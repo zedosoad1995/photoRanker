@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { getMany } from "@/controllers/users.controller";
+import { createOne, getMany } from "@/controllers/users.controller";
 
 const router = Router();
 
 router.get("/", getMany);
+
+router.post("/", createOne);
 
 export default router;

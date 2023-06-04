@@ -15,6 +15,12 @@ model User {
   ethnicity       String
   countryOfOrigin String
   dateOfBirth     String
+  role            UserRole
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  REGULAR
 }
