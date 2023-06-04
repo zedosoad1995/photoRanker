@@ -14,5 +14,4 @@ export const createUserSchema = z.object({
   dateOfBirth: z
     .string()
     .refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
-  role: z.nativeEnum(UserRole),
 });
