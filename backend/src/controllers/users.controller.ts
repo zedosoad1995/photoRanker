@@ -1,5 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import prisma from "@/helpers/prismaClient";
+import { hashPassowrd } from "@/helpers/password";
+import { UserModel } from "@/models/user";
+import _ from "underscore";
+import { ConflictError } from "@/errors/ConflictError";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await prisma.user.findMany();
@@ -8,9 +12,22 @@ export const getMany = async (req: Request, res: Response) => {
 };
 
 export const createOne = async (req: Request, res: Response) => {
-  const user = await prisma.user.create({
-    data: req.body,
+  const hashedPassword = await hashPassowrd(req.body.password);
+
+  const userSameEmail = await UserModel.findUnique({
+    where: {
+      email: req.body.email,
+    },
+  });
+  if (Boolean(userSameEmail)) {
+    throw new ConflictError("Email already exists");
+  }
+
+  const user = await UserModel.create({
+    data: { ...req.body, password: hashedPassword },
   });
 
-  res.status(201).json({ user });
+  const userNoPassword = _.omit(user, "password");
+
+  res.status(201).json({ user: userNoPassword });
 };
