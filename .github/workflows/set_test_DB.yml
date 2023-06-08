@@ -1,0 +1,17 @@
+name: Test DB
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-file: infra/dockers/docker-compose-postgres-test.yaml
+          compose-command: up -d
