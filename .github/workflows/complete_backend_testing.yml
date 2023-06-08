@@ -1,0 +1,21 @@
+name: Sequential Workflows
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup-db-and-test-backend:
+    runs-on: ubuntu-latest
+    needs: [set_test_DB, backend_testing]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup DB
+        uses: ./.github/workflows/setup-db.yml
+
+      - name: Test Backend
+        uses: ./.github/workflows/test-backend.yml
