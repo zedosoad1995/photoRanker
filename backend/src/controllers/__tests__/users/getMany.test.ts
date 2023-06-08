@@ -2,11 +2,13 @@ import request from "supertest";
 import { app } from "@/app";
 import { Seeder } from "@/tests/seed/Seeder";
 
+const NUM_USERS = 10;
+
+beforeAll(() => {
+  return Seeder("User")?.seed({ numRepeat: NUM_USERS });
+});
+
 it("returns a list of users", async () => {
-  const NUM_USERS = 10;
-
-  await Seeder("User")?.seed({ numRepeat: NUM_USERS });
-
   const response = await request(app).get("/api/users").send();
 
   expect(response.status).toEqual(200);
@@ -14,8 +16,6 @@ it("returns a list of users", async () => {
 });
 
 it("does not return 'password' field", async () => {
-  await Seeder("User")?.seed({ numRepeat: 1 });
-
   const response = await request(app).get("/api/users").send();
 
   expect(response.status).toEqual(200);

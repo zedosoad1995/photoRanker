@@ -33,19 +33,23 @@ export class UserSeeder {
     await UserModel.deleteMany();
 
     if (Array.isArray(data)) {
-      return UserModel.createMany({
+      await UserModel.createMany({
         data: data.map((row) => ({
           ...randomizeUser(),
           ...row,
         })),
       });
+
+      return UserModel.findMany();
     }
 
-    return UserModel.createMany({
+    await UserModel.createMany({
       data: _.times(numRepeat, () => ({
         ...randomizeUser(),
         ...data,
       })),
     });
+
+    return UserModel.findMany();
   }
 }
