@@ -12,8 +12,13 @@ export class UserSeeder {
   async seed(
     { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
   ) {
-    await UserModel.deleteMany();
+    await this.deleteAll();
+    return this.createMany({ data, numRepeat });
+  }
 
+  async createMany(
+    { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
+  ) {
     if (Array.isArray(data)) {
       await UserModel.createMany({
         data: data.map((row) => ({

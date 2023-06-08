@@ -4,22 +4,24 @@ import { Seeder } from "@/tests/seed/Seeder";
 import { UserModel } from "@/models/user";
 import { randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
+import { UserRole } from "@prisma/client";
 
 const createUserBody = randomizeUser();
 
-it("creates a new user, 'password' is not returned", async () => {
+it("creates a new user, 'password' is not returned, 'role' is REGULAR", async () => {
   await Seeder("User")?.deleteAll();
 
   const response = await request(app).post("/api/users").send(createUserBody);
 
   expect(response.status).toEqual(201);
   expect(response.body.user).not.toHaveProperty("password");
+  expect(response.body.user.role).toEqual(UserRole.REGULAR);
 
   const numUsers = await UserModel.count();
   expect(numUsers).toBe(1);
 });
 
-it("return 409, when 'email' already exists", async () => {
+it("returns 409, when 'email' already exists", async () => {
   await Seeder("User")?.seed({ data: { email: createUserBody.email } });
 
   const response = await request(app).post("/api/users").send(createUserBody);
@@ -33,7 +35,7 @@ describe("Test Validation", () => {
   });
 
   it("must use valid propriety name", async () => {
-    const body = { ...createUserBody, invalidProp: "" };
+    const body = { ...createUserBody, role: UserRole.ADMIN };
 
     const response = await request(app).post("/api/users").send(body);
 
