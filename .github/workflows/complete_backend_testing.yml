@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup DB
-        uses: ./.github/workflows/setup-db.yml
+        uses: ./.github/workflows/set_test_DB.yml
 
       - name: Test Backend
-        uses: ./.github/workflows/test-backend.yml
+        uses: ./.github/workflows/backend_testing.yml
