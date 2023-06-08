@@ -3,7 +3,7 @@ name: Set Test DB
 on: [pull_request]
 
 jobs:
-  test:
+  set_test_DB:
     runs-on: ubuntu-latest
 
     steps:
