@@ -10,8 +10,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Docker Compose
-        uses: docker/compose-action@v2
-        with:
-          compose-file: infra/dockers/docker-compose-postgres-test.yaml
-          compose-command: up -d
+      - name: Build the stack
+        run: docker-compose --file="infra/dockers/docker-compose-postgres-test.yaml" up -d
