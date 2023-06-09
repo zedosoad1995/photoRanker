@@ -3,7 +3,7 @@ name: Backend testing
 on: [pull_request]
 
 jobs:
-  set_test_DB:
+  test-backend:
     runs-on: ubuntu-latest
 
     strategy:
@@ -25,6 +25,8 @@ jobs:
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
+        working-directory: "./backend"
+      - run: npm test:migrate
         working-directory: "./backend"
       - run: npm test
         working-directory: "./backend"
