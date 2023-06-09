@@ -3,7 +3,18 @@ name: Backend testing
 on: [pull_request]
 
 jobs:
+  set_test_DB:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build the stack
+        run: docker-compose --file="infra/dockers/docker-compose-postgres-test.yaml" up -d
+
   backend_testing:
+    needs: set_test_DB
     runs-on: ubuntu-latest
 
     strategy:
