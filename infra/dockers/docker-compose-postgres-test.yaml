@@ -5,6 +5,7 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
+      POSTGRES_HOST: localhost
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: test
