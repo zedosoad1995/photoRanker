@@ -3,7 +3,7 @@ name: Backend testing
 on: [pull_request]
 
 jobs:
-  backend_testing:
+  test-backend:
     runs-on: ubuntu-latest
 
     strategy:
@@ -11,6 +11,12 @@ jobs:
         node-version: [18.x]
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build the stack
+        run: docker-compose --file="infra/dockers/docker-compose-postgres-test.yaml" up -d
+
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -19,6 +25,8 @@ jobs:
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
+        working-directory: "./backend"
+      - run: npm run test:migrate
         working-directory: "./backend"
       - run: npm test
         working-directory: "./backend"

@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
 }
 
 datasource db {
@@ -15,6 +16,12 @@ model User {
   ethnicity       String
   countryOfOrigin String
   dateOfBirth     String
+  role            UserRole @default(REGULAR)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  REGULAR
 }
