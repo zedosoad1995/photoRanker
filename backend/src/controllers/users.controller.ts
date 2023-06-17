@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { hashPassowrd } from "@/helpers/password";
+import { hashPassword } from "@/helpers/password";
 import { UserModel } from "@/models/user";
 import _ from "underscore";
 import { ConflictError } from "@/errors/ConflictError";
 import { NotFoundError } from "@/errors/NotFoundError";
+import { isAdmin } from "@/helpers/role";
+import { ForbiddenError } from "@/errors/ForbiddenError";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -14,6 +16,11 @@ export const getMany = async (req: Request, res: Response) => {
 
 export const getOne = async (req: Request, res: Response) => {
   const userId = req.params.userId;
+  const loggedUser = req.loggedUser!;
+
+  if (!isAdmin(loggedUser.role) && userId !== loggedUser.id) {
+    throw new ForbiddenError();
+  }
 
   const user = await UserModel.findUnique({ where: { id: userId } });
 
@@ -27,7 +34,7 @@ export const getOne = async (req: Request, res: Response) => {
 };
 
 export const createOne = async (req: Request, res: Response) => {
-  const hashedPassword = await hashPassowrd(req.body.password);
+  const hashedPassword = await hashPassword(req.body.password);
 
   const userSameEmail = await UserModel.findUnique({
     where: {
@@ -58,7 +65,7 @@ export const updateOne = async (req: Request, res: Response) => {
   }
 
   if (body.password) {
-    body.password = await hashPassowrd(body.password);
+    body.password = await hashPassword(body.password);
   }
 
   const updatedUser = await UserModel.update({
