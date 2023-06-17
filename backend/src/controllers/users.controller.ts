@@ -4,6 +4,8 @@ import { UserModel } from "@/models/user";
 import _ from "underscore";
 import { ConflictError } from "@/errors/ConflictError";
 import { NotFoundError } from "@/errors/NotFoundError";
+import { isAdmin } from "@/helpers/role";
+import { ForbiddenError } from "@/errors/ForbiddenError";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -14,6 +16,11 @@ export const getMany = async (req: Request, res: Response) => {
 
 export const getOne = async (req: Request, res: Response) => {
   const userId = req.params.userId;
+  const loggedUser = req.loggedUser!;
+
+  if (!isAdmin(loggedUser.role) && userId !== loggedUser.id) {
+    throw new ForbiddenError();
+  }
 
   const user = await UserModel.findUnique({ where: { id: userId } });
 

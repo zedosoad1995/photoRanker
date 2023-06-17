@@ -19,7 +19,6 @@ export const signIn = async (req: Request, res: Response) => {
 
   const userJwt = jwt.sign(
     {
-      id: user.id,
       email: user.email,
     },
     process.env.JWT_KEY!
