@@ -4,7 +4,7 @@ import { ETHNICITY } from "@/constants/user";
 import { COUNTRIES } from "@/constants/user";
 import { Prisma, UserRole } from "@prisma/client";
 import { UserModel } from "@/models/user";
-import { hashPassowrd } from "@/helpers/password";
+import { hashPassword } from "@/helpers/password";
 import { app } from "@/app";
 import request from "supertest";
 
@@ -30,7 +30,7 @@ export const loginUser = async (role: UserRole) => {
   const adminUser = await UserModel.create({
     data: randomizeUser({
       role,
-      password: await hashPassowrd(password),
+      password: await hashPassword(password),
     }),
   });
 

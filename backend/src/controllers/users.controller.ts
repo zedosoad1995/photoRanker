@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { hashPassowrd } from "@/helpers/password";
+import { hashPassword } from "@/helpers/password";
 import { UserModel } from "@/models/user";
 import _ from "underscore";
 import { ConflictError } from "@/errors/ConflictError";
@@ -34,7 +34,7 @@ export const getOne = async (req: Request, res: Response) => {
 };
 
 export const createOne = async (req: Request, res: Response) => {
-  const hashedPassword = await hashPassowrd(req.body.password);
+  const hashedPassword = await hashPassword(req.body.password);
 
   const userSameEmail = await UserModel.findUnique({
     where: {
@@ -65,7 +65,7 @@ export const updateOne = async (req: Request, res: Response) => {
   }
 
   if (body.password) {
-    body.password = await hashPassowrd(body.password);
+    body.password = await hashPassword(body.password);
   }
 
   const updatedUser = await UserModel.update({
