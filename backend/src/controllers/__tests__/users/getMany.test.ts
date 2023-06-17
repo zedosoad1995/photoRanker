@@ -15,7 +15,7 @@ describe("Unauthorized", () => {
   });
 
   it("returns 403, when logged user is not ADMIN", async () => {
-    const cookie = await loginRegular();
+    const { cookie } = await loginRegular();
 
     const response = await request(app)
       .get("/api/users")
@@ -29,7 +29,8 @@ describe("Unauthorized", () => {
 describe("Admin Logged User", () => {
   beforeAll(async () => {
     await Seeder("User")?.seed({ numRepeat: NUM_USERS });
-    adminCookie = await loginAdmin();
+    const res = await loginAdmin();
+    adminCookie = res.cookie;
   });
 
   it("returns a list of users", async () => {

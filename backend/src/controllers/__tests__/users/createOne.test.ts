@@ -16,7 +16,7 @@ describe("Unauthorized", () => {
   });
 
   it("returns 403, when logged user is not ADMIN", async () => {
-    const cookie = await loginRegular();
+    const { cookie } = await loginRegular();
 
     const response = await request(app)
       .post("/api/users")
@@ -31,7 +31,7 @@ describe("Admin Logged User", () => {
   it("creates a new user, 'password' is not returned, 'role' is REGULAR", async () => {
     await Seeder("User")?.deleteAll();
 
-    const cookie = await loginAdmin();
+    const { cookie } = await loginAdmin();
 
     const response = await request(app)
       .post("/api/users")
@@ -49,7 +49,7 @@ describe("Admin Logged User", () => {
   it("returns 409, when 'email' already exists", async () => {
     await Seeder("User")?.seed({ data: { email: createUserBody.email } });
 
-    const cookie = await loginAdmin();
+    const { cookie } = await loginAdmin();
 
     const response = await request(app)
       .post("/api/users")
@@ -64,7 +64,8 @@ describe("Admin Logged User", () => {
 
     beforeEach(async () => {
       await Seeder("User")?.deleteAll();
-      cookie = await loginAdmin();
+      const res = await loginAdmin();
+      cookie = res.cookie;
     });
 
     it("must use valid propriety name", async () => {

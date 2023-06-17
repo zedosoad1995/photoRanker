@@ -27,7 +27,7 @@ describe("Unauthorized", () => {
   });
 
   it("returns 403, when logged user is not ADMIN", async () => {
-    const cookie = await loginRegular();
+    const { cookie } = await loginRegular();
 
     const response = await request(app)
       .patch(`/api/users/${userId}`)
@@ -40,7 +40,8 @@ describe("Unauthorized", () => {
 
 describe("Admin Logged User", () => {
   beforeAll(async () => {
-    adminCookie = await loginAdmin();
+    const res = await loginAdmin();
+    adminCookie = res.cookie;
   });
 
   it("edits user, 'password' is not returned", async () => {

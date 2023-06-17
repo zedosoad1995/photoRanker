@@ -41,7 +41,7 @@ export const loginUser = async (role: UserRole) => {
 
   const cookie = res.header["set-cookie"][0].split(";")[0];
 
-  return cookie;
+  return { cookie, user: res.body.user };
 };
 
 export const loginRegular = async () => {
