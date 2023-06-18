@@ -1,14 +1,10 @@
-import multer from "multer";
 import { Router } from "express";
 import { upload } from "@/controllers/pictures.controller";
-import { validateForm } from "@/middlewares/validateForm";
 import { checkAuth } from "@/middlewares/checkAuth";
-import { checkAdmin } from "@/middlewares/checkAdmin";
+import { storeImage } from "@/middlewares/storeImage";
 
 const router = Router();
 
-const uploadMiddleware = multer({ dest: "storage/" });
-
-router.post("/", checkAuth, uploadMiddleware.single("image"), upload);
+router.post("/", checkAuth, storeImage, upload);
 
 export default router;
