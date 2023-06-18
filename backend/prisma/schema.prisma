@@ -9,19 +9,46 @@ datasource db {
 }
 
 model User {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   name            String
-  email           String   @unique
+  email           String    @unique
   password        String
   ethnicity       String
   countryOfOrigin String
   dateOfBirth     String
-  role            UserRole @default(REGULAR)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  role            UserRole  @default(REGULAR)
+  pictures        Picture[]
+  votes           Vote[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 enum UserRole {
   ADMIN
   REGULAR
+}
+
+model Picture {
+  id          String   @id @default(uuid())
+  filename    String
+  elo         Float
+  numVotes    Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  votes       Vote[]
+  votesWinner Vote[]   @relation(name: "winnerPicture")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Vote {
+  id            String    @id @default(uuid())
+  pictures      Picture[]
+  winnerPicture Picture   @relation(fields: [pictureId], references: [id], name: "winnerPicture")
+  pictureId     String
+  voteTimestamp DateTime
+  voter         User      @relation(fields: [voterId], references: [id])
+  voterId       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
