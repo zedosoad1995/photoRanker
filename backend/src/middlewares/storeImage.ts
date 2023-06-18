@@ -1,6 +1,8 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { BadRequestError } from "@/errors/BadRequestError";
+import { IMAGE_SIZE_LIMIT } from "@/constants/image";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -28,6 +30,25 @@ const storage = multer.diskStorage({
   },
 });
 
-const uploader = multer({ storage });
+const uploader = multer({
+  storage,
+  limits: {
+    fileSize: IMAGE_SIZE_LIMIT,
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [".png", ".jpg", ".jpeg"];
+
+    const extension = path.extname(file.originalname).toLowerCase();
+    if (allowedTypes.includes(extension)) {
+      cb(null, true);
+    } else {
+      cb(
+        new BadRequestError(
+          "Invalid file type. Only PNG and JPEG files are allowed."
+        )
+      );
+    }
+  },
+});
 
 export const storeImage = uploader.single("image");
