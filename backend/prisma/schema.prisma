@@ -32,7 +32,7 @@ model Picture {
   id          String   @id @default(uuid())
   filepath    String
   elo         Float
-  numVotes    Int
+  numVotes    Int      @default(0)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   votes       Vote[]

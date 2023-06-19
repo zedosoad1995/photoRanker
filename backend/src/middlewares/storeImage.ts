@@ -2,7 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { BadRequestError } from "@/errors/BadRequestError";
-import { IMAGE_SIZE_LIMIT } from "@/constants/image";
+import { IMAGE_SIZE_LIMIT } from "@/constants/picture";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

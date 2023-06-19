@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "@/errors/CustomError";
 import multer from "multer";
-import { IMAGE_SIZE_LIMIT, IMAGE_UPLOAD_KEY } from "@/constants/image";
+import { IMAGE_SIZE_LIMIT, IMAGE_UPLOAD_KEY } from "@/constants/picture";
 import bytes from "bytes";
 
 export const errorHandler = (
