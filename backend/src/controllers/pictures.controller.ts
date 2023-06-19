@@ -3,8 +3,25 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { isRegular } from "@/helpers/role";
 import { PictureModel } from "@/models/picture";
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { Request, Response } from "express";
+
+export const getMany = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser as User;
+
+  const whereQuery: Prisma.PictureWhereInput = {};
+  if (isRegular(loggedUser.role)) {
+    whereQuery.userId = loggedUser.id;
+  }
+
+  const pictures = await PictureModel.findMany({
+    where: whereQuery,
+  });
+
+  res.status(200).json({
+    pictures,
+  });
+};
 
 export const upload = async (req: Request, res: Response) => {
   if (!req.file) {
