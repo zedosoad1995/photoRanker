@@ -23,6 +23,25 @@ export const getMany = async (req: Request, res: Response) => {
   });
 };
 
+export const getOne = async (req: Request, res: Response) => {
+  const pictureId = req.params.pictureId;
+  const loggedUser = req.loggedUser as User;
+
+  const picture = await PictureModel.findUnique({
+    where: {
+      id: pictureId,
+    },
+  });
+
+  if (isRegular(loggedUser.role) && picture?.userId !== loggedUser.id) {
+    throw new ForbiddenError("User cannot access this picture");
+  }
+
+  res.status(200).json({
+    picture,
+  });
+};
+
 export const upload = async (req: Request, res: Response) => {
   if (!req.file) {
     throw new BadRequestError("No file uploaded");
