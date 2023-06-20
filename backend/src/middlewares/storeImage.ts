@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { IMAGE_SIZE_LIMIT } from "@/constants/picture";
+import crypto from "crypto"
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -28,6 +29,11 @@ const storage = multer.diskStorage({
 
     cb(null, dayFolder);
   },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = crypto.randomBytes(18).toString('hex');
+    const extension = path.extname(file.originalname);
+    cb(null, uniqueSuffix + extension);
+  }
 });
 
 const uploader = multer({
