@@ -5,6 +5,7 @@ import { UserModel } from "@/models/user";
 import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
 import { UserRole } from "@prisma/client";
+import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const createUserBody = randomizeUser();
 
@@ -47,7 +48,7 @@ describe("Admin Logged User", () => {
   });
 
   it("returns 409, when 'email' already exists", async () => {
-    await Seeder("User")?.seed({ data: { email: createUserBody.email } });
+    await (Seeder("User") as UserSeeder)?.seed({ data: { email: createUserBody.email } });
 
     const { cookie } = await loginAdmin();
 
