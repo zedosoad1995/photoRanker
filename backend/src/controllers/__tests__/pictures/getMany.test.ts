@@ -3,10 +3,10 @@ import { app } from "@/app";
 import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
+import { UserSeeder } from "@/tests/seed/UserSeeder";
+import { User } from "@prisma/client";
 
 const NUM_PICTURES = 10;
-
-let adminCookie: string;
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
@@ -16,7 +16,36 @@ describe("Unauthorized", () => {
   });
 });
 
+describe("Regular Logged User", () => {
+  let regularCookie: string;
+  let loggedUser: User
+
+  beforeAll(async () => {
+    const users = await (Seeder("User") as UserSeeder).createMany({numRepeat: 1})
+    const randomUser = users[0]
+
+    const res = await loginRegular();
+    regularCookie = res.cookie;
+    loggedUser = res.user;
+
+    await (Seeder("Picture") as PictureSeeder).seed({data: [{userId: loggedUser.id}, {userId: randomUser.id}]})
+  });
+
+  it("returns a list of pictures belonging to logged user", async () => {
+    const response = await request(app)
+      .get("/api/pictures")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(200);
+    expect(response.body.pictures).toHaveLength(1);
+    expect(response.body.pictures[0].userId).toEqual(loggedUser.id);
+  });
+});
+
 describe("Admin Logged User", () => {
+  let adminCookie: string;
+
   beforeAll(async () => {
     const res = await loginAdmin();
     adminCookie = res.cookie;
