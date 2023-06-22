@@ -1,6 +1,7 @@
 import { ELO_INIT } from "@/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
+import { NotFoundError } from "@/errors/NotFoundError";
 import { isRegular } from "@/helpers/role";
 import { PictureModel } from "@/models/picture";
 import { Prisma, User } from "@prisma/client";
@@ -32,6 +33,10 @@ export const getOne = async (req: Request, res: Response) => {
       id: pictureId,
     },
   });
+
+  if (!picture) {
+    throw new NotFoundError("Picture does not exist");
+  }
 
   if (isRegular(loggedUser.role) && picture?.userId !== loggedUser.id) {
     throw new ForbiddenError("User cannot access this picture");
@@ -75,7 +80,7 @@ export const deleteOne = async (req: Request, res: Response) => {
   });
 
   if (!existingPicture) {
-    throw new BadRequestError("Picture does not exist");
+    throw new NotFoundError("Picture does not exist");
   }
 
   if (isRegular(loggedUser.role) && existingPicture.userId !== loggedUser.id) {
