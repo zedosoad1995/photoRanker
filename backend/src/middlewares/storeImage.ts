@@ -2,8 +2,9 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { BadRequestError } from "@/errors/BadRequestError";
-import { IMAGE_SIZE_LIMIT } from "@/constants/picture";
-import crypto from "crypto"
+import { IMAGES_FOLDER_PATH, IMAGE_SIZE_LIMIT } from "@/constants/picture";
+import crypto from "crypto";
+import { PICTURE } from "@/constants/messages";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -12,7 +13,7 @@ const storage = multer.diskStorage({
     const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
     const day = currentDate.getDate().toString().padStart(2, "0");
 
-    const yearFolder = path.join("storage/images", year);
+    const yearFolder = path.join(IMAGES_FOLDER_PATH, year);
     if (!fs.existsSync(yearFolder)) {
       fs.mkdirSync(yearFolder);
     }
@@ -30,10 +31,10 @@ const storage = multer.diskStorage({
     cb(null, dayFolder);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = crypto.randomBytes(18).toString('hex');
+    const uniqueSuffix = crypto.randomBytes(18).toString("hex");
     const extension = path.extname(file.originalname);
     cb(null, uniqueSuffix + extension);
-  }
+  },
 });
 
 const uploader = multer({
@@ -50,7 +51,7 @@ const uploader = multer({
     } else {
       cb(
         new BadRequestError(
-          "Invalid file type. Only PNG and JPEG files are allowed."
+          PICTURE.INVALID_EXTENSION
         )
       );
     }

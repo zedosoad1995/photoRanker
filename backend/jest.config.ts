@@ -6,4 +6,6 @@ export default {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
+  globalSetup: "<rootDir>/src/tests/setup.ts",
+  globalTeardown: "<rootDir>/src/tests/teardown.ts",
 };

@@ -1,3 +1,4 @@
+import { PICTURE } from "@/constants/messages";
 import { ELO_INIT } from "@/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
@@ -47,12 +48,12 @@ export const getOne = async (req: Request, res: Response) => {
   });
 };
 
-export const upload = async (req: Request, res: Response) => {
+export const uploadOne = async (req: Request, res: Response) => {
   if (!req.file) {
-    throw new BadRequestError("No file uploaded");
+    throw new BadRequestError(PICTURE.NO_FILE);
   }
 
-  await PictureModel.create({
+  const picture = await PictureModel.create({
     data: {
       filepath: req.file.filename,
       elo: ELO_INIT,
@@ -64,8 +65,8 @@ export const upload = async (req: Request, res: Response) => {
     },
   });
 
-  res.status(200).json({
-    message: "Image successfully uploaded",
+  res.status(201).json({
+    picture,
   });
 };
 
