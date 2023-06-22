@@ -20,24 +20,34 @@ export class UserSeeder {
     { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
   ) {
     if (Array.isArray(data)) {
-      await UserModel.createMany({
+      const res = await UserModel.createMany({
         data: data.map((row) => ({
           ...randomizeUser(),
           ...row,
         })),
       });
 
-      return UserModel.findMany();
+      return UserModel.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: res.count,
+      });
     }
 
-    await UserModel.createMany({
+    const res = await UserModel.createMany({
       data: _.times(numRepeat, () => ({
         ...randomizeUser(),
         ...data,
       })),
     });
 
-    return UserModel.findMany();
+    return UserModel.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: res.count,
+    });
   }
 
   async deleteAll() {
