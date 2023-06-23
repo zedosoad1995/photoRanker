@@ -30,9 +30,9 @@ enum UserRole {
 
 model Picture {
   id          String   @id @default(uuid())
-  filename    String
+  filepath    String
   elo         Float
-  numVotes    Int
+  numVotes    Int      @default(0)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   votes       Vote[]
