@@ -7,7 +7,6 @@ import { isRegular } from "@/helpers/role";
 import { PictureModel } from "@/models/picture";
 import { Prisma, User } from "@prisma/client";
 import { Request, Response } from "express";
-import _ from "underscore"
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser as User;
@@ -97,63 +96,3 @@ export const deleteOne = async (req: Request, res: Response) => {
 
   res.sendStatus(204);
 };
-
-export const getRandomPair = async (req: Request, res: Response) => {
-    const loggedUser = req.loggedUser!
-
-    const numPictures = await PictureModel.count({
-        where: {
-            userId: {
-                not:  loggedUser.id
-            }
-        }
-    })
-
-    const randomNumPic1 = _.random(numPictures - 1)
-    if(randomNumPic1 < 0){
-        throw new BadRequestError("Not enought pictures for match")
-    }
-
-    const picture1 = await PictureModel.findFirst({
-        where: {
-            userId: {
-                not:  loggedUser.id
-            }
-        },
-        skip: randomNumPic1,
-    })
-    if(!picture1){
-        throw new BadRequestError("Not enought pictures for match")
-    }
-
-    const randomNumPic2 = _.random(numPictures - 2)
-    if(randomNumPic2 < 0){
-        throw new BadRequestError("Not enought pictures for match")
-    }
-
-    const picture2 = await PictureModel.findFirst({
-        where: {
-            AND: [
-                {
-                    userId: {
-                        not: loggedUser.id
-                    }
-                },
-                {
-                    id: {
-                        not: picture1.id
-                    }
-                }
-            ]
-        },
-        skip: randomNumPic2,
-    })
-    if(!picture2){
-        throw new BadRequestError("Not enought pictures for match")
-    }
-
-    res.status(200).send({
-      picture1,
-      picture2
-    })
-}
