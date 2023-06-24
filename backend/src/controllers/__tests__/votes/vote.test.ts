@@ -21,7 +21,7 @@ describe("Regular Logged User", () => {
   let regularCookie: string;
   let regularUser: User;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
     regularUser = res.user;
@@ -109,5 +109,83 @@ describe("Regular Logged User", () => {
       });
 
     expect(response.status).toEqual(403);
+  });
+
+  it("throws an error, when winning picture does not exist", async () => {
+    const matches = await (Seeder("Match") as MatchSeeder).seed();
+
+    await UserModel.update({
+      where: {
+        id: regularUser.id,
+      },
+      data: {
+        activeMatch: {
+          connect: {
+            id: matches[0].id,
+          },
+        },
+      },
+    });
+
+    const response = await request(app)
+      .post("/api/votes")
+      .set("Cookie", regularCookie)
+      .send({
+        matchId: matches[0].id,
+        winnerPictureId: "doesNotExist",
+      });
+
+    expect(response.status).toEqual(404);
+  });
+
+  it("throws an error, when winning picture exists, but belongs to another match", async () => {
+    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+      data: {
+        userId: regularUser.id,
+      },
+      numRepeat: 2,
+    });
+
+    const matches = await (Seeder("Match") as MatchSeeder).seed({
+      data: [
+        {
+          pictures: {
+            connect: {
+              id: pictures[0].id,
+            },
+          },
+        },
+        {
+          pictures: {
+            connect: {
+              id: pictures[1].id,
+            },
+          },
+        },
+      ],
+    });
+
+    await UserModel.update({
+      where: {
+        id: regularUser.id,
+      },
+      data: {
+        activeMatch: {
+          connect: {
+            id: matches[0].id,
+          },
+        },
+      },
+    });
+
+    const response = await request(app)
+      .post("/api/votes")
+      .set("Cookie", regularCookie)
+      .send({
+        matchId: matches[0].id,
+        winnerPictureId: pictures[1].id,
+      });
+
+    expect(response.status).toEqual(404);
   });
 });
