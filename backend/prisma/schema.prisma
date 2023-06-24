@@ -17,10 +17,10 @@ model User {
   countryOfOrigin String
   dateOfBirth     String
   role            UserRole  @default(REGULAR)
-  activeVote      Vote?     @relation(name: "activeVote", fields: [activeVoteId], references: [id])
-  activeVoteId    String    @unique
+  activeMatch     Match?    @relation(name: "activeMatch", fields: [activeMatchId], references: [id])
+  activeMatchId   String    @unique
   pictures        Picture[]
-  votes           Vote[]
+  votes           Vote[]    @relation(name: "voter")
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   voteId          String
@@ -38,7 +38,7 @@ model Picture {
   numVotes    Int      @default(0)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
-  votes       Vote[]
+  matches     Match[]
   votesWinner Vote[]   @relation(name: "winnerPicture")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -46,13 +46,22 @@ model Picture {
 
 model Vote {
   id              String    @id @default(uuid())
-  pictures        Picture[]
-  winnerPicture   Picture   @relation(fields: [winnerPictureId], references: [id], name: "winnerPicture")
+  winnerPicture   Picture?  @relation(fields: [winnerPictureId], references: [id], name: "winnerPicture")
   winnerPictureId String
   voteTimestamp   DateTime?
-  voter           User      @relation(fields: [voterId], references: [id])
+  voter           User      @relation(fields: [voterId], references: [id], name: "voter")
   voterId         String
-  activeUser      User?     @relation(name: "activeVote")
+  match           Match     @relation(fields: [matchId], references: [id])
+  matchId         String    @unique
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+model Match {
+  id         String    @id @default(uuid())
+  activeUser User?     @relation(name: "activeMatch")
+  pictures   Picture[]
+  vote       Vote?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
