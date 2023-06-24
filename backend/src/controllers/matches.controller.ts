@@ -5,7 +5,7 @@ import { PictureModel } from "@/models/picture";
 import { Request, Response } from "express";
 import _ from "underscore";
 
-export const createMatch = async (req: Request, res: Response) => {
+export const createOne = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
   const numPictures = await PictureModel.count({
