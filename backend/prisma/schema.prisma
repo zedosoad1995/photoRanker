@@ -45,14 +45,14 @@ model Picture {
 }
 
 model Vote {
-  id            String    @id @default(uuid())
-  pictures      Picture[]
-  winnerPicture Picture   @relation(fields: [pictureId], references: [id], name: "winnerPicture")
-  pictureId     String
-  voteTimestamp DateTime
-  voter         User      @relation(fields: [voterId], references: [id])
-  voterId       String
-  activeUser    User?     @relation(name: "activeVote")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String    @id @default(uuid())
+  pictures        Picture[]
+  winnerPicture   Picture   @relation(fields: [winnerPictureId], references: [id], name: "winnerPicture")
+  winnerPictureId String
+  voteTimestamp   DateTime?
+  voter           User      @relation(fields: [voterId], references: [id])
+  voterId         String
+  activeUser      User?     @relation(name: "activeVote")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
