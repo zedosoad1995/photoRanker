@@ -12,7 +12,7 @@ let userId: string;
 let adminCookie: string;
 
 beforeAll(async () => {
-  const user = await Seeder("User")?.seed({ numRepeat: 1 });
+  const user = await Seeder("User")?.seed());
 
   if (user) {
     userId = user[0].id;

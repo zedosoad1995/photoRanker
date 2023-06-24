@@ -2,9 +2,8 @@ import _ from "underscore";
 import request from "supertest";
 import { app } from "@/app";
 import { Seeder } from "@/tests/seed/Seeder";
-import { UserModel } from "@/models/user";
-import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
-import { User, UserRole } from "@prisma/client";
+import { loginAdmin, loginRegular } from "@/tests/helpers/user";
+import { User } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { MatchModel } from "@/models/match";
@@ -13,9 +12,7 @@ import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 let otherUser: User;
 
 beforeAll(async () => {
-  const users = await (Seeder("User") as UserSeeder).createMany({
-    numRepeat: 1,
-  });
+  const users = await (Seeder("User") as UserSeeder).createMany();
   otherUser = users[0];
 });
 
@@ -48,7 +45,6 @@ describe("Regular Logged User", () => {
       data: {
         userId: otherUser.id,
       },
-      numRepeat: 1,
     });
 
     const response = await request(app)
@@ -104,7 +100,6 @@ describe("Regular Logged User", () => {
           },
         },
       },
-      numRepeat: 1,
     });
 
     const matchesLoggedUser = await (Seeder("Match") as MatchSeeder).createMany(
@@ -116,7 +111,6 @@ describe("Regular Logged User", () => {
             },
           },
         },
-        numRepeat: 1,
       }
     );
 
