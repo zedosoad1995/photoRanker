@@ -17,7 +17,7 @@ export const createOne = async (req: Request, res: Response) => {
   });
 
   if (numPictures < 2) {
-    throw new BadRequestError("Not enought pictures for match");
+    throw new BadRequestError("Not enought pictures for the match");
   }
   const randomNumPic1 = _.random(numPictures - 1);
 
@@ -30,7 +30,7 @@ export const createOne = async (req: Request, res: Response) => {
     skip: randomNumPic1,
   });
   if (!picture1) {
-    throw new BadRequestError("Not enought pictures for match");
+    throw new BadRequestError("Not enought pictures for the match");
   }
 
   const randomNumPic2 = _.random(numPictures - 2);
@@ -53,7 +53,7 @@ export const createOne = async (req: Request, res: Response) => {
     skip: randomNumPic2,
   });
   if (!picture2) {
-    throw new BadRequestError("Not enought pictures for match");
+    throw new BadRequestError("Not enought pictures for the match");
   }
 
   const [doesNotMatter, match] = await prisma.$transaction([
