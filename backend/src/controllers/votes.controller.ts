@@ -1,5 +1,6 @@
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
+import { calculateNewRating } from "@/helpers/rating";
 import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
@@ -69,12 +70,27 @@ export const vote = async (req: Request, res: Response) => {
     },
   });
 
+  const loserPicture = match.pictures.find(
+    (picture) => picture.id !== winnerPictureId
+  )!;
+
   const updateWinnerPictureScore = PictureModel.update({
     where: {
       id: winnerPictureId,
     },
     data: {
       numVotes: winnerPicture.numVotes + 1,
+      elo: calculateNewRating(true, winnerPicture.elo, loserPicture.elo),
+    },
+  });
+
+  const updateLoserPictureScore = PictureModel.update({
+    where: {
+      id: loserPicture.id,
+    },
+    data: {
+      numVotes: loserPicture.numVotes + 1,
+      elo: calculateNewRating(false, loserPicture.elo, winnerPicture.elo),
     },
   });
 
@@ -82,6 +98,7 @@ export const vote = async (req: Request, res: Response) => {
     createNewVote,
     makeMatchInactive,
     updateWinnerPictureScore,
+    updateLoserPictureScore,
   ]);
 
   res.status(201).send({ vote });
