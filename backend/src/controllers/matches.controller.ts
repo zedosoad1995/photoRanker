@@ -1,4 +1,5 @@
 import { BadRequestError } from "@/errors/BadRequestError";
+import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { Request, Response } from "express";
@@ -55,41 +56,42 @@ export const createMatch = async (req: Request, res: Response) => {
     throw new BadRequestError("Not enought pictures for match");
   }
 
-  await MatchModel.deleteMany({
-    where: {
-      activeUser: {
-        id: loggedUser.id
-      },
-    },
-  });
-
-  const match = await MatchModel.create({
-    data: {
-      activeUser: {
-        connect: {
+  const [doesNotMatter, match] = await prisma.$transaction([
+    MatchModel.deleteMany({
+      where: {
+        activeUser: {
           id: loggedUser.id,
         },
       },
-      pictures: {
-        connect: [
-          {
-            id: picture1.id,
+    }),
+    MatchModel.create({
+      data: {
+        activeUser: {
+          connect: {
+            id: loggedUser.id,
           },
-          {
-            id: picture2.id,
+        },
+        pictures: {
+          connect: [
+            {
+              id: picture1.id,
+            },
+            {
+              id: picture2.id,
+            },
+          ],
+        },
+      },
+      include: {
+        pictures: {
+          select: {
+            id: true,
+            filepath: true,
           },
-        ],
+        },
       },
-    },
-    include: {
-      pictures: {
-        select: {
-          id: true,
-          filepath: true,
-        }
-      },
-    },
-  });
+    }),
+  ]);
 
   res.status(201).send({ match });
 };
