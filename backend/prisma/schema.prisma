@@ -17,10 +17,13 @@ model User {
   countryOfOrigin String
   dateOfBirth     String
   role            UserRole  @default(REGULAR)
+  activeVote      Vote?     @relation(name: "activeVote", fields: [activeVoteId], references: [id])
+  activeVoteId    String    @unique
   pictures        Picture[]
   votes           Vote[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  voteId          String
 }
 
 enum UserRole {
@@ -49,6 +52,7 @@ model Vote {
   voteTimestamp DateTime
   voter         User      @relation(fields: [voterId], references: [id])
   voterId       String
+  activeUser    User?     @relation(name: "activeVote")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
