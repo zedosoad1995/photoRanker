@@ -8,12 +8,11 @@ import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 let pictureId: string;
 
 beforeAll(async () => {
-  const users = await (Seeder("User") as UserSeeder).seed({ numRepeat: 1 });
+  const users = await (Seeder("User") as UserSeeder).seed();
   const user = users[0];
 
   const pictures = await (Seeder("Picture") as PictureSeeder).seed({
     data: { userId: user.id },
-    numRepeat: 1,
   });
   pictureId = pictures[0].id;
 });
@@ -38,7 +37,6 @@ describe("Regular Logged User", () => {
 
     const pictures = await (Seeder("Picture") as PictureSeeder).createMany({
       data: { userId: res.user.id },
-      numRepeat: 1,
     });
     regularUserPictureId = pictures[0].id;
   });

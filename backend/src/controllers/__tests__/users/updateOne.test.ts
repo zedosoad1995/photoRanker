@@ -5,6 +5,7 @@ import { UserModel } from "@/models/user";
 import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
 import { UserRole } from "@prisma/client";
+import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const updateUserBody = _.omit(randomizeUser(), "email");
 
@@ -12,7 +13,7 @@ let userId: string;
 let adminCookie: string;
 
 beforeAll(async () => {
-  const user = await Seeder("User")?.seed({ numRepeat: 1 });
+  const user = await (Seeder("User") as UserSeeder).seed();
 
   if (user) {
     userId = user[0].id;

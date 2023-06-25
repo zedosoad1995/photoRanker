@@ -18,17 +18,19 @@ describe("Unauthorized", () => {
 
 describe("Regular Logged User", () => {
   let regularCookie: string;
-  let loggedUser: User
+  let loggedUser: User;
 
   beforeAll(async () => {
-    const users = await (Seeder("User") as UserSeeder).createMany({numRepeat: 1})
-    const randomUser = users[0]
+    const users = await (Seeder("User") as UserSeeder).createMany();
+    const randomUser = users[0];
 
     const res = await loginRegular();
     regularCookie = res.cookie;
     loggedUser = res.user;
 
-    await (Seeder("Picture") as PictureSeeder).seed({data: [{userId: loggedUser.id}, {userId: randomUser.id}]})
+    await (Seeder("Picture") as PictureSeeder).seed({
+      data: [{ userId: loggedUser.id }, { userId: randomUser.id }],
+    });
   });
 
   it("returns a list of pictures belonging to logged user", async () => {
@@ -50,7 +52,10 @@ describe("Admin Logged User", () => {
     const res = await loginAdmin();
     adminCookie = res.cookie;
 
-    await (Seeder("Picture") as PictureSeeder).seed({data: {userId: res.user.id}, numRepeat: NUM_PICTURES})
+    await (Seeder("Picture") as PictureSeeder).seed({
+      data: { userId: res.user.id },
+      numRepeat: NUM_PICTURES,
+    });
   });
 
   it("returns a list of pictures", async () => {
