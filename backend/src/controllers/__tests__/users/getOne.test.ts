@@ -2,11 +2,12 @@ import request from "supertest";
 import { app } from "@/app";
 import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
+import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 let userId: string;
 
 beforeAll(async () => {
-  const user = await Seeder("User")?.seed();
+  const user = await (Seeder("User") as UserSeeder).seed();
 
   if (user) {
     userId = user[0].id;
