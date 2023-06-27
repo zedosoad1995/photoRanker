@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
 import { MatchSeeder } from "@/tests/seed/MatchSeeder";
@@ -30,7 +29,7 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when match does not exist", async () => {
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+    const pictures = await PictureSeeder.seed({
       data: {
         userId: regularUser.id,
       },
@@ -48,13 +47,13 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when match exists but is inactive", async () => {
-    const matches = await (Seeder("Match") as MatchSeeder).seed();
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+    const matches = await MatchSeeder.seed();
+    const pictures = await PictureSeeder.seed({
       data: {
         userId: regularUser.id,
       },
     });
-    await (Seeder("Vote") as VoteSeeder).seed({
+    await VoteSeeder.seed({
       data: {
         matchId: matches[0].id,
         voterId: regularUser.id,
@@ -74,14 +73,14 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when match exists is active, but belongs to another user", async () => {
-    const users = await (Seeder("User") as UserSeeder).createMany();
-    const matches = await (Seeder("Match") as MatchSeeder).seed();
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+    const users = await UserSeeder.createMany();
+    const matches = await MatchSeeder.seed();
+    const pictures = await PictureSeeder.seed({
       data: {
         userId: users[0].id,
       },
     });
-    await (Seeder("Vote") as VoteSeeder).seed({
+    await VoteSeeder.seed({
       data: {
         matchId: matches[0].id,
         voterId: users[0].id,
@@ -110,7 +109,7 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when winning picture does not exist", async () => {
-    const matches = await (Seeder("Match") as MatchSeeder).seed();
+    const matches = await MatchSeeder.seed();
 
     await UserModel.update({
       where: {
@@ -133,14 +132,14 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when winning picture exists, but belongs to another match", async () => {
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+    const pictures = await PictureSeeder.seed({
       data: {
         userId: regularUser.id,
       },
       numRepeat: 2,
     });
 
-    const matches = await (Seeder("Match") as MatchSeeder).seed({
+    const matches = await MatchSeeder.seed({
       data: [
         {
           pictures: {
@@ -186,7 +185,7 @@ describe("Regular Logged User", () => {
     const INITIAL_NUM_VOTES = 0;
 
     beforeEach(async () => {
-      const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+      const pictures = await PictureSeeder.seed({
         data: {
           userId: regularUser.id,
           elo: INITIAL_ELO,
@@ -195,7 +194,7 @@ describe("Regular Logged User", () => {
         numRepeat: 2,
       });
 
-      const matches = await (Seeder("Match") as MatchSeeder).seed({
+      const matches = await MatchSeeder.seed({
         data: {
           pictures: {
             connect: pictures.map((picture) => ({ id: picture.id })),
@@ -296,14 +295,14 @@ describe("Admin Logged User", () => {
   });
 
   it("creates a new vote", async () => {
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+    const pictures = await PictureSeeder.seed({
       data: {
         userId: adminUser.id,
       },
       numRepeat: 2,
     });
 
-    const matches = await (Seeder("Match") as MatchSeeder).seed({
+    const matches = await MatchSeeder.seed({
       data: {
         pictures: {
           connect: pictures.map((picture) => ({ id: picture.id })),

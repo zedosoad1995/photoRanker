@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { UserModel } from "@/models/user";
 import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
@@ -13,7 +12,7 @@ let userId: string;
 let adminCookie: string;
 
 beforeAll(async () => {
-  const user = await (Seeder("User") as UserSeeder).seed();
+  const user = await UserSeeder.seed();
 
   if (user) {
     userId = user[0].id;

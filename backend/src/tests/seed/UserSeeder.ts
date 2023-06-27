@@ -8,13 +8,13 @@ interface SeedInput {
   numRepeat?: number;
 }
 
-export class UserSeeder {
+export const UserSeeder = {
   async seed(
     { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
   ) {
     await this.deleteAll();
     return this.createMany({ data, numRepeat });
-  }
+  },
 
   async createMany(
     { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
@@ -48,9 +48,9 @@ export class UserSeeder {
       },
       take: res.count,
     });
-  }
+  },
 
   async deleteAll() {
     await UserModel.deleteMany();
-  }
-}
+  },
+};

@@ -5,7 +5,6 @@ import { randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
 import { User } from "@prisma/client";
 import { hashPassword } from "@/helpers/password";
-import { Seeder } from "@/tests/seed/Seeder";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const PASSWORD = "Password";
@@ -20,7 +19,7 @@ beforeAll(async () => {
     data: userData,
   });
 
-  const users = await (Seeder("User") as UserSeeder).seed({ data: userData });
+  const users = await UserSeeder.seed({ data: userData });
   if (users) {
     user = users[0];
   }

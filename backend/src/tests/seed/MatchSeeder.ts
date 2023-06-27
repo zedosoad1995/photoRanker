@@ -8,13 +8,13 @@ interface SeedInput {
   numRepeat?: number;
 }
 
-export class MatchSeeder {
+export const MatchSeeder = {
   async seed(
     { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
   ) {
     await this.deleteAll();
     return this.createMany({ data, numRepeat });
-  }
+  },
 
   async createMany(
     { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
@@ -42,9 +42,9 @@ export class MatchSeeder {
         })
       )
     );
-  }
+  },
 
   async deleteAll() {
     await MatchModel.deleteMany();
-  }
-}
+  },
+};

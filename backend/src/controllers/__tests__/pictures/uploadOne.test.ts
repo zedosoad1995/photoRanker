@@ -4,10 +4,10 @@ import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { PICTURE } from "@/constants/messages";
 import { loginRegular } from "@/tests/helpers/user";
-import { Seeder } from "@/tests/seed/Seeder";
 import { User } from "@prisma/client";
 import { PictureModel } from "@/models/picture";
 import fs from "fs";
+import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 
 beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
@@ -72,7 +72,7 @@ describe("Regular Logged User", () => {
   });
 
   it("Created Picture assigned to logged user, adds image file to folder", async () => {
-    await Seeder("Picture")?.deleteAll();
+    await PictureSeeder.deleteAll();
 
     const response = await request(app)
       .post("/api/pictures")
@@ -100,7 +100,7 @@ describe("Admin Logged User", () => {
   });
 
   it("Created Picture assigned to logged user, adds image file to folder", async () => {
-    await Seeder("Picture")?.deleteAll();
+    await PictureSeeder.deleteAll();
 
     const response = await request(app)
       .post("/api/pictures")

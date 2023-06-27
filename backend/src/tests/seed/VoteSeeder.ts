@@ -8,11 +8,11 @@ interface SeedInput {
   numRepeat?: number;
 }
 
-export class VoteSeeder {
+export const VoteSeeder = {
   async seed({ data, numRepeat = 1 }: SeedInput) {
     await this.deleteAll();
     return this.createMany({ data, numRepeat });
-  }
+  },
 
   async createMany({ data, numRepeat = 1 }: SeedInput) {
     if (Array.isArray(data)) {
@@ -38,9 +38,9 @@ export class VoteSeeder {
         })
       )
     );
-  }
+  },
 
   async deleteAll() {
     await VoteModel.deleteMany();
-  }
-}
+  },
+};

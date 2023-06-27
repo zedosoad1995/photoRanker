@@ -1,7 +1,6 @@
 import _ from "underscore";
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { UserModel } from "@/models/user";
 import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import { UserRole } from "@prisma/client";
@@ -30,7 +29,7 @@ describe("Unauthorized", () => {
 
 describe("Admin Logged User", () => {
   it("creates a new user, 'password' is not returned, 'role' is REGULAR", async () => {
-    await Seeder("User")?.deleteAll();
+    await UserSeeder.deleteAll();
 
     const { cookie } = await loginAdmin();
 
@@ -48,7 +47,7 @@ describe("Admin Logged User", () => {
   });
 
   it("returns 409, when 'email' already exists", async () => {
-    await (Seeder("User") as UserSeeder)?.seed({
+    await UserSeeder.seed({
       data: { email: createUserBody.email },
     });
 
@@ -66,7 +65,7 @@ describe("Admin Logged User", () => {
     let cookie: string;
 
     beforeEach(async () => {
-      await Seeder("User")?.deleteAll();
+      await UserSeeder.deleteAll();
       const res = await loginAdmin();
       cookie = res.cookie;
     });

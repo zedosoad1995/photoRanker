@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
@@ -9,10 +8,10 @@ import { PictureModel } from "@/models/picture";
 let pictureId: string;
 
 beforeAll(async () => {
-  const users = await (Seeder("User") as UserSeeder).seed();
+  const users = await UserSeeder.seed();
   const user = users[0];
 
-  const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+  const pictures = await PictureSeeder.seed({
     data: { userId: user.id },
   });
   pictureId = pictures[0].id;
@@ -36,7 +35,7 @@ describe("Regular Logged User", () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
 
-    const pictures = await (Seeder("Picture") as PictureSeeder).createMany({
+    const pictures = await PictureSeeder.createMany({
       data: { userId: res.user.id },
     });
     regularUserPictureId = pictures[0].id;

@@ -1,7 +1,6 @@
 import _ from "underscore";
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
@@ -12,7 +11,7 @@ import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 let otherUser: User;
 
 beforeAll(async () => {
-  const users = await (Seeder("User") as UserSeeder).createMany();
+  const users = await UserSeeder.createMany();
   otherUser = users[0];
 });
 
@@ -35,13 +34,13 @@ describe("Regular Logged User", () => {
   });
 
   it("throws and error, when there are less than 2 pictures belonging to other users", async () => {
-    await (Seeder("Picture") as PictureSeeder).seed({
+    await PictureSeeder.seed({
       data: {
         userId: regularUser.id,
       },
       numRepeat: 5,
     });
-    await (Seeder("Picture") as PictureSeeder).createMany({
+    await PictureSeeder.createMany({
       data: {
         userId: otherUser.id,
       },
@@ -56,7 +55,7 @@ describe("Regular Logged User", () => {
   });
 
   it("creates new match, with activeUser not null", async () => {
-    await (Seeder("Picture") as PictureSeeder).seed({
+    await PictureSeeder.seed({
       data: {
         userId: otherUser.id,
       },
@@ -85,14 +84,14 @@ describe("Regular Logged User", () => {
   });
 
   it("creates new match, deletes active match belonging to logged user, ignores active matches from other users", async () => {
-    await (Seeder("Picture") as PictureSeeder).seed({
+    await PictureSeeder.seed({
       data: {
         userId: otherUser.id,
       },
       numRepeat: 2,
     });
 
-    const matchesOtherUser = await (Seeder("Match") as MatchSeeder).seed({
+    const matchesOtherUser = await MatchSeeder.seed({
       data: {
         activeUser: {
           connect: {
@@ -102,17 +101,15 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const matchesLoggedUser = await (Seeder("Match") as MatchSeeder).createMany(
-      {
-        data: {
-          activeUser: {
-            connect: {
-              id: regularUser.id,
-            },
+    const matchesLoggedUser = await MatchSeeder.createMany({
+      data: {
+        activeUser: {
+          connect: {
+            id: regularUser.id,
           },
         },
-      }
-    );
+      },
+    });
 
     const response = await request(app)
       .post("/api/matches")
@@ -146,7 +143,7 @@ describe("Admin Logged User", () => {
   });
 
   it("creates new match", async () => {
-    await (Seeder("Picture") as PictureSeeder).seed({
+    await PictureSeeder.seed({
       data: {
         userId: otherUser.id,
       },
