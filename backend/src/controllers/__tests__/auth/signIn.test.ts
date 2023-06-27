@@ -15,14 +15,7 @@ beforeAll(async () => {
     password: await hashPassword(PASSWORD),
   });
 
-  user = await UserModel.create({
-    data: userData,
-  });
-
-  const users = await UserSeeder.seed({ data: userData });
-  if (users) {
-    user = users[0];
-  }
+  user = await UserSeeder.seedOne(userData);
 });
 
 it("Logs in, returns logged user, and sets cookie", async () => {

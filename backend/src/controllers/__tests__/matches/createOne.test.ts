@@ -11,8 +11,7 @@ import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 let otherUser: User;
 
 beforeAll(async () => {
-  const users = await UserSeeder.createMany();
-  otherUser = users[0];
+  otherUser = await UserSeeder.createOne();
 });
 
 describe("Unauthorized", () => {
@@ -34,16 +33,14 @@ describe("Regular Logged User", () => {
   });
 
   it("throws and error, when there are less than 2 pictures belonging to other users", async () => {
-    await PictureSeeder.seed({
+    await PictureSeeder.seedMany({
       data: {
         userId: regularUser.id,
       },
       numRepeat: 5,
     });
-    await PictureSeeder.createMany({
-      data: {
-        userId: otherUser.id,
-      },
+    await PictureSeeder.createOne({
+      userId: otherUser.id,
     });
 
     const response = await request(app)
@@ -55,7 +52,7 @@ describe("Regular Logged User", () => {
   });
 
   it("creates new match, with activeUser not null", async () => {
-    await PictureSeeder.seed({
+    await PictureSeeder.seedMany({
       data: {
         userId: otherUser.id,
       },
@@ -84,31 +81,30 @@ describe("Regular Logged User", () => {
   });
 
   it("creates new match, deletes active match belonging to logged user, ignores active matches from other users", async () => {
-    await PictureSeeder.seed({
+    await PictureSeeder.seedMany({
       data: {
         userId: otherUser.id,
       },
       numRepeat: 2,
     });
 
-    const matchesOtherUser = await MatchSeeder.seed({
-      data: {
-        activeUser: {
-          connect: {
-            id: otherUser.id,
+    const [matchOtherUser, matchLoggedUser] = await MatchSeeder.seedMany({
+      data: [
+        {
+          activeUser: {
+            connect: {
+              id: otherUser.id,
+            },
           },
         },
-      },
-    });
-
-    const matchesLoggedUser = await MatchSeeder.createMany({
-      data: {
-        activeUser: {
-          connect: {
-            id: regularUser.id,
+        {
+          activeUser: {
+            connect: {
+              id: regularUser.id,
+            },
           },
         },
-      },
+      ],
     });
 
     const response = await request(app)
@@ -118,19 +114,19 @@ describe("Regular Logged User", () => {
 
     expect(response.status).toEqual(201);
 
-    const matchOtherUser = await MatchModel.findUnique({
+    const matchOtherUserDB = await MatchModel.findUnique({
       where: {
-        id: matchesOtherUser[0].id,
+        id: matchOtherUser.id,
       },
     });
-    const matchLoggedUser = await MatchModel.findUnique({
+    const matchLoggedUserDB = await MatchModel.findUnique({
       where: {
-        id: matchesLoggedUser[0].id,
+        id: matchLoggedUser.id,
       },
     });
 
-    expect(matchOtherUser).toBeTruthy();
-    expect(matchLoggedUser).toBeFalsy();
+    expect(matchOtherUserDB).toBeTruthy();
+    expect(matchLoggedUserDB).toBeFalsy();
   });
 });
 
@@ -143,7 +139,7 @@ describe("Admin Logged User", () => {
   });
 
   it("creates new match", async () => {
-    await PictureSeeder.seed({
+    await PictureSeeder.seedMany({
       data: {
         userId: otherUser.id,
       },

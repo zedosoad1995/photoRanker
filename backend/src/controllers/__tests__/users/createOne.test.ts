@@ -47,9 +47,7 @@ describe("Admin Logged User", () => {
   });
 
   it("returns 409, when 'email' already exists", async () => {
-    await UserSeeder.seed({
-      data: { email: createUserBody.email },
-    });
+    await UserSeeder.seedOne({ email: createUserBody.email });
 
     const { cookie } = await loginAdmin();
 

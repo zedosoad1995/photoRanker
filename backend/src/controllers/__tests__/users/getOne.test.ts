@@ -6,11 +6,8 @@ import { UserSeeder } from "@/tests/seed/UserSeeder";
 let userId: string;
 
 beforeAll(async () => {
-  const user = await UserSeeder.seed();
-
-  if (user) {
-    userId = user[0].id;
-  }
+  const user = await UserSeeder.seedOne();
+  userId = user.id;
 });
 
 describe("Unauthorized", () => {

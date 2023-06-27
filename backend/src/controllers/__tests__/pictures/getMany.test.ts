@@ -20,14 +20,13 @@ describe("Regular Logged User", () => {
   let loggedUser: User;
 
   beforeAll(async () => {
-    const users = await UserSeeder.createMany();
-    const randomUser = users[0];
+    const randomUser = await UserSeeder.createOne();
 
     const res = await loginRegular();
     regularCookie = res.cookie;
     loggedUser = res.user;
 
-    await PictureSeeder.seed({
+    await PictureSeeder.seedMany({
       data: [{ userId: loggedUser.id }, { userId: randomUser.id }],
     });
   });
@@ -51,7 +50,7 @@ describe("Admin Logged User", () => {
     const res = await loginAdmin();
     adminCookie = res.cookie;
 
-    await PictureSeeder.seed({
+    await PictureSeeder.seedMany({
       data: { userId: res.user.id },
       numRepeat: NUM_PICTURES,
     });

@@ -28,7 +28,7 @@ describe("Unauthorized", () => {
 
 describe("Admin Logged User", () => {
   beforeAll(async () => {
-    await UserSeeder.seed({ numRepeat: NUM_USERS });
+    await UserSeeder.seedMany({ numRepeat: NUM_USERS });
     const res = await loginAdmin();
     adminCookie = res.cookie;
   });

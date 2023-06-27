@@ -12,11 +12,9 @@ let userId: string;
 let adminCookie: string;
 
 beforeAll(async () => {
-  const user = await UserSeeder.seed();
+  const user = await UserSeeder.seedOne();
 
-  if (user) {
-    userId = user[0].id;
-  }
+  userId = user.id;
 });
 
 describe("Unauthorized", () => {
