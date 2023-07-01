@@ -1,3 +1,5 @@
+import "./global.css";
+
 export const metadata = {};
 
 export default function RootLayout({
@@ -6,8 +8,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html className="h-full bg-white" lang="en">
+      <body className="h-full">{children}</body>
     </html>
   );
 }
