@@ -1,11 +1,13 @@
 import { HTMLInputTypeAttribute } from "react";
-import { AutocompleteOption } from "../types/web";
+import { AutocompleteOption } from "@/types/web";
 import Label from "./Label";
+import { inputField } from "@/globalClasses";
 
 interface ITextField {
   label?: string;
   type?: HTMLInputTypeAttribute;
   autocomplete?: AutocompleteOption;
+  disaplayValue?: string;
   required?: boolean;
 }
 
@@ -23,7 +25,7 @@ export default function Textfield({
           type={type}
           autoComplete={autocomplete}
           required={required}
-          className="block w-full rounded-md border-0 py-1.5 text-indigo-600 shadow-sm ring-1 ring-inset ring-normal-contour placeholder:text-placeholder-text focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+          className={inputField}
         />
       </div>
     </div>
