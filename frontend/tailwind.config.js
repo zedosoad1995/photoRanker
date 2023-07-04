@@ -25,9 +25,11 @@ module.exports = {
         "light-text": "#6b7280",
         "placeholder-text": "#9ca3af",
         "normal-contour": "#d1d5db",
+        danger: "#D63230",
       },
       fontSize: {
         label: ["0.875rem", "1.25rem"],
+        "error-text": "13px",
       },
     },
   },

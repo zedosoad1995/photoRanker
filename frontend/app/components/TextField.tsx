@@ -2,13 +2,15 @@ import { HTMLInputTypeAttribute } from "react";
 import { AutocompleteOption } from "@/types/web";
 import Label from "./Label";
 import { inputField } from "@/globalClasses";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 interface ITextField {
   label?: string;
   type?: HTMLInputTypeAttribute;
   autocomplete?: AutocompleteOption;
-  disaplayValue?: string;
   required?: boolean;
+  register?: UseFormRegisterReturn;
+  error?: string;
 }
 
 export default function Textfield({
@@ -16,6 +18,8 @@ export default function Textfield({
   type,
   autocomplete,
   required,
+  register,
+  error,
 }: ITextField) {
   return (
     <div>
@@ -25,8 +29,14 @@ export default function Textfield({
           type={type}
           autoComplete={autocomplete}
           required={required}
-          className={inputField}
+          className={`${inputField} ${
+            error ? "!ring-danger !focus:ring-danger" : ""
+          }`}
+          {...register}
         />
+        {error && (
+          <div className="text-error-text mt-1 text-danger">{error}</div>
+        )}
       </div>
     </div>
   );

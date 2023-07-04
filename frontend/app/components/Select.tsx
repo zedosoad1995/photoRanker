@@ -9,10 +9,16 @@ import { inputField } from "@/globalClasses";
 interface ISelect {
   options: string[];
   label?: string;
+  value: string;
+  onChange: (value: string) => void;
 }
 
-export default function Select({ options, label }: ISelect) {
-  const [selectedPerson, setSelectedPerson] = useState(options[0]);
+export default function Select({
+  options,
+  label,
+  value,
+  onChange: handleChange,
+}: ISelect) {
   const [query, setQuery] = useState("");
 
   const filteredOptions =
@@ -26,7 +32,7 @@ export default function Select({ options, label }: ISelect) {
     <div>
       {label && <Label name={label} />}
       <div className="mt-2 relative">
-        <Combobox value={selectedPerson} onChange={setSelectedPerson}>
+        <Combobox value={value} onChange={handleChange}>
           <div className="relative">
             <Combobox.Input
               onChange={(event) => setQuery(event.target.value)}

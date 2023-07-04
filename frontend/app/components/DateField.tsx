@@ -1,27 +1,34 @@
-"use client";
-
 import { inputField } from "@/globalClasses";
 import Label from "./Label";
 import Datepicker from "react-tailwindcss-datepicker";
 import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
-import { useState } from "react";
 import { subtractYears } from "@/helpers/date";
 import { CalendarIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 interface IDateField {
   label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  maxDate?: Date;
+  error?: string;
 }
 
-export default function DateField({ label }: IDateField) {
-  const maxDate = subtractYears(new Date(), 18);
+export default function DateField({
+  label,
+  value,
+  maxDate = subtractYears(new Date(), 18),
+  onChange: handleChange,
+  error,
+}: IDateField) {
+  const transformedValue = {
+    startDate: value,
+    endDate: value,
+  };
 
-  const [value, setValue] = useState<DateValueType>({
-    startDate: maxDate,
-    endDate: maxDate,
-  });
+  const correctTypeHandleChange = (value: DateValueType) => {
+    const callValue = Boolean(value?.startDate) ? value?.startDate : "";
 
-  const handleValueChange = (newValue: DateValueType) => {
-    setValue(newValue);
+    handleChange(callValue as string);
   };
 
   return (
@@ -29,9 +36,11 @@ export default function DateField({ label }: IDateField) {
       {label && <Label name={label} />}
       <div className="mt-2 relative">
         <Datepicker
-          inputClassName={inputField}
-          value={value}
-          onChange={handleValueChange}
+          inputClassName={`${inputField} ${
+            error ? "!ring-danger !focus:ring-danger" : ""
+          }`}
+          value={transformedValue}
+          onChange={correctTypeHandleChange}
           asSingle={true}
           useRange={false}
           startFrom={maxDate}
@@ -45,6 +54,9 @@ export default function DateField({ label }: IDateField) {
             );
           }}
         />
+        {error && (
+          <div className="text-error-text mt-1 text-danger">{error}</div>
+        )}
       </div>
     </div>
   );
