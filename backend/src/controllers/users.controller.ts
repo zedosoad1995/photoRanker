@@ -79,3 +79,15 @@ export const updateOne = async (req: Request, res: Response) => {
 
   res.status(200).json({ user: userNoPassword });
 };
+
+export const checkEmailExists = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const user = await UserModel.findUnique({ where: { email } });
+
+  const emailExists = Boolean(user);
+
+  res.status(200).send({
+    exists: emailExists,
+  });
+};

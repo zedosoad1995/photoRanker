@@ -10,7 +10,7 @@ import { register } from "@/services/auth";
 import { LOGIN } from "@/constants/routes";
 
 interface IFormRef {
-  checkValid: () => boolean;
+  checkValid: () => Promise<boolean>;
 }
 
 interface IData {
@@ -54,7 +54,7 @@ export default function Register() {
   };
 
   const handleNext = async () => {
-    const isValid = formRef.current?.checkValid();
+    const isValid = await formRef.current?.checkValid();
     if (!isValid) return;
 
     if (isLastForm) {

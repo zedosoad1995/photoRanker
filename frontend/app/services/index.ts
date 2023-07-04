@@ -1,6 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
-console.log(process.env.BACKEND_URL);
+interface ApiResponse<T> {
+  data: T;
+}
 
 const api: AxiosInstance = axios.create({
   baseURL: process.env.BACKEND_URL,

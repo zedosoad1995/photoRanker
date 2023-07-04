@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  checkEmailExists,
   createOne,
   getMany,
   getOne,
@@ -24,5 +25,7 @@ router.patch(
   validateForm(updateUserSchema),
   updateOne
 );
+
+router.post("/check-email", checkEmailExists);
 
 export default router;

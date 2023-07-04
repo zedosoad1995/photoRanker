@@ -5,7 +5,8 @@ import {
   ICreateUserMain,
   createUserMainSchema,
 } from "@/schemas/user/createUserMain";
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { checkEmailExists } from "@/services/auth";
 
 interface IProps {
   updateData: (data: Partial<ICreateUserMain>) => void;
@@ -16,6 +17,8 @@ interface IProps {
 
 const MainForm = forwardRef(
   ({ updateData, name, email, password }: IProps, ref) => {
+    const [emailApiError, setEmailApiError] = useState<string>();
+
     const {
       register,
       handleSubmit,
@@ -30,8 +33,14 @@ const MainForm = forwardRef(
     });
 
     useImperativeHandle(ref, () => ({
-      checkValid() {
+      async checkValid() {
         handleSubmit(() => {})();
+        const { exists } = await checkEmailExists(email);
+        if (exists) {
+          setEmailApiError("Email is already taken");
+          return false;
+        }
+
         return isValid;
       },
     }));
@@ -60,7 +69,7 @@ const MainForm = forwardRef(
           register={register("email", {
             onChange: handleChange("email"),
           })}
-          error={errors.email?.message}
+          error={errors.email?.message ?? emailApiError}
         />
         <Textfield
           label="Password"
