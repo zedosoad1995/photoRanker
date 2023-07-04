@@ -28,5 +28,7 @@ export const signIn = async (req: Request, res: Response) => {
     jwt: userJwt,
   };
 
-  res.status(200).json({ user });
+  const userNoPassword = UserModel.exclude(user, ["password"]);
+
+  res.status(200).json({ user: userNoPassword });
 };

@@ -11,6 +11,8 @@ interface ITextField {
   required?: boolean;
   register?: UseFormRegisterReturn;
   error?: string;
+  value?: string | number | readonly string[];
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function Textfield({
@@ -20,6 +22,8 @@ export default function Textfield({
   required,
   register,
   error,
+  value,
+  onChange: handleChange,
 }: ITextField) {
   return (
     <div>
@@ -32,6 +36,8 @@ export default function Textfield({
           className={`${inputField} ${
             error ? "!ring-danger !focus:ring-danger" : ""
           }`}
+          value={value}
+          onChange={handleChange}
           {...register}
         />
         {error && (
