@@ -16,18 +16,12 @@ const router = Router();
 router.get("/", checkAuth, checkAdmin, getMany);
 router.get("/:userId", checkAuth, getOne);
 
-router.post(
-  "/",
-  checkAuth,
-  validateForm(createUserSchema),
-  checkAdmin,
-  createOne
-);
+router.post("/", validateForm(createUserSchema), createOne);
 router.patch(
   "/:userId",
   checkAuth,
-  validateForm(updateUserSchema),
   checkAdmin,
+  validateForm(updateUserSchema),
   updateOne
 );
 

@@ -2,6 +2,7 @@ import Label from "@/components/Label";
 import Link from "@/components/Link";
 import Textfield from "@/components/TextField";
 import Button from "@/components/Button";
+import { REGISTER } from "@/constants/routes";
 
 export default function SignIn() {
   return (
@@ -35,7 +36,7 @@ export default function SignIn() {
           </form>
 
           <p className="mt-10 text-center text-sm text-light-text">
-            Not a member? <Link url="/register">Sign Up</Link>
+            Not a member? <Link url={REGISTER}>Sign Up</Link>
           </p>
         </div>
       </div>

@@ -15,12 +15,9 @@ interface IData {
   dateOfBirth: string;
 }
 
-interface IProps {
+type IProps = {
   updateData: (data: Partial<IData>) => void;
-  countryOfOrigin: string;
-  ethnicity: string;
-  dateOfBirth: string;
-}
+} & IData
 
 const PersonalInfoForm = forwardRef(
   ({ updateData, countryOfOrigin, ethnicity, dateOfBirth }: IProps, ref) => {

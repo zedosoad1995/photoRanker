@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "@/components/Link";
+import { useRouter } from "next/navigation";
 import MainForm from "./Forms/MainForm";
 import PersonalInfoForm from "./Forms/PersonalInfoForm";
 import Button from "@/components/Button";
 import { useRef, useState } from "react";
+import { register } from "@/services/auth";
+import { LOGIN } from "@/constants/routes";
 
 interface IFormRef {
   checkValid: () => boolean;
@@ -19,7 +22,7 @@ interface IData {
   dateOfBirth: string;
 }
 
-const INITIAL_DATA = {
+const INITIAL_DATA: IData = {
   email: "",
   name: "",
   password: "",
@@ -32,6 +35,8 @@ const forms = [MainForm, PersonalInfoForm];
 const numForms = forms.length;
 
 export default function Register() {
+  const router = useRouter();
+
   const formRef = useRef<IFormRef>(null);
 
   const [data, setData] = useState(INITIAL_DATA);
@@ -40,7 +45,7 @@ export default function Register() {
   const Form = forms[formStage];
 
   const isLastForm = formStage >= numForms - 1;
-  const nextButtonName = isLastForm ? "Sign Up" : "Next";
+  const nextButtonLabel = isLastForm ? "Sign Up" : "Next";
 
   const updateData = (data: Partial<IData>) => {
     setData((prev) => {
@@ -48,12 +53,13 @@ export default function Register() {
     });
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const isValid = formRef.current?.checkValid();
     if (!isValid) return;
 
     if (isLastForm) {
-      console.log(data);
+      await register(data);
+      router.push(LOGIN);
     } else {
       setFormStage((val) => val + 1);
     }
@@ -75,12 +81,12 @@ export default function Register() {
 
             <div className="flex gap-2">
               {formStage > 0 && <Button onClick={handleBack}>Back</Button>}
-              <Button onClick={handleNext}>{nextButtonName}</Button>
+              <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
           </div>
 
           <p className="mt-10 text-center text-sm text-light-text">
-            Already have an account? <Link url="/login">Sign Up</Link>
+            Already have an account? <Link url={LOGIN}>Sign In</Link>
           </p>
         </div>
       </div>

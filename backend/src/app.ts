@@ -5,6 +5,7 @@ import { json } from "body-parser";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { errorHandler } from "@/middlewares/errorHandler";
 import routes from "@/routes";
+import cors from "cors";
 
 const app = express();
 app.use(json());
@@ -12,6 +13,11 @@ app.use(
   cookieSession({
     signed: false,
     secure: false,
+  })
+);
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
   })
 );
 app.use(routes);
