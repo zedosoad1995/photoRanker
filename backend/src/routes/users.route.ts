@@ -11,6 +11,7 @@ import { createUserSchema } from "@/schemas/user/createUser";
 import { updateUserSchema } from "@/schemas/user/updateUser";
 import { checkAuth } from "@/middlewares/checkAuth";
 import { checkAdmin } from "@/middlewares/checkAdmin";
+import { checkEmailExistsSchema } from "@/schemas/user/checkEmailExists";
 
 const router = Router();
 
@@ -26,6 +27,10 @@ router.patch(
   updateOne
 );
 
-router.post("/check-email", checkEmailExists);
+router.post(
+  "/check-email",
+  validateForm(checkEmailExistsSchema),
+  checkEmailExists
+);
 
 export default router;

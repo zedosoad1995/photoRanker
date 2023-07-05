@@ -28,6 +28,15 @@ it("Logs in, returns logged user, and sets cookie", async () => {
   expect(response.header).toHaveProperty("set-cookie");
 });
 
+it("does not return 'password' field", async () => {
+  const response = await request(app).post("/api/auth").send({
+    email: user.email,
+    password: PASSWORD,
+  });
+
+  expect(response.body.user).not.toHaveProperty("password");
+});
+
 it("Returns 401, when email does not exist", async () => {
   const response = await request(app).post("/api/auth").send({
     email: "random@email.com",
