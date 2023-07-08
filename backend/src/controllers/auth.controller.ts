@@ -32,3 +32,9 @@ export const signIn = async (req: Request, res: Response) => {
 
   res.status(200).json({ user: userNoPassword });
 };
+
+export const signOut = (req: Request, res: Response) => {
+  res.clearCookie("session");
+
+  res.status(204).send();
+};

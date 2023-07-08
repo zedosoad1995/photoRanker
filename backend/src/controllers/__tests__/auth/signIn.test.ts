@@ -19,7 +19,7 @@ beforeAll(async () => {
 });
 
 it("Logs in, returns logged user, and sets cookie", async () => {
-  const response = await request(app).post("/api/auth").send({
+  const response = await request(app).post("/api/auth/login").send({
     email: user.email,
     password: PASSWORD,
   });
@@ -29,7 +29,7 @@ it("Logs in, returns logged user, and sets cookie", async () => {
 });
 
 it("does not return 'password' field", async () => {
-  const response = await request(app).post("/api/auth").send({
+  const response = await request(app).post("/api/auth/login").send({
     email: user.email,
     password: PASSWORD,
   });
@@ -38,7 +38,7 @@ it("does not return 'password' field", async () => {
 });
 
 it("Returns 401, when email does not exist", async () => {
-  const response = await request(app).post("/api/auth").send({
+  const response = await request(app).post("/api/auth/login").send({
     email: "random@email.com",
     password: PASSWORD,
   });
@@ -47,7 +47,7 @@ it("Returns 401, when email does not exist", async () => {
 });
 
 it("Returns 401, when password is wrong", async () => {
-  const response = await request(app).post("/api/auth").send({
+  const response = await request(app).post("/api/auth/login").send({
     email: user.email,
     password: "WrongPass",
   });
@@ -58,7 +58,7 @@ it("Returns 401, when password is wrong", async () => {
 describe("Test Validation", () => {
   describe("'email' field", () => {
     it("is required", async () => {
-      const response = await request(app).post("/api/auth").send({
+      const response = await request(app).post("/api/auth/login").send({
         password: PASSWORD,
       });
 
@@ -68,7 +68,7 @@ describe("Test Validation", () => {
 
   describe("'password' field", () => {
     it("is required", async () => {
-      const response = await request(app).post("/api/auth").send({
+      const response = await request(app).post("/api/auth/login").send({
         email: user.email,
       });
 

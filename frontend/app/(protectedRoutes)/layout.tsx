@@ -9,7 +9,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   const [, pathname] = fullUrl.match(/^https?:\/\/[^/]+(\/[^?#]*)/i) || [];
 
   if (!NON_PROTECTED_ROUTES.includes(pathname)) {
-    await getMe(cookies().toString()).catch((error) => {
+    await getMe(cookies().toString()).catch(() => {
       return redirect(LOGIN);
     });
   }

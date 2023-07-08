@@ -5,7 +5,11 @@ import { ICheckEmailRes, ICreateRes, IGetMeRes } from "../../../backend/src/type
 import { ILoginRes } from "../../../backend/src/types/auth";
 
 export const login = async (data: ISignIn): Promise<ILoginRes> => {
-  return api.post("/auth", data);
+  return api.post("/auth/login", data);
+};
+
+export const logout = async (): Promise<void> => {
+  return api.post("/auth/logout");
 };
 
 export const register = async (data: ICreateUser): Promise<ICreateRes> => {
@@ -17,7 +21,7 @@ export const checkEmailExists = async (email: string): Promise<ICheckEmailRes> =
 };
 
 export const getMe = async (cookies?: string): Promise<IGetMeRes> => {
-  return api.get(process.env.BACKEND_URL + "/users/me", {
+  return api.get("/users/me", {
     headers: {
       Cookie: cookies,
     },

@@ -5,12 +5,14 @@ import Link from "@/components/Link";
 import Textfield from "@/components/TextField";
 import Button from "@/components/Button";
 import { HOME, REGISTER } from "@/constants/routes";
-import { login } from "@/services/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../contexts/auth";
 
 export default function SignIn() {
   const router = useRouter();
+
+  const { user, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,9 +26,13 @@ export default function SignIn() {
   };
 
   const handleSignIn = async () => {
-    await login({ email, password });
+    await login(email, password);
     router.push(HOME);
   };
+
+  if (Boolean(user)) {
+    router.push(HOME);
+  }
 
   return (
     <>
