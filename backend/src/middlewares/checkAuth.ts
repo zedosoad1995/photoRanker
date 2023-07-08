@@ -4,20 +4,15 @@ import { JWTPayload } from "@/types/jwt";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export const checkAuth = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (!req.session?.jwt) {
+export const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
+  const jwtoken = req.cookies["session"]?.jwt;
+
+  if (!jwtoken) {
     throw new UnauthorizedError();
   }
 
   try {
-    const payload = jwt.verify(
-      req.session.jwt,
-      process.env.JWT_KEY!
-    ) as JWTPayload;
+    const payload = jwt.verify(jwtoken, process.env.JWT_KEY!) as JWTPayload;
 
     const user = await UserModel.findUnique({
       where: {

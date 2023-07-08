@@ -4,11 +4,14 @@ import Label from "@/components/Label";
 import Link from "@/components/Link";
 import Textfield from "@/components/TextField";
 import Button from "@/components/Button";
-import { REGISTER } from "@/constants/routes";
+import { HOME, REGISTER } from "@/constants/routes";
 import { login } from "@/services/auth";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -20,8 +23,9 @@ export default function SignIn() {
     setPassword(event.currentTarget.value);
   };
 
-  const handleSignIn = () => {
-    login({ email, password });
+  const handleSignIn = async () => {
+    await login({ email, password });
+    router.push(HOME);
   };
 
   return (

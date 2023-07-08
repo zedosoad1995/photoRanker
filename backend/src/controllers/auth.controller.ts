@@ -24,9 +24,9 @@ export const signIn = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  req.session = {
+  res.cookie("session", {
     jwt: userJwt,
-  };
+  });
 
   const userNoPassword = UserModel.exclude(user, ["password"]);
 

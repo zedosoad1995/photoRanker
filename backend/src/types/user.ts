@@ -1,4 +1,5 @@
 import { UserRole } from "@prisma/client";
+import { ILoginRes } from "./auth";
 
 export interface ICreateRes {
   id: string;
@@ -16,3 +17,5 @@ export interface ICreateRes {
 export interface ICheckEmailRes {
   exists: boolean;
 }
+
+export type IGetMeRes = ILoginRes;

@@ -33,6 +33,14 @@ export const getOne = async (req: Request, res: Response) => {
   res.status(200).json({ user: userNoPassword });
 };
 
+export const getMe = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
+  const userNoPassword = UserModel.exclude(loggedUser, ["password"]);
+
+  res.status(200).json({ user: userNoPassword });
+};
+
 export const createOne = async (req: Request, res: Response) => {
   const hashedPassword = await hashPassword(req.body.password);
 
