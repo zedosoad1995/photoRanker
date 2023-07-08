@@ -34,7 +34,7 @@ export const loginUser = async (role: UserRole) => {
     }),
   });
 
-  const res = await request(app).post("/api/auth").send({
+  const res = await request(app).post("/api/auth/login").send({
     email: adminUser.email,
     password: password,
   });
