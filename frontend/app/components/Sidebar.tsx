@@ -7,6 +7,7 @@ import {
   PhotoIcon,
   RectangleStackIcon,
 } from "@heroicons/react/20/solid";
+import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 
 interface ISidebar {
@@ -14,7 +15,27 @@ interface ISidebar {
   onClose: () => void;
 }
 
+const navbarOptions = [
+  {
+    label: "Vote",
+    url: "/vote",
+    Icon: RectangleStackIcon,
+  },
+  {
+    label: "My Photos",
+    url: "/photos",
+    Icon: PhotoIcon,
+  },
+  {
+    label: "Settings",
+    url: "/settings",
+    Icon: AdjustmentsHorizontalIcon,
+  },
+];
+
 export default function Sidebar({ open, onClose: handleClose }: ISidebar) {
+  const pathname = usePathname();
+
   return (
     <Transition show={open}>
       <Dialog onClose={handleClose} className="fixed inset-0 z-40">
@@ -30,18 +51,21 @@ export default function Sidebar({ open, onClose: handleClose }: ISidebar) {
           >
             <div className="text-2xl font-bold">Photo Ranker</div>
             <div className="mt-10">
-              <div className="flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer">
-                <RectangleStackIcon className="h-6 w-6" />
-                <div className="text-xl font-semibold cursor-pointer">Vote</div>
-              </div>
-              <div className="flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer">
-                <PhotoIcon className="h-6 w-6" />
-                <div className="text-xl font-semibold cursor-pointer">Photos</div>
-              </div>
-              <div className="flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer">
-                <AdjustmentsHorizontalIcon className="h-6 w-6" />
-                <div className="text-xl font-semibold cursor-pointer">Settings</div>
-              </div>
+              {navbarOptions.map(({ label, url, Icon }) => {
+                const isCurrPath = pathname === url;
+
+                return (
+                  <div
+                    key={label}
+                    className={`flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer ${
+                      isCurrPath ? "text-primary-hover" : ""
+                    }`}
+                  >
+                    <Icon className="h-6 w-6" />
+                    <div className="text-xl font-semibold cursor-pointer">{label}</div>
+                  </div>
+                );
+              })}
               <div className="flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer">
                 <ArrowLeftOnRectangleIcon className="h-6 w-6" />
                 <div className="text-xl font-semibold cursor-pointer">Logout</div>

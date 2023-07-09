@@ -1,15 +1,12 @@
 import { LOGIN, NON_PROTECTED_ROUTES } from "@/constants/routes";
 import { getMe } from "@/services/auth";
 import { redirect } from "next/navigation";
-import { headers, cookies } from "next/headers";
+import { cookies } from "next/headers";
 import NavbarLayout from "@/components/NavbarLayout";
+import { getPathname } from "../../helpers/path";
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-  const headersList = headers();
-  const fullUrl = headersList.get("referer") || "";
-  const [, pathname] = fullUrl.match(/^https?:\/\/[^/]+(\/[^?#]*)/i) || [];
-
-  if (!NON_PROTECTED_ROUTES.includes(pathname)) {
+  if (!NON_PROTECTED_ROUTES.includes(getPathname())) {
     await getMe(cookies().toString()).catch(() => {
       return redirect(LOGIN);
     });
