@@ -13,6 +13,7 @@ import { Fragment } from "react";
 interface ISidebar {
   open: boolean;
   onClose: () => void;
+  onLogout: () => void;
 }
 
 const navbarOptions = [
@@ -33,7 +34,7 @@ const navbarOptions = [
   },
 ];
 
-export default function Sidebar({ open, onClose: handleClose }: ISidebar) {
+export default function Sidebar({ open, onClose: handleClose, onLogout: handleLogout }: ISidebar) {
   const pathname = usePathname();
 
   return (
@@ -66,7 +67,10 @@ export default function Sidebar({ open, onClose: handleClose }: ISidebar) {
                   </div>
                 );
               })}
-              <div className="flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer">
+              <div
+                onClick={handleLogout}
+                className="flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer"
+              >
                 <ArrowLeftOnRectangleIcon className="h-6 w-6" />
                 <div className="text-xl font-semibold cursor-pointer">Logout</div>
               </div>

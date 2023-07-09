@@ -3,8 +3,14 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { useAuth } from "../../contexts/auth";
+import { LOGIN } from "@/constants/routes";
+import { useRouter } from "next/navigation";
 
 export default function NavbarLayout() {
+  const router = useRouter();
+  const { logout } = useAuth();
+
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
@@ -15,10 +21,15 @@ export default function NavbarLayout() {
     setOpen(true);
   };
 
+  const handleLogout = async () => {
+    await logout();
+    router.push(LOGIN);
+  };
+
   return (
     <>
-      <Navbar onClickMenu={handleClickMenu} />
-      <Sidebar open={open} onClose={handleClose} />
+      <Navbar onClickMenu={handleClickMenu} onLogout={handleLogout} />
+      <Sidebar open={open} onClose={handleClose} onLogout={handleLogout} />
     </>
   );
 }

@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 interface INavbar {
   onClickMenu: () => void;
+  onLogout: () => void;
 }
 
 const navbarOptions = [
@@ -24,7 +25,7 @@ const navbarOptions = [
   },
 ];
 
-export default function Navbar({ onClickMenu: handleClickMenu }: INavbar) {
+export default function Navbar({ onClickMenu: handleClickMenu, onLogout: handleLogout }: INavbar) {
   const pathname = usePathname();
 
   return (
@@ -50,7 +51,9 @@ export default function Navbar({ onClickMenu: handleClickMenu }: INavbar) {
           );
         })}
         <div className="">
-          <Button size="large">Logout</Button>
+          <Button onClick={handleLogout} size="large">
+            Logout
+          </Button>
         </div>
       </div>
     </nav>
