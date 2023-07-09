@@ -2,7 +2,7 @@ import { LOGIN, NON_PROTECTED_ROUTES } from "@/constants/routes";
 import { getMe } from "@/services/auth";
 import { redirect } from "next/navigation";
 import { headers, cookies } from "next/headers";
-import Navbar from "@/components/Navbar";
+import NavbarLayout from "@/components/NavbarLayout";
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const headersList = headers();
@@ -17,8 +17,8 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <Navbar />
-      {children}
+      <NavbarLayout />
+      <div className="p-12">{children}</div>
     </>
   );
 };
