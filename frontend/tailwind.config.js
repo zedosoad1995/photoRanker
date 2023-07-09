@@ -13,8 +13,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
         primary: "#4f46e5",
@@ -25,6 +24,7 @@ module.exports = {
         "light-text": "#6b7280",
         "placeholder-text": "#9ca3af",
         "normal-contour": "#d1d5db",
+        "light-contour": "#e5e7eb",
         danger: "#D63230",
       },
       fontSize: {
