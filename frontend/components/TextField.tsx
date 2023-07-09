@@ -1,5 +1,5 @@
 import { HTMLInputTypeAttribute } from "react";
-import { AutocompleteOption } from "@/types/web";
+import { AutocompleteOption } from "../types/web";
 import Label from "./Label";
 import { inputField } from "@/globalClasses";
 import { UseFormRegisterReturn } from "react-hook-form";

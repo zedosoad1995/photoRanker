@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
+import NextLink from "next/link";
 
 interface ISidebar {
   open: boolean;
@@ -56,15 +57,16 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
                 const isCurrPath = pathname === url;
 
                 return (
-                  <div
+                  <NextLink
                     key={label}
+                    href={url}
                     className={`flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer ${
                       isCurrPath ? "text-primary-hover" : ""
                     }`}
                   >
                     <Icon className="h-6 w-6" />
                     <div className="text-xl font-semibold cursor-pointer">{label}</div>
-                  </div>
+                  </NextLink>
                 );
               })}
               <div

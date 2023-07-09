@@ -9,9 +9,7 @@ export const createUserSchema = z
     password: z.string().min(6).max(30),
     countryOfOrigin: z.enum(COUNTRIES as unknown as [string, ...string[]]),
     ethnicity: z.enum(ETHNICITY as unknown as [string, ...string[]]),
-    dateOfBirth: z
-      .string()
-      .refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
+    dateOfBirth: z.string().refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
   })
   .strict();
 

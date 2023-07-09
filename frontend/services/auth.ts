@@ -1,8 +1,8 @@
 import api from ".";
-import { ICreateUser } from "../../../backend/src/schemas/user/createUser";
-import { ISignIn } from "../../../backend/src/schemas/auth/signIn";
-import { ICheckEmailRes, ICreateRes, IGetMeRes } from "../../../backend/src/types/user";
-import { ILoginRes } from "../../../backend/src/types/auth";
+import { ICreateUser } from "../../backend/src/schemas/user/createUser";
+import { ISignIn } from "../../backend/src/schemas/auth/signIn";
+import { ICheckEmailRes, ICreateRes, IGetMeRes } from "../../backend/src/types/user";
+import { ILoginRes } from "../../backend/src/types/auth";
 
 export const login = async (data: ISignIn): Promise<ILoginRes> => {
   return api.post("/auth/login", data);

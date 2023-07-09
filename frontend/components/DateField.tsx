@@ -2,7 +2,7 @@ import { inputField } from "@/globalClasses";
 import Label from "./Label";
 import Datepicker from "react-tailwindcss-datepicker";
 import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
-import { subtractYears } from "@/helpers/date";
+import { subtractYears } from "../helpers/date";
 import { CalendarIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 interface IDateField {
