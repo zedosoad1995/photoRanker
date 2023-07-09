@@ -1,9 +1,9 @@
-import Textfield from "../../../components/TextField";
+import Textfield from "@/components/TextField";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ICreateUserMain, createUserMainSchema } from "@/schemas/user/createUserMain";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { checkEmailExists } from "../../../services/auth";
+import { checkEmailExists } from "@/services/auth";
 
 interface IProps {
   updateData: (data: Partial<ICreateUserMain>) => void;

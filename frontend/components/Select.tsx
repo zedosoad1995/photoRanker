@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import Label from "./Label";
-import { inputField } from "@/globalClasses";
+import { inputField } from "@/app/globalClasses";
 
 interface ISelect {
   options: string[];

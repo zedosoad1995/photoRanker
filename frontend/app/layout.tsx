@@ -1,4 +1,4 @@
-import { AuthProvider } from "../contexts/auth";
+import { AuthProvider } from "@/contexts/auth";
 import "./global.css";
 
 export const metadata = {};

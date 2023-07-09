@@ -52,7 +52,7 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
             leaveTo="transform -translate-x-full"
           >
             <div className="text-2xl font-bold">Photo Ranker</div>
-            <div className="mt-10">
+            <div className="mt-7">
               {navbarOptions.map(({ label, url, Icon }) => {
                 const isCurrPath = pathname === url;
 
@@ -60,7 +60,7 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
                   <NextLink
                     key={label}
                     href={url}
-                    className={`flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer ${
+                    className={`flex items-center gap-4 py-3 hover:text-primary-hover cursor-pointer ${
                       isCurrPath ? "text-primary-hover" : ""
                     }`}
                   >
@@ -71,7 +71,7 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
               })}
               <div
                 onClick={handleLogout}
-                className="flex items-center gap-4 pb-6 hover:text-primary-hover cursor-pointer"
+                className="flex items-center gap-4 py-3 hover:text-primary-hover cursor-pointer"
               >
                 <ArrowLeftOnRectangleIcon className="h-6 w-6" />
                 <div className="text-xl font-semibold cursor-pointer">Logout</div>

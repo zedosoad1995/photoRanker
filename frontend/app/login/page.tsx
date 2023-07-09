@@ -1,13 +1,13 @@
 "use client";
 
-import Label from "../../components/Label";
-import Link from "../../components/Link";
-import Textfield from "../../components/TextField";
-import Button from "../../components/Button";
-import { HOME, REGISTER } from "../../constants/routes";
+import Label from "@/components/Label";
+import Link from "@/components/Link";
+import Textfield from "@/components/TextField";
+import Button from "@/components/Button";
+import { HOME, REGISTER } from "@/constants/routes";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../contexts/auth";
+import { useAuth } from "@/contexts/auth";
 
 export default function SignIn() {
   const router = useRouter();

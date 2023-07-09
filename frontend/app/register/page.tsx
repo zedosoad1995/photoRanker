@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "../../components/Link";
+import Link from "@/components/Link";
 import { useRouter } from "next/navigation";
 import MainForm from "./Forms/MainForm";
 import PersonalInfoForm from "./Forms/PersonalInfoForm";
-import Button from "../../components/Button";
+import Button from "@/components/Button";
 import { useRef, useState } from "react";
-import { register } from "../../services/auth";
-import { LOGIN } from "../../constants/routes";
+import { register } from "@/services/auth";
+import { LOGIN } from "@/constants/routes";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;

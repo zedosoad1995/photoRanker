@@ -3,7 +3,7 @@
 import { getMe } from "../services/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { IGetMeRes } from "../../backend/src/types/user";
-import { logout as logoutService, login as loginService } from "../services/auth";
+import { logout as logoutService, login as loginService } from "@/services/auth";
 
 export interface IAuthContext {
   user?: IGetMeRes["user"];

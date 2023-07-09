@@ -1,6 +1,6 @@
-import Select from "../../../components/Select";
+import Select from "@/components/Select";
 import { COUNTRIES, ETHNICITY } from "../../../../backend/src/constants/user";
-import DateField from "../../../components/DateField";
+import DateField from "@/components/DateField";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
