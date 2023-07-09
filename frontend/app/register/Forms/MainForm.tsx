@@ -1,10 +1,7 @@
 import Textfield from "@/components/TextField";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ICreateUserMain,
-  createUserMainSchema,
-} from "@/schemas/user/createUserMain";
+import { ICreateUserMain, createUserMainSchema } from "@/schemas/user/createUserMain";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { checkEmailExists } from "@/services/auth";
 
@@ -13,10 +10,11 @@ interface IProps {
   name: string;
   email: string;
   password: string;
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 const MainForm = forwardRef(
-  ({ updateData, name, email, password }: IProps, ref) => {
+  ({ updateData, name, email, password, onKeyDown: handleKeyDown }: IProps, ref) => {
     const [emailApiError, setEmailApiError] = useState<string>();
 
     const {
@@ -61,6 +59,7 @@ const MainForm = forwardRef(
             onChange: handleChange("name"),
           })}
           error={errors.name?.message}
+          onKeyDown={handleKeyDown}
         />
         <Textfield
           label="Email address"
@@ -70,6 +69,7 @@ const MainForm = forwardRef(
             onChange: handleChange("email"),
           })}
           error={errors.email?.message ?? emailApiError}
+          onKeyDown={handleKeyDown}
         />
         <Textfield
           label="Password"
@@ -79,6 +79,7 @@ const MainForm = forwardRef(
             onChange: handleChange("password"),
           })}
           error={errors.password?.message}
+          onKeyDown={handleKeyDown}
         />
       </>
     );

@@ -9,6 +9,7 @@ interface IDateField {
   label?: string;
   value: string;
   onChange: (value: string) => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
   maxDate?: Date;
   error?: string;
 }
@@ -18,6 +19,7 @@ export default function DateField({
   value,
   maxDate = subtractYears(new Date(), 18),
   onChange: handleChange,
+  onKeyDown: handleKeyDown,
   error,
 }: IDateField) {
   const transformedValue = {
@@ -32,13 +34,11 @@ export default function DateField({
   };
 
   return (
-    <div>
+    <div onKeyDown={handleKeyDown}>
       {label && <Label name={label} />}
       <div className="mt-2 relative">
         <Datepicker
-          inputClassName={`${inputField} ${
-            error ? "!ring-danger !focus:ring-danger" : ""
-          }`}
+          inputClassName={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
           value={transformedValue}
           onChange={correctTypeHandleChange}
           asSingle={true}
@@ -47,16 +47,10 @@ export default function DateField({
           maxDate={maxDate}
           toggleClassName="absolute right-0 h-full px-2 text-light-text focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
           toggleIcon={(open) => {
-            return open ? (
-              <CalendarIcon className="h-5 w-5" />
-            ) : (
-              <XMarkIcon className="h-5 w-5" />
-            );
+            return open ? <CalendarIcon className="h-5 w-5" /> : <XMarkIcon className="h-5 w-5" />;
           }}
         />
-        {error && (
-          <div className="text-error-text mt-1 text-danger">{error}</div>
-        )}
+        {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
       </div>
     </div>
   );

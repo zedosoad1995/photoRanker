@@ -13,14 +13,18 @@ interface IData {
   ethnicity: string;
   countryOfOrigin: string;
   dateOfBirth: string;
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 type IProps = {
   updateData: (data: Partial<IData>) => void;
-} & IData
+} & IData;
 
 const PersonalInfoForm = forwardRef(
-  ({ updateData, countryOfOrigin, ethnicity, dateOfBirth }: IProps, ref) => {
+  (
+    { updateData, countryOfOrigin, ethnicity, dateOfBirth, onKeyDown: handleKeyDown }: IProps,
+    ref
+  ) => {
     const {
       handleSubmit,
       setValue,
@@ -55,18 +59,21 @@ const PersonalInfoForm = forwardRef(
           options={COUNTRIES}
           value={countryOfOrigin}
           onChange={handleChange("countryOfOrigin")}
+          onKeyDown={handleKeyDown}
         />
         <Select
           label="Ethnicity"
           options={ETHNICITY}
           value={ethnicity}
           onChange={handleChange("ethnicity")}
+          onKeyDown={handleKeyDown}
         />
         <DateField
           label="Date of Birth"
           value={dateOfBirth}
           onChange={handleChangeDate}
           error={errors.dateOfBirth?.message}
+          onKeyDown={handleKeyDown}
         />
       </>
     );

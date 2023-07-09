@@ -11,6 +11,7 @@ interface ISelect {
   label?: string;
   value: string;
   onChange: (value: string) => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 export default function Select({
@@ -18,6 +19,7 @@ export default function Select({
   label,
   value,
   onChange: handleChange,
+  onKeyDown: handleKeyDown,
 }: ISelect) {
   const [query, setQuery] = useState("");
 
@@ -37,6 +39,7 @@ export default function Select({
             <Combobox.Input
               onChange={(event) => setQuery(event.target.value)}
               className={`pr-6 ${inputField}`}
+              onKeyDown={handleKeyDown}
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon className="h-5 w-5 text-light-text" />
@@ -59,11 +62,7 @@ export default function Select({
               >
                 {({ selected }) => (
                   <>
-                    <span
-                      className={`block truncate ${
-                        selected ? "font-medium" : "font-normal"
-                      }`}
-                    >
+                    <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
                       {option}
                     </span>
                     {selected ? (

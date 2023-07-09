@@ -13,6 +13,7 @@ interface ITextField {
   error?: string;
   value?: string | number | readonly string[];
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 export default function Textfield({
@@ -24,6 +25,7 @@ export default function Textfield({
   error,
   value,
   onChange: handleChange,
+  onKeyDown: handleKeyDown,
 }: ITextField) {
   return (
     <div>
@@ -33,16 +35,13 @@ export default function Textfield({
           type={type}
           autoComplete={autocomplete}
           required={required}
-          className={`${inputField} ${
-            error ? "!ring-danger !focus:ring-danger" : ""
-          }`}
+          className={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
           value={value}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           {...register}
         />
-        {error && (
-          <div className="text-error-text mt-1 text-danger">{error}</div>
-        )}
+        {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
       </div>
     </div>
   );

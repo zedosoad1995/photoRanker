@@ -30,6 +30,12 @@ export default function SignIn() {
     router.push(HOME);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSignIn();
+    }
+  };
+
   if (Boolean(user)) {
     router.push(HOME);
   }
@@ -48,6 +54,7 @@ export default function SignIn() {
               label="Email address"
               type="email"
               autocomplete="email"
+              onKeyDown={handleKeyDown}
             />
 
             <div>
@@ -60,6 +67,7 @@ export default function SignIn() {
                 onChange={handlePasswordChange}
                 type="password"
                 autocomplete="current-password"
+                onKeyDown={handleKeyDown}
               />
             </div>
 

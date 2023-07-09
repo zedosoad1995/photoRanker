@@ -69,6 +69,12 @@ export default function Register() {
     setFormStage((val) => val - 1);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleNext();
+    }
+  };
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
@@ -77,7 +83,7 @@ export default function Register() {
         </h2>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="space-y-6">
-            <Form ref={formRef} updateData={updateData} {...data} />
+            <Form ref={formRef} updateData={updateData} onKeyDown={handleKeyDown} {...data} />
 
             <div className="flex gap-2">
               {formStage > 0 && <Button onClick={handleBack}>Back</Button>}
