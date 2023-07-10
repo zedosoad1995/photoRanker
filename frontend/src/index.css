@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply h-full bg-white;
+  }
+  body {
+    @apply h-full text-normal-text;
+  }
+  #root {
+    @apply h-full;
+  }
+}
