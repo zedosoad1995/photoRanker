@@ -24,9 +24,17 @@ export const signIn = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  req.session = {
+  res.cookie("session", {
     jwt: userJwt,
-  };
+  });
 
-  res.status(200).json({ user });
+  const userNoPassword = UserModel.exclude(user, ["password"]);
+
+  res.status(200).json({ user: userNoPassword });
+};
+
+export const signOut = (req: Request, res: Response) => {
+  res.clearCookie("session");
+
+  res.status(204).send();
 };

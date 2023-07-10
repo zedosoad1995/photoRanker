@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
@@ -9,13 +8,10 @@ import { PictureModel } from "@/models/picture";
 let pictureId: string;
 
 beforeAll(async () => {
-  const users = await (Seeder("User") as UserSeeder).seed();
-  const user = users[0];
+  const user = await UserSeeder.seedOne();
 
-  const pictures = await (Seeder("Picture") as PictureSeeder).seed({
-    data: { userId: user.id },
-  });
-  pictureId = pictures[0].id;
+  const picture = await PictureSeeder.seedOne({ userId: user.id });
+  pictureId = picture.id;
 });
 
 describe("Unauthorized", () => {
@@ -36,10 +32,8 @@ describe("Regular Logged User", () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
 
-    const pictures = await (Seeder("Picture") as PictureSeeder).createMany({
-      data: { userId: res.user.id },
-    });
-    regularUserPictureId = pictures[0].id;
+    const picture = await PictureSeeder.createOne({ userId: res.user.id });
+    regularUserPictureId = picture.id;
   });
 
   it("returns 403, when passed id does not correspond to picture of logged user", async () => {

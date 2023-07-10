@@ -33,6 +33,14 @@ export const getOne = async (req: Request, res: Response) => {
   res.status(200).json({ user: userNoPassword });
 };
 
+export const getMe = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
+  const userNoPassword = UserModel.exclude(loggedUser, ["password"]);
+
+  res.status(200).json({ user: userNoPassword });
+};
+
 export const createOne = async (req: Request, res: Response) => {
   const hashedPassword = await hashPassword(req.body.password);
 
@@ -78,4 +86,16 @@ export const updateOne = async (req: Request, res: Response) => {
   const userNoPassword = UserModel.exclude(updatedUser, ["password"]);
 
   res.status(200).json({ user: userNoPassword });
+};
+
+export const checkEmailExists = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const user = await UserModel.findUnique({ where: { email } });
+
+  const emailExists = Boolean(user);
+
+  res.status(200).send({
+    exists: emailExists,
+  });
 };

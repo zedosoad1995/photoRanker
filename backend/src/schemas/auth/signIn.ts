@@ -6,3 +6,5 @@ export const signInSchema = z
     password: z.string(),
   })
   .strict();
+
+export type ISignIn = z.infer<typeof signInSchema>;

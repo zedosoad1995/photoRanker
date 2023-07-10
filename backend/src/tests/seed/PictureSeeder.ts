@@ -3,56 +3,66 @@ import { Prisma } from "@prisma/client";
 import _ from "underscore";
 import { randomizePicture } from "../helpers/picture";
 
-interface SeedInput {
+type SeedInputOne = Partial<Prisma.PictureUncheckedCreateInput>;
+
+interface SeedInputMany {
   data?:
-    | Partial<Prisma.PictureCreateManyInput>
-    | Partial<Prisma.PictureCreateManyInput>[];
+    | Partial<Prisma.PictureUncheckedCreateInput>
+    | Partial<Prisma.PictureUncheckedCreateInput>[];
   numRepeat?: number;
 }
 
-export class PictureSeeder {
-  async seed(
-    { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
+export const PictureSeeder = {
+  async seedOne(data: SeedInputOne = {}) {
+    await this.deleteAll();
+    return this.createOne(data);
+  },
+
+  async seedMany(
+    { data = {}, numRepeat = 1 }: SeedInputMany = { data: {}, numRepeat: 1 }
   ) {
     await this.deleteAll();
     return this.createMany({ data, numRepeat });
-  }
+  },
 
-  async createMany(
-    { data = {}, numRepeat = 1 }: SeedInput = { data: {}, numRepeat: 1 }
-  ) {
-    if (Array.isArray(data)) {
-      const res = await PictureModel.createMany({
-        data: data.map((row) => ({
-          ...randomizePicture(),
-          ...row,
-        })),
-      });
-
-      return PictureModel.findMany({
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: res.count,
-      });
-    }
-
-    const res = await PictureModel.createMany({
-      data: _.times(numRepeat, () => ({
+  async createOne(data: SeedInputOne = {}) {
+    return PictureModel.create({
+      data: {
         ...randomizePicture(),
         ...data,
-      })),
-    });
-
-    return PictureModel.findMany({
-      orderBy: {
-        createdAt: "desc",
       },
-      take: res.count,
     });
-  }
+  },
+
+  async createMany(
+    { data = {}, numRepeat = 1 }: SeedInputMany = { data: {}, numRepeat: 1 }
+  ) {
+    if (Array.isArray(data)) {
+      return Promise.all(
+        data.map((row) =>
+          PictureModel.create({
+            data: {
+              ...randomizePicture(),
+              ...row,
+            },
+          })
+        )
+      );
+    }
+
+    return Promise.all(
+      _.times(numRepeat, () =>
+        PictureModel.create({
+          data: {
+            ...randomizePicture(),
+            ...data,
+          },
+        })
+      )
+    );
+  },
 
   async deleteAll() {
     await PictureModel.deleteMany();
-  }
-}
+  },
+};

@@ -1,289 +1,203 @@
 import _ from "underscore";
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { UserModel } from "@/models/user";
-import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
+import { randomizeUser } from "@/tests/helpers/user";
 import { UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const createUserBody = randomizeUser();
 
-describe("Unauthorized", () => {
-  it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app).post("/api/users").send(createUserBody);
+it("creates a new user, 'password' is not returned, 'role' is REGULAR", async () => {
+  await UserSeeder.deleteAll();
 
-    expect(response.status).toEqual(401);
-  });
+  const response = await request(app).post("/api/users").send(createUserBody);
 
-  it("returns 403, when logged user is not ADMIN", async () => {
-    const { cookie } = await loginRegular();
+  expect(response.status).toEqual(201);
+  expect(response.body.user).not.toHaveProperty("password");
+  expect(response.body.user.role).toEqual(UserRole.REGULAR);
 
-    const response = await request(app)
-      .post("/api/users")
-      .set("Cookie", cookie)
-      .send(createUserBody);
-
-    expect(response.status).toEqual(403);
-  });
+  const numUsers = await UserModel.count();
+  expect(numUsers).toBe(1);
 });
 
-describe("Admin Logged User", () => {
-  it("creates a new user, 'password' is not returned, 'role' is REGULAR", async () => {
-    await Seeder("User")?.deleteAll();
+it("returns 409, when 'email' already exists", async () => {
+  await UserSeeder.seedOne({ email: createUserBody.email });
 
-    const { cookie } = await loginAdmin();
+  const response = await request(app).post("/api/users").send(createUserBody);
 
-    const response = await request(app)
-      .post("/api/users")
-      .set("Cookie", cookie)
-      .send(createUserBody);
+  expect(response.status).toEqual(409);
+});
 
-    expect(response.status).toEqual(201);
-    expect(response.body.user).not.toHaveProperty("password");
-    expect(response.body.user.role).toEqual(UserRole.REGULAR);
-
-    const numUsers = await UserModel.count();
-    expect(numUsers).toBe(2);
+describe("Test Validation", () => {
+  beforeEach(async () => {
+    await UserSeeder.deleteAll();
   });
 
-  it("returns 409, when 'email' already exists", async () => {
-    await (Seeder("User") as UserSeeder)?.seed({
-      data: { email: createUserBody.email },
-    });
+  it("must use valid propriety name", async () => {
+    const body = { ...createUserBody, role: UserRole.ADMIN };
 
-    const { cookie } = await loginAdmin();
+    const response = await request(app).post("/api/users").send(body);
 
-    const response = await request(app)
-      .post("/api/users")
-      .set("Cookie", cookie)
-      .send(createUserBody);
-
-    expect(response.status).toEqual(409);
+    expect(response.status).toEqual(422);
   });
 
-  describe("Test Validation", () => {
-    let cookie: string;
+  describe("'name' field", () => {
+    it("is required", async () => {
+      const body = _.omit(createUserBody, "name");
 
-    beforeEach(async () => {
-      await Seeder("User")?.deleteAll();
-      const res = await loginAdmin();
-      cookie = res.cookie;
-    });
-
-    it("must use valid propriety name", async () => {
-      const body = { ...createUserBody, role: UserRole.ADMIN };
-
-      const response = await request(app)
-        .post("/api/users")
-        .set("Cookie", cookie)
-        .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
       expect(response.status).toEqual(422);
     });
 
-    describe("'name' field", () => {
-      it("is required", async () => {
-        const body = _.omit(createUserBody, "name");
+    it("is empty", async () => {
+      const body = {
+        ...createUserBody,
+        name: "",
+      };
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
-
-      it("is empty", async () => {
-        const body = {
-          ...createUserBody,
-          name: "",
-        };
-
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
-
-        expect(response.status).toEqual(422);
-      });
-
-      it("is too long", async () => {
-        const body = {
-          ...createUserBody,
-          name: "a".repeat(100),
-        };
-
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
-
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
     });
 
-    describe("'email' field", () => {
-      it("is required", async () => {
-        const body = _.omit(createUserBody, "email");
+    it("is too long", async () => {
+      const body = {
+        ...createUserBody,
+        name: "a".repeat(100),
+      };
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
+    });
+  });
 
-      it("has invalid email format", async () => {
-        const body = {
-          ...createUserBody,
-          email: "invalid",
-        };
+  describe("'email' field", () => {
+    it("is required", async () => {
+      const body = _.omit(createUserBody, "email");
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
     });
 
-    describe("'password' field", () => {
-      it("is required", async () => {
-        const body = _.omit(createUserBody, "password");
+    it("has invalid email format", async () => {
+      const body = {
+        ...createUserBody,
+        email: "invalid",
+      };
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
+    });
+  });
 
-      it("is too short", async () => {
-        const body = {
-          ...createUserBody,
-          password: "ab",
-        };
+  describe("'password' field", () => {
+    it("is required", async () => {
+      const body = _.omit(createUserBody, "password");
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
-
-      it("is too long", async () => {
-        const body = {
-          ...createUserBody,
-          password: "a".repeat(50),
-        };
-
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
-
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
     });
 
-    describe("'countryOfOrigin' field", () => {
-      it("is required", async () => {
-        const body = _.omit(createUserBody, "countryOfOrigin");
+    it("is too short", async () => {
+      const body = {
+        ...createUserBody,
+        password: "ab",
+      };
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
-
-      it("is an invalid country name", async () => {
-        const body = {
-          ...createUserBody,
-          countryOfOrigin: "invalid",
-        };
-
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
-
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
     });
 
-    describe("'ethnicity' field", () => {
-      it("is required", async () => {
-        const body = _.omit(createUserBody, "ethnicity");
+    it("is too long", async () => {
+      const body = {
+        ...createUserBody,
+        password: "a".repeat(50),
+      };
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
+    });
+  });
 
-      it("is an invalid ethnicity name", async () => {
-        const body = {
-          ...createUserBody,
-          ethnicity: "invalid",
-        };
+  describe("'countryOfOrigin' field", () => {
+    it("is required", async () => {
+      const body = _.omit(createUserBody, "countryOfOrigin");
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
     });
 
-    describe("'dateOfBirth' field", () => {
-      it("is required", async () => {
-        const body = _.omit(createUserBody, "dateOfBirth");
+    it("is an invalid country name", async () => {
+      const body = {
+        ...createUserBody,
+        countryOfOrigin: "invalid",
+      };
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
+    });
+  });
 
-      it("is has an invalid format, should be yyyy-MM-dd", async () => {
-        const body = {
-          ...createUserBody,
-          dateOfBirth: "2020/01/01",
-        };
+  describe("'ethnicity' field", () => {
+    it("is required", async () => {
+      const body = _.omit(createUserBody, "ethnicity");
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
+    });
 
-      it("is has a valid format, but the date is invalid", async () => {
-        const body = {
-          ...createUserBody,
-          dateOfBirth: "2020-02-30",
-        };
+    it("is an invalid ethnicity name", async () => {
+      const body = {
+        ...createUserBody,
+        ethnicity: "invalid",
+      };
 
-        const response = await request(app)
-          .post("/api/users")
-          .set("Cookie", cookie)
-          .send(body);
+      const response = await request(app).post("/api/users").send(body);
 
-        expect(response.status).toEqual(422);
-      });
+      expect(response.status).toEqual(422);
+    });
+  });
+
+  describe("'dateOfBirth' field", () => {
+    it("is required", async () => {
+      const body = _.omit(createUserBody, "dateOfBirth");
+
+      const response = await request(app).post("/api/users").send(body);
+
+      expect(response.status).toEqual(422);
+    });
+
+    it("is has an invalid format, should be yyyy-MM-dd", async () => {
+      const body = {
+        ...createUserBody,
+        dateOfBirth: "2020/01/01",
+      };
+
+      const response = await request(app).post("/api/users").send(body);
+
+      expect(response.status).toEqual(422);
+    });
+
+    it("is has a valid format, but the date is invalid", async () => {
+      const body = {
+        ...createUserBody,
+        dateOfBirth: "2020-02-30",
+      };
+
+      const response = await request(app).post("/api/users").send(body);
+
+      expect(response.status).toEqual(422);
     });
   });
 });

@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
 import { MatchSeeder } from "@/tests/seed/MatchSeeder";
@@ -30,10 +29,8 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when match does not exist", async () => {
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
-      data: {
-        userId: regularUser.id,
-      },
+    const picture = await PictureSeeder.seedOne({
+      userId: regularUser.id,
     });
 
     const response = await request(app)
@@ -41,60 +38,58 @@ describe("Regular Logged User", () => {
       .set("Cookie", regularCookie)
       .send({
         matchId: "doesNotExist",
-        winnerPictureId: pictures[0].id,
+        winnerPictureId: picture.id,
       });
 
     expect(response.status).toEqual(404);
   });
 
   it("throws an error, when match exists but is inactive", async () => {
-    const matches = await (Seeder("Match") as MatchSeeder).seed();
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
-      data: {
-        userId: regularUser.id,
-      },
+    const match = await MatchSeeder.seedOne();
+    const matchId = match.id;
+
+    const picture = await PictureSeeder.seedOne({
+      userId: regularUser.id,
     });
-    await (Seeder("Vote") as VoteSeeder).seed({
-      data: {
-        matchId: matches[0].id,
-        voterId: regularUser.id,
-        winnerPictureId: pictures[0].id,
-      },
+    await VoteSeeder.seedOne({
+      matchId,
+      voterId: regularUser.id,
+      winnerPictureId: picture.id,
     });
 
     const response = await request(app)
       .post("/api/votes")
       .set("Cookie", regularCookie)
       .send({
-        matchId: matches[0].id,
-        winnerPictureId: pictures[0].id,
+        matchId,
+        winnerPictureId: picture.id,
       });
 
     expect(response.status).toEqual(403);
   });
 
   it("throws an error, when match exists is active, but belongs to another user", async () => {
-    const users = await (Seeder("User") as UserSeeder).createMany();
-    const matches = await (Seeder("Match") as MatchSeeder).seed();
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
-      data: {
-        userId: users[0].id,
-      },
+    const user = await UserSeeder.createOne();
+    const userId = user.id;
+
+    const match = await MatchSeeder.seedOne();
+    const matchId = match.id;
+
+    const picture = await PictureSeeder.seedOne({
+      userId,
     });
-    await (Seeder("Vote") as VoteSeeder).seed({
-      data: {
-        matchId: matches[0].id,
-        voterId: users[0].id,
-        winnerPictureId: pictures[0].id,
-      },
+    await VoteSeeder.seedOne({
+      matchId,
+      voterId: userId,
+      winnerPictureId: picture.id,
     });
 
     await UserModel.update({
       where: {
-        id: users[0].id,
+        id: userId,
       },
       data: {
-        activeMatchId: matches[0].id,
+        activeMatchId: matchId,
       },
     });
 
@@ -102,22 +97,23 @@ describe("Regular Logged User", () => {
       .post("/api/votes")
       .set("Cookie", regularCookie)
       .send({
-        matchId: matches[0].id,
-        winnerPictureId: pictures[0].id,
+        matchId,
+        winnerPictureId: picture.id,
       });
 
     expect(response.status).toEqual(403);
   });
 
   it("throws an error, when winning picture does not exist", async () => {
-    const matches = await (Seeder("Match") as MatchSeeder).seed();
+    const match = await MatchSeeder.seedOne();
+    const matchId = match.id;
 
     await UserModel.update({
       where: {
         id: regularUser.id,
       },
       data: {
-        activeMatchId: matches[0].id,
+        activeMatchId: matchId,
       },
     });
 
@@ -125,7 +121,7 @@ describe("Regular Logged User", () => {
       .post("/api/votes")
       .set("Cookie", regularCookie)
       .send({
-        matchId: matches[0].id,
+        matchId: matchId,
         winnerPictureId: "doesNotExist",
       });
 
@@ -133,14 +129,14 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when winning picture exists, but belongs to another match", async () => {
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+    const pictures = await PictureSeeder.seedMany({
       data: {
         userId: regularUser.id,
       },
       numRepeat: 2,
     });
 
-    const matches = await (Seeder("Match") as MatchSeeder).seed({
+    const matches = await MatchSeeder.seedMany({
       data: [
         {
           pictures: {
@@ -186,7 +182,7 @@ describe("Regular Logged User", () => {
     const INITIAL_NUM_VOTES = 0;
 
     beforeEach(async () => {
-      const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+      const pictures = await PictureSeeder.seedMany({
         data: {
           userId: regularUser.id,
           elo: INITIAL_ELO,
@@ -195,15 +191,13 @@ describe("Regular Logged User", () => {
         numRepeat: 2,
       });
 
-      const matches = await (Seeder("Match") as MatchSeeder).seed({
-        data: {
-          pictures: {
-            connect: pictures.map((picture) => ({ id: picture.id })),
-          },
+      const match = await MatchSeeder.seedOne({
+        pictures: {
+          connect: pictures.map((picture) => ({ id: picture.id })),
         },
       });
 
-      matchId = matches[0].id;
+      matchId = match.id;
       winnerPictureId = pictures[0].id;
 
       await UserModel.update({
@@ -296,22 +290,20 @@ describe("Admin Logged User", () => {
   });
 
   it("creates a new vote", async () => {
-    const pictures = await (Seeder("Picture") as PictureSeeder).seed({
+    const pictures = await PictureSeeder.seedMany({
       data: {
         userId: adminUser.id,
       },
       numRepeat: 2,
     });
 
-    const matches = await (Seeder("Match") as MatchSeeder).seed({
-      data: {
-        pictures: {
-          connect: pictures.map((picture) => ({ id: picture.id })),
-        },
+    const match = await MatchSeeder.seedOne({
+      pictures: {
+        connect: pictures.map((picture) => ({ id: picture.id })),
       },
     });
 
-    const matchId = matches[0].id;
+    const matchId = match.id;
     const winnerPictureId = pictures[0].id;
 
     await UserModel.update({

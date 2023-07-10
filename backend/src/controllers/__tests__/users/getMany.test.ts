@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "@/app";
-import { Seeder } from "@/tests/seed/Seeder";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 
@@ -29,7 +28,7 @@ describe("Unauthorized", () => {
 
 describe("Admin Logged User", () => {
   beforeAll(async () => {
-    await (Seeder("User") as UserSeeder).seed({ numRepeat: NUM_USERS });
+    await UserSeeder.seedMany({ numRepeat: NUM_USERS });
     const res = await loginAdmin();
     adminCookie = res.cookie;
   });

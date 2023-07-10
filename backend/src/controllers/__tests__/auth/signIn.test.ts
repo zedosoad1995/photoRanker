@@ -5,7 +5,6 @@ import { randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
 import { User } from "@prisma/client";
 import { hashPassword } from "@/helpers/password";
-import { Seeder } from "@/tests/seed/Seeder";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const PASSWORD = "Password";
@@ -16,18 +15,11 @@ beforeAll(async () => {
     password: await hashPassword(PASSWORD),
   });
 
-  user = await UserModel.create({
-    data: userData,
-  });
-
-  const users = await (Seeder("User") as UserSeeder).seed({ data: userData });
-  if (users) {
-    user = users[0];
-  }
+  user = await UserSeeder.seedOne(userData);
 });
 
 it("Logs in, returns logged user, and sets cookie", async () => {
-  const response = await request(app).post("/api/auth").send({
+  const response = await request(app).post("/api/auth/login").send({
     email: user.email,
     password: PASSWORD,
   });
@@ -36,8 +28,17 @@ it("Logs in, returns logged user, and sets cookie", async () => {
   expect(response.header).toHaveProperty("set-cookie");
 });
 
+it("does not return 'password' field", async () => {
+  const response = await request(app).post("/api/auth/login").send({
+    email: user.email,
+    password: PASSWORD,
+  });
+
+  expect(response.body.user).not.toHaveProperty("password");
+});
+
 it("Returns 401, when email does not exist", async () => {
-  const response = await request(app).post("/api/auth").send({
+  const response = await request(app).post("/api/auth/login").send({
     email: "random@email.com",
     password: PASSWORD,
   });
@@ -46,7 +47,7 @@ it("Returns 401, when email does not exist", async () => {
 });
 
 it("Returns 401, when password is wrong", async () => {
-  const response = await request(app).post("/api/auth").send({
+  const response = await request(app).post("/api/auth/login").send({
     email: user.email,
     password: "WrongPass",
   });
@@ -57,7 +58,7 @@ it("Returns 401, when password is wrong", async () => {
 describe("Test Validation", () => {
   describe("'email' field", () => {
     it("is required", async () => {
-      const response = await request(app).post("/api/auth").send({
+      const response = await request(app).post("/api/auth/login").send({
         password: PASSWORD,
       });
 
@@ -67,7 +68,7 @@ describe("Test Validation", () => {
 
   describe("'password' field", () => {
     it("is required", async () => {
-      const response = await request(app).post("/api/auth").send({
+      const response = await request(app).post("/api/auth/login").send({
         email: user.email,
       });
 

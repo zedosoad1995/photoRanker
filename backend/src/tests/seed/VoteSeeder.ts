@@ -1,28 +1,35 @@
 import { VoteModel } from "@/models/vote";
 import { Prisma } from "@prisma/client";
 import _ from "underscore";
-import { randomizeVote } from "../helpers/vote";
 
-interface SeedInput {
-  data: Prisma.VoteCreateManyInput | Prisma.VoteCreateManyInput[];
+type SeedInputOne = Prisma.VoteUncheckedCreateInput;
+
+interface SeedInputMany {
+  data: Prisma.VoteUncheckedCreateInput | Prisma.VoteUncheckedCreateInput[];
   numRepeat?: number;
 }
 
-export class VoteSeeder {
-  async seed({ data, numRepeat = 1 }: SeedInput) {
+export const VoteSeeder = {
+  async seedOne(data: SeedInputOne) {
+    await this.deleteAll();
+    return this.createOne(data);
+  },
+
+  async seedMany({ data, numRepeat = 1 }: SeedInputMany) {
     await this.deleteAll();
     return this.createMany({ data, numRepeat });
-  }
+  },
 
-  async createMany({ data, numRepeat = 1 }: SeedInput) {
+  async createOne(data: SeedInputOne) {
+    return VoteModel.create({ data });
+  },
+
+  async createMany({ data, numRepeat = 1 }: SeedInputMany) {
     if (Array.isArray(data)) {
       return Promise.all(
         data.map((row) =>
           VoteModel.create({
-            data: {
-              ...randomizeVote(row),
-              ...row,
-            },
+            data: row,
           })
         )
       );
@@ -31,16 +38,13 @@ export class VoteSeeder {
     return Promise.all(
       _.times(numRepeat, () =>
         VoteModel.create({
-          data: {
-            ...randomizeVote(data),
-            ...data,
-          },
+          data,
         })
       )
     );
-  }
+  },
 
   async deleteAll() {
     await VoteModel.deleteMany();
-  }
-}
+  },
+};

@@ -7,12 +7,10 @@ export const createUserSchema = z
     name: z.string().min(1).max(50),
     email: z.string().email(),
     password: z.string().min(6).max(30),
-    // @ts-ignore
-    countryOfOrigin: z.enum(COUNTRIES),
-    // @ts-ignore
-    ethnicity: z.enum(ETHNICITY),
-    dateOfBirth: z
-      .string()
-      .refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
+    countryOfOrigin: z.enum(COUNTRIES as unknown as [string, ...string[]]),
+    ethnicity: z.enum(ETHNICITY as unknown as [string, ...string[]]),
+    dateOfBirth: z.string().refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
   })
   .strict();
+
+export type ICreateUser = z.infer<typeof createUserSchema>;
