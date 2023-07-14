@@ -2,6 +2,7 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
+import { Prisma } from "@prisma/client";
 import { Request, Response } from "express";
 import _ from "underscore";
 
@@ -28,6 +29,9 @@ export const createOne = async (req: Request, res: Response) => {
       },
     },
     skip: randomNumPic1,
+    orderBy: {
+      id: "asc",
+    },
   });
   if (!picture1) {
     throw new BadRequestError("Not enought pictures for the match");
@@ -51,47 +55,55 @@ export const createOne = async (req: Request, res: Response) => {
       ],
     },
     skip: randomNumPic2,
+    orderBy: {
+      id: "asc",
+    },
   });
   if (!picture2) {
     throw new BadRequestError("Not enought pictures for the match");
   }
 
-  const [doesNotMatter, match] = await prisma.$transaction([
-    MatchModel.deleteMany({
-      where: {
-        activeUser: {
-          id: loggedUser.id,
-        },
-      },
-    }),
-    MatchModel.create({
-      data: {
-        activeUser: {
-          connect: {
+  const [doesNotMatter, match] = await prisma.$transaction(
+    [
+      MatchModel.deleteMany({
+        where: {
+          activeUser: {
             id: loggedUser.id,
           },
         },
-        pictures: {
-          connect: [
-            {
-              id: picture1.id,
+      }),
+      MatchModel.create({
+        data: {
+          activeUser: {
+            connect: {
+              id: loggedUser.id,
             },
-            {
-              id: picture2.id,
-            },
-          ],
-        },
-      },
-      include: {
-        pictures: {
-          select: {
-            id: true,
-            filepath: true,
+          },
+          pictures: {
+            connect: [
+              {
+                id: picture1.id,
+              },
+              {
+                id: picture2.id,
+              },
+            ],
           },
         },
-      },
-    }),
-  ]);
+        include: {
+          pictures: {
+            select: {
+              id: true,
+              filepath: true,
+            },
+          },
+        },
+      }),
+    ],
+    {
+      isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+    }
+  );
 
   res.status(201).send({ match });
 };

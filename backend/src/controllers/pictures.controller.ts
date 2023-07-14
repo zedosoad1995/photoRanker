@@ -7,6 +7,7 @@ import { isRegular } from "@/helpers/role";
 import { PictureModel } from "@/models/picture";
 import { Prisma, User } from "@prisma/client";
 import { Request, Response } from "express";
+import path from "path";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser as User;
@@ -18,6 +19,9 @@ export const getMany = async (req: Request, res: Response) => {
 
   const pictures = await PictureModel.findMany({
     where: whereQuery,
+    orderBy: {
+      elo: "desc",
+    },
   });
 
   res.status(200).json({
@@ -27,7 +31,7 @@ export const getMany = async (req: Request, res: Response) => {
 
 export const getOne = async (req: Request, res: Response) => {
   const pictureId = req.params.pictureId;
-  const loggedUser = req.loggedUser as User;
+  const loggedUser = req.loggedUser!;
 
   const picture = await PictureModel.findUnique({
     where: {
@@ -48,6 +52,30 @@ export const getOne = async (req: Request, res: Response) => {
   });
 };
 
+export const getOneImage = async (req: Request, res: Response) => {
+  const imagePath = req.params.imagePath;
+  const loggedUser = req.loggedUser!;
+
+  const picture = await PictureModel.findFirst({
+    where: {
+      filepath: encodeURI(imagePath),
+    },
+  });
+
+  if (!picture) {
+    throw new NotFoundError("Picture does not exist");
+  }
+
+  if (isRegular(loggedUser.role) && picture?.userId !== loggedUser.id) {
+    throw new ForbiddenError("User cannot access this picture");
+  }
+
+  const decodedPath = decodeURI(imagePath).replace(/\\/g, "/");
+  const fullPath = path.join(process.cwd(), decodedPath);
+
+  res.sendFile(fullPath);
+};
+
 export const uploadOne = async (req: Request, res: Response) => {
   if (!req.file) {
     throw new BadRequestError(PICTURE.NO_FILE);
@@ -55,7 +83,7 @@ export const uploadOne = async (req: Request, res: Response) => {
 
   const picture = await PictureModel.create({
     data: {
-      filepath: req.file.filename,
+      filepath: encodeURI(req.file.path),
       elo: ELO_INIT,
       user: {
         connect: {
