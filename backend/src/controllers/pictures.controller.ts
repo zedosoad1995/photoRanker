@@ -1,8 +1,9 @@
 import { PICTURE } from "@/constants/messages";
-import { ELO_INIT } from "@/constants/picture";
+import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
+import { removeFolders } from "@/helpers/file";
 import { isRegular } from "@/helpers/role";
 import { PictureModel } from "@/models/picture";
 import { Prisma, User } from "@prisma/client";
@@ -19,9 +20,6 @@ export const getMany = async (req: Request, res: Response) => {
 
   const pictures = await PictureModel.findMany({
     where: whereQuery,
-    orderBy: {
-      elo: "desc",
-    },
   });
 
   res.status(200).json({
@@ -83,7 +81,7 @@ export const uploadOne = async (req: Request, res: Response) => {
 
   const picture = await PictureModel.create({
     data: {
-      filepath: encodeURI(req.file.path),
+      filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
       elo: ELO_INIT,
       user: {
         connect: {

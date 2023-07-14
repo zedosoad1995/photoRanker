@@ -7,6 +7,7 @@ import { loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
 import { PictureModel } from "@/models/picture";
 import fs from "fs";
+import path from "path";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 
 beforeEach(() => {
@@ -62,10 +63,7 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when no file is uploaded", async () => {
-    const response = await request(app)
-      .post("/api/pictures")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/pictures").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(400);
     expect(response.body.message).toEqual(PICTURE.NO_FILE);
@@ -85,7 +83,9 @@ describe("Regular Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(regularUser.id);
 
-    expect(fs.existsSync(picture?.filepath!)).toBeTruthy;
+    expect(
+      fs.existsSync(path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+    ).toBeTruthy();
   });
 });
 
@@ -113,6 +113,8 @@ describe("Admin Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(adminUser.id);
 
-    expect(fs.existsSync(picture?.filepath!)).toBeTruthy;
+    expect(
+      fs.existsSync(path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+    ).toBeTruthy();
   });
 });
