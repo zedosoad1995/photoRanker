@@ -6,8 +6,13 @@ export default function Settings() {
 
   useEffect(() => {
     getManyPictures().then(async (res) => {
-      console.log(res);
-      const pics = await Promise.all(res.pictures.map((pic: any) => getImage(pic.filepath)));
+      const pics: Blob[] = [];
+      for (const pic of res.pictures) {
+        try {
+          const tempPic = await getImage(pic.filepath);
+          pics.push(tempPic);
+        } catch (error) {}
+      }
       setPics(pics);
     });
   }, []);
