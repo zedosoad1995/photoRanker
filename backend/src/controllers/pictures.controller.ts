@@ -36,14 +36,33 @@ export const getOne = async (req: Request, res: Response) => {
     where: {
       id: pictureId,
     },
+    include: {
+      user: true,
+    },
   });
 
   if (!picture) {
     throw new NotFoundError("Picture does not exist");
   }
 
-  if (isRegular(loggedUser.role) && picture?.userId !== loggedUser.id) {
-    throw new ForbiddenError("User cannot access this picture");
+  if (isRegular(loggedUser.role)) {
+    const activeMatch = picture.user.activeMatchId
+      ? await MatchModel.findUnique({
+          where: {
+            id: picture.user.activeMatchId,
+          },
+          include: {
+            pictures: true,
+          },
+        })
+      : undefined;
+
+    const isPictureInActiveMatch =
+      activeMatch && activeMatch.pictures.map((picture) => picture.id).includes(pictureId);
+
+    if (picture?.userId !== loggedUser.id && !isPictureInActiveMatch) {
+      throw new ForbiddenError("User cannot access this picture");
+    }
   }
 
   res.status(200).json({

@@ -5,17 +5,8 @@ import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
-
-let pictureId: string;
-
-beforeAll(async () => {
-  const user = await UserSeeder.seedOne();
-
-  const picture = await PictureSeeder.seedOne({
-    userId: user.id,
-  });
-  pictureId = picture.id;
-});
+import { MatchSeeder } from "@/tests/seed/MatchSeeder";
+import { UserModel } from "@/models/user";
 
 beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
@@ -27,7 +18,7 @@ afterAll(() => {
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app).get(`/api/pictures/${pictureId}`).send();
+    const response = await request(app).get("/api/pictures/picId").send();
 
     expect(response.status).toEqual(401);
   });
@@ -37,19 +28,24 @@ describe("Regular Logged User", () => {
   let regularCookie: string;
   let regularUserPictureId: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
 
-    const picture = await PictureSeeder.createOne({
+    const picture = await PictureSeeder.seedOne({
       userId: res.user.id,
     });
     regularUserPictureId = picture.id;
   });
 
   it("returns 403, when passed id does not correspond to picture of logged user", async () => {
+    const user = await UserSeeder.createOne();
+    const picture = await PictureSeeder.seedOne({
+      userId: user.id,
+    });
+
     const response = await request(app)
-      .get(`/api/pictures/${pictureId}`)
+      .get(`/api/pictures/${picture.id}`)
       .set("Cookie", regularCookie)
       .send();
 
@@ -64,6 +60,31 @@ describe("Regular Logged User", () => {
 
     expect(response.status).toEqual(200);
     expect(response.body.picture.id).toEqual(regularUserPictureId);
+  });
+
+  it("returns picture, when passed id corresponds to other's picture, but it belongs to the active match", async () => {
+    const user = await UserSeeder.createOne();
+    const picture = await PictureSeeder.seedOne({ userId: user.id });
+    const match = await MatchSeeder.seedOne({
+      pictures: {
+        connect: {
+          id: picture.id,
+        },
+      },
+    });
+    await UserModel.update({
+      data: { activeMatchId: match.id },
+      where: {
+        id: user.id,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/pictures/${picture.id}`)
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(200);
   });
 });
 
@@ -85,12 +106,17 @@ describe("Admin Logged User", () => {
   });
 
   it("returns picture", async () => {
+    const user = await UserSeeder.createOne();
+    const picture = await PictureSeeder.seedOne({
+      userId: user.id,
+    });
+
     const response = await request(app)
-      .get(`/api/pictures/${pictureId}`)
+      .get(`/api/pictures/${picture.id}`)
       .set("Cookie", adminCookie)
       .send();
 
     expect(response.status).toEqual(200);
-    expect(response.body.picture.id).toEqual(pictureId);
+    expect(response.body.picture.id).toEqual(picture.id);
   });
 });
