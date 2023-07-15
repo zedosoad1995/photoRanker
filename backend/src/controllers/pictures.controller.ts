@@ -5,8 +5,9 @@ import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { removeFolders } from "@/helpers/file";
 import { isRegular } from "@/helpers/role";
+import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
-import { Prisma, User } from "@prisma/client";
+import { Prisma, User, Match } from "@prisma/client";
 import { Request, Response } from "express";
 import path from "path";
 
@@ -50,7 +51,7 @@ export const getOne = async (req: Request, res: Response) => {
   });
 };
 
-export const getOneImage = async (req: Request, res: Response) => {
+export const getImageFile = async (req: Request, res: Response) => {
   const imagePath = req.params.imagePath;
   const loggedUser = req.loggedUser!;
 
@@ -58,18 +59,37 @@ export const getOneImage = async (req: Request, res: Response) => {
     where: {
       filepath: encodeURI(imagePath),
     },
+    include: {
+      user: true,
+    },
   });
 
   if (!picture) {
     throw new NotFoundError("Picture does not exist");
   }
 
-  if (isRegular(loggedUser.role) && picture?.userId !== loggedUser.id) {
-    throw new ForbiddenError("User cannot access this picture");
+  if (isRegular(loggedUser.role)) {
+    const activeMatch = picture.user.activeMatchId
+      ? await MatchModel.findUnique({
+          where: {
+            id: picture.user.activeMatchId,
+          },
+          include: {
+            pictures: true,
+          },
+        })
+      : undefined;
+
+    const isPictureInActiveMatch =
+      activeMatch &&
+      activeMatch.pictures.map((picture) => picture.filepath).includes(encodeURI(imagePath));
+
+    if (picture?.userId !== loggedUser.id && !isPictureInActiveMatch) {
+      throw new ForbiddenError("User cannot access this picture");
+    }
   }
 
-  const decodedPath = decodeURI(imagePath).replace(/\\/g, "/");
-  const fullPath = path.join(process.cwd(), decodedPath);
+  const fullPath = path.resolve(process.cwd(), IMAGES_FOLDER_PATH, decodeURI(imagePath));
 
   res.sendFile(fullPath);
 };

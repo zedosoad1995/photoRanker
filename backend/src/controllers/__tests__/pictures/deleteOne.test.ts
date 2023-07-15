@@ -4,6 +4,8 @@ import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { PictureModel } from "@/models/picture";
+import { rimrafSync } from "rimraf";
+import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 
 let pictureId: string;
 
@@ -14,11 +16,17 @@ beforeAll(async () => {
   pictureId = picture.id;
 });
 
+beforeEach(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
+
+afterAll(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
+
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app)
-      .delete(`/api/pictures/${pictureId}`)
-      .send();
+    const response = await request(app).delete(`/api/pictures/${pictureId}`).send();
 
     expect(response.status).toEqual(401);
   });

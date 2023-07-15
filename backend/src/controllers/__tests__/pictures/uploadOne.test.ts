@@ -14,6 +14,10 @@ beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
 });
 
+afterAll(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
+
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
     const response = await request(app).post("/api/pictures").send();

@@ -3,7 +3,7 @@ import {
   deleteOne,
   getMany,
   getOne,
-  getOneImage,
+  getImageFile,
   uploadOne,
 } from "@/controllers/pictures.controller";
 import { checkAuth } from "@/middlewares/checkAuth";
@@ -12,7 +12,7 @@ import { storeImage } from "@/middlewares/storeImage";
 const router = Router();
 
 router.get("/", checkAuth, getMany);
-router.get("/image/:imagePath", checkAuth, getOneImage);
+router.get("/image/:imagePath", checkAuth, getImageFile);
 router.get("/:pictureId", checkAuth, getOne);
 router.post("/", checkAuth, storeImage, uploadOne);
 router.delete("/:pictureId", checkAuth, deleteOne);

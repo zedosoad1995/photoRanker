@@ -4,8 +4,18 @@ import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { User } from "@prisma/client";
+import { rimrafSync } from "rimraf";
+import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 
 const NUM_PICTURES = 10;
+
+beforeEach(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
+
+afterAll(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
@@ -32,10 +42,7 @@ describe("Regular Logged User", () => {
   });
 
   it("returns a list of pictures belonging to logged user", async () => {
-    const response = await request(app)
-      .get("/api/pictures")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).get("/api/pictures").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(200);
     expect(response.body.pictures).toHaveLength(1);
@@ -57,10 +64,7 @@ describe("Admin Logged User", () => {
   });
 
   it("returns a list of pictures", async () => {
-    const response = await request(app)
-      .get("/api/pictures")
-      .set("Cookie", adminCookie)
-      .send();
+    const response = await request(app).get("/api/pictures").set("Cookie", adminCookie).send();
 
     expect(response.status).toEqual(200);
     expect(response.body.pictures).toHaveLength(NUM_PICTURES);
