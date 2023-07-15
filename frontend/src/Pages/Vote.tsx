@@ -13,12 +13,12 @@ export default function Vote() {
     const { match } = await getNewMatch();
     setMatch(match);
 
-    getImage(match.pictures[0].filepath).then((response) => {
-      setPic1(URL.createObjectURL(response));
+    getImage(match.pictures[0].filepath).then((blob) => {
+      setPic1(URL.createObjectURL(blob));
     });
 
-    getImage(match.pictures[1].filepath).then((response) => {
-      setPic2(URL.createObjectURL(response));
+    getImage(match.pictures[1].filepath).then((blob) => {
+      setPic2(URL.createObjectURL(blob));
     });
   };
 

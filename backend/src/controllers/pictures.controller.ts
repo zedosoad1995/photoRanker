@@ -21,6 +21,9 @@ export const getMany = async (req: Request, res: Response) => {
 
   const pictures = await PictureModel.findMany({
     where: whereQuery,
+    orderBy: {
+      elo: "desc",
+    },
   });
 
   res.status(200).json({
