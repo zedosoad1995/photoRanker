@@ -39,7 +39,7 @@ export default function Layout() {
     <>
       <Navbar onClickMenu={handleClickMenu} onLogout={handleLogout} />
       <Sidebar open={open} onClose={handleClose} onLogout={handleLogout} />
-      <div className="p-12">
+      <div className="p-12 h-[calc(100%-4rem)]">
         <Outlet />
       </div>
     </>

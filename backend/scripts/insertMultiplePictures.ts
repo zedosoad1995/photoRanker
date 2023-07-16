@@ -26,7 +26,7 @@ const HOST = `http://localhost:8000`;
     const formData = new FormData();
     formData.append("image", fs.createReadStream(path.resolve(__dirname, "data", filepath)));
 
-    await fetch(`${HOST}/api/pictures`, {
+    const res = await fetch(`${HOST}/api/pictures`, {
       method: "POST",
       body: formData,
       headers: {
@@ -34,5 +34,7 @@ const HOST = `http://localhost:8000`;
         cookie: cookie!,
       },
     });
+
+    console.log(res.status);
   }
 })();
