@@ -7,9 +7,8 @@ import { normalizedJoin, removeFolders } from "@/helpers/file";
 import { isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
-import { Prisma, User, Match } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { Request, Response } from "express";
-import path from "path";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser as User;

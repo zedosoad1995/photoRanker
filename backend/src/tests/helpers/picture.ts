@@ -24,7 +24,7 @@ export const randomizePicture = (data: Partial<Prisma.PictureCreateManyInput> = 
   fs.writeFileSync(fullPath, "");
 
   return {
-    filepath: encodeURI(imagePath),
+    filepath: encodeURI(imagePath.replace(/\//g, "\\")),
     elo: faker.number.float({ min: 0, max: 4000 }),
     numVotes: faker.number.int({ min: 0, max: 50_000 }),
     userId: uuidv4(),
