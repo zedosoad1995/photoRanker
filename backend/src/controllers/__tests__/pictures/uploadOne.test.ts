@@ -87,10 +87,10 @@ describe("Regular Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(regularUser.id);
 
-    console.log(path.join(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)));
-
     expect(
-      fs.existsSync(path.join(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+      fs.existsSync(
+        path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)).replace(/\\/g, "/")
+      )
     ).toBeTruthy();
   });
 });
