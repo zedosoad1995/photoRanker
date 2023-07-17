@@ -121,6 +121,8 @@ export const uploadOne = async (req: Request, res: Response) => {
     throw new BadRequestError(PICTURE.NO_FILE);
   }
 
+  console.log(removeFolders(req.file.path, IMAGES_FOLDER_PATH), req.file.path, IMAGES_FOLDER_PATH);
+
   const picture = await PictureModel.create({
     data: {
       filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
