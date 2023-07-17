@@ -5,7 +5,6 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { IMAGES_FOLDER_PATH, IMAGE_SIZE_LIMIT } from "@/constants/picture";
 import crypto from "crypto";
 import { PICTURE } from "@/constants/messages";
-import { Request, Response, NextFunction } from "express";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

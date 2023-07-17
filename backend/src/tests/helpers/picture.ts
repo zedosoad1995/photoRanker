@@ -14,9 +14,10 @@ export const randomizePicture = (data: Partial<Prisma.PictureCreateManyInput> = 
     fs.mkdirSync(intermediateFolder);
   }
 
-  const imagePath = `${INTERMEDIATE_FOLDER}\\${crypto
-    .randomBytes(18)
-    .toString("hex")}.${faker.helpers.arrayElement(["jpg", "png"])}`;
+  const imagePath = path.resolve(
+    INTERMEDIATE_FOLDER,
+    `${crypto.randomBytes(18).toString("hex")}.${faker.helpers.arrayElement(["jpg", "png"])}`
+  );
 
   // Create file
   const fullPath = path.resolve(IMAGES_FOLDER_PATH, imagePath);
