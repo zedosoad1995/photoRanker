@@ -6,6 +6,6 @@ export const removeFolders = (path: string, foldersToRemove: string) => {
     return path.replace(new RegExp(foldersToRemovePattern), "");
   }
 
-  const foldersToRemovePattern = `^${foldersToRemove}\\\\`;
-  return path.replace(/\//g, "\\").replace(new RegExp(foldersToRemovePattern), "");
+  const foldersToRemovePattern = `^${foldersToRemove}\/`;
+  return path.replace(new RegExp(foldersToRemovePattern), "").replace(/\//g, "\\");
 };
