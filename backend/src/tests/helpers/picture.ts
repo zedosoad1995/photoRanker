@@ -14,7 +14,7 @@ export const randomizePicture = (data: Partial<Prisma.PictureCreateManyInput> = 
     fs.mkdirSync(intermediateFolder);
   }
 
-  const imagePath = path.resolve(
+  const imagePath = path.join(
     INTERMEDIATE_FOLDER,
     `${crypto.randomBytes(18).toString("hex")}.${faker.helpers.arrayElement(["jpg", "png"])}`
   );
