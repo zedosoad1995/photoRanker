@@ -9,6 +9,7 @@ import { PictureModel } from "@/models/picture";
 import fs from "fs";
 import path from "path";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
+import { normalizedJoin } from "@/helpers/file";
 
 beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
@@ -88,9 +89,7 @@ describe("Regular Logged User", () => {
     expect(picture?.userId).toEqual(regularUser.id);
 
     expect(
-      fs.existsSync(
-        path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)).replace(/\\/g, "/")
-      )
+      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
     ).toBeTruthy();
   });
 });
@@ -120,9 +119,7 @@ describe("Admin Logged User", () => {
     expect(picture?.userId).toEqual(adminUser.id);
 
     expect(
-      fs.existsSync(
-        path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)).replace(/\\/g, "/")
-      )
+      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
     ).toBeTruthy();
   });
 });

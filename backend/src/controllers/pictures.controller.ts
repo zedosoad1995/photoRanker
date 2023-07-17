@@ -3,7 +3,7 @@ import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
-import { removeFolders } from "@/helpers/file";
+import { normalizedJoin, removeFolders } from "@/helpers/file";
 import { isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
@@ -111,7 +111,7 @@ export const getImageFile = async (req: Request, res: Response) => {
     }
   }
 
-  const fullPath = path.resolve(process.cwd(), IMAGES_FOLDER_PATH, decodeURI(imagePath));
+  const fullPath = normalizedJoin(process.cwd(), IMAGES_FOLDER_PATH, decodeURI(imagePath));
 
   res.sendFile(fullPath);
 };
