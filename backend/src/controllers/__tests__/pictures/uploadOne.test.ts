@@ -73,7 +73,7 @@ describe("Regular Logged User", () => {
     expect(response.body.message).toEqual(PICTURE.NO_FILE);
   });
 
-  it("Created Picture assigned to logged user, adds image file to folder", async () => {
+  it("Creates Picture assigned to logged user, adds image file to folder", async () => {
     await PictureSeeder.deleteAll();
 
     const response = await request(app)
@@ -105,7 +105,7 @@ describe("Admin Logged User", () => {
     adminUser = res.user;
   });
 
-  it("Created Picture assigned to logged user, adds image file to folder", async () => {
+  it("Creates Picture assigned to logged user, adds image file to folder", async () => {
     await PictureSeeder.deleteAll();
 
     const response = await request(app)
@@ -120,7 +120,9 @@ describe("Admin Logged User", () => {
     expect(picture?.userId).toEqual(adminUser.id);
 
     expect(
-      fs.existsSync(path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+      fs.existsSync(
+        path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)).replace(/\\/g, "/")
+      )
     ).toBeTruthy();
   });
 });
