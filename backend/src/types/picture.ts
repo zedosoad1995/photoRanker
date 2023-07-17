@@ -8,6 +8,10 @@ export interface IPicture {
   updatedAt: Date;
 }
 
+export interface IGetPicture {
+  picture: IPicture;
+}
+
 export interface IGetManyPictures {
   pictures: IPicture[];
 }
