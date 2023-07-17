@@ -1,0 +1,141 @@
+import { getNewMatch } from "@/Services/match";
+import { getImage, getPicture } from "@/Services/picture";
+import { vote } from "@/Services/vote";
+import { useState, useEffect } from "react";
+import { IMatch } from "../../../backend/src/types/match";
+import { SENSITIVITY } from "../../../backend/src/constants/rating";
+
+export default function Vote() {
+  const [pic1, setPic1] = useState<string>();
+  const [pic2, setPic2] = useState<string>();
+  const [prob1, setProb1] = useState<number>();
+  const [prob2, setProb2] = useState<number>();
+
+  const [match, setMatch] = useState<IMatch["match"]>();
+  const [hasVoted, setHasVoted] = useState(false);
+
+  const getMatch = async () => {
+    if (pic1) URL.revokeObjectURL(pic1);
+    if (pic2) URL.revokeObjectURL(pic2);
+
+    const { match } = await getNewMatch();
+    setMatch(match);
+
+    await getImage(match.pictures[0].filepath).then((blob) => {
+      setPic1(URL.createObjectURL(blob));
+    });
+
+    await getImage(match.pictures[1].filepath).then((blob) => {
+      setPic2(URL.createObjectURL(blob));
+    });
+
+    const picInfo1 = await getPicture(match.pictures[0].id);
+    const picInfo2 = await getPicture(match.pictures[1].id);
+
+    const prob1 = Math.round(
+      100 / (1 + Math.pow(10, (picInfo2.picture.elo - picInfo1.picture.elo) / SENSITIVITY))
+    );
+    const prob2 = 100 - prob1;
+
+    setProb1(prob1);
+    setProb2(prob2);
+  };
+
+  useEffect(() => {
+    getMatch();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (pic1) URL.revokeObjectURL(pic1);
+      if (pic2) URL.revokeObjectURL(pic2);
+    };
+  }, [pic1, pic1]);
+
+  const handleClickImage = (picId?: string) => async () => {
+    if (match?.id && picId) {
+      await vote(match.id, picId);
+    }
+
+    setHasVoted(true);
+    setTimeout(() => {
+      getMatch();
+      setHasVoted(false);
+    }, 1000);
+  };
+
+  const ImageCard = ({
+    className,
+    pic,
+    onClick,
+    hasVoted,
+    prob,
+  }: {
+    className: string;
+    pic: string | undefined;
+    onClick: () => void;
+    hasVoted: boolean;
+    prob: number | undefined;
+  }) => {
+    const [isImageHovered, setIsImageHovered] = useState(false);
+
+    return (
+      <div
+        onClick={onClick}
+        className={`${className} text-white font-bold text-xl`}
+        style={{
+          backgroundImage: `${
+            hasVoted ? "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8))," : ""
+          } url(${pic})`,
+          backgroundSize: isImageHovered ? "101%" : "100%",
+          transition: "background-size 0.5s ease",
+        }}
+        onMouseEnter={() => {
+          setIsImageHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsImageHovered(false);
+        }}
+      >
+        {hasVoted ? `${prob}%` : ""}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div className="hidden sm:flex gap-[1vw] justify-center h-full">
+        <ImageCard
+          className="flex justify-center items-center cursor-pointer rounded-lg h-[40vw] w-[40vw] bg-cover bg-center bg-no-repeat"
+          onClick={handleClickImage(match?.pictures[0].id)}
+          pic={pic1}
+          hasVoted={hasVoted}
+          prob={prob1}
+        />
+        <ImageCard
+          className="flex justify-center items-center cursor-pointer rounded-lg h-[40vw] w-[40vw] bg-cover bg-center bg-no-repeat"
+          onClick={handleClickImage(match?.pictures[1].id)}
+          pic={pic2}
+          hasVoted={hasVoted}
+          prob={prob2}
+        />
+      </div>
+      <div className="flex sm:hidden flex-col gap-[1vw] items-center h-full justify-start">
+        <ImageCard
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          onClick={handleClickImage(match?.pictures[0].id)}
+          pic={pic1}
+          hasVoted={hasVoted}
+          prob={prob1}
+        />
+        <ImageCard
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          onClick={handleClickImage(match?.pictures[1].id)}
+          pic={pic2}
+          hasVoted={hasVoted}
+          prob={prob2}
+        />
+      </div>
+    </>
+  );
+}

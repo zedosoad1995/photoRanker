@@ -49,11 +49,7 @@ const uploader = multer({
     if (allowedTypes.includes(extension)) {
       cb(null, true);
     } else {
-      cb(
-        new BadRequestError(
-          PICTURE.INVALID_EXTENSION
-        )
-      );
+      cb(new BadRequestError(PICTURE.INVALID_EXTENSION));
     }
   },
 });

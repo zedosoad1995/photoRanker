@@ -7,9 +7,15 @@ import { loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
 import { PictureModel } from "@/models/picture";
 import fs from "fs";
+import path from "path";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
+import { normalizedJoin } from "@/helpers/file";
 
 beforeEach(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
+
+afterAll(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
 });
 
@@ -62,16 +68,13 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when no file is uploaded", async () => {
-    const response = await request(app)
-      .post("/api/pictures")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/pictures").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(400);
     expect(response.body.message).toEqual(PICTURE.NO_FILE);
   });
 
-  it("Created Picture assigned to logged user, adds image file to folder", async () => {
+  it("Creates Picture assigned to logged user, adds image file to folder", async () => {
     await PictureSeeder.deleteAll();
 
     const response = await request(app)
@@ -85,7 +88,9 @@ describe("Regular Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(regularUser.id);
 
-    expect(fs.existsSync(picture?.filepath!)).toBeTruthy;
+    expect(
+      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+    ).toBeTruthy();
   });
 });
 
@@ -99,7 +104,7 @@ describe("Admin Logged User", () => {
     adminUser = res.user;
   });
 
-  it("Created Picture assigned to logged user, adds image file to folder", async () => {
+  it("Creates Picture assigned to logged user, adds image file to folder", async () => {
     await PictureSeeder.deleteAll();
 
     const response = await request(app)
@@ -113,6 +118,8 @@ describe("Admin Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(adminUser.id);
 
-    expect(fs.existsSync(picture?.filepath!)).toBeTruthy;
+    expect(
+      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+    ).toBeTruthy();
   });
 });

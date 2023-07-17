@@ -5,8 +5,8 @@ import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
-import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 import { UserModel } from "@/models/user";
+import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 
 beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
@@ -18,7 +18,7 @@ afterAll(() => {
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app).get("/api/pictures/picId").send();
+    const response = await request(app).get("/api/pictures/image/imagePath").send();
 
     expect(response.status).toEqual(401);
   });
@@ -26,43 +26,47 @@ describe("Unauthorized", () => {
 
 describe("Regular Logged User", () => {
   let regularCookie: string;
-  let regularUserPictureId: string;
+  let regularUserId: string;
 
   beforeEach(async () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
-
-    const picture = await PictureSeeder.seedOne({
-      userId: res.user.id,
-    });
-    regularUserPictureId = picture.id;
+    regularUserId = res.user.id;
   });
 
-  it("returns 403, when passed id does not correspond to picture of logged user", async () => {
+  it("returns 404, when picture does not exist", async () => {
+    const response = await request(app)
+      .get("/api/pictures/image/doesnotexist")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(404);
+  });
+
+  it("returns 403, when user tries to access other's picture which is not in an active match", async () => {
     const user = await UserSeeder.createOne();
-    const picture = await PictureSeeder.seedOne({
-      userId: user.id,
-    });
+    const picture = await PictureSeeder.seedOne({ userId: user.id });
 
     const response = await request(app)
-      .get(`/api/pictures/${picture.id}`)
+      .get(`/api/pictures/image/${picture.filepath}`)
       .set("Cookie", regularCookie)
       .send();
 
     expect(response.status).toEqual(403);
   });
 
-  it("returns picture, when passed id corresponds to picture of logged user", async () => {
+  it("returns 200 and image, when user tries to its own picture", async () => {
+    const picture = await PictureSeeder.seedOne({ userId: regularUserId });
+
     const response = await request(app)
-      .get(`/api/pictures/${regularUserPictureId}`)
+      .get(`/api/pictures/image/${picture.filepath}`)
       .set("Cookie", regularCookie)
       .send();
 
     expect(response.status).toEqual(200);
-    expect(response.body.picture.id).toEqual(regularUserPictureId);
   });
 
-  it("returns picture, when passed id corresponds to other's picture, but it belongs to the active match", async () => {
+  it("returns 200 and image, when user tries other's picture, given that it is in an active match", async () => {
     const user = await UserSeeder.createOne();
     const picture = await PictureSeeder.seedOne({ userId: user.id });
     const match = await MatchSeeder.seedOne({
@@ -80,7 +84,7 @@ describe("Regular Logged User", () => {
     });
 
     const response = await request(app)
-      .get(`/api/pictures/${picture.id}`)
+      .get(`/api/pictures/image/${picture.filepath}`)
       .set("Cookie", regularCookie)
       .send();
 
@@ -90,33 +94,34 @@ describe("Regular Logged User", () => {
 
 describe("Admin Logged User", () => {
   let adminCookie: string;
+  let adminUserId: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const res = await loginAdmin();
     adminCookie = res.cookie;
+    adminUserId = res.user.id;
   });
 
-  it("returns 404, when picture id does not exist", async () => {
-    const response = await request(app)
-      .get("/api/pictures/doesnotexist")
-      .set("Cookie", adminCookie)
-      .send();
-
-    expect(response.status).toEqual(404);
-  });
-
-  it("returns picture", async () => {
-    const user = await UserSeeder.createOne();
-    const picture = await PictureSeeder.seedOne({
-      userId: user.id,
-    });
+  it("returns 200 and image, when user tries to its own picture", async () => {
+    const picture = await PictureSeeder.seedOne({ userId: adminUserId });
 
     const response = await request(app)
-      .get(`/api/pictures/${picture.id}`)
+      .get(`/api/pictures/image/${picture.filepath}`)
       .set("Cookie", adminCookie)
       .send();
 
     expect(response.status).toEqual(200);
-    expect(response.body.picture.id).toEqual(picture.id);
+  });
+
+  it("returns 200 and image, when user tries other's picture, not in an active match", async () => {
+    const user = await UserSeeder.createOne();
+    const picture = await PictureSeeder.seedOne({ userId: user.id });
+
+    const response = await request(app)
+      .get(`/api/pictures/image/${picture.filepath}`)
+      .set("Cookie", adminCookie)
+      .send();
+
+    expect(response.status).toEqual(200);
   });
 });

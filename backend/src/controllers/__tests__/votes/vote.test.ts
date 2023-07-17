@@ -9,6 +9,16 @@ import { UserModel } from "@/models/user";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { VoteModel } from "@/models/vote";
 import { MatchModel } from "@/models/match";
+import { rimrafSync } from "rimraf";
+import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+
+beforeEach(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
+
+afterAll(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
@@ -33,13 +43,10 @@ describe("Regular Logged User", () => {
       userId: regularUser.id,
     });
 
-    const response = await request(app)
-      .post("/api/votes")
-      .set("Cookie", regularCookie)
-      .send({
-        matchId: "doesNotExist",
-        winnerPictureId: picture.id,
-      });
+    const response = await request(app).post("/api/votes").set("Cookie", regularCookie).send({
+      matchId: "doesNotExist",
+      winnerPictureId: picture.id,
+    });
 
     expect(response.status).toEqual(404);
   });
@@ -57,13 +64,10 @@ describe("Regular Logged User", () => {
       winnerPictureId: picture.id,
     });
 
-    const response = await request(app)
-      .post("/api/votes")
-      .set("Cookie", regularCookie)
-      .send({
-        matchId,
-        winnerPictureId: picture.id,
-      });
+    const response = await request(app).post("/api/votes").set("Cookie", regularCookie).send({
+      matchId,
+      winnerPictureId: picture.id,
+    });
 
     expect(response.status).toEqual(403);
   });
@@ -93,13 +97,10 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .post("/api/votes")
-      .set("Cookie", regularCookie)
-      .send({
-        matchId,
-        winnerPictureId: picture.id,
-      });
+    const response = await request(app).post("/api/votes").set("Cookie", regularCookie).send({
+      matchId,
+      winnerPictureId: picture.id,
+    });
 
     expect(response.status).toEqual(403);
   });
@@ -117,13 +118,10 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .post("/api/votes")
-      .set("Cookie", regularCookie)
-      .send({
-        matchId: matchId,
-        winnerPictureId: "doesNotExist",
-      });
+    const response = await request(app).post("/api/votes").set("Cookie", regularCookie).send({
+      matchId: matchId,
+      winnerPictureId: "doesNotExist",
+    });
 
     expect(response.status).toEqual(404);
   });
@@ -164,13 +162,10 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .post("/api/votes")
-      .set("Cookie", regularCookie)
-      .send({
-        matchId: matches[0].id,
-        winnerPictureId: pictures[1].id,
-      });
+    const response = await request(app).post("/api/votes").set("Cookie", regularCookie).send({
+      matchId: matches[0].id,
+      winnerPictureId: pictures[1].id,
+    });
 
     expect(response.status).toEqual(404);
   });
@@ -211,13 +206,10 @@ describe("Regular Logged User", () => {
     });
 
     it("creates a new vote, and assigns the winning picture", async () => {
-      const response = await request(app)
-        .post("/api/votes")
-        .set("Cookie", regularCookie)
-        .send({
-          matchId,
-          winnerPictureId,
-        });
+      const response = await request(app).post("/api/votes").set("Cookie", regularCookie).send({
+        matchId,
+        winnerPictureId,
+      });
 
       expect(response.status).toEqual(201);
       expect(response.body.vote.winnerPictureId).toEqual(winnerPictureId);
@@ -264,12 +256,8 @@ describe("Regular Logged User", () => {
         },
       });
 
-      const winnerPicture = match?.pictures.find(
-        (picture) => picture.id === winnerPictureId
-      );
-      const loserPicture = match?.pictures.find(
-        (picture) => picture.id !== winnerPictureId
-      );
+      const winnerPicture = match?.pictures.find((picture) => picture.id === winnerPictureId);
+      const loserPicture = match?.pictures.find((picture) => picture.id !== winnerPictureId);
 
       expect(winnerPicture?.elo).toBeGreaterThan(INITIAL_ELO);
       expect(loserPicture?.elo).toBeLessThan(INITIAL_ELO);
@@ -315,13 +303,10 @@ describe("Admin Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .post("/api/votes")
-      .set("Cookie", adminCookie)
-      .send({
-        matchId,
-        winnerPictureId,
-      });
+    const response = await request(app).post("/api/votes").set("Cookie", adminCookie).send({
+      matchId,
+      winnerPictureId,
+    });
 
     expect(response.status).toEqual(201);
   });

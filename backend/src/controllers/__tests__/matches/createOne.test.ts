@@ -7,11 +7,21 @@ import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { MatchModel } from "@/models/match";
 import { MatchSeeder } from "@/tests/seed/MatchSeeder";
+import { rimrafSync } from "rimraf";
+import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 
 let otherUser: User;
 
 beforeAll(async () => {
   otherUser = await UserSeeder.createOne();
+});
+
+beforeEach(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
+});
+
+afterAll(() => {
+  rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
 });
 
 describe("Unauthorized", () => {
@@ -43,10 +53,7 @@ describe("Regular Logged User", () => {
       userId: otherUser.id,
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(400);
   });
@@ -59,10 +66,7 @@ describe("Regular Logged User", () => {
       numRepeat: 2,
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(201);
     expect(response.body.match).toBeTruthy();
@@ -107,10 +111,7 @@ describe("Regular Logged User", () => {
       ],
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(201);
 
@@ -146,10 +147,7 @@ describe("Admin Logged User", () => {
       numRepeat: 2,
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", adminCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", adminCookie).send();
 
     expect(response.status).toEqual(201);
   });
