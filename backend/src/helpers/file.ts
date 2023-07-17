@@ -1,5 +1,11 @@
-// Assuming path has the \\ divider, and foldersToRemove the / divider
 export const removeFolders = (path: string, foldersToRemove: string) => {
-  const foldersToRemovePattern = `^${foldersToRemove.replace(/\//g, "\\\\")}\\\\`;
-  return path.replace(new RegExp(foldersToRemovePattern), "");
+  const hasBackSlash = Boolean(path.match(/\\/));
+
+  if (hasBackSlash) {
+    const foldersToRemovePattern = `^${foldersToRemove.replace(/\//g, "\\\\")}\\\\`;
+    return path.replace(new RegExp(foldersToRemovePattern), "");
+  }
+
+  const foldersToRemovePattern = `^${foldersToRemove}\\\\`;
+  return path.replace(/\//g, "\\").replace(new RegExp(foldersToRemovePattern), "");
 };
