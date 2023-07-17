@@ -87,6 +87,8 @@ describe("Regular Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(regularUser.id);
 
+    console.log(path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)));
+
     expect(
       fs.existsSync(path.resolve(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
     ).toBeTruthy();
