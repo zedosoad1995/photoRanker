@@ -4,6 +4,7 @@ interface IButton {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   size?: "medium" | "large";
   isFull?: boolean;
+  style?: "primary" | "secondary";
 }
 
 export default function Button({
@@ -12,13 +13,18 @@ export default function Button({
   onClick,
   size = "medium",
   isFull = true,
+  style = "primary",
 }: IButton) {
   return (
     <button
       type={type}
-      className={`flex justify-center rounded-md bg-primary font-semibold leading-6 text-white shadow-sm hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+      className={`flex justify-center rounded-md font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         size === "medium" ? "px-3 py-1.5 text-sm" : "px-5 py-2.5 text-base"
-      } ${isFull ? "w-fill" : ""}`}
+      } ${isFull ? "w-full" : ""} ${
+        style === "primary"
+          ? "bg-primary text-white hover:bg-primary-hover focus-visible:outline-primary shadow-sm"
+          : "hover:bg-light-contour"
+      }`}
       onClick={onClick}
     >
       {children}

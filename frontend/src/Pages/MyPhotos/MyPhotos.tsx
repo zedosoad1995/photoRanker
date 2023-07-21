@@ -1,9 +1,8 @@
 import Button from "@/Components/Button";
 import { getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useRef, useState } from "react";
-import { IPicture } from "../../../backend/src/types/picture";
-import { Dialog } from "@headlessui/react";
-import Cropper from "react-easy-crop";
+import { IPicture } from "../../../../backend/src/types/picture";
+import UploadPhotoModal from "./UploadPhotoModal";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -11,8 +10,6 @@ export default function MyPhotos() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [pics, setPics] = useState<string[]>([]);
   const [picsInfo, setPicsInfo] = useState<IPicture[]>([]);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -60,41 +57,13 @@ export default function MyPhotos() {
 
   return (
     <>
-      <Dialog
-        as="div"
-        className="fixed inset-0 z-10 flex items-center justify-center"
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-      >
-        <Dialog.Panel className="bg-blue-200 p-5 w-[500px] rounded-xl">
-          <div className="font-bold text-center text-lg">Adjust Photo</div>
-          <div className="relative w-[350px] h-[350px] mx-auto my-8">
-            {selectedImage && (
-              <Cropper
-                image={selectedImage}
-                crop={crop}
-                zoom={zoom}
-                onCropChange={setCrop}
-                onCropComplete={console.log}
-                onZoomChange={setZoom}
-                aspect={1}
-              />
-            )}
-          </div>
-          <input
-            id="default-range"
-            type="range"
-            min="1"
-            max="3"
-            step="0.001"
-            value={zoom}
-            onChange={(event) => {
-              setZoom(Number(event.currentTarget.value));
-            }}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-          />
-        </Dialog.Panel>
-      </Dialog>
+      <UploadPhotoModal
+        image={selectedImage}
+        isOpen={isOpen}
+        handleClose={() => {
+          setIsOpen(false);
+        }}
+      />
       <div className="flow-root pb-4 md:pb-12 w-full md:w-[650px] lg:w-[900px] xl:w-[1150px] mx-auto">
         <input
           type="file"

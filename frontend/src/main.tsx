@@ -2,14 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
-import { HOME, LOGIN, PHOTOS, REGISTER, SETTINGS, VOTE } from "./Constants/routes.ts";
+import { HOME, LOGIN, PHOTOS, REGISTER, SETTINGS, VOTE } from "./constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
 import { AuthProvider } from "@/Contexts/auth.tsx";
 import ProtectedLayout from "./Components/Layout/Layout.tsx";
 import Settings from "./Pages/Settings.tsx";
 import Vote from "./Pages/Vote.tsx";
-import MyPhotos from "./Pages/MyPhotos.tsx";
+import MyPhotos from "./Pages/MyPhotos/MyPhotos.tsx";
 
 const router = createBrowserRouter([
   {

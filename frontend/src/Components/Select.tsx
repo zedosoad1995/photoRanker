@@ -46,7 +46,7 @@ export default function Select({
             </Combobox.Button>
           </div>
           <Combobox.Options
-            className={`absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm z-10 ${
+            className={`absolute mt-1 max-h-44 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm z-10 ${
               filteredOptions.length === 0 ? "hidden" : ""
             }`}
           >

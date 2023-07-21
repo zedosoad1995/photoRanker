@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateUserPersonalInfoSchema,
   ICreateUserPersonalInfo,
-} from "@/Schemas/User/createUserPersonalInfo";
+} from "@/Schemas/User/CreateUserPersonalInfo";
 import { forwardRef, useImperativeHandle } from "react";
 
 interface IData {
