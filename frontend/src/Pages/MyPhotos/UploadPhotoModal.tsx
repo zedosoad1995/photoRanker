@@ -3,7 +3,7 @@ import { Dialog } from "@headlessui/react";
 import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
-import { AGE_OPTIONS, SEXES } from "@/constants/user";
+import { AGE_OPTIONS } from "@/constants/user";
 import { getUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
 import { getCroppedImage } from "@/Utils/dataManipulation";
@@ -33,7 +33,6 @@ export default function UploadPhotoModal({
 
     return calculateAge(user.dateOfBirth).toString();
   });
-  const [sex, setSex] = useState<SEXES>(SEXES.FEMALE);
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
@@ -86,9 +85,8 @@ export default function UploadPhotoModal({
               className="bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 w-full h-1"
             />
           </div>
-          <div className="flex gap-4 mb-6">
+          <div className="mb-6">
             <Select label="Age" options={AGE_OPTIONS} value={age} onChange={setAge} />
-            <Select label="Sex" options={Object.values(SEXES)} value={sex} onChange={setSex} />
           </div>
           <div className="mb-2">
             <Button onClick={handleUpload}>Create</Button>
