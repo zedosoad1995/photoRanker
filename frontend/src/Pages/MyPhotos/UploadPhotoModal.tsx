@@ -6,7 +6,7 @@ import Select from "@/Components/Select";
 import { AGE_OPTIONS, SEXES } from "@/constants/user";
 import { getUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
-import { dataURLtoBlob } from "@/Utils/dataManipulation";
+import { base64toBlob } from "@/Utils/dataManipulation";
 import { uploadImage } from "@/Services/picture";
 
 interface IUploadPhotoModal {
@@ -34,7 +34,7 @@ export default function UploadPhotoModal({
 
   const handleUpload = async () => {
     if (image && filename) {
-      const imageBlob = dataURLtoBlob(image);
+      const imageBlob = base64toBlob(image);
       await uploadImage(imageBlob, filename);
       handleClose();
     }
@@ -58,7 +58,6 @@ export default function UploadPhotoModal({
                 crop={crop}
                 zoom={zoom}
                 onCropChange={setCrop}
-                onCropComplete={console.log}
                 onZoomChange={setZoom}
                 aspect={1}
               />

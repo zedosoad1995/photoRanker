@@ -2,7 +2,9 @@ import Button from "@/Components/Button";
 import { getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useRef, useState } from "react";
 import { IPicture } from "../../../../backend/src/types/picture";
+import { MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
+import { getImageDimensionsFromBase64 } from "@/Utils/dataManipulation";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -47,7 +49,13 @@ export default function MyPhotos() {
     const selectedFile = event.target.files ? event.target.files[0] : null;
     if (selectedFile) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
+        const { height, width } = await getImageDimensionsFromBase64(reader.result as string);
+
+        if (height < MIN_HEIGHT || width < MIN_WIDTH) {
+          return;
+        }
+
         setSelectedImage(reader.result as string);
         setFilename(selectedFile.name);
         setIsOpen(true);
