@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import Cropper from "react-easy-crop";
+import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
 import { AGE_OPTIONS, SEXES } from "@/constants/user";
 import { getUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
-import { base64toBlob } from "@/Utils/dataManipulation";
+import { getCroppedImage } from "@/Utils/dataManipulation";
 import { uploadImage } from "@/Services/picture";
 
 interface IUploadPhotoModal {
@@ -24,6 +24,7 @@ export default function UploadPhotoModal({
 }: IUploadPhotoModal) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [age, setAge] = useState(() => {
     const user = getUser();
     if (!user?.dateOfBirth) return "18";
@@ -33,11 +34,15 @@ export default function UploadPhotoModal({
   const [sex, setSex] = useState<SEXES>(SEXES.FEMALE);
 
   const handleUpload = async () => {
-    if (image && filename) {
-      const imageBlob = base64toBlob(image);
-      await uploadImage(imageBlob, filename);
+    if (image && filename && croppedAreaPixels) {
+      const croppedImage = await getCroppedImage(image, croppedAreaPixels);
+      await uploadImage(croppedImage, filename);
       handleClose();
     }
+  };
+
+  const handleCompleteCrop = (croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
   };
 
   return (
@@ -59,6 +64,7 @@ export default function UploadPhotoModal({
                 zoom={zoom}
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
+                onCropComplete={handleCompleteCrop}
                 aspect={1}
               />
             )}
