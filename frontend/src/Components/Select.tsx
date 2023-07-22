@@ -10,7 +10,7 @@ interface ISelect {
   options: string[];
   label?: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: any) => void;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 

@@ -10,9 +10,7 @@ export const updateUserSchema = z
     countryOfOrigin: z.enum(COUNTRIES),
     // @ts-ignore
     ethnicity: z.enum(ETHNICITY),
-    dateOfBirth: z
-      .string()
-      .refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
+    dateOfBirth: z.string().refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
   })
   .strict()
   .partial();

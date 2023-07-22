@@ -3,17 +3,42 @@ import { Dialog } from "@headlessui/react";
 import Cropper from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
-import { AGE_OPTIONS } from "@/constants/user";
+import { AGE_OPTIONS, SEXES } from "@/constants/user";
+import { getUser } from "@/Utils/user";
+import { calculateAge } from "@/Utils/date";
+import { dataURLtoBlob } from "@/Utils/dataManipulation";
+import { uploadImage } from "@/Services/picture";
 
 interface IUploadPhotoModal {
   image: string | null;
+  filename: string | null;
   isOpen: boolean;
-  handleClose: () => void;
+  onClose: () => void;
 }
 
-export default function UploadPhotoModal({ image, isOpen, handleClose }: IUploadPhotoModal) {
+export default function UploadPhotoModal({
+  image,
+  filename,
+  isOpen,
+  onClose: handleClose,
+}: IUploadPhotoModal) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [age, setAge] = useState(() => {
+    const user = getUser();
+    if (!user?.dateOfBirth) return "18";
+
+    return calculateAge(user.dateOfBirth).toString();
+  });
+  const [sex, setSex] = useState<SEXES>(SEXES.FEMALE);
+
+  const handleUpload = async () => {
+    if (image && filename) {
+      const imageBlob = dataURLtoBlob(image);
+      await uploadImage(imageBlob, filename);
+      handleClose();
+    }
+  };
 
   return (
     <Dialog
@@ -23,7 +48,7 @@ export default function UploadPhotoModal({ image, isOpen, handleClose }: IUpload
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white p-6 !pb-12 w-[500px] rounded-xl z-10">
+      <Dialog.Panel className="bg-white p-6 !pb-10 w-[500px] rounded-xl z-10">
         <div className="font-bold text-center text-lg">Adjust Photo</div>
         <div className="w-[350px] mx-auto">
           <div className="relative w-[350px] h-[350px] mx-auto mt-8">
@@ -54,27 +79,15 @@ export default function UploadPhotoModal({ image, isOpen, handleClose }: IUpload
             />
           </div>
           <div className="flex gap-4 mb-6">
-            <Select
-              label="Age"
-              options={AGE_OPTIONS}
-              value="1"
-              onChange={(value: string) => {
-                console.log(value);
-              }}
-            />
-            <Select
-              label="Sex"
-              options={["Male", "Female"]}
-              value="Female"
-              onChange={(value: string) => {
-                console.log(value);
-              }}
-            />
+            <Select label="Age" options={AGE_OPTIONS} value={age} onChange={setAge} />
+            <Select label="Sex" options={Object.values(SEXES)} value={sex} onChange={setSex} />
           </div>
           <div className="mb-2">
-            <Button>Create</Button>
+            <Button onClick={handleUpload}>Create</Button>
           </div>
-          <Button style="secondary">Cancel</Button>
+          <Button onClick={handleClose} style="secondary">
+            Cancel
+          </Button>
         </div>
       </Dialog.Panel>
     </Dialog>

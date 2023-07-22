@@ -8,6 +8,7 @@ export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [filename, setFilename] = useState<string | null>(null);
   const [pics, setPics] = useState<string[]>([]);
   const [picsInfo, setPicsInfo] = useState<IPicture[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -47,8 +48,8 @@ export default function MyPhotos() {
     if (selectedFile) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log(reader.result);
         setSelectedImage(reader.result as string);
+        setFilename(selectedFile.name);
         setIsOpen(true);
       };
       reader.readAsDataURL(selectedFile);
@@ -59,8 +60,9 @@ export default function MyPhotos() {
     <>
       <UploadPhotoModal
         image={selectedImage}
+        filename={filename}
         isOpen={isOpen}
-        handleClose={() => {
+        onClose={() => {
           setIsOpen(false);
         }}
       />

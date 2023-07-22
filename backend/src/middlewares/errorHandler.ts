@@ -3,12 +3,7 @@ import { CustomError } from "@/errors/CustomError";
 import multer from "multer";
 import { PICTURE } from "@/constants/messages";
 
-export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof CustomError) {
     return res.status(err.statusCode).send(err.serializeErrors());
   }
