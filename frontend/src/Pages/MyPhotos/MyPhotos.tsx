@@ -15,8 +15,8 @@ export default function MyPhotos() {
   const [picsInfo, setPicsInfo] = useState<IPicture[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    getManyPictures().then(async (res) => {
+  const getPictures = () => {
+    return getManyPictures().then(async (res) => {
       const pics: string[] = [];
       const picsInfo: IPicture[] = [];
       for (const pic of res.pictures) {
@@ -29,6 +29,10 @@ export default function MyPhotos() {
       setPics(pics);
       setPicsInfo(picsInfo);
     });
+  };
+
+  useEffect(() => {
+    getPictures();
   }, []);
 
   useEffect(() => {
@@ -70,6 +74,7 @@ export default function MyPhotos() {
         image={selectedImage}
         filename={filename}
         isOpen={isOpen}
+        onUpload={getPictures}
         onClose={() => {
           setIsOpen(false);
         }}

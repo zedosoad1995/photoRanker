@@ -14,6 +14,7 @@ interface IUploadPhotoModal {
   filename: string | null;
   isOpen: boolean;
   onClose: () => void;
+  onUpload: () => void;
 }
 
 export default function UploadPhotoModal({
@@ -21,6 +22,7 @@ export default function UploadPhotoModal({
   filename,
   isOpen,
   onClose: handleClose,
+  onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -37,6 +39,7 @@ export default function UploadPhotoModal({
     if (image && filename && croppedAreaPixels) {
       const croppedImage = await getCroppedImage(image, croppedAreaPixels);
       await uploadImage(croppedImage, filename);
+      handleUploadParent();
       handleClose();
     }
   };
