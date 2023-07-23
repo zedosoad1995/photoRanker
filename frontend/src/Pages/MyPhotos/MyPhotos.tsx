@@ -98,7 +98,7 @@ export default function MyPhotos() {
           {pics.map((pic, index) => (
             <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
               <div className="cursor-pointer shadow-md rounded-md overflow-hidden">
-                <img className="mx-auto" src={pic} alt={`picture-${index}`} />
+                <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
                 <div className="p-3 font-semibold text-sm">
                   <div>elo: {picsInfo[index].elo}</div>
                   <div>votes: {picsInfo[index].numVotes}</div>
