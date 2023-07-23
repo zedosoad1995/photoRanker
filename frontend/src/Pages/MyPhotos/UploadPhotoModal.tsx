@@ -6,10 +6,9 @@ import Select from "@/Components/Select";
 import { AGE_OPTIONS } from "@/constants/user";
 import { getUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
-import { getCroppedImage } from "@/Utils/dataManipulation";
+import { getCroppedImage, resizeImage } from "@/Utils/dataManipulation";
 import { uploadImage } from "@/Services/picture";
-import Resizer from "react-image-file-resizer";
-import { IMG_HEIGHT, IMG_WIDTH } from "../../../../backend/src/constants/picture";
+import { IMAGE_SIZE_LIMIT } from "@/constants/picture";
 
 interface IUploadPhotoModal {
   image: string | null;
@@ -40,21 +39,8 @@ export default function UploadPhotoModal({
     if (image && filename && croppedAreaPixels) {
       let croppedImage = await getCroppedImage(image, croppedAreaPixels);
 
-      if (croppedImage.size > 2 * 1024 * 1024) {
-        croppedImage = await new Promise((resolve) => {
-          Resizer.imageFileResizer(
-            croppedImage,
-            IMG_WIDTH,
-            IMG_HEIGHT,
-            "JPEG",
-            100,
-            0,
-            (uri) => {
-              resolve(uri as Blob);
-            },
-            "blob"
-          );
-        });
+      if (croppedImage.size > IMAGE_SIZE_LIMIT) {
+        croppedImage = await resizeImage(croppedImage);
       }
 
       await uploadImage(croppedImage, filename);

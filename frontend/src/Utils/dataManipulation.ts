@@ -1,4 +1,6 @@
 import { Area } from "react-easy-crop";
+import Resizer from "react-image-file-resizer";
+import { IMG_HEIGHT, IMG_WIDTH } from "../../../backend/src/constants/picture";
 
 export const base64toBlob = (dataURL: string) => {
   const arr = dataURL.split(",");
@@ -92,3 +94,19 @@ export const getCroppedImage = async (dataURL: string, crop: Area): Promise<Blob
     }, mime);
   });
 };
+
+export const resizeImage = (image: Blob): Promise<Blob> =>
+  new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      image,
+      IMG_WIDTH,
+      IMG_HEIGHT,
+      "JPEG",
+      100,
+      0,
+      (uri) => {
+        resolve(uri as Blob);
+      },
+      "blob"
+    );
+  });
