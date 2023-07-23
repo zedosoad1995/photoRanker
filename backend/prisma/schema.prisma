@@ -17,7 +17,7 @@ model User {
   countryOfOrigin String
   dateOfBirth     String
   role            UserRole  @default(REGULAR)
-  gender          Gender    @default(MALE)
+  gender          Gender    @default(Male)
   activeMatch     Match?    @relation(name: "activeMatch", fields: [activeMatchId], references: [id])
   activeMatchId   String?   @unique
   pictures        Picture[]
@@ -32,8 +32,8 @@ enum UserRole {
 }
 
 enum Gender {
-  MALE
-  FEMALE
+  Male
+  Female
 }
 
 model Picture {

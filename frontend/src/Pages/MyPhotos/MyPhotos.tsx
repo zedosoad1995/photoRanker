@@ -90,7 +90,7 @@ export default function MyPhotos() {
           onChange={handleFileChange}
           className="hidden"
         />
-        <Button onClick={handleFileSelect}>
+        <Button onClick={handleFileSelect} isFull={false}>
           <span className="mr-3 text-xl !leading-5">+</span>
           <span>Add Photo</span>
         </Button>

@@ -1,4 +1,4 @@
-import { COUNTRIES, ETHNICITY } from "../../../../../backend/src/constants/user";
+import { COUNTRIES, ETHNICITY, GENDER } from "../../../../../backend/src/constants/user";
 import Select from "@/Components/Select";
 import DateField from "@/Components/DateField";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import { forwardRef, useImperativeHandle } from "react";
 interface IData {
   ethnicity: string;
   countryOfOrigin: string;
+  gender: string;
   dateOfBirth: string;
   onKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
 }
@@ -22,7 +23,14 @@ type IProps = {
 
 const PersonalInfoForm = forwardRef(
   (
-    { updateData, countryOfOrigin, ethnicity, dateOfBirth, onKeyDown: handleKeyDown }: IProps,
+    {
+      updateData,
+      countryOfOrigin,
+      ethnicity,
+      dateOfBirth,
+      gender,
+      onKeyDown: handleKeyDown,
+    }: IProps,
     ref
   ) => {
     const {
@@ -66,6 +74,13 @@ const PersonalInfoForm = forwardRef(
           options={ETHNICITY}
           value={ethnicity}
           onChange={handleChange("ethnicity")}
+          onKeyDown={handleKeyDown}
+        />
+        <Select
+          label="Gender"
+          options={Object.values(GENDER)}
+          value={gender}
+          onChange={handleChange("gender")}
           onKeyDown={handleKeyDown}
         />
         <DateField
