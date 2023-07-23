@@ -1,7 +1,5 @@
 export const ETHNICITY = ["White", "Black", "Asian", "Latino", "Other"];
 
-export const GENDER = ["Male", "Female"];
-
 export const COUNTRIES = [
   "Afghanistan",
   "Albania",
