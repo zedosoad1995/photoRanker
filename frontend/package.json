@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-easy-crop": "^5.0.0",
     "react-hook-form": "^7.45.1",
+    "react-image-file-resizer": "^0.4.8",
     "react-router-dom": "^6.14.1",
     "react-tailwindcss-datepicker": "^1.6.3",
     "zod": "^3.21.4"

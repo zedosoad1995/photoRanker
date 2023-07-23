@@ -78,6 +78,10 @@ export const getCroppedImage = async (dataURL: string, crop: Area): Promise<Blob
     crop.height
   );
 
+  const arr = dataURL.split(",");
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  const mime = (mimeMatch && mimeMatch[1]) || "image/jpeg";
+
   return new Promise((resolve, reject) => {
     croppedCanvas.toBlob((file) => {
       if (file) {
@@ -85,6 +89,6 @@ export const getCroppedImage = async (dataURL: string, crop: Area): Promise<Blob
       } else {
         reject();
       }
-    }, "image/*");
+    }, mime);
   });
 };

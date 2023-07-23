@@ -55,13 +55,15 @@ export default function MyPhotos() {
     if (selectedFile) {
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const { height, width } = await getImageDimensionsFromBase64(reader.result as string);
+        let base64Image = reader.result as string;
+
+        const { height, width } = await getImageDimensionsFromBase64(base64Image);
 
         if (height < MIN_HEIGHT || width < MIN_WIDTH) {
           return;
         }
 
-        setSelectedImage(reader.result as string);
+        setSelectedImage(base64Image);
         setFilename(selectedFile.name);
         setIsOpen(true);
       };

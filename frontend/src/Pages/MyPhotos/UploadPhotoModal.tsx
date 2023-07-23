@@ -8,6 +8,8 @@ import { getUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
 import { getCroppedImage } from "@/Utils/dataManipulation";
 import { uploadImage } from "@/Services/picture";
+import Resizer from "react-image-file-resizer";
+import { IMG_HEIGHT, IMG_WIDTH } from "../../../../backend/src/constants/picture";
 
 interface IUploadPhotoModal {
   image: string | null;
@@ -36,7 +38,25 @@ export default function UploadPhotoModal({
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
-      const croppedImage = await getCroppedImage(image, croppedAreaPixels);
+      let croppedImage = await getCroppedImage(image, croppedAreaPixels);
+
+      if (croppedImage.size > 2 * 1024 * 1024) {
+        croppedImage = await new Promise((resolve) => {
+          Resizer.imageFileResizer(
+            croppedImage,
+            IMG_WIDTH,
+            IMG_HEIGHT,
+            "JPEG",
+            100,
+            0,
+            (uri) => {
+              resolve(uri as Blob);
+            },
+            "blob"
+          );
+        });
+      }
+
       await uploadImage(croppedImage, filename);
       handleUploadParent();
       handleClose();

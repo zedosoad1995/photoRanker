@@ -1,5 +1,11 @@
 import { PICTURE } from "@/constants/messages";
-import { IMAGES_FOLDER_PATH, MIN_HEIGHT, MIN_WIDTH } from "@/constants/picture";
+import {
+  IMAGES_FOLDER_PATH,
+  IMG_HEIGHT,
+  IMG_WIDTH,
+  MIN_HEIGHT,
+  MIN_WIDTH,
+} from "@/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs";
@@ -46,7 +52,7 @@ export const validateImage = async (req: Request, res: Response, next: NextFunct
   const uniqueSuffix = crypto.randomBytes(18).toString("hex");
   const fullPath = path.join(dayFolder, uniqueSuffix + extension);
 
-  fs.writeFileSync(fullPath, req.file.buffer);
+  await sharp(req.file.buffer).resize(IMG_WIDTH, IMG_HEIGHT).toFile(fullPath);
   req.file.path = fullPath;
 
   return next();
