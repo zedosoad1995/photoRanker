@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IPicture } from "../../../../backend/src/types/picture";
 import { MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
-import { getImageDimensionsFromBase64 } from "@/Utils/dataManipulation";
+import { getImageDimensionsFromBase64 } from "@/Utils/image";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
