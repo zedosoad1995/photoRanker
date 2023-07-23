@@ -169,6 +169,27 @@ describe("Test Validation", () => {
     });
   });
 
+  describe("'gender' field", () => {
+    it("is required", async () => {
+      const body = _.omit(createUserBody, "gender");
+
+      const response = await request(app).post("/api/users").send(body);
+
+      expect(response.status).toEqual(422);
+    });
+
+    it("is an invalid gender name", async () => {
+      const body = {
+        ...createUserBody,
+        ethnicity: "non-binary",
+      };
+
+      const response = await request(app).post("/api/users").send(body);
+
+      expect(response.status).toEqual(422);
+    });
+  });
+
   describe("'dateOfBirth' field", () => {
     it("is required", async () => {
       const body = _.omit(createUserBody, "dateOfBirth");

@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { formatDate } from "@/helpers/date";
 import { ETHNICITY, COUNTRIES } from "@/constants/user";
-import { Prisma, UserRole } from "@prisma/client";
+import { Gender, Prisma, UserRole } from "@prisma/client";
 import { UserModel } from "@/models/user";
 import { hashPassword } from "@/helpers/password";
 import { app } from "@/app";
@@ -19,6 +19,7 @@ export const randomizeUser = (data: Partial<Prisma.UserCreateInput> = {}) => ({
   ),
   ethnicity: faker.helpers.arrayElement(ETHNICITY),
   countryOfOrigin: faker.helpers.arrayElement(COUNTRIES),
+  gender: faker.helpers.arrayElement(Object.values(Gender)),
   password: faker.internet.password(),
   ...data,
 });
