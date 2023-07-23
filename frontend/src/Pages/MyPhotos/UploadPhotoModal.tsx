@@ -40,6 +40,8 @@ export default function UploadPhotoModal({
       await uploadImage(croppedImage, filename);
       handleUploadParent();
       handleClose();
+      setZoom(1);
+      setCrop({ x: 0, y: 0 });
     }
   };
 
@@ -68,6 +70,7 @@ export default function UploadPhotoModal({
                 onZoomChange={setZoom}
                 onCropComplete={handleCompleteCrop}
                 aspect={1}
+                objectFit="horizontal-cover"
               />
             )}
           </div>

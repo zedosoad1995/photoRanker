@@ -46,6 +46,7 @@ export default function MyPhotos() {
   const handleFileSelect = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+      fileInputRef.current.value = "";
     }
   };
 
