@@ -6,7 +6,7 @@ import Select from "@/Components/Select";
 import { AGE_OPTIONS } from "@/constants/user";
 import { getUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
-import { getCroppedImage, resizeImage } from "@/Utils/dataManipulation";
+import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/constants/picture";
 
