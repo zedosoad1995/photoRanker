@@ -4,7 +4,7 @@ import PersonalInfoForm from "./Forms/PersonalInfoForm";
 import Button from "@/Components/Button";
 import { useRef, useState } from "react";
 import { register } from "@/Services/auth";
-import { LOGIN } from "@/Constants/routes";
+import { LOGIN } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 
 interface IFormRef {

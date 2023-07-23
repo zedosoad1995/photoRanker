@@ -74,6 +74,25 @@ describe("Regular Logged User", () => {
     expect(response.body.message).toEqual(PICTURE.NO_FILE);
   });
 
+  it("throws an error, when image dimensions are too small", async () => {
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", regularCookie)
+      .attach("image", "src/tests/fixtures/files/small-image-dim.jpg");
+
+    expect(response.status).toEqual(400);
+    expect(response.body.message).toEqual(PICTURE.IMAGE_DIM_TOO_SMALL);
+  });
+
+  it("throws an error, when jpg image is corrupt", async () => {
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", regularCookie)
+      .attach("image", "src/tests/fixtures/files/corrupt-image.jpg");
+
+    expect(response.status).toEqual(400);
+  });
+
   it("Creates Picture assigned to logged user, adds image file to folder", async () => {
     await PictureSeeder.deleteAll();
 

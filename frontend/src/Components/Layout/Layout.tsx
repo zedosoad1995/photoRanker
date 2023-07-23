@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
-import { LOGIN } from "@/Constants/routes";
+import { LOGIN } from "@/constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Layout() {

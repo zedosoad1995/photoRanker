@@ -1,4 +1,4 @@
-import { IMAGE_SIZE_LIMIT, IMAGE_UPLOAD_KEY } from "./picture";
+import { IMAGE_SIZE_LIMIT, IMAGE_UPLOAD_KEY, MIN_HEIGHT, MIN_WIDTH } from "./picture";
 import bytes from "bytes";
 
 export const PICTURE = {
@@ -6,4 +6,5 @@ export const PICTURE = {
   INVALID_FORM_KEY: `Invalid form-data key. Picture must be sent using the key: "${IMAGE_UPLOAD_KEY}"`,
   FILE_TOO_LARGE: `File size exceeds the limit (${bytes(IMAGE_SIZE_LIMIT)})`,
   NO_FILE: "No file uploaded",
+  IMAGE_DIM_TOO_SMALL: `Image height must be at least ${MIN_HEIGHT} and width at least ${MIN_WIDTH}`,
 };

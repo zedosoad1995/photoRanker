@@ -3,7 +3,7 @@ import Label from "@/Components/Label";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
 import Button from "@/Components/Button";
-import { HOME, REGISTER } from "@/Constants/routes";
+import { HOME, REGISTER } from "@/constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
 
