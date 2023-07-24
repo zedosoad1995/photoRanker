@@ -6,6 +6,7 @@ import { MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import DeletePhotoModal from "./DeletePhotoModal";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -15,6 +16,8 @@ export default function MyPhotos() {
   const [pics, setPics] = useState<string[]>([]);
   const [picsInfo, setPicsInfo] = useState<IPicture[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
 
   const getPictures = () => {
     return getManyPictures().then(async (res) => {
@@ -72,18 +75,40 @@ export default function MyPhotos() {
     }
   };
 
-  const handleDeletePic = (index: number) => async (event: React.MouseEvent<SVGSVGElement>) => {
-    event.stopPropagation();
+  const handleClickDeletePic =
+    (index: number) => async (event: React.MouseEvent<SVGSVGElement>) => {
+      event.stopPropagation();
 
-    setPicsInfo((pics) => [...pics.slice(0, index), ...pics.slice(index + 1)]);
-    setPics((pics) => [...pics.slice(0, index), ...pics.slice(index + 1)]);
+      setIsOpenDelete(true);
+      setPicToDeleteIndex(index);
+    };
 
-    await deleteImage(picsInfo[index].id);
-    getPictures();
+  const handleDeletePic = async () => {
+    if (picToDeleteIndex) {
+      setPicsInfo((pics) => [
+        ...pics.slice(0, picToDeleteIndex),
+        ...pics.slice(picToDeleteIndex + 1),
+      ]);
+      setPics((pics) => [...pics.slice(0, picToDeleteIndex), ...pics.slice(picToDeleteIndex + 1)]);
+
+      handleCloseDeleteModal();
+
+      await deleteImage(picsInfo[picToDeleteIndex].id);
+      getPictures();
+    }
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsOpenDelete(false);
   };
 
   return (
     <>
+      <DeletePhotoModal
+        isOpen={isOpenDelete}
+        onDelete={handleDeletePic}
+        onClose={handleCloseDeleteModal}
+      />
       <UploadPhotoModal
         image={selectedImage}
         filename={filename}
@@ -111,8 +136,8 @@ export default function MyPhotos() {
               <div className="cursor-pointer shadow-md rounded-md overflow-hidden">
                 <div className="relative">
                   <XMarkIcon
-                    onClick={handleDeletePic(index)}
-                    className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-0 hover:bg-opacity-30 transition duration-200"
+                    onClick={handleClickDeletePic(index)}
+                    className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
                   />
                   <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
                 </div>
