@@ -1,5 +1,5 @@
 import { PICTURE } from "@/constants/messages";
-import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { ELO_INIT, IMAGES_FOLDER_PATH, LIMIT_PICTURES } from "@/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
@@ -123,8 +123,22 @@ export const getImageFile = async (req: Request, res: Response) => {
 };
 
 export const uploadOne = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
   if (!req.file) {
     throw new BadRequestError(PICTURE.NO_FILE);
+  }
+
+  if (isRegular(loggedUser.role)) {
+    const numPictures = await PictureModel.count({
+      where: {
+        userId: loggedUser.id,
+      },
+    });
+
+    if (numPictures >= LIMIT_PICTURES) {
+      throw new BadRequestError(PICTURE.TOO_MANY_PICTURES);
+    }
   }
 
   const picture = await PictureModel.create({
