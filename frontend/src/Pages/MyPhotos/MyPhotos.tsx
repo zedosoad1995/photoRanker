@@ -5,6 +5,7 @@ import { IPicture } from "../../../../backend/src/types/picture";
 import { MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -98,7 +99,10 @@ export default function MyPhotos() {
           {pics.map((pic, index) => (
             <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
               <div className="cursor-pointer shadow-md rounded-md overflow-hidden">
-                <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
+                <div className="relative">
+                  <XMarkIcon className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-0 hover:bg-opacity-30 transition duration-200" />
+                  <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
+                </div>
                 <div className="p-3 font-semibold text-sm">
                   <div>elo: {picsInfo[index].elo}</div>
                   <div>votes: {picsInfo[index].numVotes}</div>
