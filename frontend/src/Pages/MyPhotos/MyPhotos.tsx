@@ -7,6 +7,7 @@ import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import DeletePhotoModal from "./DeletePhotoModal";
+import { getLoggedUser } from "@/Utils/user";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -20,7 +21,9 @@ export default function MyPhotos() {
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
 
   const getPictures = () => {
-    return getManyPictures().then(async (res) => {
+    const loggedUser = getLoggedUser();
+
+    return getManyPictures(loggedUser?.id).then(async (res) => {
       const pics: string[] = [];
       const picsInfo: IPicture[] = [];
       for (const pic of res.pictures) {

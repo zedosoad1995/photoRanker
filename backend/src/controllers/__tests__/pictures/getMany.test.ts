@@ -80,6 +80,17 @@ describe("Regular Logged User", () => {
         expect(response.body.pictures).toHaveLength(1);
         expect(response.body.pictures[0].userId).toEqual(loggedUser.id);
       });
+
+      it("returns pictures from logged user, when 'userId' is undefined", async () => {
+        const response = await request(app)
+          .get("/api/pictures?userId=")
+          .set("Cookie", regularCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(1);
+        expect(response.body.pictures[0].userId).toEqual(loggedUser.id);
+      });
     });
   });
 });
