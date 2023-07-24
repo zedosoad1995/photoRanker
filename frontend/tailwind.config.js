@@ -21,6 +21,8 @@ export default {
         "placeholder-text": "#9ca3af",
         "normal-contour": "#d1d5db",
         "light-contour": "#e5e7eb",
+        "disabled-button-text": "rgba(0, 0, 0, 0.26)",
+        "disabled-button-bg": "rgba(0, 0, 0, 0.12)",
         danger: "#D63230",
       },
       fontSize: {

@@ -2,7 +2,7 @@ import Button from "@/Components/Button";
 import { deleteImage, getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useRef, useState } from "react";
 import { IPicture } from "../../../../backend/src/types/picture";
-import { MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
+import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { XMarkIcon } from "@heroicons/react/20/solid";
@@ -129,7 +129,7 @@ export default function MyPhotos() {
           onChange={handleFileChange}
           className="hidden"
         />
-        <Button onClick={handleFileSelect} isFull={false}>
+        <Button disabled={pics.length >= LIMIT_PICTURES} onClick={handleFileSelect} isFull={false}>
           <span className="mr-3 text-xl !leading-5">+</span>
           <span>Add Photo</span>
         </Button>
