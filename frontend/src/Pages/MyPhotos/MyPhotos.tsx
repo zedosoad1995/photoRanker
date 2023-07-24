@@ -1,6 +1,6 @@
 import Button from "@/Components/Button";
 import { deleteImage, getImage, getManyPictures } from "@/Services/picture";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IPicture } from "../../../../backend/src/types/picture";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
@@ -20,9 +20,10 @@ export default function MyPhotos() {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
 
-  const getPictures = () => {
-    const loggedUser = getLoggedUser();
+  const loggedUser = useMemo(() => getLoggedUser(), []);
+  const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
+  const getPictures = () => {
     return getManyPictures(loggedUser?.id).then(async (res) => {
       const pics: string[] = [];
       const picsInfo: IPicture[] = [];
@@ -87,7 +88,7 @@ export default function MyPhotos() {
     };
 
   const handleDeletePic = async () => {
-    if (picToDeleteIndex) {
+    if (picToDeleteIndex != null) {
       setPicsInfo((pics) => [
         ...pics.slice(0, picToDeleteIndex),
         ...pics.slice(picToDeleteIndex + 1),
@@ -129,7 +130,7 @@ export default function MyPhotos() {
           onChange={handleFileChange}
           className="hidden"
         />
-        <Button disabled={pics.length >= LIMIT_PICTURES} onClick={handleFileSelect} isFull={false}>
+        <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={false}>
           <span className="mr-3 text-xl !leading-5">+</span>
           <span>Add Photo</span>
         </Button>
