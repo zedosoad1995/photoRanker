@@ -13,6 +13,10 @@ export const getImage = async (imagePath: string): Promise<Blob> => {
   return api.get(`/pictures/image/${imagePath}`, { responseType: "blob" });
 };
 
+export const deleteImage = async (id: string): Promise<void> => {
+  return api.delete(`/pictures/${id}`);
+};
+
 export const uploadImage = async (image: Blob, filename: string): Promise<Blob> => {
   const formData = new FormData();
   formData.append("image", image, filename);

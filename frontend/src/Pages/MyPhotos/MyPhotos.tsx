@@ -1,5 +1,5 @@
 import Button from "@/Components/Button";
-import { getImage, getManyPictures } from "@/Services/picture";
+import { deleteImage, getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useRef, useState } from "react";
 import { IPicture } from "../../../../backend/src/types/picture";
 import { MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
@@ -72,6 +72,16 @@ export default function MyPhotos() {
     }
   };
 
+  const handleDeletePic = (index: number) => async (event: React.MouseEvent<SVGSVGElement>) => {
+    event.stopPropagation();
+
+    setPicsInfo((pics) => [...pics.slice(0, index), ...pics.slice(index + 1)]);
+    setPics((pics) => [...pics.slice(0, index), ...pics.slice(index + 1)]);
+
+    await deleteImage(picsInfo[index].id);
+    getPictures();
+  };
+
   return (
     <>
       <UploadPhotoModal
@@ -100,7 +110,10 @@ export default function MyPhotos() {
             <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
               <div className="cursor-pointer shadow-md rounded-md overflow-hidden">
                 <div className="relative">
-                  <XMarkIcon className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-0 hover:bg-opacity-30 transition duration-200" />
+                  <XMarkIcon
+                    onClick={handleDeletePic(index)}
+                    className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-0 hover:bg-opacity-30 transition duration-200"
+                  />
                   <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
                 </div>
                 <div className="p-3 font-semibold text-sm">
