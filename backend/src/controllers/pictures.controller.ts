@@ -11,10 +11,17 @@ import { Prisma, User } from "@prisma/client";
 import { Request, Response } from "express";
 
 export const getMany = async (req: Request, res: Response) => {
-  const loggedUser = req.loggedUser as User;
+  const loggedUser = req.loggedUser!;
+  const userId = req.query.userId as string | undefined;
+
+  if (userId && isRegular(loggedUser.role) && loggedUser.id !== userId) {
+    throw new ForbiddenError("User cannot use this endpoint to access pictures from other users");
+  }
 
   const whereQuery: Prisma.PictureWhereInput = {};
-  if (isRegular(loggedUser.role)) {
+  if (userId) {
+    whereQuery.userId = userId;
+  } else if (isRegular(loggedUser.role)) {
     whereQuery.userId = loggedUser.id;
   }
 
