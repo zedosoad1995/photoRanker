@@ -177,7 +177,7 @@ describe("Admin Logged User", () => {
     describe("'gender' field", () => {
       it("is an invalid gender name", async () => {
         const body = {
-          ethnicity: "non-binary",
+          gender: "non-binary",
         };
 
         const response = await request(app)

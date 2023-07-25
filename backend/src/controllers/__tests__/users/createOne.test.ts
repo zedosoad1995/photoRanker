@@ -181,7 +181,7 @@ describe("Test Validation", () => {
     it("is an invalid gender name", async () => {
       const body = {
         ...createUserBody,
-        ethnicity: "non-binary",
+        gender: "non-binary",
       };
 
       const response = await request(app).post("/api/users").send(body);
