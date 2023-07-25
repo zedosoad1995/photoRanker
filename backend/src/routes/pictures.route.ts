@@ -9,10 +9,12 @@ import {
 import { checkAuth } from "@/middlewares/checkAuth";
 import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
 import { validateImage } from "@/middlewares/validateImage";
+import { validateQuery } from "@/middlewares/validateQuery";
+import { getManyPicturesSchema } from "@/schemas/user/query/getManyPictures";
 
 const router = Router();
 
-router.get("/", checkAuth, getMany);
+router.get("/", checkAuth, validateQuery(getManyPicturesSchema), getMany);
 router.get("/image/:imagePath", checkAuth, getImageFile);
 router.get("/:pictureId", checkAuth, getOne);
 router.post("/", checkAuth, convertFormDataToBuffer, validateImage, uploadOne);

@@ -28,9 +28,10 @@ describe("Unauthorized", () => {
 describe("Regular Logged User", () => {
   let regularCookie: string;
   let loggedUser: User;
+  let randomUser: User;
 
   beforeAll(async () => {
-    const randomUser = await UserSeeder.createOne();
+    randomUser = await UserSeeder.createOne();
 
     const res = await loginRegular();
     regularCookie = res.cookie;
@@ -47,6 +48,50 @@ describe("Regular Logged User", () => {
     expect(response.status).toEqual(200);
     expect(response.body.pictures).toHaveLength(1);
     expect(response.body.pictures[0].userId).toEqual(loggedUser.id);
+  });
+
+  describe("Query", () => {
+    describe("userId", () => {
+      it("throws error, when 'userId' is an array of strings", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?userId=a&userId=b`)
+          .set("Cookie", regularCookie)
+          .send();
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("throws error, when 'userId' does not correspond to logged user", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?userId=${randomUser.id}`)
+          .set("Cookie", regularCookie)
+          .send();
+
+        expect(response.status).toEqual(403);
+      });
+
+      it("returns pictures from logged user, 'userId' corresponds to logged user", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?userId=${loggedUser.id}`)
+          .set("Cookie", regularCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(1);
+        expect(response.body.pictures[0].userId).toEqual(loggedUser.id);
+      });
+
+      it("returns pictures from logged user, when 'userId' is undefined", async () => {
+        const response = await request(app)
+          .get("/api/pictures?userId=")
+          .set("Cookie", regularCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(1);
+        expect(response.body.pictures[0].userId).toEqual(loggedUser.id);
+      });
+    });
   });
 });
 
@@ -68,5 +113,27 @@ describe("Admin Logged User", () => {
 
     expect(response.status).toEqual(200);
     expect(response.body.pictures).toHaveLength(NUM_PICTURES);
+  });
+
+  describe("Query", () => {
+    let randomUser: User;
+
+    beforeAll(async () => {
+      randomUser = await UserSeeder.createOne();
+      await PictureSeeder.createOne({ userId: randomUser.id });
+    });
+
+    describe("userId", () => {
+      it("returns pictures from 'userId'", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?userId=${randomUser.id}`)
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(1);
+        expect(response.body.pictures[0].userId).toEqual(randomUser.id);
+      });
+    });
   });
 });

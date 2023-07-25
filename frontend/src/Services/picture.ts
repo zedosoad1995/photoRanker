@@ -1,8 +1,8 @@
 import api from "./index";
 import { IGetManyPictures, IGetPicture } from "../../../backend/src/types/picture";
 
-export const getManyPictures = async (): Promise<IGetManyPictures> => {
-  return api.get("/pictures");
+export const getManyPictures = async (userId?: string): Promise<IGetManyPictures> => {
+  return api.get(`/pictures?userId=${userId}`);
 };
 
 export const getPicture = async (id: string): Promise<IGetPicture> => {
@@ -11,6 +11,10 @@ export const getPicture = async (id: string): Promise<IGetPicture> => {
 
 export const getImage = async (imagePath: string): Promise<Blob> => {
   return api.get(`/pictures/image/${imagePath}`, { responseType: "blob" });
+};
+
+export const deleteImage = async (id: string): Promise<void> => {
+  return api.delete(`/pictures/${id}`);
 };
 
 export const uploadImage = async (image: Blob, filename: string): Promise<Blob> => {

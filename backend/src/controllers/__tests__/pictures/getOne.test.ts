@@ -26,11 +26,13 @@ describe("Unauthorized", () => {
 
 describe("Regular Logged User", () => {
   let regularCookie: string;
+  let regularUserId: string;
   let regularUserPictureId: string;
 
   beforeEach(async () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
+    regularUserId = res.user.id;
 
     const picture = await PictureSeeder.seedOne({
       userId: res.user.id,
@@ -75,7 +77,7 @@ describe("Regular Logged User", () => {
     await UserModel.update({
       data: { activeMatchId: match.id },
       where: {
-        id: user.id,
+        id: regularUserId,
       },
     });
 

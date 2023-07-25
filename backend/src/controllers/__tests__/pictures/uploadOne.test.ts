@@ -1,13 +1,12 @@
 import request from "supertest";
 import { app } from "@/app";
 import { rimrafSync } from "rimraf";
-import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { LIMIT_PICTURES, TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { PICTURE } from "@/constants/messages";
-import { loginRegular } from "@/tests/helpers/user";
+import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
 import { PictureModel } from "@/models/picture";
 import fs from "fs";
-import path from "path";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { normalizedJoin } from "@/helpers/file";
 
@@ -93,6 +92,17 @@ describe("Regular Logged User", () => {
     expect(response.status).toEqual(400);
   });
 
+  it("throws an error, when number of pictures passes the limit", async () => {
+    await PictureSeeder.seedMany({ data: { userId: regularUser.id }, numRepeat: LIMIT_PICTURES });
+
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", regularCookie)
+      .attach("image", "src/tests/fixtures/files/image.jpg");
+
+    expect(response.status).toEqual(400);
+  });
+
   it("Creates Picture assigned to logged user, adds image file to folder", async () => {
     await PictureSeeder.deleteAll();
 
@@ -118,7 +128,7 @@ describe("Admin Logged User", () => {
   let adminUser: User;
 
   beforeAll(async () => {
-    const res = await loginRegular();
+    const res = await loginAdmin();
     adminCookie = res.cookie;
     adminUser = res.user;
   });
@@ -140,5 +150,23 @@ describe("Admin Logged User", () => {
     expect(
       fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
     ).toBeTruthy();
+  });
+
+  it("Creates Picture, even when regular user picture limit is passed", async () => {
+    await PictureSeeder.seedMany({ data: { userId: adminUser.id }, numRepeat: LIMIT_PICTURES });
+
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", adminCookie)
+      .attach("image", "src/tests/fixtures/files/image.jpg");
+
+    expect(response.status).toEqual(201);
+
+    const numPictures = await PictureModel.count({
+      where: {
+        userId: adminUser.id,
+      },
+    });
+    expect(numPictures).toBe(LIMIT_PICTURES + 1);
   });
 });

@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { register } from "@/Services/auth";
 import { LOGIN } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
+import { GENDER } from "../../../../backend/src/constants/user";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
@@ -17,6 +18,7 @@ interface IData {
   password: string;
   ethnicity: string;
   countryOfOrigin: string;
+  gender: string;
   dateOfBirth: string;
 }
 
@@ -26,6 +28,7 @@ const INITIAL_DATA: IData = {
   password: "",
   ethnicity: "White",
   countryOfOrigin: "Portugal",
+  gender: GENDER.Male,
   dateOfBirth: "",
 };
 

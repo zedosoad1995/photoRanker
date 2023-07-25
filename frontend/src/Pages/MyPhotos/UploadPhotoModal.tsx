@@ -4,7 +4,7 @@ import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
 import { AGE_OPTIONS } from "@/constants/user";
-import { getUser } from "@/Utils/user";
+import { getLoggedUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
@@ -29,7 +29,7 @@ export default function UploadPhotoModal({
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [age, setAge] = useState(() => {
-    const user = getUser();
+    const user = getLoggedUser();
     if (!user?.dateOfBirth) return "18";
 
     return calculateAge(user.dateOfBirth).toString();

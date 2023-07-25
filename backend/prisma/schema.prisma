@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
   previewFeatures = ["clientExtensions"]
 }
 
@@ -17,6 +17,7 @@ model User {
   countryOfOrigin String
   dateOfBirth     String
   role            UserRole  @default(REGULAR)
+  gender          Gender    @default(Male)
   activeMatch     Match?    @relation(name: "activeMatch", fields: [activeMatchId], references: [id])
   activeMatchId   String?   @unique
   pictures        Picture[]
@@ -28,6 +29,11 @@ model User {
 enum UserRole {
   ADMIN
   REGULAR
+}
+
+enum Gender {
+  Male
+  Female
 }
 
 model Picture {

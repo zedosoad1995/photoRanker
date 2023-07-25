@@ -27,10 +27,7 @@ describe("Unauthorized", () => {
   it("returns 403, when logged user is not ADMIN", async () => {
     const { cookie } = await loginRegular();
 
-    const response = await request(app)
-      .patch(`/api/users/${userId}`)
-      .set("Cookie", cookie)
-      .send();
+    const response = await request(app).patch(`/api/users/${userId}`).set("Cookie", cookie).send();
 
     expect(response.status).toEqual(403);
   });
@@ -166,6 +163,21 @@ describe("Admin Logged User", () => {
       it("is an invalid ethnicity name", async () => {
         const body = {
           ethnicity: "invalid",
+        };
+
+        const response = await request(app)
+          .patch(`/api/users/${userId}`)
+          .set("Cookie", adminCookie)
+          .send(body);
+
+        expect(response.status).toEqual(422);
+      });
+    });
+
+    describe("'gender' field", () => {
+      it("is an invalid gender name", async () => {
+        const body = {
+          gender: "non-binary",
         };
 
         const response = await request(app)

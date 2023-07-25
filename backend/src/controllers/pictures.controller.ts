@@ -1,5 +1,5 @@
 import { PICTURE } from "@/constants/messages";
-import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { ELO_INIT, IMAGES_FOLDER_PATH, LIMIT_PICTURES } from "@/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
@@ -11,10 +11,17 @@ import { Prisma, User } from "@prisma/client";
 import { Request, Response } from "express";
 
 export const getMany = async (req: Request, res: Response) => {
-  const loggedUser = req.loggedUser as User;
+  const loggedUser = req.loggedUser!;
+  const userId = req.query.userId as string | undefined;
+
+  if (userId && isRegular(loggedUser.role) && loggedUser.id !== userId) {
+    throw new ForbiddenError("User cannot use this endpoint to access pictures from other users");
+  }
 
   const whereQuery: Prisma.PictureWhereInput = {};
-  if (isRegular(loggedUser.role)) {
+  if (userId) {
+    whereQuery.userId = userId;
+  } else if (isRegular(loggedUser.role)) {
     whereQuery.userId = loggedUser.id;
   }
 
@@ -48,10 +55,10 @@ export const getOne = async (req: Request, res: Response) => {
   }
 
   if (isRegular(loggedUser.role)) {
-    const activeMatch = picture.user.activeMatchId
+    const activeMatch = loggedUser.activeMatchId
       ? await MatchModel.findUnique({
           where: {
-            id: picture.user.activeMatchId,
+            id: loggedUser.activeMatchId,
           },
           include: {
             pictures: true,
@@ -90,10 +97,10 @@ export const getImageFile = async (req: Request, res: Response) => {
   }
 
   if (isRegular(loggedUser.role)) {
-    const activeMatch = picture.user.activeMatchId
+    const activeMatch = loggedUser.activeMatchId
       ? await MatchModel.findUnique({
           where: {
-            id: picture.user.activeMatchId,
+            id: loggedUser.activeMatchId,
           },
           include: {
             pictures: true,
@@ -116,8 +123,22 @@ export const getImageFile = async (req: Request, res: Response) => {
 };
 
 export const uploadOne = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
   if (!req.file) {
     throw new BadRequestError(PICTURE.NO_FILE);
+  }
+
+  if (isRegular(loggedUser.role)) {
+    const numPictures = await PictureModel.count({
+      where: {
+        userId: loggedUser.id,
+      },
+    });
+
+    if (numPictures >= LIMIT_PICTURES) {
+      throw new BadRequestError(PICTURE.TOO_MANY_PICTURES);
+    }
   }
 
   const picture = await PictureModel.create({
