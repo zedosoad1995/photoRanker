@@ -55,6 +55,7 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
                   <NavLink
                     key={label}
                     to={url}
+                    onClick={handleClose}
                     className={({ isActive }) =>
                       `flex items-center gap-4 py-3 hover:text-primary-hover cursor-pointer ${
                         isActive ? "text-primary-hover" : ""
