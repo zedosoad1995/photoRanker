@@ -79,7 +79,7 @@ describe("Regular Logged User", () => {
     await UserModel.update({
       data: { activeMatchId: match.id },
       where: {
-        id: user.id,
+        id: regularUserId,
       },
     });
 

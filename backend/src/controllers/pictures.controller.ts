@@ -55,10 +55,10 @@ export const getOne = async (req: Request, res: Response) => {
   }
 
   if (isRegular(loggedUser.role)) {
-    const activeMatch = picture.user.activeMatchId
+    const activeMatch = loggedUser.activeMatchId
       ? await MatchModel.findUnique({
           where: {
-            id: picture.user.activeMatchId,
+            id: loggedUser.activeMatchId,
           },
           include: {
             pictures: true,
@@ -97,10 +97,10 @@ export const getImageFile = async (req: Request, res: Response) => {
   }
 
   if (isRegular(loggedUser.role)) {
-    const activeMatch = picture.user.activeMatchId
+    const activeMatch = loggedUser.activeMatchId
       ? await MatchModel.findUnique({
           where: {
-            id: picture.user.activeMatchId,
+            id: loggedUser.activeMatchId,
           },
           include: {
             pictures: true,
