@@ -10,6 +10,7 @@ import ProtectedLayout from "./Components/Layout/Layout.tsx";
 import Settings from "./Pages/Settings.tsx";
 import Vote from "./Pages/Vote.tsx";
 import MyPhotos from "./Pages/MyPhotos/MyPhotos.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const router = createBrowserRouter([
   {
@@ -45,8 +46,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_AUTH_ID!}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );

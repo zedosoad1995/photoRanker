@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Label from "@/Components/Label";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
@@ -6,6 +6,7 @@ import Button from "@/Components/Button";
 import { HOME, REGISTER } from "@/constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function SignIn() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginBtnWidth, setLoginBtnWidth] = useState("");
+  const loginBtnRef = useRef<HTMLDivElement | null>(null);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.currentTarget.value);
@@ -38,13 +41,29 @@ export default function SignIn() {
     navigate(HOME);
   }
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (loginBtnRef.current) {
+        setLoginBtnWidth(String(loginBtnRef.current.offsetWidth));
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
         <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
           Sign in to your account
         </h2>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-10 mx-auto w-full max-w-sm">
           <div className="space-y-6">
             <Textfield
               value={email}
@@ -69,9 +88,13 @@ export default function SignIn() {
               />
             </div>
 
-            <Button type="submit" onClick={handleSignIn}>
-              Sign in
-            </Button>
+            <div ref={loginBtnRef}>
+              <Button type="submit" onClick={handleSignIn}>
+                Sign in
+              </Button>
+            </div>
+
+            <GoogleLogin onSuccess={console.log} onError={console.error} width={loginBtnWidth} />
           </div>
 
           <p className="mt-10 text-center text-sm text-light-text">
