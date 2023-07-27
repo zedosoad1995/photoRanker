@@ -8,6 +8,10 @@ export const login = async (data: ISignIn): Promise<ILoginRes> => {
   return api.post("/auth/login", data);
 };
 
+export const loginGoogle = async (code: string): Promise<ILoginRes> => {
+  return api.post("/auth/login/google", { code });
+};
+
 export const logout = async (): Promise<void> => {
   return api.post("/auth/logout");
 };

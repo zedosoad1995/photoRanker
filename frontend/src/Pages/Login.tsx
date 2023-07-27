@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Label from "@/Components/Label";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
@@ -6,17 +6,17 @@ import Button from "@/Components/Button";
 import { HOME, REGISTER } from "@/constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import { loginGoogle } from "@/Services/auth";
+import GoogleButton from "@/Components/GoogleButton";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const loginbtnRef = useRef<HTMLDivElement>(null);
 
   const { user, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginBtnWidth, setLoginBtnWidth] = useState("");
-  const loginBtnRef = useRef<HTMLDivElement | null>(null);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.currentTarget.value);
@@ -37,25 +37,24 @@ export default function SignIn() {
     }
   };
 
+  const handleGoogleLoginClick = () => {
+    const client = window?.google?.accounts?.oauth2.initCodeClient({
+      client_id: import.meta.env.VITE_GOOGLE_AUTH_ID,
+      scope: "openid profile email",
+      callback: (response) => {
+        loginGoogle(response.code);
+      },
+      error_callback: (error) => {
+        console.error(error);
+      },
+      ux_mode: "popup",
+    });
+    client.requestCode();
+  };
+
   if (Boolean(user)) {
     navigate(HOME);
   }
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (loginBtnRef.current) {
-        setLoginBtnWidth(String(loginBtnRef.current.offsetWidth));
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    handleResize();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   return (
     <>
@@ -88,13 +87,13 @@ export default function SignIn() {
               />
             </div>
 
-            <div ref={loginBtnRef}>
+            <div ref={loginbtnRef}>
               <Button type="submit" onClick={handleSignIn}>
                 Sign in
               </Button>
             </div>
 
-            <GoogleLogin onSuccess={console.log} onError={console.error} width={loginBtnWidth} />
+            <GoogleButton onClick={handleGoogleLoginClick} />
           </div>
 
           <p className="mt-10 text-center text-sm text-light-text">
