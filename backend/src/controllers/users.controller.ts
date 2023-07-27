@@ -64,11 +64,12 @@ export const createOne = async (req: Request, res: Response) => {
 };
 
 export const createProfile = async (req: Request, res: Response) => {
-  const { email, ...body } = req.body;
+  const body = { ...req.body };
+  const userId = req.params.userId;
 
   const user = await UserModel.findUnique({
     where: {
-      email,
+      id: userId,
     },
   });
 
@@ -83,7 +84,7 @@ export const createProfile = async (req: Request, res: Response) => {
   const updatedUser = await UserModel.update({
     data: body,
     where: {
-      email,
+      id: userId,
     },
   });
 
