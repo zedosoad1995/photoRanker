@@ -2,8 +2,6 @@ class OAuth2ClientMock {
   constructor() {}
 
   async getToken() {}
-
-  async getTokenInfo() {}
 }
 
 import request from "supertest";
@@ -13,16 +11,19 @@ import _ from "underscore";
 import { User } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { AUTH } from "@/constants/messages";
+import axios from "axios";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL, NON_EXISTING_USER } = AUTH.GOOGLE;
 
 const CODE = "code";
 let user: User;
 let spyGetToken: jest.SpyInstance;
-let spyGetTokenInfo: jest.SpyInstance;
 
 jest.mock("google-auth-library", () => ({
   OAuth2Client: OAuth2ClientMock,
 }));
+
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 beforeAll(async () => {
   const userData = randomizeUser({
@@ -34,12 +35,10 @@ beforeAll(async () => {
 
 beforeEach(() => {
   spyGetToken = jest.spyOn(OAuth2ClientMock.prototype, "getToken");
-  spyGetTokenInfo = jest.spyOn(OAuth2ClientMock.prototype, "getTokenInfo");
 });
 
 afterEach(() => {
   spyGetToken.mockRestore();
-  spyGetTokenInfo.mockRestore();
 });
 
 it("Returns 401, when access_token is undefined", async () => {
@@ -55,7 +54,7 @@ it("Returns 401, when access_token is undefined", async () => {
 
 it("Returns 401, when email is not verified", async () => {
   spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
-  spyGetTokenInfo.mockResolvedValue({ email_verified: false });
+  mockedAxios.get.mockResolvedValue({ data: { email_verified: false } });
 
   const response = await request(app).post("/api/auth/login/google").send({
     code: CODE,
@@ -67,10 +66,12 @@ it("Returns 401, when email is not verified", async () => {
 
 it("Returns 401, when user does not exist", async () => {
   spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
-  spyGetTokenInfo.mockResolvedValue({
-    email: "doesNotExists",
-    sub: "sub",
-    email_verified: true,
+  mockedAxios.get.mockResolvedValue({
+    data: {
+      email: "doesNotExists",
+      sub: "sub",
+      email_verified: true,
+    },
   });
 
   const response = await request(app).post("/api/auth/login/google").send({
@@ -83,10 +84,12 @@ it("Returns 401, when user does not exist", async () => {
 
 it("Returns 401, when user does not exist", async () => {
   spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
-  spyGetTokenInfo.mockResolvedValue({
-    email: "doesNotExists",
-    sub: "sub",
-    email_verified: true,
+  mockedAxios.get.mockResolvedValue({
+    data: {
+      email: "doesNotExists",
+      sub: "sub",
+      email_verified: true,
+    },
   });
 
   const response = await request(app).post("/api/auth/login/google").send({
@@ -99,10 +102,12 @@ it("Returns 401, when user does not exist", async () => {
 
 it("Logs in, returns logged user, and sets cookie", async () => {
   spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
-  spyGetTokenInfo.mockResolvedValue({
-    email: user.email,
-    sub: user.googleId,
-    email_verified: true,
+  mockedAxios.get.mockResolvedValue({
+    data: {
+      email: user.email,
+      sub: user.googleId,
+      email_verified: true,
+    },
   });
 
   const response = await request(app).post("/api/auth/login/google").send({
@@ -115,10 +120,12 @@ it("Logs in, returns logged user, and sets cookie", async () => {
 
 it("does not return 'password' field", async () => {
   spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
-  spyGetTokenInfo.mockResolvedValue({
-    email: user.email,
-    sub: user.googleId,
-    email_verified: true,
+  mockedAxios.get.mockResolvedValue({
+    data: {
+      email: user.email,
+      sub: user.googleId,
+      email_verified: true,
+    },
   });
 
   const response = await request(app).post("/api/auth/login/google").send({
