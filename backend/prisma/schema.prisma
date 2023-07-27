@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["clientExtensions"]
 }
 
@@ -12,7 +12,8 @@ model User {
   id              String    @id @default(uuid())
   name            String
   email           String    @unique
-  password        String
+  password        String?
+  googleId        String?
   ethnicity       String
   countryOfOrigin String
   dateOfBirth     String
