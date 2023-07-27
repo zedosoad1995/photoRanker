@@ -6,6 +6,7 @@ import { ConflictError } from "@/errors/ConflictError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { isAdmin } from "@/helpers/role";
 import { ForbiddenError } from "@/errors/ForbiddenError";
+import { BadRequestError } from "@/errors/BadRequestError";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -60,6 +61,35 @@ export const createOne = async (req: Request, res: Response) => {
   const userNoPassword = UserModel.exclude(user, ["password"]);
 
   res.status(201).json({ user: userNoPassword });
+};
+
+export const createProfile = async (req: Request, res: Response) => {
+  const { email, ...body } = req.body;
+
+  const user = await UserModel.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError("User does not exist");
+  }
+
+  if (user.isProfileCompleted) {
+    throw new BadRequestError("User profile has already been created");
+  }
+
+  const updatedUser = await UserModel.update({
+    data: body,
+    where: {
+      email,
+    },
+  });
+
+  const userNoPassword = UserModel.exclude(updatedUser, ["password"]);
+
+  res.status(200).json({ user: userNoPassword });
 };
 
 export const updateOne = async (req: Request, res: Response) => {
