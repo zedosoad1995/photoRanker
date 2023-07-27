@@ -11,13 +11,11 @@ import { app } from "@/app";
 import { randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
 import { User } from "@prisma/client";
-import { hashPassword } from "@/helpers/password";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { AUTH } from "@/constants/messages";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL, NON_EXISTING_USER } = AUTH.GOOGLE;
 
 const CODE = "code";
-const PASSWORD = "Password";
 let user: User;
 let spyGetToken: jest.SpyInstance;
 let spyGetTokenInfo: jest.SpyInstance;
@@ -28,7 +26,7 @@ jest.mock("google-auth-library", () => ({
 
 beforeAll(async () => {
   const userData = randomizeUser({
-    password: await hashPassword(PASSWORD),
+    googleId: "googleId",
   });
 
   user = await UserSeeder.seedOne(userData);

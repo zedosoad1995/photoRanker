@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "ethnicity" DROP NOT NULL,
+ALTER COLUMN "countryOfOrigin" DROP NOT NULL,
+ALTER COLUMN "dateOfBirth" DROP NOT NULL,
+ALTER COLUMN "gender" DROP NOT NULL;

@@ -22,7 +22,6 @@ export const randomizeUser = (data: Partial<Prisma.UserCreateInput> = {}) => ({
   countryOfOrigin: faker.helpers.arrayElement(COUNTRIES),
   gender: faker.helpers.arrayElement(Object.values(Gender)),
   password: faker.internet.password(),
-  googleId: uuidv4(),
   ...data,
 });
 
