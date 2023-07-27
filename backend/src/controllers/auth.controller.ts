@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { OAuth2Client } from "google-auth-library";
+import { AUTH } from "@/constants/messages";
+const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL, NON_EXISTING_USER } = AUTH.GOOGLE;
 
 export const signIn = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -50,10 +52,18 @@ export const signInGoogle = async (req: Request, res: Response) => {
   const { tokens } = await oAuth2Client.getToken(req.body.code);
 
   if (!tokens.access_token) {
-    throw new UnauthorizedError("Google access token is undefined");
+    throw new UnauthorizedError(NO_ACCESS_TOKEN);
   }
 
-  const { email, sub: googleId } = await oAuth2Client.getTokenInfo(tokens.access_token);
+  const {
+    email,
+    sub: googleId,
+    email_verified,
+  } = await oAuth2Client.getTokenInfo(tokens.access_token);
+
+  if (!email_verified) {
+    throw new UnauthorizedError(UNVERIFIED_EMAIL);
+  }
 
   const user = await UserModel.findFirst({
     where: {
@@ -63,7 +73,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    throw new UnauthorizedError("User does not exist. Invalid email or googleId");
+    throw new UnauthorizedError(NON_EXISTING_USER);
   }
 
   const userJwt = jwt.sign(
