@@ -4,11 +4,11 @@ import PersonalInfoForm from "./Forms/PersonalInfoForm";
 import Button from "@/Components/Button";
 import { useRef, useState, useMemo } from "react";
 import { createProfile, register } from "@/Services/auth";
-import { LOGIN } from "@/constants/routes";
+import { HOME, LOGIN } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 import { GENDER } from "../../../../backend/src/constants/user";
 import _ from "underscore";
-import { getLoggedUser } from "@/Utils/user";
+import { getLoggedUser, setLoggedUser } from "@/Utils/user";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
@@ -66,7 +66,12 @@ export default function Register() {
 
     if (isLastForm) {
       if (incompleteProfile) {
-        await createProfile(loggedUser.id, _.omit(data, ["email", "password", "name"]));
+        const { user } = await createProfile(
+          loggedUser.id,
+          _.omit(data, ["email", "password", "name"])
+        );
+        setLoggedUser(user);
+        return navigate(HOME);
       } else {
         await register(data);
       }

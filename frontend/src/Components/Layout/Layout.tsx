@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
-import { LOGIN } from "@/constants/routes";
+import { LOGIN, REGISTER } from "@/constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
+import { getLoggedUser } from "@/Utils/user";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -24,14 +25,16 @@ export default function Layout() {
     navigate(LOGIN);
   };
 
-  const user = localStorage.getItem("user");
+  const user = getLoggedUser();
   useEffect(() => {
     if (!user) {
       navigate(LOGIN);
+    } else if (user.isProfileCompleted === false) {
+      navigate(REGISTER);
     }
   }, []);
 
-  if (!user) {
+  if (!user || user.isProfileCompleted === false) {
     return <></>;
   }
 

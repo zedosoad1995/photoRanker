@@ -46,6 +46,7 @@ export default function SignIn() {
         const { user } = await loginGoogle(response.code);
 
         if (user.isProfileCompleted) {
+          setLoggedUser(user);
           navigate(HOME);
         } else if (user.isProfileCompleted === false) {
           setLoggedUser(user);
