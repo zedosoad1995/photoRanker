@@ -55,7 +55,7 @@ export const createOne = async (req: Request, res: Response) => {
   }
 
   const user = await UserModel.create({
-    data: { ...req.body, password: hashedPassword },
+    data: { ...req.body, password: hashedPassword, isProfileCompleted: true },
   });
 
   const userNoPassword = UserModel.exclude(user, ["password"]);

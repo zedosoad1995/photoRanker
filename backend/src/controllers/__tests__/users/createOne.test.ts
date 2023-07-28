@@ -8,7 +8,7 @@ import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const createUserBody = randomizeUser();
 
-it("creates a new user, 'password' is not returned, 'role' is REGULAR", async () => {
+it("creates a new user, 'password' is not returned and isProfileCompleted is true, 'role' is REGULAR", async () => {
   await UserSeeder.deleteAll();
 
   const response = await request(app).post("/api/users").send(createUserBody);
@@ -16,9 +16,10 @@ it("creates a new user, 'password' is not returned, 'role' is REGULAR", async ()
   expect(response.status).toEqual(201);
   expect(response.body.user).not.toHaveProperty("password");
   expect(response.body.user.role).toEqual(UserRole.REGULAR);
-
-  const numUsers = await UserModel.count();
-  expect(numUsers).toBe(1);
+  
+  const users = await UserModel.findMany();
+  expect(users).toHaveLength(1);
+  expect(users[0].isProfileCompleted).toBe(true);
 });
 
 it("returns 409, when 'email' already exists", async () => {
