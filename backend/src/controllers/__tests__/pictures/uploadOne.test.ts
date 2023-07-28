@@ -9,6 +9,7 @@ import { PictureModel } from "@/models/picture";
 import fs from "fs";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { normalizedJoin } from "@/helpers/file";
+import { UserModel } from "@/models/user";
 
 beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
@@ -34,6 +35,35 @@ describe("Regular Logged User", () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
     regularUser = res.user;
+  });
+
+  beforeEach(() => {
+    return UserModel.update({
+      data: {
+        isProfileCompleted: true,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", regularCookie)
+      .attach("image", "src/tests/fixtures/files/noExtension");
+
+    expect(response.status).toEqual(403);
   });
 
   it("throws an error, when file has no extension", async () => {

@@ -29,10 +29,13 @@ export const loginUser = async (role: UserRole) => {
   const password = "Password";
 
   const adminUser = await UserModel.create({
-    data: randomizeUser({
-      role,
-      password: await hashPassword(password),
-    }),
+    data: {
+      ...randomizeUser({
+        role,
+        password: await hashPassword(password),
+      }),
+      isProfileCompleted: true,
+    },
   });
 
   const res = await request(app).post("/api/auth/login").send({

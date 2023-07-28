@@ -36,6 +36,30 @@ describe("Regular Logged User", () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
     regularUser = res.user;
+
+    await UserModel.update({
+      data: {
+        isProfileCompleted: true,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app).post("/api/votes").set("Cookie", regularCookie).send();
+
+    expect(response.status).toEqual(403);
   });
 
   it("throws an error, when match does not exist", async () => {

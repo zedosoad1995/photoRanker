@@ -19,13 +19,20 @@ import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 
 const router = Router();
 
-router.get("/", checkAuth, checkAdmin, getMany);
+router.get("/", checkAuth, checkAdmin, checkProfileCompleted, getMany);
 router.get("/me", checkAuth, getMe);
 router.get("/:userId", checkAuth, getOne);
 
 router.post("/", validateForm(createUserSchema), createOne);
 router.patch("/profile/:userId", checkAuth, validateForm(createProfileSchema), createProfile);
-router.patch("/:userId", checkAuth, checkAdmin, checkProfileCompleted, validateForm(updateUserSchema), updateOne);
+router.patch(
+  "/:userId",
+  checkAuth,
+  checkAdmin,
+  checkProfileCompleted,
+  validateForm(updateUserSchema),
+  updateOne
+);
 
 router.post("/check-email", validateForm(checkEmailExistsSchema), checkEmailExists);
 

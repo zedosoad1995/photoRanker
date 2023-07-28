@@ -9,6 +9,7 @@ import { MatchModel } from "@/models/match";
 import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { UserModel } from "@/models/user";
 
 let otherUser: User;
 
@@ -40,6 +41,32 @@ describe("Regular Logged User", () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
     regularUser = res.user;
+  });
+
+  beforeEach(() => {
+    return UserModel.update({
+      data: {
+        isProfileCompleted: true,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
+
+    expect(response.status).toEqual(403);
   });
 
   it("throws and error, when there are less than 2 pictures belonging to other users", async () => {

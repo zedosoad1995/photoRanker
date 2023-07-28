@@ -6,6 +6,7 @@ import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { User } from "@prisma/client";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { UserModel } from "@/models/user";
 
 const NUM_PICTURES = 10;
 
@@ -40,6 +41,32 @@ describe("Regular Logged User", () => {
     await PictureSeeder.seedMany({
       data: [{ userId: loggedUser.id }, { userId: randomUser.id }],
     });
+  });
+
+  beforeEach(() => {
+    return UserModel.update({
+      data: {
+        isProfileCompleted: true,
+      },
+      where: {
+        id: loggedUser.id,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: loggedUser.id,
+      },
+    });
+
+    const response = await request(app).get("/api/pictures").set("Cookie", regularCookie).send();
+
+    expect(response.status).toEqual(403);
   });
 
   it("returns a list of pictures belonging to logged user", async () => {

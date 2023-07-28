@@ -32,6 +32,33 @@ describe("Regular Logged User", () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
     regularUserId = res.user.id;
+
+    return UserModel.update({
+      data: {
+        isProfileCompleted: true,
+      },
+      where: {
+        id: regularUserId,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: regularUserId,
+      },
+    });
+
+    const response = await request(app)
+      .get("/api/pictures/image/something")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
   });
 
   it("returns 404, when picture does not exist", async () => {
