@@ -88,6 +88,17 @@ export const signInGoogle = async (req: Request, res: Response) => {
       },
     });
 
+    const userJwt = jwt.sign(
+      {
+        email: newUser.email,
+      },
+      process.env.JWT_KEY!
+    );
+
+    res.cookie("session", {
+      jwt: userJwt,
+    });
+
     return res.status(201).json({ user: newUser });
   }
 

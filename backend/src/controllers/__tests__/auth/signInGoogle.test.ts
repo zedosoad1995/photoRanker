@@ -12,7 +12,8 @@ import { User } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { AUTH } from "@/constants/messages";
 import axios from "axios";
-const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL, NON_EXISTING_USER } = AUTH.GOOGLE;
+import { UserModel } from "@/models/user";
+const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 
 const CODE = "code";
 let user: User;
@@ -64,12 +65,12 @@ it("Returns 401, when email is not verified", async () => {
   expect(response.body.message).toEqual(UNVERIFIED_EMAIL);
 });
 
-it("Returns 401, when user does not exist", async () => {
+it("Returns 401, when user exists, but googleId/sub does not match the existing one", async () => {
   spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
   mockedAxios.get.mockResolvedValue({
     data: {
-      email: "doesNotExists",
-      sub: "sub",
+      email: user.email,
+      sub: "wrongGoogleId",
       email_verified: true,
     },
   });
@@ -79,25 +80,6 @@ it("Returns 401, when user does not exist", async () => {
   });
 
   expect(response.status).toEqual(401);
-  expect(response.body.message).toEqual(NON_EXISTING_USER);
-});
-
-it("Returns 401, when user does not exist", async () => {
-  spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
-  mockedAxios.get.mockResolvedValue({
-    data: {
-      email: "doesNotExists",
-      sub: "sub",
-      email_verified: true,
-    },
-  });
-
-  const response = await request(app).post("/api/auth/login/google").send({
-    code: CODE,
-  });
-
-  expect(response.status).toEqual(401);
-  expect(response.body.message).toEqual(NON_EXISTING_USER);
 });
 
 it("Logs in, returns logged user, and sets cookie", async () => {
@@ -133,6 +115,57 @@ it("does not return 'password' field", async () => {
   });
 
   expect(response.body.user).not.toHaveProperty("password");
+});
+
+it("Logs in, returns logged user, and sets cookie", async () => {
+  spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
+  mockedAxios.get.mockResolvedValue({
+    data: {
+      email: user.email,
+      sub: user.googleId,
+      email_verified: true,
+    },
+  });
+
+  const response = await request(app).post("/api/auth/login/google").send({
+    code: CODE,
+  });
+
+  expect(response.body.user.id).toEqual(user.id);
+  expect(response.header).toHaveProperty("set-cookie");
+});
+
+it("Creates user and sets cookie, when user does not exist", async () => {
+  const NEW_EMAIL = "new@email.com";
+  const NEW_GOOGLE_ID = "id";
+
+  spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
+  mockedAxios.get.mockResolvedValue({
+    data: {
+      name: "Name",
+      email: NEW_EMAIL,
+      sub: NEW_GOOGLE_ID,
+      email_verified: true,
+    },
+  });
+
+  const response = await request(app).post("/api/auth/login/google").send({
+    code: CODE,
+  });
+
+  expect(response.status).toEqual(201);
+
+  const newUser = await UserModel.findUnique({
+    where: {
+      email: NEW_EMAIL,
+    },
+  });
+
+  expect(newUser?.isProfileCompleted).toBe(false);
+  expect(newUser?.googleId).toBe(NEW_GOOGLE_ID);
+
+  expect(response.body.user.email).toEqual(NEW_EMAIL);
+  expect(response.header).toHaveProperty("set-cookie");
 });
 
 describe("Test Validation", () => {
