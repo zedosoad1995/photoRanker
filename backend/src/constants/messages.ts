@@ -20,6 +20,5 @@ export const AUTH = {
   GOOGLE: {
     NO_ACCESS_TOKEN: "Google access token is not defined",
     UNVERIFIED_EMAIL: "Emails is not verified",
-    NON_EXISTING_USER: "User does not exist. Invalid email or googleId",
   },
 };

@@ -6,7 +6,7 @@ import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import { AUTH } from "@/constants/messages";
-const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL, NON_EXISTING_USER } = AUTH.GOOGLE;
+const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 
 export const signIn = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -71,12 +71,24 @@ export const signInGoogle = async (req: Request, res: Response) => {
   const user = await UserModel.findFirst({
     where: {
       email,
-      googleId,
     },
   });
 
+  if (user && user.googleId !== googleId) {
+    throw new UnauthorizedError();
+  }
+
   if (!user) {
-    throw new UnauthorizedError(NON_EXISTING_USER);
+    const newUser = await UserModel.create({
+      data: {
+        email,
+        name,
+        isProfileCompleted: false,
+        googleId,
+      },
+    });
+
+    return res.status(201).json({ user: newUser });
   }
 
   const userJwt = jwt.sign(
