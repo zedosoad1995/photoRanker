@@ -2,11 +2,13 @@ import Link from "@/Components/Link";
 import MainForm from "./Forms/MainForm";
 import PersonalInfoForm from "./Forms/PersonalInfoForm";
 import Button from "@/Components/Button";
-import { useRef, useState } from "react";
-import { register } from "@/Services/auth";
+import { useRef, useState, useMemo } from "react";
+import { createProfile, register } from "@/Services/auth";
 import { LOGIN } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 import { GENDER } from "../../../../backend/src/constants/user";
+import _ from "underscore";
+import { getLoggedUser } from "@/Utils/user";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
@@ -40,8 +42,12 @@ export default function Register() {
 
   const formRef = useRef<IFormRef>(null);
 
+  const loggedUser = useMemo(() => getLoggedUser(), []);
+
+  const incompleteProfile = loggedUser && loggedUser.isProfileCompleted === false;
+
   const [data, setData] = useState(INITIAL_DATA);
-  const [formStage, setFormStage] = useState(0);
+  const [formStage, setFormStage] = useState(() => (incompleteProfile ? 1 : 0));
 
   const Form = forms[formStage];
 
@@ -59,7 +65,12 @@ export default function Register() {
     if (!isValid) return;
 
     if (isLastForm) {
-      await register(data);
+      if (incompleteProfile) {
+        await createProfile(loggedUser.id, _.omit(data, ["email", "password", "name"]));
+      } else {
+        await register(data);
+      }
+
       navigate(LOGIN);
     } else {
       setFormStage((val) => val + 1);
@@ -87,7 +98,7 @@ export default function Register() {
             <Form ref={formRef} updateData={updateData} onKeyDown={handleKeyDown} {...data} />
 
             <div className="flex gap-2">
-              {formStage > 0 && <Button onClick={handleBack}>Back</Button>}
+              {formStage > 0 && !incompleteProfile && <Button onClick={handleBack}>Back</Button>}
               <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
           </div>

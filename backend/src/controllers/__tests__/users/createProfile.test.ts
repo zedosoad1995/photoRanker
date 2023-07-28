@@ -45,7 +45,7 @@ describe("Admin Logged User", () => {
     adminCookie = res.cookie;
   });
 
-  it("edits user, 'password' is not returned", async () => {
+  it("edits user, updated isProdileCompleted to true, 'password' is not returned", async () => {
     const response = await request(app)
       .patch(`/api/users/profile/${userId}`)
       .set("Cookie", adminCookie)
@@ -60,6 +60,7 @@ describe("Admin Logged User", () => {
       },
     });
     expect(user).toMatchObject(updateProfileBody);
+    expect(user?.isProfileCompleted).toBe(true);
   });
 
   it("returns 404, when user id does not exist", async () => {
@@ -214,6 +215,15 @@ describe("Regular Logged User", () => {
   });
 
   it("edits user, 'password' is not returned", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: userId,
+      },
+    });
+
     const response = await request(app)
       .patch(`/api/users/profile/${userId}`)
       .set("Cookie", regularCookie)

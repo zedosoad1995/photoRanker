@@ -11,3 +11,5 @@ export const createProfileSchema = z
     dateOfBirth: z.string().refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd"),
   })
   .strict();
+
+export type ICreateProfile = z.infer<typeof createProfileSchema>;

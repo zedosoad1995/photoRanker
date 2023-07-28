@@ -25,6 +25,7 @@
     "react-image-file-resizer": "^0.4.8",
     "react-router-dom": "^6.14.1",
     "react-tailwindcss-datepicker": "^1.6.3",
+    "underscore": "^1.13.6",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -33,6 +34,7 @@
     "@types/node": "^20.4.1",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
+    "@types/underscore": "^1.11.6",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react-swc": "^3.3.2",

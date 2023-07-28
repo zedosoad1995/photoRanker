@@ -8,6 +8,7 @@ import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
 import { loginGoogle } from "@/Services/auth";
 import GoogleButton from "@/Components/GoogleButton";
+import { setLoggedUser } from "@/Utils/user";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -41,8 +42,15 @@ export default function SignIn() {
     const client = window?.google?.accounts?.oauth2.initCodeClient({
       client_id: import.meta.env.VITE_GOOGLE_AUTH_ID,
       scope: "openid profile email",
-      callback: (response) => {
-        loginGoogle(response.code);
+      callback: async (response) => {
+        const { user } = await loginGoogle(response.code);
+
+        if (user.isProfileCompleted) {
+          navigate(HOME);
+        } else if (user.isProfileCompleted === false) {
+          setLoggedUser(user);
+          navigate(REGISTER);
+        }
       },
       error_callback: (error) => {
         console.error(error);

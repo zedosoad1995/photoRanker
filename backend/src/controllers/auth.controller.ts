@@ -32,7 +32,7 @@ export const signIn = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, ["password"]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -99,7 +99,9 @@ export const signInGoogle = async (req: Request, res: Response) => {
       jwt: userJwt,
     });
 
-    return res.status(201).json({ user: newUser });
+    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId"]);
+
+    return res.status(201).json({ user: userNoPassword });
   }
 
   const userJwt = jwt.sign(
@@ -113,7 +115,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, ["password"]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
