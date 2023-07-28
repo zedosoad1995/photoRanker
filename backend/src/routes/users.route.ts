@@ -15,6 +15,7 @@ import { checkAuth } from "@/middlewares/checkAuth";
 import { checkAdmin } from "@/middlewares/checkAdmin";
 import { checkEmailExistsSchema } from "@/schemas/user/checkEmailExists";
 import { createProfileSchema } from "@/schemas/user/createProfile";
+import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ router.get("/:userId", checkAuth, getOne);
 
 router.post("/", validateForm(createUserSchema), createOne);
 router.patch("/profile/:userId", checkAuth, validateForm(createProfileSchema), createProfile);
-router.patch("/:userId", checkAuth, checkAdmin, validateForm(updateUserSchema), updateOne);
+router.patch("/:userId", checkAuth, checkAdmin, checkProfileCompleted, validateForm(updateUserSchema), updateOne);
 
 router.post("/check-email", validateForm(checkEmailExistsSchema), checkEmailExists);
 

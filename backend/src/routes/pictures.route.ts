@@ -11,13 +11,14 @@ import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
 import { validateImage } from "@/middlewares/validateImage";
 import { validateQuery } from "@/middlewares/validateQuery";
 import { getManyPicturesSchema } from "@/schemas/user/query/getManyPictures";
+import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 
 const router = Router();
 
-router.get("/", checkAuth, validateQuery(getManyPicturesSchema), getMany);
-router.get("/image/:imagePath", checkAuth, getImageFile);
-router.get("/:pictureId", checkAuth, getOne);
-router.post("/", checkAuth, convertFormDataToBuffer, validateImage, uploadOne);
-router.delete("/:pictureId", checkAuth, deleteOne);
+router.get("/", checkAuth, checkProfileCompleted, validateQuery(getManyPicturesSchema), getMany);
+router.get("/image/:imagePath", checkAuth, checkProfileCompleted, getImageFile);
+router.get("/:pictureId", checkAuth, checkProfileCompleted, getOne);
+router.post("/", checkAuth, checkProfileCompleted, convertFormDataToBuffer, validateImage, uploadOne);
+router.delete("/:pictureId", checkAuth, checkProfileCompleted, deleteOne);
 
 export default router;
