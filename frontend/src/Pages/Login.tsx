@@ -6,9 +6,7 @@ import Button from "@/Components/Button";
 import { HOME, REGISTER } from "@/constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
-import { loginGoogle } from "@/Services/auth";
 import GoogleButton from "@/Components/GoogleButton";
-import { setLoggedUser } from "@/Utils/user";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -38,29 +36,6 @@ export default function SignIn() {
     }
   };
 
-  const handleGoogleLoginClick = () => {
-    const client = window?.google?.accounts?.oauth2.initCodeClient({
-      client_id: import.meta.env.VITE_GOOGLE_AUTH_ID,
-      scope: "openid profile email",
-      callback: async (response) => {
-        const { user } = await loginGoogle(response.code);
-
-        if (user.isProfileCompleted) {
-          setLoggedUser(user);
-          navigate(HOME);
-        } else if (user.isProfileCompleted === false) {
-          setLoggedUser(user);
-          navigate(REGISTER);
-        }
-      },
-      error_callback: (error) => {
-        console.error(error);
-      },
-      ux_mode: "popup",
-    });
-    client.requestCode();
-  };
-
   if (Boolean(user)) {
     navigate(HOME);
   }
@@ -71,7 +46,7 @@ export default function SignIn() {
         <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
           Sign in to your account
         </h2>
-        <div className="mt-10 mx-auto w-full max-w-sm">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="space-y-6">
             <Textfield
               value={email}
@@ -102,7 +77,7 @@ export default function SignIn() {
               </Button>
             </div>
 
-            <GoogleButton onClick={handleGoogleLoginClick} />
+            <GoogleButton />
           </div>
 
           <p className="mt-10 text-center text-sm text-light-text">

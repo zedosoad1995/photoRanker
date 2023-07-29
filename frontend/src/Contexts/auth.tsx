@@ -24,8 +24,8 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
-      getMe().then((res) => {
-        setUser(res.user);
+      getMe().then(({ user }) => {
+        setUser(user);
         localStorage.setItem("user", JSON.stringify(user));
       });
     }

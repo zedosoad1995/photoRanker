@@ -1,11 +1,45 @@
+import { loginGoogle } from "@/Services/auth";
+import { setLoggedUser } from "@/Utils/user";
+import { HOME, REGISTER } from "@/constants/routes";
+import { useNavigate } from "react-router-dom";
+
 interface IGoogleButton {
-  onClick: () => void;
+  onSuccess?: () => void;
 }
 
-export default function GoogleButton({ onClick: handleClick }: IGoogleButton) {
+export default function GoogleButton({ onSuccess: handleSuccess }: IGoogleButton) {
+  const navigate = useNavigate();
+
+  const handleGoogleLoginClick = () => {
+    const client = window?.google?.accounts?.oauth2.initCodeClient({
+      client_id: import.meta.env.VITE_GOOGLE_AUTH_ID,
+      scope: "openid profile email",
+      callback: async (response) => {
+        const { user } = await loginGoogle(response.code);
+
+        if (user.isProfileCompleted) {
+          setLoggedUser(user);
+          navigate(HOME);
+        } else if (user.isProfileCompleted === false) {
+          setLoggedUser(user);
+          navigate(REGISTER);
+        }
+
+        if (handleSuccess) {
+          handleSuccess();
+        }
+      },
+      error_callback: (error) => {
+        console.error(error);
+      },
+      ux_mode: "popup",
+    });
+    client.requestCode();
+  };
+
   return (
     <button
-      onClick={handleClick}
+      onClick={handleGoogleLoginClick}
       className="px-4 py-2 w-full border flex items-center justify-center gap-2 border-normal-contour rounded-md hover:bg-[#4285f40a] hover:bg-[#d2e3fc] transition duration-150"
     >
       <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">

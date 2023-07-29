@@ -10,6 +10,8 @@ export const getLoggedUser = (): IUserNoPassword["user"] | null => {
   return JSON.parse(storedUser);
 };
 
-export const setLoggedUser = (user: IGetMeRes["user"]): void => {
+export const setLoggedUser = (user?: IGetMeRes["user"]): void => {
+  if (!user) return;
+
   localStorage.setItem("user", JSON.stringify(user));
 };

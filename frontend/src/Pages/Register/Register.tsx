@@ -2,13 +2,14 @@ import Link from "@/Components/Link";
 import MainForm from "./Forms/MainForm";
 import PersonalInfoForm from "./Forms/PersonalInfoForm";
 import Button from "@/Components/Button";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState } from "react";
 import { createProfile, register } from "@/Services/auth";
 import { HOME, LOGIN } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 import { GENDER } from "../../../../backend/src/constants/user";
 import _ from "underscore";
 import { getLoggedUser, setLoggedUser } from "@/Utils/user";
+import GoogleButton from "@/Components/GoogleButton";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
@@ -42,7 +43,7 @@ export default function Register() {
 
   const formRef = useRef<IFormRef>(null);
 
-  const loggedUser = useMemo(() => getLoggedUser(), []);
+  const loggedUser = getLoggedUser();
 
   const incompleteProfile = loggedUser && loggedUser.isProfileCompleted === false;
 
@@ -92,6 +93,10 @@ export default function Register() {
     }
   };
 
+  const handleGoogleSuccess = () => {
+    setFormStage(1);
+  };
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
@@ -106,6 +111,8 @@ export default function Register() {
               {formStage > 0 && !incompleteProfile && <Button onClick={handleBack}>Back</Button>}
               <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
+
+            {formStage === 0 && <GoogleButton onSuccess={handleGoogleSuccess} />}
           </div>
 
           <p className="mt-10 text-center text-sm text-light-text">
