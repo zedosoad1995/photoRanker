@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
-import { LOGIN, REGISTER } from "@/constants/routes";
+import { HOME, LOGIN } from "@/constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getLoggedUser } from "@/Utils/user";
+import CreateProfile from "../CreateProfile";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -30,12 +31,21 @@ export default function Layout() {
     if (!user) {
       navigate(LOGIN);
     } else if (user.isProfileCompleted === false) {
-      navigate(REGISTER);
+      navigate(HOME);
     }
   }, []);
 
-  if (!user || user.isProfileCompleted === false) {
+  if (!user) {
     return <></>;
+  } else if (user.isProfileCompleted === false) {
+    return (
+      <>
+        <Navbar onClickMenu={handleClickMenu} onLogout={handleLogout} isProfileCreated={false} />
+        <div className="h-[calc(100%-4rem)] flex flex-col justify-center">
+          <CreateProfile />;
+        </div>
+      </>
+    );
   }
 
   return (

@@ -1,12 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getMe } from "@/Services/auth";
+import { getMe, loginGoogle as loginGoogleService } from "@/Services/auth";
 import { IGetMeRes } from "../../../backend/src/types/user";
 import { logout as logoutService, login as loginService } from "@/Services/auth";
 
 export interface IAuthContext {
   user?: IGetMeRes["user"];
   login: (email: string, password: string) => Promise<void>;
+  loginGoogle: (code: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -43,7 +45,24 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(user));
   };
 
-  return <AuthContext.Provider value={{ user, logout, login }}>{children}</AuthContext.Provider>;
+  const loginGoogle = async (code: string) => {
+    const { user } = await loginGoogleService(code);
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
+  const updateUser = async () => {
+    return getMe().then(({ user }) => {
+      setUser(user);
+      localStorage.setItem("user", JSON.stringify(user));
+    });
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, logout, login, loginGoogle, updateUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

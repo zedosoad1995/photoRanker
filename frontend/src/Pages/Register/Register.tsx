@@ -93,10 +93,6 @@ export default function Register() {
     }
   };
 
-  const handleGoogleSuccess = () => {
-    setFormStage(1);
-  };
-
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
@@ -112,7 +108,7 @@ export default function Register() {
               <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
 
-            {formStage === 0 && <GoogleButton onSuccess={handleGoogleSuccess} />}
+            {formStage === 0 && <GoogleButton />}
           </div>
 
           <p className="mt-10 text-center text-sm text-light-text">

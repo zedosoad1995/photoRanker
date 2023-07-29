@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Label from "@/Components/Label";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
@@ -36,8 +36,14 @@ export default function SignIn() {
     }
   };
 
+  useEffect(() => {
+    if (Boolean(user)) {
+      navigate(HOME);
+    }
+  }, [user]);
+
   if (Boolean(user)) {
-    navigate(HOME);
+    return <></>;
   }
 
   return (

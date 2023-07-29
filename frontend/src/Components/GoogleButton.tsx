@@ -1,33 +1,18 @@
-import { loginGoogle } from "@/Services/auth";
-import { setLoggedUser } from "@/Utils/user";
-import { HOME, REGISTER } from "@/constants/routes";
+import { useAuth } from "@/Contexts/auth";
+import { HOME } from "@/constants/routes";
 import { useNavigate } from "react-router-dom";
 
-interface IGoogleButton {
-  onSuccess?: () => void;
-}
-
-export default function GoogleButton({ onSuccess: handleSuccess }: IGoogleButton) {
+export default function GoogleButton() {
   const navigate = useNavigate();
+  const { loginGoogle } = useAuth();
 
   const handleGoogleLoginClick = () => {
     const client = window?.google?.accounts?.oauth2.initCodeClient({
       client_id: import.meta.env.VITE_GOOGLE_AUTH_ID,
       scope: "openid profile email",
       callback: async (response) => {
-        const { user } = await loginGoogle(response.code);
-
-        if (user.isProfileCompleted) {
-          setLoggedUser(user);
-          navigate(HOME);
-        } else if (user.isProfileCompleted === false) {
-          setLoggedUser(user);
-          navigate(REGISTER);
-        }
-
-        if (handleSuccess) {
-          handleSuccess();
-        }
+        await loginGoogle(response.code);
+        navigate(HOME);
       },
       error_callback: (error) => {
         console.error(error);
