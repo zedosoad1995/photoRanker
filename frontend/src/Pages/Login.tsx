@@ -7,6 +7,7 @@ import { HOME, REGISTER } from "@/constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
 import GoogleButton from "@/Components/GoogleButton";
+import queryString from "query-string";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -46,8 +47,20 @@ export default function SignIn() {
     return <></>;
   }
 
+  const stringifiedParams = queryString.stringify({
+    client_id: import.meta.env.VITE_FACEBOOK_AUTH_ID,
+    redirect_uri: "localhost:3000/login",
+  });
+
+  const facebookLoginUrl = `https://www.facebook.com/v4.0/dialog/oauth?client_id=${
+    import.meta.env.VITE_FACEBOOK_AUTH_ID
+  }&redirect_uri=http://localhost:3000/login&scope=email&display=popup`;
+
+  console.log(facebookLoginUrl);
+
   return (
     <>
+      <a href={facebookLoginUrl}>sfsfssfsf</a>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
         <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
           Sign in to your account

@@ -119,3 +119,20 @@ export const signInGoogle = async (req: Request, res: Response) => {
 
   res.status(200).json({ user: userNoPassword });
 };
+
+import queryString from "query-string";
+
+export const signFacebook = async (req: Request, res: Response) => {
+  const stringifiedParams = queryString.stringify({
+    client_id: process.env.FACEBOOK_CLIENT_ID,
+    redirect_uri: "http://localhost:3000",
+    scope: ["email"].join(","), // comma seperated string
+    response_type: "code",
+    auth_type: "rerequest",
+    display: "popup",
+  });
+
+  const facebookLoginUrl = `https://www.facebook.com/v4.0/dialog/oauth?${stringifiedParams}`;
+
+  res.status(200).send();
+};
