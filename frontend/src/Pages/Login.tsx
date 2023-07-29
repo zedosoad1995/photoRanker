@@ -54,7 +54,7 @@ export default function SignIn() {
 
   const facebookLoginUrl = `https://www.facebook.com/v4.0/dialog/oauth?client_id=${
     import.meta.env.VITE_FACEBOOK_AUTH_ID
-  }&redirect_uri=http://localhost:3000/login&scope=email&display=popup`;
+  }&redirect_uri=http://localhost:3000/login&scope=email&`;
 
   console.log(facebookLoginUrl);
 
