@@ -5,4 +5,6 @@ export const VOTE = "/vote";
 export const PHOTOS = "/photos";
 export const SETTINGS = "/settings";
 
-export const NON_PROTECTED_ROUTES = [LOGIN, REGISTER];
+export const FACEBOOK_CALLBACK = "/auth/facebook";
+
+export const NON_PROTECTED_ROUTES = [LOGIN, REGISTER, FACEBOOK_CALLBACK];
