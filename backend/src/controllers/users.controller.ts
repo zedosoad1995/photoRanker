@@ -7,6 +7,7 @@ import { NotFoundError } from "@/errors/NotFoundError";
 import { isAdmin } from "@/helpers/role";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { BadRequestError } from "@/errors/BadRequestError";
+import nodemailer from "nodemailer";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -65,6 +66,25 @@ export const createOne = async (req: Request, res: Response) => {
   const user = await UserModel.create({
     data: { ...req.body, password: hashedPassword, isProfileCompleted: true },
   });
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.SENDER_EMAIL,
+      pass: process.env.SENDER_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.SENDER_EMAIL,
+    to: req.body.email,
+    subject: "Fat",
+    text: "Hello.",
+  };
+
+  transporter.sendMail(mailOptions);
 
   const userNoPassword = UserModel.exclude(user, [
     "password",
