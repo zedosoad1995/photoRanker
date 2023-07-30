@@ -34,6 +34,7 @@ describe("Regular Logged User", () => {
     await UserModel.update({
       data: {
         isProfileCompleted: true,
+        isEmailVerified: true,
       },
       where: {
         id: regularUser.id,
@@ -45,6 +46,24 @@ describe("Regular Logged User", () => {
     await UserModel.update({
       data: {
         isProfileCompleted: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/users/${userId}`)
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
       },
       where: {
         id: regularUser.id,

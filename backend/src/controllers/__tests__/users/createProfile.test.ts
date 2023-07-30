@@ -3,7 +3,6 @@ import { app } from "@/app";
 import { UserModel } from "@/models/user";
 import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
-import { UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const updateProfileBody = _.pick(
@@ -33,7 +32,9 @@ beforeAll(async () => {
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app).patch(`/api/users/profile/${userId}`).send();
+    const response = await request(app)
+      .patch(`/api/users/profile/${userId}`)
+      .send();
 
     expect(response.status).toEqual(401);
   });

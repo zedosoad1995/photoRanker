@@ -18,7 +18,9 @@ afterAll(() => {
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app).get("/api/pictures/image/imagePath").send();
+    const response = await request(app)
+      .get("/api/pictures/image/imagePath")
+      .send();
 
     expect(response.status).toEqual(401);
   });
@@ -36,6 +38,7 @@ describe("Regular Logged User", () => {
     return UserModel.update({
       data: {
         isProfileCompleted: true,
+        isEmailVerified: true,
       },
       where: {
         id: regularUserId,
@@ -47,6 +50,24 @@ describe("Regular Logged User", () => {
     await UserModel.update({
       data: {
         isProfileCompleted: false,
+      },
+      where: {
+        id: regularUserId,
+      },
+    });
+
+    const response = await request(app)
+      .get("/api/pictures/image/something")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
       },
       where: {
         id: regularUserId,

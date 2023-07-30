@@ -28,7 +28,10 @@ describe("Unauthorized", () => {
   it("returns 403, when logged user is not ADMIN", async () => {
     const { cookie } = await loginRegular();
 
-    const response = await request(app).patch(`/api/users/${userId}`).set("Cookie", cookie).send();
+    const response = await request(app)
+      .patch(`/api/users/${userId}`)
+      .set("Cookie", cookie)
+      .send();
 
     expect(response.status).toEqual(403);
   });
@@ -45,6 +48,7 @@ describe("Admin Logged User", () => {
     return UserModel.update({
       data: {
         isProfileCompleted: true,
+        isEmailVerified: true,
       },
       where: {
         id: adminUser.id,
@@ -56,6 +60,24 @@ describe("Admin Logged User", () => {
     await UserModel.update({
       data: {
         isProfileCompleted: false,
+      },
+      where: {
+        id: adminUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .patch(`/api/users/${userId}`)
+      .set("Cookie", adminCookie)
+      .send(updateUserBody);
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
       },
       where: {
         id: adminUser.id,

@@ -20,7 +20,10 @@ describe("Unauthorized", () => {
   it("returns 403, when logged user is not ADMIN", async () => {
     const { cookie } = await loginRegular();
 
-    const response = await request(app).get("/api/users").set("Cookie", cookie).send();
+    const response = await request(app)
+      .get("/api/users")
+      .set("Cookie", cookie)
+      .send();
 
     expect(response.status).toEqual(403);
   });
@@ -38,6 +41,7 @@ describe("Admin Logged User", () => {
     return UserModel.update({
       data: {
         isProfileCompleted: true,
+        isEmailVerified: true,
       },
       where: {
         id: adminUser.id,
@@ -55,20 +59,47 @@ describe("Admin Logged User", () => {
       },
     });
 
-    const response = await request(app).get("/api/users").set("Cookie", adminCookie).send();
+    const response = await request(app)
+      .get("/api/users")
+      .set("Cookie", adminCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
+      },
+      where: {
+        id: adminUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .get("/api/users")
+      .set("Cookie", adminCookie)
+      .send();
 
     expect(response.status).toEqual(403);
   });
 
   it("returns a list of users", async () => {
-    const response = await request(app).get("/api/users").set("Cookie", adminCookie).send();
+    const response = await request(app)
+      .get("/api/users")
+      .set("Cookie", adminCookie)
+      .send();
 
     expect(response.status).toEqual(200);
     expect(response.body.users).toHaveLength(NUM_USERS + 1);
   });
 
   it("does not return 'password' field", async () => {
-    const response = await request(app).get("/api/users").set("Cookie", adminCookie).send();
+    const response = await request(app)
+      .get("/api/users")
+      .set("Cookie", adminCookie)
+      .send();
 
     expect(response.status).toEqual(200);
     expect(response.body.users[0]).not.toHaveProperty("password");

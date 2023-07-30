@@ -41,6 +41,7 @@ describe("Regular Logged User", () => {
     return UserModel.update({
       data: {
         isProfileCompleted: true,
+        isEmailVerified: true,
       },
       where: {
         id: regularUser.id,
@@ -52,6 +53,24 @@ describe("Regular Logged User", () => {
     await UserModel.update({
       data: {
         isProfileCompleted: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", regularCookie)
+      .attach("image", "src/tests/fixtures/files/noExtension");
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
       },
       where: {
         id: regularUser.id,
@@ -97,7 +116,10 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when no file is uploaded", async () => {
-    const response = await request(app).post("/api/pictures").set("Cookie", regularCookie).send();
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", regularCookie)
+      .send();
 
     expect(response.status).toEqual(400);
     expect(response.body.message).toEqual(PICTURE.NO_FILE);
@@ -123,7 +145,10 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when number of pictures passes the limit", async () => {
-    await PictureSeeder.seedMany({ data: { userId: regularUser.id }, numRepeat: LIMIT_PICTURES });
+    await PictureSeeder.seedMany({
+      data: { userId: regularUser.id },
+      numRepeat: LIMIT_PICTURES,
+    });
 
     const response = await request(app)
       .post("/api/pictures")
@@ -148,7 +173,9 @@ describe("Regular Logged User", () => {
     expect(picture?.userId).toEqual(regularUser.id);
 
     expect(
-      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+      fs.existsSync(
+        normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!))
+      )
     ).toBeTruthy();
   });
 });
@@ -178,12 +205,17 @@ describe("Admin Logged User", () => {
     expect(picture?.userId).toEqual(adminUser.id);
 
     expect(
-      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
+      fs.existsSync(
+        normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!))
+      )
     ).toBeTruthy();
   });
 
   it("Creates Picture, even when regular user picture limit is passed", async () => {
-    await PictureSeeder.seedMany({ data: { userId: adminUser.id }, numRepeat: LIMIT_PICTURES });
+    await PictureSeeder.seedMany({
+      data: { userId: adminUser.id },
+      numRepeat: LIMIT_PICTURES,
+    });
 
     const response = await request(app)
       .post("/api/pictures")
