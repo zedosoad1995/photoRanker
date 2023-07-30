@@ -1,12 +1,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getMe, loginGoogle as loginGoogleService } from "@/Services/auth";
 import { IGetMeRes } from "../../../backend/src/types/user";
-import { logout as logoutService, login as loginService } from "@/Services/auth";
+import {
+  logout as logoutService,
+  login as loginService,
+  getMe,
+  loginGoogle as loginGoogleService,
+  loginFacebook as loginFacebookService,
+} from "@/Services/auth";
+import { ISignInFacebook } from "../../../backend/src/schemas/auth/signInFacebook";
 
 export interface IAuthContext {
   user?: IGetMeRes["user"];
   login: (email: string, password: string) => Promise<void>;
   loginGoogle: (code: string) => Promise<void>;
+  loginFacebook: (data: ISignInFacebook) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: () => Promise<void>;
 }
@@ -51,6 +58,12 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(user));
   };
 
+  const loginFacebook = async (data: ISignInFacebook) => {
+    const { user } = await loginFacebookService(data);
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
   const updateUser = async () => {
     return getMe().then(({ user }) => {
       setUser(user);
@@ -59,7 +72,9 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, logout, login, loginGoogle, updateUser }}>
+    <AuthContext.Provider
+      value={{ user, logout, login, loginGoogle, loginFacebook, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

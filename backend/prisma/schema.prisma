@@ -13,6 +13,7 @@ model User {
   email              String    @unique
   password           String?
   googleId           String?
+  facebookId         String?
   ethnicity          String?
   countryOfOrigin    String?
   dateOfBirth        String?

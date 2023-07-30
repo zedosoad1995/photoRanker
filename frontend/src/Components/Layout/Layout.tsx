@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
-import { HOME, LOGIN } from "@/constants/routes";
+import { HOME, LOGIN } from "@/Constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getLoggedUser } from "@/Utils/user";
 import CreateProfile from "../CreateProfile";

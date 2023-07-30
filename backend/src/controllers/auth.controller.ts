@@ -119,3 +119,58 @@ export const signInGoogle = async (req: Request, res: Response) => {
 
   res.status(200).json({ user: userNoPassword });
 };
+
+export const signInFacebook = async (req: Request, res: Response) => {
+  const { id, name, email } = req.body;
+
+  const user = await UserModel.findFirst({
+    where: {
+      email,
+    },
+  });
+
+  if (user && user.facebookId !== id) {
+    throw new UnauthorizedError();
+  }
+
+  if (!user) {
+    const newUser = await UserModel.create({
+      data: {
+        email,
+        name,
+        isProfileCompleted: false,
+        facebookId: id,
+      },
+    });
+
+    const userJwt = jwt.sign(
+      {
+        email: newUser.email,
+      },
+      process.env.JWT_KEY!
+    );
+
+    res.cookie("session", {
+      jwt: userJwt,
+    });
+
+    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
+
+    return res.status(201).json({ user: userNoPassword });
+  }
+
+  const userJwt = jwt.sign(
+    {
+      email: user.email,
+    },
+    process.env.JWT_KEY!
+  );
+
+  res.cookie("session", {
+    jwt: userJwt,
+  });
+
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
+
+  res.status(200).send({user: userNoPassword});
+};
