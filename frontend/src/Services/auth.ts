@@ -1,7 +1,6 @@
 import api from "./index";
 import { ICreateUser } from "../../../backend/src/schemas/user/createUser";
 import { ICreateProfile } from "../../../backend/src/schemas/user/createProfile";
-import { ISignInFacebook } from "../../../backend/src/schemas/auth/signInFacebook";
 import { ISignIn } from "../../../backend/src/schemas/auth/signIn";
 import {
   ICheckEmailRes,
@@ -18,10 +17,8 @@ export const loginGoogle = async (code: string): Promise<ILoginRes> => {
   return api.post("/auth/login/google", { code });
 };
 
-export const loginFacebook = async (
-  data: ISignInFacebook
-): Promise<ILoginRes> => {
-  return api.post("/auth/login/facebook", data);
+export const loginFacebook = async (code: string): Promise<ILoginRes> => {
+  return api.post("/auth/login/facebook", { code });
 };
 
 export const logout = async (): Promise<void> => {

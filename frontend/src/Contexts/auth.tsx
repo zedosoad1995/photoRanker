@@ -7,13 +7,12 @@ import {
   loginGoogle as loginGoogleService,
   loginFacebook as loginFacebookService,
 } from "@/Services/auth";
-import { ISignInFacebook } from "../../../backend/src/schemas/auth/signInFacebook";
 
 export interface IAuthContext {
   user?: IGetMeRes["user"];
   login: (email: string, password: string) => Promise<void>;
   loginGoogle: (code: string) => Promise<void>;
-  loginFacebook: (data: ISignInFacebook) => Promise<void>;
+  loginFacebook: (code: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: () => Promise<void>;
 }
@@ -58,8 +57,8 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(user));
   };
 
-  const loginFacebook = async (data: ISignInFacebook) => {
-    const { user } = await loginFacebookService(data);
+  const loginFacebook = async (code: string) => {
+    const { user } = await loginFacebookService(code);
     setUser(user);
     localStorage.setItem("user", JSON.stringify(user));
   };

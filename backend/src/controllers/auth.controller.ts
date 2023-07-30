@@ -6,6 +6,7 @@ import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import { AUTH } from "@/constants/messages";
+import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 
 export const signIn = async (req: Request, res: Response) => {
@@ -121,7 +122,28 @@ export const signInGoogle = async (req: Request, res: Response) => {
 };
 
 export const signInFacebook = async (req: Request, res: Response) => {
-  const { id, name, email } = req.body;
+  const { code } = req.body;
+
+  const result = await axios.get(
+    "https://graph.facebook.com/v4.0/oauth/access_token",
+    {
+      params: {
+        client_id: process.env.FACEBOOK_CLIENT_ID,
+        client_secret: process.env.FACEBOOK_CLIENT_SECRET,
+        redirect_uri: FACEBOOK_CALLBACK_URI,
+        code,
+      },
+    }
+  );
+
+  const {
+    data: { id, email, name },
+  } = await axios.get("https://graph.facebook.com/me", {
+    params: {
+      fields: ["id", "email", "name"].join(","),
+      access_token: result.data.access_token,
+    },
+  });
 
   const user = await UserModel.findFirst({
     where: {
@@ -154,7 +176,11 @@ export const signInFacebook = async (req: Request, res: Response) => {
       jwt: userJwt,
     });
 
-    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
+    const userNoPassword = UserModel.exclude(newUser, [
+      "password",
+      "googleId",
+      "facebookId",
+    ]);
 
     return res.status(201).json({ user: userNoPassword });
   }
@@ -172,5 +198,5 @@ export const signInFacebook = async (req: Request, res: Response) => {
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
 
-  res.status(200).send({user: userNoPassword});
+  res.status(200).send({ user: userNoPassword });
 };
