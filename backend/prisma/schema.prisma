@@ -20,6 +20,7 @@ model User {
   gender             Gender?   @default(Male)
   role               UserRole  @default(REGULAR)
   isProfileCompleted Boolean   @default(false)
+  isEmailVerified    Boolean   @default(false)
   activeMatch        Match?    @relation(name: "activeMatch", fields: [activeMatchId], references: [id])
   activeMatchId      String?   @unique
   pictures           Picture[]

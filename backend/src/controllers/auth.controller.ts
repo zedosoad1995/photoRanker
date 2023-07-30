@@ -89,6 +89,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
         email,
         name,
         isProfileCompleted: false,
+        isEmailVerified: true,
         googleId,
       },
     });
@@ -177,6 +178,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
         email,
         name,
         isProfileCompleted: false,
+        isEmailVerified: true,
         facebookId: id,
       },
     });

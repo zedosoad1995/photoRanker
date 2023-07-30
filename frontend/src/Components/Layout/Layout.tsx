@@ -40,7 +40,11 @@ export default function Layout() {
   } else if (user.isProfileCompleted === false) {
     return (
       <>
-        <Navbar onClickMenu={handleClickMenu} onLogout={handleLogout} isProfileCreated={false} />
+        <Navbar
+          onClickMenu={handleClickMenu}
+          onLogout={handleLogout}
+          isProfileCreated={false}
+        />
         <div className="h-[calc(100%-4rem)] flex flex-col justify-center">
           <CreateProfile />;
         </div>

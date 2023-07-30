@@ -1,8 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
-import { HOME, LOGIN, PHOTOS, REGISTER, SETTINGS, VOTE, FACEBOOK_CALLBACK } from "./Constants/routes.ts";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import {
+  HOME,
+  LOGIN,
+  PHOTOS,
+  REGISTER,
+  SETTINGS,
+  VOTE,
+  FACEBOOK_CALLBACK,
+} from "./Constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
 import { AuthProvider } from "@/Contexts/auth.tsx";
