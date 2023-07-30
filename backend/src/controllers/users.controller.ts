@@ -8,6 +8,9 @@ import { isAdmin } from "@/helpers/role";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { BadRequestError } from "@/errors/BadRequestError";
 import nodemailer from "nodemailer";
+import ejs from "ejs";
+import path from "path";
+import fs from "fs";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -75,13 +78,30 @@ export const createOne = async (req: Request, res: Response) => {
       user: process.env.SENDER_EMAIL,
       pass: process.env.SENDER_PASSWORD,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
+
+  const templatePath = path.resolve(
+    __dirname,
+    "../views/emailVerification.ejs"
+  );
+
+  const data = {
+    user: {
+      name: req.body.name,
+    },
+    verificationUrl: "http://yourwebsite.com/verify?token=someToken",
+  };
+
+  const html = await ejs.renderFile(templatePath, data);
 
   const mailOptions = {
     from: process.env.SENDER_EMAIL,
     to: req.body.email,
-    subject: "Fat",
-    text: "Hello.",
+    subject: "Email Verification",
+    html,
   };
 
   transporter.sendMail(mailOptions);
