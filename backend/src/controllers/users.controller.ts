@@ -10,7 +10,6 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 import path from "path";
-import fs from "fs";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -78,6 +77,7 @@ export const createOne = async (req: Request, res: Response) => {
       user: process.env.SENDER_EMAIL,
       pass: process.env.SENDER_PASSWORD,
     },
+    // TODO: Remove this unsafe option in the future for production
     tls: {
       rejectUnauthorized: false,
     },
