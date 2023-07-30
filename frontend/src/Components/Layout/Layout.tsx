@@ -6,6 +6,7 @@ import { HOME, LOGIN } from "@/Constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getLoggedUser } from "@/Utils/user";
 import CreateProfile from "../CreateProfile";
+import UnverifiedEmail from "../UnverifiedEmail";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -30,23 +31,28 @@ export default function Layout() {
   useEffect(() => {
     if (!user) {
       navigate(LOGIN);
-    } else if (user.isProfileCompleted === false) {
+    } else if (!user.isProfileCompleted || !user.isEmailVerified) {
       navigate(HOME);
     }
   }, []);
 
   if (!user) {
     return <></>;
-  } else if (user.isProfileCompleted === false) {
+  } else if (!user.isProfileCompleted) {
     return (
       <>
-        <Navbar
-          onClickMenu={handleClickMenu}
-          onLogout={handleLogout}
-          isProfileCreated={false}
-        />
+        <Navbar onLogout={handleLogout} isProfileCreated={false} />
         <div className="h-[calc(100%-4rem)] flex flex-col justify-center">
           <CreateProfile />;
+        </div>
+      </>
+    );
+  } else if (!user.isEmailVerified) {
+    return (
+      <>
+        <Navbar onLogout={handleLogout} isProfileCreated={false} />
+        <div className="p-4 md:p-12">
+          <UnverifiedEmail />
         </div>
       </>
     );
