@@ -30,8 +30,8 @@ describe("Regular Logged User", () => {
     regularUser = res.user;
   });
 
-  beforeEach(() => {
-    return UserModel.update({
+  beforeEach(async () => {
+    await UserModel.update({
       data: {
         isProfileCompleted: true,
       },

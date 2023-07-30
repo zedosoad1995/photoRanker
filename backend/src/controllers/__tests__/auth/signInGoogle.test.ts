@@ -135,7 +135,7 @@ it("Logs in, returns logged user, and sets cookie", async () => {
   expect(response.header).toHaveProperty("set-cookie");
 });
 
-it("Creates user and sets cookie, when user does not exist", async () => {
+it("Creates user and sets cookie, when user does not exist. isEmailVerified is set as true", async () => {
   const NEW_EMAIL = "new@email.com";
   const NEW_GOOGLE_ID = "id";
 
@@ -162,6 +162,7 @@ it("Creates user and sets cookie, when user does not exist", async () => {
   });
 
   expect(newUser?.isProfileCompleted).toBe(false);
+  expect(newUser?.isEmailVerified).toBe(true);
   expect(newUser?.googleId).toBe(NEW_GOOGLE_ID);
 
   expect(response.body.user.email).toEqual(NEW_EMAIL);

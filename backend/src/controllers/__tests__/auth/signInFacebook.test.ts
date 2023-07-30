@@ -7,7 +7,7 @@ import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { AUTH } from "@/constants/messages";
 import axios from "axios";
 import { UserModel } from "@/models/user";
-const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
+const { NO_ACCESS_TOKEN } = AUTH.FACEBOOK;
 
 const CODE = "code";
 let user: User;
@@ -74,7 +74,7 @@ it("does not return 'facebookId' field", async () => {
   expect(response.body.user).not.toHaveProperty("facebookId");
 });
 
-it("Creates user and sets cookie, when user does not exist", async () => {
+it("Creates user and sets cookie, when user does not exist. isEmailVerified is set as true", async () => {
   const NEW_EMAIL = "new@email.com";
   const NEW_FACEBOOK_ID = "id";
 
@@ -96,6 +96,7 @@ it("Creates user and sets cookie, when user does not exist", async () => {
   });
 
   expect(newUser?.isProfileCompleted).toBe(false);
+  expect(newUser?.isEmailVerified).toBe(true);
   expect(newUser?.facebookId).toBe(NEW_FACEBOOK_ID);
 
   expect(response.body.user.email).toEqual(NEW_EMAIL);

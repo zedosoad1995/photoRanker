@@ -21,4 +21,7 @@ export const AUTH = {
     NO_ACCESS_TOKEN: "Google access token is not defined",
     UNVERIFIED_EMAIL: "Emails is not verified",
   },
+  FACEBOOK: {
+    NO_ACCESS_TOKEN: "Facebook access token is not defined",
+  },
 };

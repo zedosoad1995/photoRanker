@@ -6,7 +6,6 @@ import { UserModel } from "@/models/user";
 import { hashPassword } from "@/helpers/password";
 import { app } from "@/app";
 import request from "supertest";
-import { v4 as uuidv4 } from "uuid";
 
 export const randomizeUser = (data: Partial<Prisma.UserCreateInput> = {}) => ({
   email: faker.internet.email(),
@@ -35,6 +34,7 @@ export const loginUser = async (role: UserRole) => {
         password: await hashPassword(password),
       }),
       isProfileCompleted: true,
+      isEmailVerified: true,
     },
   });
 

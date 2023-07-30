@@ -8,6 +8,7 @@ import axios from "axios";
 import { AUTH } from "@/constants/messages";
 import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
+const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
 export const signIn = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -150,7 +151,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
   );
 
   if (!response.data?.access_token) {
-    throw new UnauthorizedError(NO_ACCESS_TOKEN);
+    throw new UnauthorizedError(NO_ACCESS_TOKEN_FACEBOOK);
   }
 
   const {
