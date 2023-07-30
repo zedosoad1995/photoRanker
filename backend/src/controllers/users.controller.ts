@@ -29,7 +29,11 @@ export const getOne = async (req: Request, res: Response) => {
     throw new NotFoundError("User not found");
   }
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(user, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -37,7 +41,11 @@ export const getOne = async (req: Request, res: Response) => {
 export const getMe = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  const userNoPassword = UserModel.exclude(loggedUser, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(loggedUser, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -58,7 +66,11 @@ export const createOne = async (req: Request, res: Response) => {
     data: { ...req.body, password: hashedPassword, isProfileCompleted: true },
   });
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(user, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(201).json({ user: userNoPassword });
 };
@@ -88,7 +100,11 @@ export const createProfile = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(updatedUser, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -114,7 +130,11 @@ export const updateOne = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(updatedUser, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };

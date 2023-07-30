@@ -100,7 +100,7 @@ it("Logs in, returns logged user, and sets cookie", async () => {
   expect(response.header).toHaveProperty("set-cookie");
 });
 
-it("does not return 'password' field", async () => {
+it("does not return 'googleId' field", async () => {
   spyGetToken.mockResolvedValue({ tokens: { access_token: "token" } });
   mockedAxios.get.mockResolvedValue({
     data: {
@@ -114,7 +114,7 @@ it("does not return 'password' field", async () => {
     code: CODE,
   });
 
-  expect(response.body.user).not.toHaveProperty("password");
+  expect(response.body.user).not.toHaveProperty("googleId");
 });
 
 it("Logs in, returns logged user, and sets cookie", async () => {

@@ -33,7 +33,11 @@ export const signIn = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(user, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -100,7 +104,11 @@ export const signInGoogle = async (req: Request, res: Response) => {
       jwt: userJwt,
     });
 
-    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId"]);
+    const userNoPassword = UserModel.exclude(newUser, [
+      "password",
+      "googleId",
+      "facebookId",
+    ]);
 
     return res.status(201).json({ user: userNoPassword });
   }
@@ -116,7 +124,11 @@ export const signInGoogle = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(user, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -124,7 +136,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
 export const signInFacebook = async (req: Request, res: Response) => {
   const { code } = req.body;
 
-  const result = await axios.get(
+  const response = await axios.get(
     "https://graph.facebook.com/v4.0/oauth/access_token",
     {
       params: {
@@ -136,12 +148,16 @@ export const signInFacebook = async (req: Request, res: Response) => {
     }
   );
 
+  if (!response.data?.access_token) {
+    throw new UnauthorizedError(NO_ACCESS_TOKEN);
+  }
+
   const {
     data: { id, email, name },
   } = await axios.get("https://graph.facebook.com/me", {
     params: {
       fields: ["id", "email", "name"].join(","),
-      access_token: result.data.access_token,
+      access_token: response.data.access_token,
     },
   });
 
@@ -196,7 +212,11 @@ export const signInFacebook = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId"]);
+  const userNoPassword = UserModel.exclude(user, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).send({ user: userNoPassword });
 };
