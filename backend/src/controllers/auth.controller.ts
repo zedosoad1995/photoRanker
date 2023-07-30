@@ -7,6 +7,7 @@ import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import { AUTH } from "@/constants/messages";
 import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
+import { BadRequestError } from "@/errors/BadRequestError";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -222,4 +223,35 @@ export const signInFacebook = async (req: Request, res: Response) => {
   ]);
 
   res.status(200).send({ user: userNoPassword });
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  const verificationToken = req.params.token;
+
+  const user = await UserModel.findFirst({
+    where: {
+      verificationToken,
+    },
+  });
+
+  if (!user || !user.verificationTokenExpiration) {
+    throw new BadRequestError("Invalid token");
+  }
+
+  if (new Date() > user.verificationTokenExpiration) {
+    throw new BadRequestError("Token has expired");
+  }
+
+  await UserModel.update({
+    data: {
+      isEmailVerified: true,
+      verificationToken: null,
+      verificationTokenExpiration: null,
+    },
+    where: {
+      id: user.id,
+    },
+  });
+
+  res.redirect(process.env.FRONTEND_URL!);
 };

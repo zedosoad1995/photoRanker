@@ -7,6 +7,7 @@ import { NotFoundError } from "@/errors/NotFoundError";
 import { isAdmin } from "@/helpers/role";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { BadRequestError } from "@/errors/BadRequestError";
+import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 import path from "path";
@@ -65,8 +66,20 @@ export const createOne = async (req: Request, res: Response) => {
     throw new ConflictError("Email already exists");
   }
 
+  const verificationToken = uuidv4();
+  const expires = new Date();
+  expires.setHours(
+    expires.getHours() + Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
+  );
+
   const user = await UserModel.create({
-    data: { ...req.body, password: hashedPassword, isProfileCompleted: true },
+    data: {
+      ...req.body,
+      password: hashedPassword,
+      isProfileCompleted: true,
+      verificationTokenExpiration: expires,
+      verificationToken,
+    },
   });
 
   const transporter = nodemailer.createTransport({
@@ -92,7 +105,7 @@ export const createOne = async (req: Request, res: Response) => {
     user: {
       name: req.body.name,
     },
-    verificationUrl: "http://yourwebsite.com/verify?token=someToken",
+    verificationUrl: `${process.env.BACKEND_URL}/api/auth/verification/${verificationToken}`,
   };
 
   const html = await ejs.renderFile(templatePath, data);

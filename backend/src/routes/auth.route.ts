@@ -4,6 +4,7 @@ import {
   signInFacebook,
   signInGoogle,
   signOut,
+  verifyEmail,
 } from "@/controllers/auth.controller";
 import { validateForm } from "@/middlewares/validateForm";
 import { signInSchema } from "@/schemas/auth/signIn";
@@ -20,5 +21,6 @@ router.post(
   signInFacebook
 );
 router.post("/logout", signOut);
+router.get("/verification/:token", verifyEmail);
 
 export default router;
