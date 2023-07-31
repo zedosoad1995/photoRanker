@@ -4,13 +4,12 @@ import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
 import { HOME, LOGIN } from "@/Constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
-import { getLoggedUser } from "@/Utils/user";
 import CreateProfile from "../CreateProfile";
 import UnverifiedEmail from "../UnverifiedEmail";
 
 export default function Layout() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const [open, setOpen] = useState(false);
 
@@ -27,23 +26,24 @@ export default function Layout() {
     navigate(LOGIN);
   };
 
-  const user = getLoggedUser();
   useEffect(() => {
-    if (!user) {
-      navigate(LOGIN);
-    } else if (!user.isProfileCompleted || !user.isEmailVerified) {
-      navigate(HOME);
+    if (!loading) {
+      if (!user) {
+        navigate(LOGIN);
+      } else if (!user.isProfileCompleted || !user.isEmailVerified) {
+        navigate(HOME);
+      }
     }
-  }, []);
+  }, [loading, user]);
 
-  if (!user) {
+  if (loading || !user) {
     return <></>;
   } else if (!user.isProfileCompleted) {
     return (
       <>
         <Navbar onLogout={handleLogout} isProfileCreated={false} />
-        <div className="h-[calc(100%-4rem)] flex flex-col justify-center">
-          <CreateProfile />;
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-center p-4 md:p-12">
+          <CreateProfile />
         </div>
       </>
     );

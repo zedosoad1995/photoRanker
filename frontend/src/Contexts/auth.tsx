@@ -10,6 +10,7 @@ import {
 
 export interface IAuthContext {
   user?: IGetMeRes["user"];
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginGoogle: (code: string) => Promise<void>;
   loginFacebook: (code: string) => Promise<void>;
@@ -25,18 +26,17 @@ interface IAuthProvider {
 
 export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
   const [user, setUser] = useState<IGetMeRes["user"]>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      getMe().then(({ user }) => {
+    getMe()
+      .then(({ user }) => {
         setUser(user);
         localStorage.setItem("user", JSON.stringify(user));
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }
   }, []);
 
   const logout = async () => {
@@ -72,7 +72,15 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, logout, login, loginGoogle, loginFacebook, updateUser }}
+      value={{
+        user,
+        loading,
+        logout,
+        login,
+        loginGoogle,
+        loginFacebook,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>
