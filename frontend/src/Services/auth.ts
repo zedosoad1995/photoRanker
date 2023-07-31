@@ -49,3 +49,7 @@ export const getMe = async (): Promise<IGetMeRes> => {
 export const resendEmail = async (): Promise<void> => {
   return api.post("/auth/resend-email");
 };
+
+export const verifyEmail = async (token: string): Promise<void> => {
+  return api.post(`/auth/verification/${token}`);
+};

@@ -260,7 +260,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     },
   });
 
-  res.redirect(process.env.FRONTEND_URL!);
+  return res.status(204).send();
 };
 
 export const resendEmail = async (req: Request, res: Response) => {

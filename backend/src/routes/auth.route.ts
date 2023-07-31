@@ -24,6 +24,6 @@ router.post(
 );
 router.post("/logout", signOut);
 router.post("/resend-email", checkAuth, resendEmail);
-router.get("/verification/:token", verifyEmail);
+router.post("/verification/:token", verifyEmail);
 
 export default router;

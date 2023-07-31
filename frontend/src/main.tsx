@@ -14,6 +14,8 @@ import {
   SETTINGS,
   VOTE,
   FACEBOOK_CALLBACK,
+  EXPIRED_VALIDATION,
+  CHECKING_VALIDATION,
 } from "./Constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
@@ -24,6 +26,8 @@ import Vote from "./Pages/Vote.tsx";
 import MyPhotos from "./Pages/MyPhotos/MyPhotos.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import FacebookCallback from "./Pages/FacebookCallback.tsx";
+import ExpiredValidation from "./Pages/ExpiredValidation.tsx";
+import CheckingValidation from "./Pages/CheckingValidation.tsx";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +62,14 @@ const router = createBrowserRouter([
   {
     path: REGISTER,
     element: <Register />,
+  },
+  {
+    path: EXPIRED_VALIDATION,
+    element: <ExpiredValidation />,
+  },
+  {
+    path: `${CHECKING_VALIDATION}/:token`,
+    element: <CheckingValidation />,
   },
 ]);
 

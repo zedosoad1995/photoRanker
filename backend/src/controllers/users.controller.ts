@@ -84,7 +84,7 @@ export const createOne = async (req: Request, res: Response) => {
     user: {
       name: req.body.name,
     },
-    verificationUrl: `${process.env.BACKEND_URL}/api/auth/verification/${verificationToken}`,
+    verificationUrl: `${process.env.FRONTEND_URL}/checking-validation/${verificationToken}`,
   });
 
   sendEmail({

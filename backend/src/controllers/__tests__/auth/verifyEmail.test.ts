@@ -8,7 +8,7 @@ const TOKEN = "token";
 
 it("returns 400, when no user exists with given token", async () => {
   const response = await request(app)
-    .get("/api/auth/verification/invalid-token")
+    .post("/api/auth/verification/invalid-token")
     .send();
 
   expect(response.status).toEqual(400);
@@ -21,7 +21,7 @@ it("returns 400, when user exists but token expiration date not", async () => {
   });
 
   const response = await request(app)
-    .get(`/api/auth/verification/${TOKEN}`)
+    .post(`/api/auth/verification/${TOKEN}`)
     .send();
 
   expect(response.status).toEqual(400);
@@ -35,13 +35,13 @@ it("returns 400, current date is greater than token expiration date", async () =
   });
 
   const response = await request(app)
-    .get(`/api/auth/verification/${TOKEN}`)
+    .post(`/api/auth/verification/${TOKEN}`)
     .send();
 
   expect(response.status).toEqual(400);
 });
 
-it("returns 302, and updates email to verified, and nullifies token, when token is valid and has not expired", async () => {
+it("returns 204, and updates email to verified, and nullifies token, when token is valid and has not expired", async () => {
   const seededUser = await UserSeeder.seedOne({
     verificationToken: TOKEN,
     verificationTokenExpiration: getDateInXHours(1),
@@ -49,10 +49,10 @@ it("returns 302, and updates email to verified, and nullifies token, when token 
   });
 
   const response = await request(app)
-    .get(`/api/auth/verification/${TOKEN}`)
+    .post(`/api/auth/verification/${TOKEN}`)
     .send();
 
-  expect(response.status).toEqual(302);
+  expect(response.status).toEqual(204);
 
   const user = await UserModel.findUnique({
     where: {
@@ -73,7 +73,7 @@ it("returns 400, when email has already been verified", async () => {
   });
 
   const response = await request(app)
-    .get(`/api/auth/verification/${TOKEN}`)
+    .post(`/api/auth/verification/${TOKEN}`)
     .send();
 
   expect(response.status).toEqual(400);
