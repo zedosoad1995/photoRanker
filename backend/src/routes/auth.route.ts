@@ -11,7 +11,6 @@ import { validateForm } from "@/middlewares/validateForm";
 import { signInSchema } from "@/schemas/auth/signIn";
 import { signInGoogleSchema } from "@/schemas/auth/signInGoogle";
 import { signInFacebookSchema } from "@/schemas/auth/signInFacebook";
-import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkAuth } from "@/middlewares/checkAuth";
 
 const router = Router();
@@ -24,7 +23,7 @@ router.post(
   signInFacebook
 );
 router.post("/logout", signOut);
-router.post("/resend-email", checkAuth, checkProfileCompleted, resendEmail);
+router.post("/resend-email", checkAuth, resendEmail);
 router.get("/verification/:token", verifyEmail);
 
 export default router;

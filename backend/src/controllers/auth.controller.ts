@@ -10,6 +10,7 @@ import { AUTH } from "@/constants/messages";
 import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { getEmailHtml, sendEmail } from "@/helpers/mail";
+import { getDateInXHours } from "@/helpers/date";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -270,9 +271,8 @@ export const resendEmail = async (req: Request, res: Response) => {
   }
 
   const verificationToken = uuidv4();
-  const expires = new Date();
-  expires.setHours(
-    expires.getHours() + Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
+  const expires = getDateInXHours(
+    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
   );
 
   await UserModel.update({
