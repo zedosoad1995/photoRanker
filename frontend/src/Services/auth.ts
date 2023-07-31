@@ -45,3 +45,7 @@ export const checkEmailExists = async (
 export const getMe = async (): Promise<IGetMeRes> => {
   return api.get("/users/me");
 };
+
+export const resendEmail = async (): Promise<void> => {
+  return api.post("/auth/resend-email");
+};

@@ -5,9 +5,11 @@ import { Request, Response } from "express";
 import { UnauthorizedError } from "@/errors/UnauthorizedError";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 import { AUTH } from "@/constants/messages";
 import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
 import { BadRequestError } from "@/errors/BadRequestError";
+import { getEmailHtml, sendEmail } from "@/helpers/mail";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -238,6 +240,10 @@ export const verifyEmail = async (req: Request, res: Response) => {
     throw new BadRequestError("Invalid token");
   }
 
+  if (user.isEmailVerified) {
+    throw new BadRequestError("Email has already been verified");
+  }
+
   if (new Date() > user.verificationTokenExpiration) {
     throw new BadRequestError("Token has expired");
   }
@@ -254,4 +260,44 @@ export const verifyEmail = async (req: Request, res: Response) => {
   });
 
   res.redirect(process.env.FRONTEND_URL!);
+};
+
+export const resendEmail = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
+  if (loggedUser.isEmailVerified) {
+    throw new BadRequestError("Email has already been verified");
+  }
+
+  const verificationToken = uuidv4();
+  const expires = new Date();
+  expires.setHours(
+    expires.getHours() + Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
+  );
+
+  await UserModel.update({
+    data: {
+      verificationTokenExpiration: expires,
+      verificationToken,
+    },
+    where: {
+      id: loggedUser.id,
+    },
+  });
+
+  const html = await getEmailHtml("src/views/emailVerification.ejs", {
+    user: {
+      name: loggedUser.name,
+    },
+    verificationUrl: `${process.env.BACKEND_URL}/api/auth/verification/${verificationToken}`,
+  });
+
+  sendEmail({
+    from: process.env.SENDER_EMAIL,
+    to: loggedUser.email,
+    subject: "Email Verification",
+    html,
+  });
+
+  return res.status(204).send();
 };

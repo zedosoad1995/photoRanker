@@ -1,6 +1,11 @@
+import { resendEmail } from "@/Services/auth";
 import Button from "./Button";
 
 export default function UnverifiedEmail() {
+  const handleEmailResend = () => {
+    resendEmail();
+  };
+
   return (
     <div>
       <h1 className="text-xl font-bold">Verify Your Account</h1>
@@ -11,7 +16,9 @@ export default function UnverifiedEmail() {
           the verification email.
         </p>
       </div>
-      <Button isFull={false}>Resend Email</Button>
+      <Button isFull={false} onClick={handleEmailResend}>
+        Resend Email
+      </Button>
     </div>
   );
 }

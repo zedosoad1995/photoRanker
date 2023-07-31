@@ -8,9 +8,8 @@ import { isAdmin } from "@/helpers/role";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { v4 as uuidv4 } from "uuid";
-import nodemailer from "nodemailer";
-import ejs from "ejs";
-import path from "path";
+import { getEmailHtml, sendEmail } from "@/helpers/mail";
+import { getDateInXHours } from "@/helpers/date";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -67,9 +66,8 @@ export const createOne = async (req: Request, res: Response) => {
   }
 
   const verificationToken = uuidv4();
-  const expires = new Date();
-  expires.setHours(
-    expires.getHours() + Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
+  const expires = getDateInXHours(
+    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
   );
 
   const user = await UserModel.create({
@@ -82,42 +80,19 @@ export const createOne = async (req: Request, res: Response) => {
     },
   });
 
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.SENDER_EMAIL,
-      pass: process.env.SENDER_PASSWORD,
-    },
-    // TODO: Remove this unsafe option in the future for production
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
-
-  const templatePath = path.resolve(
-    __dirname,
-    "../views/emailVerification.ejs"
-  );
-
-  const data = {
+  const html = await getEmailHtml("src/views/emailVerification.ejs", {
     user: {
       name: req.body.name,
     },
     verificationUrl: `${process.env.BACKEND_URL}/api/auth/verification/${verificationToken}`,
-  };
+  });
 
-  const html = await ejs.renderFile(templatePath, data);
-
-  const mailOptions = {
+  sendEmail({
     from: process.env.SENDER_EMAIL,
     to: req.body.email,
     subject: "Email Verification",
     html,
-  };
-
-  transporter.sendMail(mailOptions);
+  });
 
   const userNoPassword = UserModel.exclude(user, [
     "password",
