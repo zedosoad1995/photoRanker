@@ -17,6 +17,7 @@ import {
   EXPIRED_VALIDATION,
   CHECKING_VALIDATION,
   FORGOT_PASSWORD,
+  RESET_PASSWORD,
 } from "./Constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
@@ -30,6 +31,7 @@ import FacebookCallback from "./Pages/FacebookCallback.tsx";
 import ExpiredValidation from "./Pages/ExpiredValidation.tsx";
 import CheckingValidation from "./Pages/CheckingValidation.tsx";
 import ForgotPassword from "./Pages/ForgotPassword.tsx";
+import ResetPassword from "./Pages/ResetPassword.tsx";
 
 const router = createBrowserRouter([
   {
@@ -76,6 +78,10 @@ const router = createBrowserRouter([
   {
     path: FORGOT_PASSWORD,
     element: <ForgotPassword />,
+  },
+  {
+    path: `${RESET_PASSWORD}/:token`,
+    element: <ResetPassword />,
   },
 ]);
 

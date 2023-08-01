@@ -1,6 +1,7 @@
 import Button from "@/Components/Button";
 import Textfield from "@/Components/TextField";
 import { HOME } from "@/Constants/routes";
+import { forgotPassword } from "@/Services/auth";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +16,7 @@ export default function ForgotPassword() {
   };
 
   const handleSendResetCode = async () => {
+    await forgotPassword(email);
     navigate(HOME);
   };
 

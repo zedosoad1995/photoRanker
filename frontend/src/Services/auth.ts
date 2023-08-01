@@ -53,3 +53,7 @@ export const resendEmail = async (): Promise<void> => {
 export const verifyEmail = async (token: string): Promise<void> => {
   return api.post(`/auth/verification/${token}`);
 };
+
+export const forgotPassword = async (email: string): Promise<void> => {
+  return api.post("/auth/forgot-password", { email });
+};
