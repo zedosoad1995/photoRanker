@@ -24,7 +24,6 @@ it("returns 400, when user exists but token expiration date not", async () => {
 });
 
 it("returns 400, current date is greater than token expiration date", async () => {
-  console.log(getDateInXHours(-1));
   await UserSeeder.seedOne({
     verificationToken: TOKEN,
     verificationTokenExpiration: getDateInXHours(-1),
