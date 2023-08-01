@@ -40,6 +40,54 @@ describe("Regular Logged User", () => {
     regularUserPictureId = picture.id;
   });
 
+  beforeEach(() => {
+    return UserModel.update({
+      data: {
+        isProfileCompleted: true,
+        isEmailVerified: true,
+      },
+      where: {
+        id: regularUserId,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: regularUserId,
+      },
+    });
+
+    const response = await request(app)
+      .get("/api/pictures/something")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
+      },
+      where: {
+        id: regularUserId,
+      },
+    });
+
+    const response = await request(app)
+      .get("/api/pictures/something")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
   it("returns 403, when passed id does not correspond to picture of logged user", async () => {
     const user = await UserSeeder.createOne();
     const picture = await PictureSeeder.seedOne({

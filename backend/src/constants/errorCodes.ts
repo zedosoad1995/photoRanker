@@ -1,0 +1,1 @@
+export const NON_EXISTENT_EMAIL = "NON_EXISTENT_EMAIL";

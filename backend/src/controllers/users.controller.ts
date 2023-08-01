@@ -6,6 +6,10 @@ import { ConflictError } from "@/errors/ConflictError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { isAdmin } from "@/helpers/role";
 import { ForbiddenError } from "@/errors/ForbiddenError";
+import { BadRequestError } from "@/errors/BadRequestError";
+import { v4 as uuidv4 } from "uuid";
+import { getEmailHtml, sendEmail } from "@/helpers/mail";
+import { getDateInXHours } from "@/helpers/date";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -28,7 +32,11 @@ export const getOne = async (req: Request, res: Response) => {
     throw new NotFoundError("User not found");
   }
 
-  const userNoPassword = UserModel.exclude(user, ["password"]);
+  const userNoPassword = UserModel.exclude(user, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -36,7 +44,11 @@ export const getOne = async (req: Request, res: Response) => {
 export const getMe = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  const userNoPassword = UserModel.exclude(loggedUser, ["password"]);
+  const userNoPassword = UserModel.exclude(loggedUser, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -53,13 +65,76 @@ export const createOne = async (req: Request, res: Response) => {
     throw new ConflictError("Email already exists");
   }
 
+  const verificationToken = uuidv4();
+  const expires = getDateInXHours(
+    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
+  );
+
   const user = await UserModel.create({
-    data: { ...req.body, password: hashedPassword },
+    data: {
+      ...req.body,
+      password: hashedPassword,
+      isProfileCompleted: true,
+      verificationTokenExpiration: expires,
+      verificationToken,
+    },
   });
 
-  const userNoPassword = UserModel.exclude(user, ["password"]);
+  const html = await getEmailHtml("src/views/emailVerification.ejs", {
+    user: {
+      name: req.body.name,
+    },
+    verificationUrl: `${process.env.FRONTEND_URL}/checking-validation/${verificationToken}`,
+  });
+
+  sendEmail({
+    from: process.env.SENDER_EMAIL,
+    to: req.body.email,
+    subject: "Email Verification",
+    html,
+  });
+
+  const userNoPassword = UserModel.exclude(user, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(201).json({ user: userNoPassword });
+};
+
+export const createProfile = async (req: Request, res: Response) => {
+  const body = { ...req.body };
+  const userId = req.params.userId;
+
+  const user = await UserModel.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError("User does not exist");
+  }
+
+  if (user.isProfileCompleted) {
+    throw new BadRequestError("User profile has already been created");
+  }
+
+  const updatedUser = await UserModel.update({
+    data: { ...body, isProfileCompleted: true },
+    where: {
+      id: userId,
+    },
+  });
+
+  const userNoPassword = UserModel.exclude(updatedUser, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
+
+  res.status(200).json({ user: userNoPassword });
 };
 
 export const updateOne = async (req: Request, res: Response) => {
@@ -83,7 +158,11 @@ export const updateOne = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, ["password"]);
+  const userNoPassword = UserModel.exclude(updatedUser, [
+    "password",
+    "googleId",
+    "facebookId",
+  ]);
 
   res.status(200).json({ user: userNoPassword });
 };

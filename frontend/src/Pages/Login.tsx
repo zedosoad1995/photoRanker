@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Label from "@/Components/Label";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
 import Button from "@/Components/Button";
-import { HOME, REGISTER } from "@/constants/routes";
+import { FORGOT_PASSWORD, HOME, REGISTER } from "@/Constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
+import GoogleButton from "@/Components/GoogleButton";
+import FacebookButton from "@/Components/FacebookButton";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const loginbtnRef = useRef<HTMLDivElement>(null);
 
   const { user, login } = useAuth();
 
@@ -34,51 +37,60 @@ export default function SignIn() {
     }
   };
 
+  useEffect(() => {
+    if (Boolean(user)) {
+      navigate(HOME);
+    }
+  }, [user]);
+
   if (Boolean(user)) {
-    navigate(HOME);
+    return <></>;
   }
 
   return (
-    <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
-        <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
-          Sign in to your account
-        </h2>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <div className="space-y-6">
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
+      <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
+        Sign in to your account
+      </h2>
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="space-y-6">
+          <Textfield
+            value={email}
+            onChange={handleEmailChange}
+            label="Email address"
+            type="email"
+            autocomplete="email"
+            onKeyDown={handleKeyDown}
+          />
+
+          <div>
+            <div className="flex items-center justify-between">
+              <Label name="Password" />
+              <Link url={FORGOT_PASSWORD}>Forgot password?</Link>
+            </div>
             <Textfield
-              value={email}
-              onChange={handleEmailChange}
-              label="Email address"
-              type="email"
-              autocomplete="email"
+              value={password}
+              onChange={handlePasswordChange}
+              type="password"
+              autocomplete="current-password"
               onKeyDown={handleKeyDown}
             />
+          </div>
 
-            <div>
-              <div className="flex items-center justify-between">
-                <Label name="Password" />
-                <Link url="#">Forgot password?</Link>
-              </div>
-              <Textfield
-                value={password}
-                onChange={handlePasswordChange}
-                type="password"
-                autocomplete="current-password"
-                onKeyDown={handleKeyDown}
-              />
-            </div>
-
+          <div ref={loginbtnRef}>
             <Button type="submit" onClick={handleSignIn}>
               Sign in
             </Button>
           </div>
 
-          <p className="mt-10 text-center text-sm text-light-text">
-            Not a member? <Link url={REGISTER}>Sign Up</Link>
-          </p>
+          <GoogleButton />
+          <FacebookButton />
         </div>
+
+        <p className="mt-10 text-center text-sm text-light-text">
+          Not a member? <Link url={REGISTER}>Sign Up</Link>
+        </p>
       </div>
-    </>
+    </div>
   );
 }

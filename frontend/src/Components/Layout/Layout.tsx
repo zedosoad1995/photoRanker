@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
-import { LOGIN } from "@/constants/routes";
+import { HOME, LOGIN } from "@/Constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
+import CreateProfile from "../CreateProfile";
+import UnverifiedEmail from "../UnverifiedEmail";
 
 export default function Layout() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const [open, setOpen] = useState(false);
 
@@ -24,15 +26,36 @@ export default function Layout() {
     navigate(LOGIN);
   };
 
-  const user = localStorage.getItem("user");
   useEffect(() => {
-    if (!user) {
-      navigate(LOGIN);
+    if (!loading) {
+      if (!user) {
+        navigate(LOGIN);
+      } else if (!user.isProfileCompleted || !user.isEmailVerified) {
+        navigate(HOME);
+      }
     }
-  }, []);
+  }, [loading, user]);
 
-  if (!user) {
+  if (loading || !user) {
     return <></>;
+  } else if (!user.isProfileCompleted) {
+    return (
+      <>
+        <Navbar onLogout={handleLogout} isProfileCreated={false} />
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-center p-4 md:p-12">
+          <CreateProfile />
+        </div>
+      </>
+    );
+  } else if (!user.isEmailVerified) {
+    return (
+      <>
+        <Navbar onLogout={handleLogout} isProfileCreated={false} />
+        <div className="p-4 md:p-12">
+          <UnverifiedEmail />
+        </div>
+      </>
+    );
   }
 
   return (

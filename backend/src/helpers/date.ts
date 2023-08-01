@@ -10,3 +10,10 @@ export const isValidDateFormat = (dateString: string) => {
 export const formatDate = (date: Date, dateformat: string = "yyyy-MM-dd") => {
   return format(date, dateformat);
 };
+
+export const getDateInXHours = (hours: number) => {
+  const date = new Date();
+  date.setHours(date.getHours() + hours);
+
+  return date;
+};

@@ -15,3 +15,13 @@ export const PICTURE = {
   IMAGE_DIM_TOO_SMALL: `Image height must be at least ${MIN_HEIGHT} and width at least ${MIN_WIDTH}`,
   TOO_MANY_PICTURES: `You have have reached the limit of ${LIMIT_PICTURES} pictures. To upload a new picture you must delete other`,
 };
+
+export const AUTH = {
+  GOOGLE: {
+    NO_ACCESS_TOKEN: "Google access token is not defined",
+    UNVERIFIED_EMAIL: "Emails is not verified",
+  },
+  FACEBOOK: {
+    NO_ACCESS_TOKEN: "Facebook access token is not defined",
+  },
+};

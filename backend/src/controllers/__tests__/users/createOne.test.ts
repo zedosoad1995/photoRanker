@@ -5,10 +5,18 @@ import { UserModel } from "@/models/user";
 import { randomizeUser } from "@/tests/helpers/user";
 import { UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
+import nodemailer, { Transporter, SentMessageInfo } from "nodemailer";
+
+jest.mock("nodemailer");
+const mockedNodeMailer = nodemailer as jest.Mocked<typeof nodemailer>;
+
+mockedNodeMailer.createTransport.mockReturnValue({
+  sendMail: jest.fn().mockResolvedValue({} as SentMessageInfo),
+} as unknown as Transporter);
 
 const createUserBody = randomizeUser();
 
-it("creates a new user, 'password' is not returned, 'role' is REGULAR", async () => {
+it("creates a new user, 'password' is not returned, isProfileCompleted is true and ieEmailVerified false, 'role' is REGULAR", async () => {
   await UserSeeder.deleteAll();
 
   const response = await request(app).post("/api/users").send(createUserBody);
@@ -17,8 +25,45 @@ it("creates a new user, 'password' is not returned, 'role' is REGULAR", async ()
   expect(response.body.user).not.toHaveProperty("password");
   expect(response.body.user.role).toEqual(UserRole.REGULAR);
 
-  const numUsers = await UserModel.count();
-  expect(numUsers).toBe(1);
+  const users = await UserModel.findMany();
+  expect(users).toHaveLength(1);
+  expect(users[0].isProfileCompleted).toBe(true);
+  expect(users[0].isEmailVerified).toBe(false);
+});
+
+it("Sends mail to email of newly created user", async () => {
+  await UserSeeder.deleteAll();
+
+  const response = await request(app).post("/api/users").send(createUserBody);
+
+  expect(response.status).toEqual(201);
+  expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledTimes(1);
+  expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledWith(
+    expect.objectContaining({
+      to: createUserBody.email,
+    })
+  );
+});
+
+describe("User Creation fail", () => {
+  let mockUserCreate: jest.SpyInstance;
+  beforeAll(() => {
+    mockUserCreate = jest
+      .spyOn(UserModel, "create")
+      .mockRejectedValueOnce(undefined);
+  });
+
+  afterAll(() => {
+    mockUserCreate.mockRestore();
+  });
+
+  it("Does not send email, when User creation fails", async () => {
+    await UserSeeder.deleteAll();
+
+    await request(app).post("/api/users").send(createUserBody);
+
+    expect(mockedNodeMailer.createTransport().sendMail).not.toHaveBeenCalled();
+  });
 });
 
 it("returns 409, when 'email' already exists", async () => {

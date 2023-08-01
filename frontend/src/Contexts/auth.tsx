@@ -1,12 +1,21 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getMe } from "@/Services/auth";
 import { IGetMeRes } from "../../../backend/src/types/user";
-import { logout as logoutService, login as loginService } from "@/Services/auth";
+import {
+  logout as logoutService,
+  login as loginService,
+  getMe,
+  loginGoogle as loginGoogleService,
+  loginFacebook as loginFacebookService,
+} from "@/Services/auth";
 
 export interface IAuthContext {
   user?: IGetMeRes["user"];
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginGoogle: (code: string) => Promise<void>;
+  loginFacebook: (code: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -17,18 +26,17 @@ interface IAuthProvider {
 
 export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
   const [user, setUser] = useState<IGetMeRes["user"]>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      getMe().then((res) => {
-        setUser(res.user);
+    getMe()
+      .then(({ user }) => {
+        setUser(user);
         localStorage.setItem("user", JSON.stringify(user));
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }
   }, []);
 
   const logout = async () => {
@@ -43,7 +51,40 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(user));
   };
 
-  return <AuthContext.Provider value={{ user, logout, login }}>{children}</AuthContext.Provider>;
+  const loginGoogle = async (code: string) => {
+    const { user } = await loginGoogleService(code);
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
+  const loginFacebook = async (code: string) => {
+    const { user } = await loginFacebookService(code);
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
+  const updateUser = async () => {
+    return getMe().then(({ user }) => {
+      setUser(user);
+      localStorage.setItem("user", JSON.stringify(user));
+    });
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        logout,
+        login,
+        loginGoogle,
+        loginFacebook,
+        updateUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

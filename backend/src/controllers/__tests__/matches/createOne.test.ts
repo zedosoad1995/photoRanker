@@ -9,6 +9,7 @@ import { MatchModel } from "@/models/match";
 import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { UserModel } from "@/models/user";
 
 let otherUser: User;
 
@@ -42,6 +43,54 @@ describe("Regular Logged User", () => {
     regularUser = res.user;
   });
 
+  beforeEach(() => {
+    return UserModel.update({
+      data: {
+        isProfileCompleted: true,
+        isEmailVerified: true,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .post("/api/matches")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .post("/api/matches")
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
   it("throws and error, when there are less than 2 pictures belonging to other users", async () => {
     await PictureSeeder.seedMany({
       data: {
@@ -53,7 +102,10 @@ describe("Regular Logged User", () => {
       userId: otherUser.id,
     });
 
-    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
+    const response = await request(app)
+      .post("/api/matches")
+      .set("Cookie", regularCookie)
+      .send();
 
     expect(response.status).toEqual(400);
   });
@@ -66,7 +118,10 @@ describe("Regular Logged User", () => {
       numRepeat: 2,
     });
 
-    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
+    const response = await request(app)
+      .post("/api/matches")
+      .set("Cookie", regularCookie)
+      .send();
 
     expect(response.status).toEqual(201);
     expect(response.body.match).toBeTruthy();
@@ -111,7 +166,10 @@ describe("Regular Logged User", () => {
       ],
     });
 
-    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
+    const response = await request(app)
+      .post("/api/matches")
+      .set("Cookie", regularCookie)
+      .send();
 
     expect(response.status).toEqual(201);
 
@@ -147,7 +205,10 @@ describe("Admin Logged User", () => {
       numRepeat: 2,
     });
 
-    const response = await request(app).post("/api/matches").set("Cookie", adminCookie).send();
+    const response = await request(app)
+      .post("/api/matches")
+      .set("Cookie", adminCookie)
+      .send();
 
     expect(response.status).toEqual(201);
   });

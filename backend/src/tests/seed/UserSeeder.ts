@@ -26,6 +26,8 @@ export const UserSeeder = {
   async createOne(data: SeedInputOne = {}) {
     return UserModel.create({
       data: {
+        isEmailVerified: true,
+        isProfileCompleted: true,
         ...randomizeUser(),
         ...data,
       },
@@ -40,6 +42,8 @@ export const UserSeeder = {
         data.map((row) =>
           UserModel.create({
             data: {
+              isEmailVerified: true,
+              isProfileCompleted: true,
               ...randomizeUser(),
               ...row,
             },
@@ -52,6 +56,8 @@ export const UserSeeder = {
       _.times(numRepeat, () =>
         UserModel.create({
           data: {
+            isEmailVerified: true,
+            isProfileCompleted: true,
             ...randomizeUser(),
             ...data,
           },

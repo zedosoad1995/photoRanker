@@ -2,6 +2,8 @@ import request from "supertest";
 import { app } from "@/app";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
+import { UserModel } from "@/models/user";
+import { User } from "@prisma/client";
 
 let userId: string;
 
@@ -20,12 +22,60 @@ describe("Unauthorized", () => {
 
 describe("Regular Logged User", () => {
   let regularCookie: string;
-  let regularUser;
+  let regularUser: User;
 
   beforeAll(async () => {
     const res = await loginRegular();
     regularCookie = res.cookie;
     regularUser = res.user;
+  });
+
+  beforeEach(async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: true,
+        isEmailVerified: true,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/users/${userId}`)
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
+      },
+      where: {
+        id: regularUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/users/${userId}`)
+      .set("Cookie", regularCookie)
+      .send();
+
+    expect(response.status).toEqual(403);
   });
 
   it("returns 403, when passed id does not correspond to logged user id", async () => {

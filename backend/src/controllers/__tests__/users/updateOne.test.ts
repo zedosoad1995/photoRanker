@@ -3,13 +3,14 @@ import { app } from "@/app";
 import { UserModel } from "@/models/user";
 import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
-import { UserRole } from "@prisma/client";
+import { User, UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 
 const updateUserBody = _.omit(randomizeUser(), "email");
 
 let userId: string;
 let adminCookie: string;
+let adminUser: User;
 
 beforeAll(async () => {
   const user = await UserSeeder.seedOne();
@@ -27,7 +28,10 @@ describe("Unauthorized", () => {
   it("returns 403, when logged user is not ADMIN", async () => {
     const { cookie } = await loginRegular();
 
-    const response = await request(app).patch(`/api/users/${userId}`).set("Cookie", cookie).send();
+    const response = await request(app)
+      .patch(`/api/users/${userId}`)
+      .set("Cookie", cookie)
+      .send();
 
     expect(response.status).toEqual(403);
   });
@@ -37,6 +41,55 @@ describe("Admin Logged User", () => {
   beforeAll(async () => {
     const res = await loginAdmin();
     adminCookie = res.cookie;
+    adminUser = res.user;
+  });
+
+  beforeEach(() => {
+    return UserModel.update({
+      data: {
+        isProfileCompleted: true,
+        isEmailVerified: true,
+      },
+      where: {
+        id: adminUser.id,
+      },
+    });
+  });
+
+  it("returns 403, when isProfileCompleted is false", async () => {
+    await UserModel.update({
+      data: {
+        isProfileCompleted: false,
+      },
+      where: {
+        id: adminUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .patch(`/api/users/${userId}`)
+      .set("Cookie", adminCookie)
+      .send(updateUserBody);
+
+    expect(response.status).toEqual(403);
+  });
+
+  it("returns 403, when isEmailVerified is false", async () => {
+    await UserModel.update({
+      data: {
+        isEmailVerified: false,
+      },
+      where: {
+        id: adminUser.id,
+      },
+    });
+
+    const response = await request(app)
+      .patch(`/api/users/${userId}`)
+      .set("Cookie", adminCookie)
+      .send(updateUserBody);
+
+    expect(response.status).toEqual(403);
   });
 
   it("edits user, 'password' is not returned", async () => {

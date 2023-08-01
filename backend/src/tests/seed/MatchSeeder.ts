@@ -23,6 +23,7 @@ export const MatchSeeder = {
   },
 
   async createOne(data: SeedInputOne = {}) {
+    //@ts-ignore
     return MatchModel.create({ data });
   },
 
@@ -33,6 +34,7 @@ export const MatchSeeder = {
       return Promise.all(
         data.map((row) =>
           MatchModel.create({
+            //@ts-ignore
             data: row,
           })
         )
@@ -42,6 +44,7 @@ export const MatchSeeder = {
     return Promise.all(
       _.times(numRepeat, () =>
         MatchModel.create({
+          //@ts-ignore
           data,
         })
       )

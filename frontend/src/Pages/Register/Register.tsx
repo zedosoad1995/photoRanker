@@ -4,9 +4,12 @@ import PersonalInfoForm from "./Forms/PersonalInfoForm";
 import Button from "@/Components/Button";
 import { useRef, useState } from "react";
 import { register } from "@/Services/auth";
-import { LOGIN } from "@/constants/routes";
+import { LOGIN } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
 import { GENDER } from "../../../../backend/src/constants/user";
+import _ from "underscore";
+import GoogleButton from "@/Components/GoogleButton";
+import FacebookButton from "@/Components/FacebookButton";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
@@ -60,6 +63,7 @@ export default function Register() {
 
     if (isLastForm) {
       await register(data);
+
       navigate(LOGIN);
     } else {
       setFormStage((val) => val + 1);
@@ -84,12 +88,20 @@ export default function Register() {
         </h2>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="space-y-6">
-            <Form ref={formRef} updateData={updateData} onKeyDown={handleKeyDown} {...data} />
+            <Form
+              ref={formRef}
+              updateData={updateData}
+              onKeyDown={handleKeyDown}
+              {...data}
+            />
 
             <div className="flex gap-2">
               {formStage > 0 && <Button onClick={handleBack}>Back</Button>}
               <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
+
+            {formStage === 0 && <GoogleButton text="Sign up with Google" />}
+            {formStage === 0 && <FacebookButton text="Sign up with Facebook" />}
           </div>
 
           <p className="mt-10 text-center text-sm text-light-text">
