@@ -4,7 +4,11 @@ import { JWTPayload } from "@/types/jwt";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const checkAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const jwtoken = req.cookies["session"]?.jwt;
 
   if (!jwtoken) {

@@ -3,7 +3,13 @@ import { HOME } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
 import { GoogleLoginButton } from "react-social-login-buttons";
 
-export default function GoogleButton() {
+interface IGoogleButton {
+  text?: string;
+}
+
+export default function GoogleButton({
+  text = "Sign in with Google",
+}: IGoogleButton) {
   const navigate = useNavigate();
   const { loginGoogle } = useAuth();
 
@@ -24,6 +30,11 @@ export default function GoogleButton() {
   };
 
   return (
-    <GoogleLoginButton onClick={handleGoogleLoginClick} className="!h-10 !rounded-md !w-full !my-6 !mx-0 !text-sm !font-semibold !shadow-none" style={{border: "1px solid rgb(209,213,219)"}} />
+    <GoogleLoginButton
+      onClick={handleGoogleLoginClick}
+      text={text}
+      className="!h-10 !rounded-md !w-full !my-6 !mx-0 !text-sm !font-semibold !shadow-none"
+      style={{ border: "1px solid rgb(209,213,219)" }}
+    />
   );
 }

@@ -10,3 +10,13 @@ export const PHOTOS = "/photos";
 export const SETTINGS = "/settings";
 
 export const FACEBOOK_CALLBACK = "/auth/facebook";
+
+export const NON_AUTH_ROUTES = [
+  LOGIN,
+  REGISTER,
+  EXPIRED_VALIDATION,
+  CHECKING_VALIDATION,
+  FORGOT_PASSWORD,
+  RESET_PASSWORD,
+  FACEBOOK_CALLBACK,
+];
