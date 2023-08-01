@@ -1,4 +1,4 @@
-import { comparePasswords } from "@/helpers/password";
+import { comparePasswords, hashPassword } from "@/helpers/password";
 import { UserModel } from "@/models/user";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
@@ -318,8 +318,8 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 
   // Is using Google or Facebook authentication
-  if(!user.password){
-    throw new ForbiddenError("This account does not need a password reset")
+  if (!user.password) {
+    throw new ForbiddenError("This account does not need a password reset");
   }
 
   const token = uuidv4();
@@ -349,6 +349,45 @@ export const forgotPassword = async (req: Request, res: Response) => {
     to: user.email,
     subject: "Reset Password",
     html,
+  });
+
+  return res.status(204).send();
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const token = req.params.token;
+  const password = req.body.password as string;
+
+  const user = await UserModel.findFirst({
+    where: {
+      resetPasswordToken: token,
+    },
+  });
+
+  if (!user || !user.resetPasswordExpiration) {
+    throw new BadRequestError("Invalid Token");
+  }
+
+  // Is using Google or Facebook authentication
+  if (!user.password) {
+    throw new ForbiddenError("This account does not need a password reset");
+  }
+
+  if (new Date() > user.resetPasswordExpiration) {
+    throw new BadRequestError("Token has expired");
+  }
+
+  const newHashedPassword = await hashPassword(password);
+
+  await UserModel.update({
+    data: {
+      password: newHashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpiration: null,
+    },
+    where: {
+      id: user.id,
+    },
   });
 
   return res.status(204).send();

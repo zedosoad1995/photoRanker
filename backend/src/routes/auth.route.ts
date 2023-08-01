@@ -14,6 +14,7 @@ import { signInGoogleSchema } from "@/schemas/auth/signInGoogle";
 import { signInFacebookSchema } from "@/schemas/auth/signInFacebook";
 import { checkAuth } from "@/middlewares/checkAuth";
 import { forgotPasswordSchema } from "@/schemas/auth/forgotPassword";
+import { resetPasswordSchema } from "@/schemas/auth/resetPassword";
 
 const router = Router();
 
@@ -27,6 +28,15 @@ router.post(
 router.post("/logout", signOut);
 router.post("/resend-email", checkAuth, resendEmail);
 router.post("/verification/:token", verifyEmail);
-router.post("/forgot-password", validateForm(forgotPasswordSchema), forgotPassword);
+router.post(
+  "/forgot-password",
+  validateForm(forgotPasswordSchema),
+  forgotPassword
+);
+router.patch(
+  "/reset-password/:token",
+  validateForm(resetPasswordSchema),
+  forgotPassword
+);
 
 export default router;
