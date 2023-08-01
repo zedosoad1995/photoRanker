@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   forgotPassword,
   resendEmail,
+  resetPassword,
   signIn,
   signInFacebook,
   signInGoogle,
@@ -36,7 +37,7 @@ router.post(
 router.patch(
   "/reset-password/:token",
   validateForm(resetPasswordSchema),
-  forgotPassword
+  resetPassword
 );
 
 export default router;

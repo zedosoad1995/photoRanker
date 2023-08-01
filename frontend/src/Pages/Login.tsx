@@ -3,7 +3,7 @@ import Label from "@/Components/Label";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
 import Button from "@/Components/Button";
-import { HOME, REGISTER } from "@/Constants/routes";
+import { FORGOT_PASSWORD, HOME, REGISTER } from "@/Constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
 import GoogleButton from "@/Components/GoogleButton";
@@ -66,7 +66,7 @@ export default function SignIn() {
           <div>
             <div className="flex items-center justify-between">
               <Label name="Password" />
-              <Link url="#">Forgot password?</Link>
+              <Link url={FORGOT_PASSWORD}>Forgot password?</Link>
             </div>
             <Textfield
               value={password}

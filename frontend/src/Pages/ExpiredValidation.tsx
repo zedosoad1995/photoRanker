@@ -1,3 +1,4 @@
+import Link from "@/Components/Link";
 import { HOME } from "@/Constants/routes";
 
 export default function ExpiredValidation() {
@@ -13,7 +14,7 @@ export default function ExpiredValidation() {
         period.
       </div>
       <div>
-        <a href={HOME}>Click here</a> to go back to the home page.
+        <Link url={HOME}>Click here</Link> to go back to the home page.
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import {
 } from "@/Schemas/User/ResetPassword";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { resetPassword } from "@/Services/auth";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -32,10 +33,10 @@ export default function ResetPassword() {
   };
 
   const handleSendResetCode = async ({ password }: IResetPassword) => {
-    console.log(password, token);
-
-    //await forgotPassword(email);
-    navigate(HOME);
+    if (token) {
+      await resetPassword(token, password);
+      navigate(HOME);
+    }
   };
 
   return (

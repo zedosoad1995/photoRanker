@@ -57,3 +57,10 @@ export const verifyEmail = async (token: string): Promise<void> => {
 export const forgotPassword = async (email: string): Promise<void> => {
   return api.post("/auth/forgot-password", { email });
 };
+
+export const resetPassword = async (
+  token: string,
+  password: string
+): Promise<void> => {
+  return api.patch(`/auth/reset-password/${token}`, { password });
+};
