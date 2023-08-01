@@ -16,6 +16,7 @@ import {
   FACEBOOK_CALLBACK,
   EXPIRED_VALIDATION,
   CHECKING_VALIDATION,
+  FORGOT_PASSWORD,
 } from "./Constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
@@ -28,6 +29,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import FacebookCallback from "./Pages/FacebookCallback.tsx";
 import ExpiredValidation from "./Pages/ExpiredValidation.tsx";
 import CheckingValidation from "./Pages/CheckingValidation.tsx";
+import ForgotPassword from "./Pages/ForgotPassword.tsx";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +72,10 @@ const router = createBrowserRouter([
   {
     path: `${CHECKING_VALIDATION}/:token`,
     element: <CheckingValidation />,
+  },
+  {
+    path: FORGOT_PASSWORD,
+    element: <ForgotPassword />,
   },
 ]);
 
