@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  forgotPassword,
   resendEmail,
   signIn,
   signInFacebook,
@@ -12,6 +13,7 @@ import { signInSchema } from "@/schemas/auth/signIn";
 import { signInGoogleSchema } from "@/schemas/auth/signInGoogle";
 import { signInFacebookSchema } from "@/schemas/auth/signInFacebook";
 import { checkAuth } from "@/middlewares/checkAuth";
+import { forgotPasswordSchema } from "@/schemas/auth/forgotPassword";
 
 const router = Router();
 
@@ -25,5 +27,6 @@ router.post(
 router.post("/logout", signOut);
 router.post("/resend-email", checkAuth, resendEmail);
 router.post("/verification/:token", verifyEmail);
+router.post("/forgot-password", validateForm(forgotPasswordSchema), forgotPassword);
 
 export default router;

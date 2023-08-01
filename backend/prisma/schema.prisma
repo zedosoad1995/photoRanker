@@ -23,6 +23,8 @@ model User {
   isEmailVerified             Boolean   @default(false)
   verificationToken           String?
   verificationTokenExpiration DateTime?
+  resetPasswordToken          String?
+  resetPasswordExpiration     DateTime?
   activeMatch                 Match?    @relation(name: "activeMatch", fields: [activeMatchId], references: [id])
   activeMatchId               String?   @unique
   pictures                    Picture[]

@@ -11,6 +11,8 @@ import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
+import { NON_EXISTENT_EMAIL } from "@/constants/errorCodes";
+import { ForbiddenError } from "@/errors/ForbiddenError";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -271,14 +273,14 @@ export const resendEmail = async (req: Request, res: Response) => {
   }
 
   const verificationToken = uuidv4();
-  const expires = getDateInXHours(
+  const expiration = getDateInXHours(
     Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
   );
 
   await UserModel.update({
     data: {
-      verificationTokenExpiration: expires,
       verificationToken,
+      verificationTokenExpiration: expiration,
     },
     where: {
       id: loggedUser.id,
@@ -289,13 +291,63 @@ export const resendEmail = async (req: Request, res: Response) => {
     user: {
       name: loggedUser.name,
     },
-    verificationUrl: `${process.env.BACKEND_URL}/api/auth/verification/${verificationToken}`,
+    verificationUrl: `${process.env.FRONTEND_URL}/checking-validation/${verificationToken}`,
   });
 
   sendEmail({
     from: process.env.SENDER_EMAIL,
     to: loggedUser.email,
     subject: "Email Verification",
+    html,
+  });
+
+  return res.status(204).send();
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const email = req.body.email as string;
+
+  const user = await UserModel.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    throw new BadRequestError("Email does not exist", NON_EXISTENT_EMAIL);
+  }
+
+  // Is using Google or Facebook authentication
+  if(!user.password){
+    throw new ForbiddenError("This account does not need a password reset")
+  }
+
+  const token = uuidv4();
+  const expiration = getDateInXHours(
+    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
+  );
+
+  await UserModel.update({
+    data: {
+      resetPasswordToken: token,
+      resetPasswordExpiration: expiration,
+    },
+    where: {
+      id: user.id,
+    },
+  });
+
+  const html = await getEmailHtml("src/views/resetPassword.ejs", {
+    user: {
+      name: user.name,
+    },
+    verificationUrl: `${process.env.FRONTEND_URL}/reset-password/${token}`,
+  });
+
+  sendEmail({
+    from: process.env.SENDER_EMAIL,
+    to: user.email,
+    subject: "Reset Password",
     html,
   });
 
