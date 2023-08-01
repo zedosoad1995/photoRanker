@@ -13,6 +13,7 @@ export const formatDate = (date: Date, dateformat: string = "yyyy-MM-dd") => {
 
 export const getDateInXHours = (hours: number) => {
   const date = new Date();
+  console.log(date.getHours(), date, date.getHours() + hours);
   date.setHours(date.getHours() + hours);
 
   return date;

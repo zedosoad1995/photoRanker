@@ -7,9 +7,7 @@ import { UserModel } from "@/models/user";
 const TOKEN = "token";
 
 it("returns 400, when no user exists with given token", async () => {
-  const response = await request(app)
-    .post("/api/auth/verification/invalid-token")
-    .send();
+  const response = await request(app).post("/api/auth/verification/invalid-token").send();
 
   expect(response.status).toEqual(400);
 });
@@ -20,23 +18,20 @@ it("returns 400, when user exists but token expiration date not", async () => {
     isEmailVerified: false,
   });
 
-  const response = await request(app)
-    .post(`/api/auth/verification/${TOKEN}`)
-    .send();
+  const response = await request(app).post(`/api/auth/verification/${TOKEN}`).send();
 
   expect(response.status).toEqual(400);
 });
 
 it("returns 400, current date is greater than token expiration date", async () => {
+  console.log(getDateInXHours(-1));
   await UserSeeder.seedOne({
     verificationToken: TOKEN,
     verificationTokenExpiration: getDateInXHours(-1),
     isEmailVerified: false,
   });
 
-  const response = await request(app)
-    .post(`/api/auth/verification/${TOKEN}`)
-    .send();
+  const response = await request(app).post(`/api/auth/verification/${TOKEN}`).send();
 
   expect(response.status).toEqual(400);
 });
@@ -48,9 +43,7 @@ it("returns 204, and updates email to verified, and nullifies token, when token 
     isEmailVerified: false,
   });
 
-  const response = await request(app)
-    .post(`/api/auth/verification/${TOKEN}`)
-    .send();
+  const response = await request(app).post(`/api/auth/verification/${TOKEN}`).send();
 
   expect(response.status).toEqual(204);
 
@@ -72,9 +65,7 @@ it("returns 400, when email has already been verified", async () => {
     isEmailVerified: true,
   });
 
-  const response = await request(app)
-    .post(`/api/auth/verification/${TOKEN}`)
-    .send();
+  const response = await request(app).post(`/api/auth/verification/${TOKEN}`).send();
 
   expect(response.status).toEqual(400);
 });
