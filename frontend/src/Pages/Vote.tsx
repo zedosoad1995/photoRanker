@@ -4,6 +4,7 @@ import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
 import { IMatch } from "../../../backend/src/types/match";
 import { SENSITIVITY } from "../../../backend/src/constants/rating";
+import Button from "@/Components/Button";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -87,6 +88,10 @@ export default function Vote() {
     }, 1000);
   };
 
+  const handleSkipMatch = () => {
+    getMatch();
+  };
+
   const ImageCard = ({
     className,
     pic,
@@ -130,7 +135,7 @@ export default function Vote() {
 
   return (
     <>
-      <div className="hidden sm:flex gap-[1vw] justify-center h-full">
+      <div className="hidden sm:flex gap-[1vw] justify-center">
         <ImageCard
           id="leftImage"
           className="flex justify-center items-center cursor-pointer rounded-lg h-[40vw] w-[40vw] bg-cover bg-center bg-no-repeat"
@@ -148,7 +153,7 @@ export default function Vote() {
           prob={prob2}
         />
       </div>
-      <div className="flex sm:hidden flex-col gap-[1vw] items-center h-full justify-start">
+      <div className="flex sm:hidden flex-col gap-[1vw] items-center justify-start">
         <ImageCard
           id="leftImage"
           className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square max-w-[40vh] bg-cover bg-center bg-no-repeat"
@@ -166,6 +171,13 @@ export default function Vote() {
           prob={prob2}
         />
       </div>
+      {pic1 && pic2 && (
+        <div className="w-28 mx-auto mt-5">
+          <Button style="secondary" onClick={handleSkipMatch}>
+            Skip
+          </Button>
+        </div>
+      )}
     </>
   );
 }
