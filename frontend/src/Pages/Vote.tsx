@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { IMatch } from "../../../backend/src/types/match";
 import { SENSITIVITY } from "../../../backend/src/constants/rating";
 import Button from "@/Components/Button";
+import { IMG_HEIGHT, IMG_WIDTH } from "../../../backend/src/constants/picture";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -109,11 +110,13 @@ export default function Vote() {
   }) => {
     const [isImageHovered, setIsImageHovered] = useState(false);
 
+    const divClass = `${className} text-white font-bold text-xl max-w-[${IMG_WIDTH}px] max-h-[${IMG_HEIGHT}px]`;
+
     return (
       <div
         id={id}
         onClick={onClick}
-        className={`${className} text-white font-bold text-xl`}
+        className={divClass}
         style={{
           backgroundImage: `${
             hasVoted ? "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8))," : ""
@@ -138,7 +141,7 @@ export default function Vote() {
       <div className="hidden sm:flex gap-[1vw] justify-center">
         <ImageCard
           id="leftImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg h-[40vw] w-[40vw] bg-cover bg-center bg-no-repeat"
+          className="flex justify-center items-center cursor-pointer rounded-lg aspect-square w-[40vw] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
           hasVoted={hasVoted}
@@ -146,7 +149,7 @@ export default function Vote() {
         />
         <ImageCard
           id="rightImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg h-[40vw] w-[40vw] bg-cover bg-center bg-no-repeat"
+          className="flex justify-center items-center cursor-pointer rounded-lg aspect-square w-[40vw] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
           hasVoted={hasVoted}
@@ -156,7 +159,7 @@ export default function Vote() {
       <div className="flex sm:hidden flex-col gap-[1vw] items-center justify-start">
         <ImageCard
           id="leftImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
           hasVoted={hasVoted}
@@ -164,7 +167,7 @@ export default function Vote() {
         />
         <ImageCard
           id="rightImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
           hasVoted={hasVoted}

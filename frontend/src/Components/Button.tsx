@@ -24,14 +24,14 @@ export default function Button({
       className =
         "text-white shadow-sm " +
         (disabled
-          ? "bg-disabled-button-bg text-disabled-button-text"
+          ? "bg-[#cac7fe] text-[#4038ca] opacity-50"
           : "bg-primary hover:bg-primary-hover focus-visible:outline-primary");
       break;
     case "secondary":
       className =
         "shadow-sm " +
         (disabled
-          ? "bg-disabled-button-bg text-disabled-button-text"
+          ? "bg-[#4038ca] text-[#4038ca] opacity-50"
           : "border border-[#4038ca] text-[#4038ca] hover:bg-[#efeeff]");
       break;
     case "none":
