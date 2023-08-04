@@ -11,10 +11,12 @@ interface IPlayer {
 type IStrategy = "RANDOM" | "CLOSEST";
 
 const NUM_MATCHES = 50 * 10;
-const NUM_REPS = 10000;
+const NUM_REPS = 1000;
 const STRATEGY: IStrategy = "CLOSEST";
 const hasVotingStrategy = true;
-const PARAM1 = 1e-3;
+const PARAM1 = 1e-2;
+const PARAM2 = 1e1;
+const NUM_PLAYERS = 100;
 
 function generateRandomNumbers(min: number, max: number, n: number) {
   let randomNumbers = [];
@@ -35,14 +37,14 @@ function generateRandomNumbers(min: number, max: number, n: number) {
 ];
  */
 
-const ELOS = generateRandomNumbers(0, 2500, 100);
-
 const errors: number[] = [];
 const positionDists: number[] = [];
 
 Array(NUM_REPS)
   .fill(0)
   .forEach(() => {
+    const ELOS = generateRandomNumbers(0, 2500, NUM_PLAYERS);
+
     const players = ELOS.map((elo, index) => ({
       id: index,
       realElo: elo,
@@ -84,14 +86,14 @@ console.log(
   errors.reduce((acc, el) => acc + el, 0) / errors.length,
   PARAM1,
   positionDists.reduce((acc, el) => acc + el, 0) / positionDists.length,
-  positionDists.reduce((acc, el) => acc + el, 0) / positionDists.length / ELOS.length,
+  positionDists.reduce((acc, el) => acc + el, 0) / positionDists.length / NUM_PLAYERS,
   (positionDists.reduce((acc, el) => acc + el, 0) /
     positionDists.length /
-    ELOS.length /
-    ELOS.length) *
+    NUM_PLAYERS /
+    NUM_PLAYERS) *
     100,
-  ELOS.length,
-  (NUM_MATCHES / ELOS.length) * 2
+  NUM_PLAYERS,
+  (NUM_MATCHES / NUM_PLAYERS) * 2
 );
 
 function getMatch(players: IPlayer[]) {
@@ -152,7 +154,7 @@ function playerWithFewestVotes(players: IPlayer[]) {
 function randomWeightedElement(array: number[], target: number) {
   const diffs = array.map((num) => Math.abs(num - target));
 
-  const weights = diffs.map((diff) => 1 / (PARAM1 + diff));
+  const weights = diffs.map((diff) => 1 / (PARAM1 + Math.pow(diff, PARAM2)));
 
   const totalWeight = weights.reduce((a, b) => a + b, 0);
   const probabilities = weights.map((weight) => weight / totalWeight);

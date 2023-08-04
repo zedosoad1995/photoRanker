@@ -9,59 +9,7 @@ import _ from "underscore";
 export const createOne = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  const numPictures = await PictureModel.count({
-    where: {
-      userId: {
-        not: loggedUser.id,
-      },
-    },
-  });
-
-  if (numPictures < 2) {
-    throw new BadRequestError("Not enought pictures for the match");
-  }
-  const randomNumPic1 = _.random(numPictures - 1);
-
-  const picture1 = await PictureModel.findFirst({
-    where: {
-      userId: {
-        not: loggedUser.id,
-      },
-    },
-    skip: randomNumPic1,
-    orderBy: {
-      id: "asc",
-    },
-  });
-  if (!picture1) {
-    throw new BadRequestError("Not enought pictures for the match");
-  }
-
-  const randomNumPic2 = _.random(numPictures - 2);
-
-  const picture2 = await PictureModel.findFirst({
-    where: {
-      AND: [
-        {
-          userId: {
-            not: loggedUser.id,
-          },
-        },
-        {
-          id: {
-            not: picture1.id,
-          },
-        },
-      ],
-    },
-    skip: randomNumPic2,
-    orderBy: {
-      id: "asc",
-    },
-  });
-  if (!picture2) {
-    throw new BadRequestError("Not enought pictures for the match");
-  }
+  var [picture1, picture2] = await PictureModel.getMatchWithClosestEloStrategy(loggedUser.id);
 
   const [doesNotMatter, match] = await prisma.$transaction(
     [
