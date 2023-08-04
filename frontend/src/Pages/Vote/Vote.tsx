@@ -61,12 +61,22 @@ export default function Vote() {
         // Click the right button
         const rightImage = document.getElementById("rightImage");
         if (rightImage && !hasVoted) {
-          rightImage.click();
+          rightImage.classList.add("!bg-[length:101%]");
+
+          setTimeout(() => {
+            rightImage.classList.remove("!bg-[length:101%]");
+            rightImage.click();
+          }, 200);
         }
       } else if (event.key === "ArrowLeft") {
         const leftImage = document.getElementById("leftImage");
         if (leftImage && !hasVoted) {
+          leftImage.classList.add("!bg-[length:102%]");
           leftImage.click();
+
+          setTimeout(() => {
+            leftImage.classList.remove("!bg-[length:102%]");
+          }, 200);
         }
       }
     };
