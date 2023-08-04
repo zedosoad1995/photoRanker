@@ -1,6 +1,7 @@
-import { Gender } from "@prisma/client";
+import { Gender, UserRole } from "@prisma/client";
 
 export const GENDER = Gender;
+export const ROLE = UserRole;
 export const ETHNICITY = ["White", "Black", "Asian", "Latino", "Other"];
 export const COUNTRIES = [
   "Afghanistan",
