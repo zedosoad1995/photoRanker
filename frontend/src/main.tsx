@@ -19,7 +19,7 @@ import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
 import { AuthProvider } from "@/Contexts/auth.tsx";
 import ProtectedLayout from "./Components/Layout/Layout.tsx";
-import Settings from "./Pages/Settings.tsx";
+import Settings from "./Pages/Settings/Settings.tsx";
 import Vote from "./Pages/Vote/Vote.tsx";
 import MyPhotos from "./Pages/MyPhotos/MyPhotos.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
