@@ -32,11 +32,7 @@ export const getOne = async (req: Request, res: Response) => {
     throw new NotFoundError("User not found");
   }
 
-  const userNoPassword = UserModel.exclude(user, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -44,11 +40,7 @@ export const getOne = async (req: Request, res: Response) => {
 export const getMe = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  const userNoPassword = UserModel.exclude(loggedUser, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(loggedUser, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -66,9 +58,7 @@ export const createOne = async (req: Request, res: Response) => {
   }
 
   const verificationToken = uuidv4();
-  const expires = getDateInXHours(
-    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
-  );
+  const expires = getDateInXHours(Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS));
 
   const user = await UserModel.create({
     data: {
@@ -94,11 +84,7 @@ export const createOne = async (req: Request, res: Response) => {
     html,
   });
 
-  const userNoPassword = UserModel.exclude(user, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
   res.status(201).json({ user: userNoPassword });
 };
@@ -128,11 +114,7 @@ export const createProfile = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -158,11 +140,7 @@ export const updateOne = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -177,4 +155,14 @@ export const checkEmailExists = async (req: Request, res: Response) => {
   res.status(200).send({
     exists: emailExists,
   });
+};
+
+export const deleteMe = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
+  UserModel.delete({
+    where: { id: loggedUser.id },
+  });
+
+  res.status(204).send();
 };
