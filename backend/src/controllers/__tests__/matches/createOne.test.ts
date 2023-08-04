@@ -65,10 +65,7 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(403);
   });
@@ -83,10 +80,7 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(403);
   });
@@ -102,10 +96,7 @@ describe("Regular Logged User", () => {
       userId: otherUser.id,
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(400);
   });
@@ -118,10 +109,7 @@ describe("Regular Logged User", () => {
       numRepeat: 2,
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(201);
     expect(response.body.match).toBeTruthy();
@@ -166,10 +154,7 @@ describe("Regular Logged User", () => {
       ],
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(201);
 
@@ -205,10 +190,7 @@ describe("Admin Logged User", () => {
       numRepeat: 2,
     });
 
-    const response = await request(app)
-      .post("/api/matches")
-      .set("Cookie", adminCookie)
-      .send();
+    const response = await request(app).post("/api/matches").set("Cookie", adminCookie).send();
 
     expect(response.status).toEqual(201);
   });

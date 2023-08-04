@@ -2,8 +2,12 @@ import { getNewMatch } from "@/Services/match";
 import { getImage, getPicture } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
-import { IMatch } from "../../../backend/src/types/match";
-import { SENSITIVITY } from "../../../backend/src/constants/rating";
+import { IMatch } from "../../../../backend/src/types/match";
+import { SENSITIVITY } from "../../../../backend/src/constants/rating";
+import Button from "@/Components/Button";
+import { IMG_WIDTH } from "../../../../backend/src/constants/picture";
+import { ImageCard } from "./ImageCard";
+import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -56,14 +60,28 @@ export default function Vote() {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
         // Click the right button
-        const rightImage = document.getElementById("rightImage");
-        if (rightImage) {
-          rightImage.click();
+        const rightImage = isScreenSmallerOrEqualTo("sm")
+          ? document.getElementById("downImage")
+          : document.getElementById("rightImage");
+        if (rightImage && !hasVoted) {
+          rightImage.classList.add("!bg-[length:101%]");
+
+          setTimeout(() => {
+            rightImage.classList.remove("!bg-[length:101%]");
+            rightImage.click();
+          }, 200);
         }
       } else if (event.key === "ArrowLeft") {
-        const leftImage = document.getElementById("leftImage");
-        if (leftImage) {
+        const leftImage = isScreenSmallerOrEqualTo("sm")
+          ? document.getElementById("upImage")
+          : document.getElementById("leftImage");
+        if (leftImage && !hasVoted) {
+          leftImage.classList.add("!bg-[length:102%]");
           leftImage.click();
+
+          setTimeout(() => {
+            leftImage.classList.remove("!bg-[length:102%]");
+          }, 200);
         }
       }
     };
@@ -76,6 +94,8 @@ export default function Vote() {
   }, []);
 
   const handleClickImage = (picId?: string) => async () => {
+    if (hasVoted) return;
+
     if (match?.id && picId) {
       await vote(match.id, picId);
     }
@@ -87,85 +107,57 @@ export default function Vote() {
     }, 1000);
   };
 
-  const ImageCard = ({
-    className,
-    pic,
-    onClick,
-    hasVoted,
-    prob,
-    id,
-  }: {
-    className: string;
-    pic: string | undefined;
-    onClick: () => void;
-    hasVoted: boolean;
-    prob: number | undefined;
-    id?: string;
-  }) => {
-    const [isImageHovered, setIsImageHovered] = useState(false);
-
-    return (
-      <div
-        id={id}
-        onClick={onClick}
-        className={`${className} text-white font-bold text-xl`}
-        style={{
-          backgroundImage: `${
-            hasVoted ? "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8))," : ""
-          } url(${pic})`,
-          backgroundSize: isImageHovered ? "101%" : "100%",
-          transition: "background-size 0.5s ease",
-        }}
-        onMouseEnter={() => {
-          setIsImageHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsImageHovered(false);
-        }}
-      >
-        {hasVoted ? `${prob}%` : ""}
-      </div>
-    );
+  const handleSkipMatch = () => {
+    getMatch();
   };
+
+  const imageWidthClass = `w-[min(40vw,${IMG_WIDTH}px)]`;
 
   return (
     <>
-      <div className="hidden sm:flex gap-[1vw] justify-center h-full">
+      <div className="hidden sm:flex gap-[1vw] justify-center">
         <ImageCard
           id="leftImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg h-[40vw] w-[40vw] bg-cover bg-center bg-no-repeat"
+          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square ${imageWidthClass} bg-cover bg-center bg-no-repeat`}
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
-          hasVoted={hasVoted}
           prob={prob1}
+          hasVoted={hasVoted}
         />
         <ImageCard
           id="rightImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg h-[40vw] w-[40vw] bg-cover bg-center bg-no-repeat"
+          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square ${imageWidthClass} bg-cover bg-center bg-no-repeat`}
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
-          hasVoted={hasVoted}
           prob={prob2}
+          hasVoted={hasVoted}
         />
       </div>
-      <div className="flex sm:hidden flex-col gap-[1vw] items-center h-full justify-start">
+      <div className="flex sm:hidden flex-col gap-[1vw] items-center justify-start">
         <ImageCard
-          id="leftImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          id="upImage"
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
-          hasVoted={hasVoted}
           prob={prob1}
+          hasVoted={hasVoted}
         />
         <ImageCard
-          id="rightImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          id="downImage"
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
-          hasVoted={hasVoted}
           prob={prob2}
+          hasVoted={hasVoted}
         />
       </div>
+      {pic1 && pic2 && (
+        <div className="w-28 mx-auto mt-5">
+          <Button style="secondary" onClick={handleSkipMatch}>
+            Skip
+          </Button>
+        </div>
+      )}
     </>
   );
 }

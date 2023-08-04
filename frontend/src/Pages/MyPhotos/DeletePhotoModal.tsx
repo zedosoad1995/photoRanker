@@ -24,7 +24,7 @@ export default function DeletePhotoModal({
         <div className="font-bold text-lg">Delete Photo</div>
         <div className="mt-4">Are you sure you want to delete this photo?</div>
         <div className="flex justify-end gap-2 mt-8">
-          <Button onClick={handleClose} isFull={false} style="secondary">
+          <Button onClick={handleClose} isFull={false} style="none">
             Cancel
           </Button>
           <Button onClick={handleDelete} isFull={false}>

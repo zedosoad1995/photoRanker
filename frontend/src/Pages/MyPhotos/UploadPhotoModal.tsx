@@ -100,7 +100,7 @@ export default function UploadPhotoModal({
           <div className="mb-2">
             <Button onClick={handleUpload}>Create</Button>
           </div>
-          <Button onClick={handleClose} style="secondary">
+          <Button onClick={handleClose} style="none">
             Cancel
           </Button>
         </div>
