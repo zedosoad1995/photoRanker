@@ -65,7 +65,6 @@ function getRandomPicture(numPictures: number, loggedUserId: string, opponentPic
 
 const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
   const MAX_RETRIEVED_PICS = 100;
-  const MAX_ELO_DIFF = 200;
 
   const numPictures = await prisma.picture.count({
     where: {
