@@ -160,8 +160,25 @@ export const checkEmailExists = async (req: Request, res: Response) => {
 export const deleteMe = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  UserModel.delete({
+  await UserModel.delete({
     where: { id: loggedUser.id },
+  });
+
+  res.clearCookie("session");
+
+  res.status(204).send();
+};
+
+export const deleteOne = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+  const userId = req.params.userId;
+
+  if (userId === loggedUser.id && isAdmin(loggedUser.role)) {
+    throw new ForbiddenError("Admin user cannot delete itseld");
+  }
+
+  await UserModel.delete({
+    where: { id: userId },
   });
 
   res.status(204).send();

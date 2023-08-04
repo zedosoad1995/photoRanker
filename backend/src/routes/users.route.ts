@@ -4,6 +4,7 @@ import {
   createOne,
   createProfile,
   deleteMe,
+  deleteOne,
   getMany,
   getMe,
   getOne,
@@ -41,5 +42,6 @@ router.patch(
 router.post("/check-email", validateForm(checkEmailExistsSchema), checkEmailExists);
 
 router.delete("/me", checkAuth, checkRegular, deleteMe);
+router.delete("/:userId", checkAuth, checkAdmin, deleteOne);
 
 export default router;
