@@ -7,6 +7,7 @@ import { SENSITIVITY } from "../../../../backend/src/constants/rating";
 import Button from "@/Components/Button";
 import { IMG_WIDTH } from "../../../../backend/src/constants/picture";
 import { ImageCard } from "./ImageCard";
+import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -59,7 +60,9 @@ export default function Vote() {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
         // Click the right button
-        const rightImage = document.getElementById("rightImage");
+        const rightImage = isScreenSmallerOrEqualTo("sm")
+          ? document.getElementById("downImage")
+          : document.getElementById("rightImage");
         if (rightImage && !hasVoted) {
           rightImage.classList.add("!bg-[length:101%]");
 
@@ -69,7 +72,9 @@ export default function Vote() {
           }, 200);
         }
       } else if (event.key === "ArrowLeft") {
-        const leftImage = document.getElementById("leftImage");
+        const leftImage = isScreenSmallerOrEqualTo("sm")
+          ? document.getElementById("upImage")
+          : document.getElementById("leftImage");
         if (leftImage && !hasVoted) {
           leftImage.classList.add("!bg-[length:102%]");
           leftImage.click();
@@ -130,7 +135,7 @@ export default function Vote() {
       </div>
       <div className="flex sm:hidden flex-col gap-[1vw] items-center justify-start">
         <ImageCard
-          id="leftImage"
+          id="upImage"
           className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
@@ -138,7 +143,7 @@ export default function Vote() {
           hasVoted={hasVoted}
         />
         <ImageCard
-          id="rightImage"
+          id="downImage"
           className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
