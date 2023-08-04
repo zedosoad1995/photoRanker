@@ -8,6 +8,9 @@ import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
 import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import { INVALID_CREDENTIALS } from "../../../backend/src/constants/errorCodes";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -27,8 +30,17 @@ export default function SignIn() {
   };
 
   const handleSignIn = async () => {
-    await login(email, password);
-    navigate(HOME);
+    await login(email, password)
+      .then(() => {
+        navigate(HOME);
+      })
+      .catch((error) => {
+        if (axios.isAxiosError(error) && error.response?.data?.error === INVALID_CREDENTIALS) {
+          toast.error("Invalid Credentials", {
+            id: "invalid-credentials",
+          });
+        }
+      });
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

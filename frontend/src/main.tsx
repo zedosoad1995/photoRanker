@@ -28,6 +28,7 @@ import ExpiredValidation from "./Pages/ExpiredValidation.tsx";
 import CheckingValidation from "./Pages/CheckingValidation.tsx";
 import ForgotPassword from "./Pages/ForgotPassword.tsx";
 import ResetPassword from "./Pages/ResetPassword.tsx";
+import { Toaster } from "react-hot-toast";
 
 const router = createBrowserRouter([
   {
@@ -85,6 +86,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_AUTH_ID!}>
       <AuthProvider>
+        <Toaster position="top-center" reverseOrder={false} />
         <RouterProvider router={router} />
       </AuthProvider>
     </GoogleOAuthProvider>

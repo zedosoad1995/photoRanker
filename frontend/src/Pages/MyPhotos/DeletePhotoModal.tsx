@@ -27,7 +27,7 @@ export default function DeletePhotoModal({
           <Button onClick={handleClose} isFull={false} style="none">
             Cancel
           </Button>
-          <Button onClick={handleDelete} isFull={false}>
+          <Button onClick={handleDelete} isFull={false} style="danger">
             Delete
           </Button>
         </div>

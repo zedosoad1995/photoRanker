@@ -8,6 +8,7 @@ import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import DeletePhotoModal from "./DeletePhotoModal";
 import { getLoggedUser } from "@/Utils/user";
+import { toast } from "react-hot-toast";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -56,6 +57,10 @@ export default function MyPhotos() {
     };
   }, [pics]);
 
+  const handlePictureUpload = async () => {
+    await getPictures();
+  };
+
   const handleFileSelect = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -73,6 +78,7 @@ export default function MyPhotos() {
         const { height, width } = await getImageDimensionsFromBase64(base64Image);
 
         if (height < MIN_HEIGHT || width < MIN_WIDTH) {
+          toast.error(`Picture must be at least ${MIN_WIDTH}x${MIN_HEIGHT}`);
           return;
         }
 
@@ -147,7 +153,7 @@ export default function MyPhotos() {
         image={selectedImage}
         filename={filename}
         isOpen={isOpen}
-        onUpload={getPictures}
+        onUpload={handlePictureUpload}
         onClose={() => {
           setIsOpen(false);
         }}
