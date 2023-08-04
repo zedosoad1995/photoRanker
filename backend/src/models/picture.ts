@@ -115,24 +115,6 @@ function getPicturesWithClosestElos(
   loggedUserId: string,
   limit: number
 ): Promise<(Picture & { abs_diff: number })[]> {
-  console.log(
-    `
-    SELECT *,
-      ABS(${opponentPicture.elo.toFixed(2)}::numeric - elo) as abs_diff
-    FROM "Picture"
-    WHERE "userId" != ${loggedUserId} AND id != ${opponentPicture.id}
-    ORDER BY abs_diff ASC
-    LIMIT ${limit};
-  `,
-    Prisma.sql`
-      SELECT *,
-        ABS(${opponentPicture.elo.toFixed(2)}::numeric  - elo) as abs_diff
-      FROM "Picture"
-      WHERE "userId" != ${loggedUserId} AND id != ${opponentPicture.id}
-      ORDER BY abs_diff ASC
-      LIMIT ${limit};`
-  );
-
   return prisma.$queryRaw(
     Prisma.sql`
       SELECT *,

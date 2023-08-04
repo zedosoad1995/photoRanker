@@ -2,10 +2,10 @@ import { getNewMatch } from "@/Services/match";
 import { getImage, getPicture } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
-import { IMatch } from "../../../backend/src/types/match";
-import { SENSITIVITY } from "../../../backend/src/constants/rating";
+import { IMatch } from "../../../../backend/src/types/match";
+import { SENSITIVITY } from "../../../../backend/src/constants/rating";
 import Button from "@/Components/Button";
-import { IMG_HEIGHT, IMG_WIDTH } from "../../../backend/src/constants/picture";
+import { IMG_HEIGHT, IMG_WIDTH } from "../../../../backend/src/constants/picture";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -136,12 +136,14 @@ export default function Vote() {
     );
   };
 
+  const imageWidthClass = `w-[min(40vw,${IMG_WIDTH}px)]`;
+
   return (
     <>
       <div className="hidden sm:flex gap-[1vw] justify-center">
         <ImageCard
           id="leftImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg aspect-square w-[40vw] bg-cover bg-center bg-no-repeat"
+          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square ${imageWidthClass} bg-cover bg-center bg-no-repeat`}
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
           hasVoted={hasVoted}
@@ -149,7 +151,7 @@ export default function Vote() {
         />
         <ImageCard
           id="rightImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg aspect-square w-[40vw] bg-cover bg-center bg-no-repeat"
+          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square ${imageWidthClass} bg-cover bg-center bg-no-repeat`}
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
           hasVoted={hasVoted}
