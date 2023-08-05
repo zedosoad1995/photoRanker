@@ -8,7 +8,8 @@ import { getLoggedUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
-import { IMAGE_SIZE_LIMIT } from "@/constants/picture";
+import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
+import { MIN_AGE } from "../../../../backend/src/constants/user";
 
 interface IUploadPhotoModal {
   image: string | null;
@@ -30,7 +31,7 @@ export default function UploadPhotoModal({
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [age, setAge] = useState(() => {
     const user = getLoggedUser();
-    if (!user?.dateOfBirth) return "18";
+    if (!user?.dateOfBirth) return String(MIN_AGE);
 
     return calculateAge(user.dateOfBirth).toString();
   });

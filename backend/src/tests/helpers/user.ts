@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { formatDate } from "@/helpers/date";
-import { ETHNICITY, COUNTRIES } from "@/constants/user";
+import { ETHNICITY, COUNTRIES, MIN_AGE } from "@/constants/user";
 import { Gender, Prisma, UserRole } from "@prisma/client";
 import { UserModel } from "@/models/user";
 import { hashPassword } from "@/helpers/password";
@@ -12,7 +12,7 @@ export const randomizeUser = (data: Partial<Prisma.UserCreateInput> = {}) => ({
   name: faker.person.fullName(),
   dateOfBirth: formatDate(
     faker.date.birthdate({
-      min: 18,
+      min: MIN_AGE,
       max: 100,
       mode: "age",
     })
