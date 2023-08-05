@@ -12,7 +12,7 @@ import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
 import { MIN_AGE } from "../../../../backend/src/constants/user";
 
 interface IUploadPhotoModal {
-  image: string | null;
+  image: { image: string; width: number; height: number } | null;
   filename: string | null;
   isOpen: boolean;
   onClose: () => void;
@@ -38,7 +38,7 @@ export default function UploadPhotoModal({
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
-      let croppedImage = await getCroppedImage(image, croppedAreaPixels);
+      let croppedImage = await getCroppedImage(image.image, croppedAreaPixels);
 
       if (croppedImage.size > IMAGE_SIZE_LIMIT) {
         croppedImage = await resizeImage(croppedImage);
@@ -70,14 +70,14 @@ export default function UploadPhotoModal({
           <div className="relative w-[350px] h-[350px] mx-auto mt-8">
             {image && (
               <Cropper
-                image={image}
+                image={image.image}
                 crop={crop}
                 zoom={zoom}
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={handleCompleteCrop}
                 aspect={1}
-                objectFit="horizontal-cover"
+                objectFit={image.height > image.width ? "vertical-cover" : "horizontal-cover"}
               />
             )}
           </div>

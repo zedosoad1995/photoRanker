@@ -13,7 +13,11 @@ import { toast } from "react-hot-toast";
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{
+    image: string;
+    width: number;
+    height: number;
+  } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [pics, setPics] = useState<string[]>([]);
   const [picsInfo, setPicsInfo] = useState<IPicture[]>([]);
@@ -84,7 +88,7 @@ export default function MyPhotos() {
           return;
         }
 
-        setSelectedImage(base64Image);
+        setSelectedImage({ image: base64Image, height, width });
         setFilename(selectedFile.name);
         setIsOpen(true);
       };
