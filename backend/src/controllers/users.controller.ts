@@ -10,6 +10,7 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { v4 as uuidv4 } from "uuid";
 import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
+import jwt from "jsonwebtoken";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -32,11 +33,7 @@ export const getOne = async (req: Request, res: Response) => {
     throw new NotFoundError("User not found");
   }
 
-  const userNoPassword = UserModel.exclude(user, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -44,11 +41,7 @@ export const getOne = async (req: Request, res: Response) => {
 export const getMe = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  const userNoPassword = UserModel.exclude(loggedUser, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(loggedUser, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -66,9 +59,7 @@ export const createOne = async (req: Request, res: Response) => {
   }
 
   const verificationToken = uuidv4();
-  const expires = getDateInXHours(
-    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
-  );
+  const expires = getDateInXHours(Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS));
 
   const user = await UserModel.create({
     data: {
@@ -94,11 +85,18 @@ export const createOne = async (req: Request, res: Response) => {
     html,
   });
 
-  const userNoPassword = UserModel.exclude(user, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userJwt = jwt.sign(
+    {
+      email: user.email,
+    },
+    process.env.JWT_KEY!
+  );
+
+  res.cookie("session", {
+    jwt: userJwt,
+  });
+
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
   res.status(201).json({ user: userNoPassword });
 };
@@ -128,11 +126,7 @@ export const createProfile = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -158,11 +152,7 @@ export const updateOne = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -177,4 +167,31 @@ export const checkEmailExists = async (req: Request, res: Response) => {
   res.status(200).send({
     exists: emailExists,
   });
+};
+
+export const deleteMe = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
+  await UserModel.delete({
+    where: { id: loggedUser.id },
+  });
+
+  res.clearCookie("session");
+
+  res.status(204).send();
+};
+
+export const deleteOne = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+  const userId = req.params.userId;
+
+  if (userId === loggedUser.id && isAdmin(loggedUser.role)) {
+    throw new ForbiddenError("Admin user cannot delete itseld");
+  }
+
+  await UserModel.delete({
+    where: { id: userId },
+  });
+
+  res.status(204).send();
 };

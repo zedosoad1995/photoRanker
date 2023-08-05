@@ -11,13 +11,12 @@ api.interceptors.response.use(
   (response: AxiosResponse) => response.data,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      await logout();
-
       const isPathProtected = !NON_AUTH_ROUTES.some((path) =>
         matchPath({ path }, window.location.pathname)
       );
 
       if (isPathProtected) {
+        await logout();
         localStorage.removeItem("user");
         window.location.href = LOGIN;
       }

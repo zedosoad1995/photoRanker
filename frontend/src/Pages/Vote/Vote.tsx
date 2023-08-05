@@ -111,26 +111,30 @@ export default function Vote() {
     getMatch();
   };
 
-  const imageWidthClass = `w-[min(40vw,${IMG_WIDTH}px)]`;
-
   return (
     <>
       <div className="hidden sm:flex gap-[1vw] justify-center">
         <ImageCard
           id="leftImage"
-          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square ${imageWidthClass} bg-cover bg-center bg-no-repeat`}
+          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
           prob={prob1}
           hasVoted={hasVoted}
+          style={{
+            width: `min(40vw,${IMG_WIDTH}px)`,
+          }}
         />
         <ImageCard
           id="rightImage"
-          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square ${imageWidthClass} bg-cover bg-center bg-no-repeat`}
+          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
           prob={prob2}
           hasVoted={hasVoted}
+          style={{
+            width: `min(40vw,${IMG_WIDTH}px)`,
+          }}
         />
       </div>
       <div className="flex sm:hidden flex-col gap-[1vw] items-center justify-start">

@@ -5,9 +5,9 @@ export const subtractYears = (date: Date, years: number) => {
 };
 
 export const calculateAge = (date: string) => {
-  const birthDate = parse(date, "yyyy-MM-dd", new Date());
+  const parsedDate = parse(date, "yyyy-MM-dd", new Date());
 
-  const age = differenceInYears(new Date(), birthDate);
+  const age = differenceInYears(new Date(), parsedDate);
 
   return age;
 };

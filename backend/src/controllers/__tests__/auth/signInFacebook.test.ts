@@ -106,11 +106,9 @@ it("Creates user and sets cookie, when user does not exist. isEmailVerified is s
 describe("Test Validation", () => {
   describe("'code' field", () => {
     it("is required", async () => {
-      const response = await request(app)
-        .post("/api/auth/login/facebook")
-        .send({
-          code: undefined,
-        });
+      const response = await request(app).post("/api/auth/login/facebook").send({
+        code: undefined,
+      });
 
       expect(response.status).toEqual(422);
     });

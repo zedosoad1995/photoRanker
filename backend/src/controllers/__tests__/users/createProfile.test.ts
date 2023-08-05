@@ -4,6 +4,8 @@ import { UserModel } from "@/models/user";
 import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
+import { adjustDate, formatDate } from "@/helpers/date";
+import { MIN_AGE } from "@/constants/user";
 
 const updateProfileBody = _.pick(
   randomizeUser(),
@@ -32,9 +34,7 @@ beforeAll(async () => {
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app)
-      .patch(`/api/users/profile/${userId}`)
-      .send();
+    const response = await request(app).patch(`/api/users/profile/${userId}`).send();
 
     expect(response.status).toEqual(401);
   });
@@ -156,6 +156,7 @@ describe("Admin Logged User", () => {
 
       it("is an invalid gender name", async () => {
         const body = {
+          updateProfileBody,
           gender: "non-binary",
         };
 
@@ -182,7 +183,8 @@ describe("Admin Logged User", () => {
 
       it("is has an invalid format, should be yyyy-MM-dd", async () => {
         const body = {
-          dateOfBirth: "2020/01/01",
+          updateProfileBody,
+          dateOfBirth: "1995/01/01",
         };
 
         const response = await request(app)
@@ -195,7 +197,22 @@ describe("Admin Logged User", () => {
 
       it("is has a valid format, but the date is invalid", async () => {
         const body = {
-          dateOfBirth: "2020-02-30",
+          ...updateProfileBody,
+          dateOfBirth: "1995-02-30",
+        };
+
+        const response = await request(app)
+          .patch(`/api/users/profile/${userId}`)
+          .set("Cookie", adminCookie)
+          .send(body);
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("Throws error when user is younger than the minimum allowed age", async () => {
+        const body = {
+          ...updateProfileBody,
+          dateOfBirth: formatDate(adjustDate(new Date(), { years: -MIN_AGE, days: 1, hours: 1 })),
         };
 
         const response = await request(app)

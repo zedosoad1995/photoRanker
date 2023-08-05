@@ -6,6 +6,8 @@ import { randomizeUser } from "@/tests/helpers/user";
 import { UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import nodemailer, { Transporter, SentMessageInfo } from "nodemailer";
+import { adjustDate, calculateAge, formatDate } from "@/helpers/date";
+import { MIN_AGE } from "@/constants/user";
 
 jest.mock("nodemailer");
 const mockedNodeMailer = nodemailer as jest.Mocked<typeof nodemailer>;
@@ -48,9 +50,7 @@ it("Sends mail to email of newly created user", async () => {
 describe("User Creation fail", () => {
   let mockUserCreate: jest.SpyInstance;
   beforeAll(() => {
-    mockUserCreate = jest
-      .spyOn(UserModel, "create")
-      .mockRejectedValueOnce(undefined);
+    mockUserCreate = jest.spyOn(UserModel, "create").mockRejectedValueOnce(undefined);
   });
 
   afterAll(() => {
@@ -247,7 +247,7 @@ describe("Test Validation", () => {
     it("is has an invalid format, should be yyyy-MM-dd", async () => {
       const body = {
         ...createUserBody,
-        dateOfBirth: "2020/01/01",
+        dateOfBirth: "1995/01/01",
       };
 
       const response = await request(app).post("/api/users").send(body);
@@ -258,12 +258,34 @@ describe("Test Validation", () => {
     it("is has a valid format, but the date is invalid", async () => {
       const body = {
         ...createUserBody,
-        dateOfBirth: "2020-02-30",
+        dateOfBirth: "1995-02-30",
       };
 
       const response = await request(app).post("/api/users").send(body);
 
       expect(response.status).toEqual(422);
+    });
+
+    it("Throws error when user is younger than the minimum allowed age", async () => {
+      const body = {
+        ...createUserBody,
+        dateOfBirth: formatDate(adjustDate(new Date(), { years: -MIN_AGE, days: 1, hours: 1 })),
+      };
+
+      const response = await request(app).post("/api/users").send(body);
+
+      expect(response.status).toEqual(422);
+    });
+
+    it("Succeds when user has an allowed age", async () => {
+      const body = {
+        ...createUserBody,
+        dateOfBirth: formatDate(adjustDate(new Date(), { years: -MIN_AGE, hours: -1 })),
+      };
+
+      const response = await request(app).post("/api/users").send(body);
+
+      expect(response.status).toEqual(201);
     });
   });
 });

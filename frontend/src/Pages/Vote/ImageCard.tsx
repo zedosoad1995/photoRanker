@@ -7,6 +7,7 @@ export const ImageCard = ({
   prob,
   id,
   hasVoted,
+  style,
 }: {
   className: string;
   pic: string | undefined;
@@ -14,6 +15,7 @@ export const ImageCard = ({
   prob: number | undefined;
   id?: string;
   hasVoted: boolean;
+  style?: React.CSSProperties;
 }) => {
   const [isImageHovered, setIsImageHovered] = useState(false);
 
@@ -30,6 +32,7 @@ export const ImageCard = ({
         } url(${pic})`,
         backgroundSize: isImageHovered ? "101%" : "100%",
         transition: "background-size 0.3s ease",
+        ...style,
       }}
       onMouseEnter={() => {
         setIsImageHovered(true);

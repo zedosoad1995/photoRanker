@@ -4,7 +4,7 @@ interface IButton {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   size?: "medium" | "large";
   isFull?: boolean;
-  style?: "primary" | "secondary" | "none";
+  style?: "primary" | "secondary" | "danger" | "none";
   disabled?: boolean;
 }
 
@@ -33,6 +33,11 @@ export default function Button({
         (disabled
           ? "bg-[#4038ca] text-[#4038ca] opacity-50"
           : "border border-[#4038ca] text-[#4038ca] hover:bg-[#efeeff]");
+      break;
+    case "danger":
+      className =
+        "text-white shadow-sm " +
+        (disabled ? "bg-[#fccdcc] text-[#b32422] opacity-50" : "bg-[#e94c4a] hover:bg-[#d63230]");
       break;
     case "none":
     default:

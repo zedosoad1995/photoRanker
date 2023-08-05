@@ -1,4 +1,5 @@
 import { EXPIRED_VALIDATION, HOME } from "@/Constants/routes";
+import { useAuth } from "@/Contexts/auth";
 import { verifyEmail } from "@/Services/auth";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,11 +7,13 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function CheckingValidation() {
   let { token } = useParams();
   let navigate = useNavigate();
+  const { updateUser } = useAuth();
 
   useEffect(() => {
     if (token) {
       verifyEmail(token)
-        .then(() => {
+        .then(async () => {
+          await updateUser();
           navigate(HOME);
         })
         .catch(() => {

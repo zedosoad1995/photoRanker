@@ -5,6 +5,8 @@ import { loginAdmin, loginRegular, randomizeUser } from "@/tests/helpers/user";
 import _ from "underscore";
 import { User, UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
+import { adjustDate, formatDate } from "@/helpers/date";
+import { MIN_AGE } from "@/constants/user";
 
 const updateUserBody = _.omit(randomizeUser(), "email");
 
@@ -28,10 +30,7 @@ describe("Unauthorized", () => {
   it("returns 403, when logged user is not ADMIN", async () => {
     const { cookie } = await loginRegular();
 
-    const response = await request(app)
-      .patch(`/api/users/${userId}`)
-      .set("Cookie", cookie)
-      .send();
+    const response = await request(app).patch(`/api/users/${userId}`).set("Cookie", cookie).send();
 
     expect(response.status).toEqual(403);
   });
@@ -245,7 +244,7 @@ describe("Admin Logged User", () => {
     describe("'dateOfBirth' field", () => {
       it("is has an invalid format, should be yyyy-MM-dd", async () => {
         const body = {
-          dateOfBirth: "2020/01/01",
+          dateOfBirth: "1995/01/01",
         };
 
         const response = await request(app)
@@ -258,7 +257,7 @@ describe("Admin Logged User", () => {
 
       it("is has a valid format, but the date is invalid", async () => {
         const body = {
-          dateOfBirth: "2020-02-30",
+          dateOfBirth: "1995-02-30",
         };
 
         const response = await request(app)
@@ -267,6 +266,32 @@ describe("Admin Logged User", () => {
           .send(body);
 
         expect(response.status).toEqual(422);
+      });
+
+      it("Throws error when user is younger than the minimum allowed age", async () => {
+        const body = {
+          dateOfBirth: formatDate(adjustDate(new Date(), { years: -MIN_AGE, days: 1, hours: 1 })),
+        };
+
+        const response = await request(app)
+          .patch(`/api/users/${userId}`)
+          .set("Cookie", adminCookie)
+          .send(body);
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("Succeds when user has an allowed age", async () => {
+        const body = {
+          dateOfBirth: formatDate(adjustDate(new Date(), { years: -MIN_AGE, hours: -1 })),
+        };
+
+        const response = await request(app)
+          .patch(`/api/users/${userId}`)
+          .set("Cookie", adminCookie)
+          .send(body);
+
+        expect(response.status).toEqual(200);
       });
     });
   });

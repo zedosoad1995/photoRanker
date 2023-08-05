@@ -11,7 +11,13 @@ import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
-import { NON_EXISTENT_EMAIL } from "@/constants/errorCodes";
+import {
+  INVALID_CREDENTIALS,
+  INVALID_LOGIN_METHOD_EMAIL,
+  INVALID_LOGIN_METHOD_FACEBOOK,
+  INVALID_LOGIN_METHOD_GOOGLE,
+  NON_EXISTENT_EMAIL,
+} from "@/constants/errorCodes";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
@@ -21,12 +27,12 @@ export const signIn = async (req: Request, res: Response) => {
 
   const user = await UserModel.findUnique({ where: { email } });
   if (!user || !user.password) {
-    throw new UnauthorizedError("Invalid credentials");
+    throw new UnauthorizedError("Invalid credentials", INVALID_CREDENTIALS);
   }
 
   const isPasswordMatch = await comparePasswords(password, user.password);
   if (!isPasswordMatch) {
-    throw new UnauthorizedError("Invalid credentials");
+    throw new UnauthorizedError("Invalid credentials", INVALID_CREDENTIALS);
   }
 
   const userJwt = jwt.sign(
@@ -40,11 +46,7 @@ export const signIn = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -86,10 +88,6 @@ export const signInGoogle = async (req: Request, res: Response) => {
     },
   });
 
-  if (user && user.googleId !== googleId) {
-    throw new UnauthorizedError();
-  }
-
   if (!user) {
     const newUser = await UserModel.create({
       data: {
@@ -112,13 +110,27 @@ export const signInGoogle = async (req: Request, res: Response) => {
       jwt: userJwt,
     });
 
-    const userNoPassword = UserModel.exclude(newUser, [
-      "password",
-      "googleId",
-      "facebookId",
-    ]);
+    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
 
     return res.status(201).json({ user: userNoPassword });
+  }
+
+  if (user.googleId === null) {
+    if (user.password !== null) {
+      throw new UnauthorizedError(
+        "You registered using your email directly. Please log in with that method",
+        INVALID_LOGIN_METHOD_EMAIL
+      );
+    } else if (user.facebookId !== null) {
+      throw new UnauthorizedError(
+        "You registered using facebook. Please log in with that method",
+        INVALID_LOGIN_METHOD_FACEBOOK
+      );
+    }
+  }
+
+  if (user.googleId !== googleId) {
+    throw new UnauthorizedError();
   }
 
   const userJwt = jwt.sign(
@@ -132,11 +144,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
   res.status(200).json({ user: userNoPassword });
 };
@@ -144,17 +152,14 @@ export const signInGoogle = async (req: Request, res: Response) => {
 export const signInFacebook = async (req: Request, res: Response) => {
   const { code } = req.body;
 
-  const response = await axios.get(
-    "https://graph.facebook.com/v4.0/oauth/access_token",
-    {
-      params: {
-        client_id: process.env.FACEBOOK_CLIENT_ID,
-        client_secret: process.env.FACEBOOK_CLIENT_SECRET,
-        redirect_uri: FACEBOOK_CALLBACK_URI,
-        code,
-      },
-    }
-  );
+  const response = await axios.get("https://graph.facebook.com/v4.0/oauth/access_token", {
+    params: {
+      client_id: process.env.FACEBOOK_CLIENT_ID,
+      client_secret: process.env.FACEBOOK_CLIENT_SECRET,
+      redirect_uri: FACEBOOK_CALLBACK_URI,
+      code,
+    },
+  });
 
   if (!response.data?.access_token) {
     throw new UnauthorizedError(NO_ACCESS_TOKEN_FACEBOOK);
@@ -174,10 +179,6 @@ export const signInFacebook = async (req: Request, res: Response) => {
       email,
     },
   });
-
-  if (user && user.facebookId !== id) {
-    throw new UnauthorizedError();
-  }
 
   if (!user) {
     const newUser = await UserModel.create({
@@ -201,13 +202,27 @@ export const signInFacebook = async (req: Request, res: Response) => {
       jwt: userJwt,
     });
 
-    const userNoPassword = UserModel.exclude(newUser, [
-      "password",
-      "googleId",
-      "facebookId",
-    ]);
+    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
 
     return res.status(201).json({ user: userNoPassword });
+  }
+
+  if (user.facebookId === null) {
+    if (user.password !== null) {
+      throw new UnauthorizedError(
+        "You registered using your email directly. Please log in with that method",
+        INVALID_LOGIN_METHOD_EMAIL
+      );
+    } else if (user.googleId !== null) {
+      throw new UnauthorizedError(
+        "You registered using google. Please log in with that method",
+        INVALID_LOGIN_METHOD_GOOGLE
+      );
+    }
+  }
+
+  if (user.facebookId !== id) {
+    throw new UnauthorizedError();
   }
 
   const userJwt = jwt.sign(
@@ -221,11 +236,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
     jwt: userJwt,
   });
 
-  const userNoPassword = UserModel.exclude(user, [
-    "password",
-    "googleId",
-    "facebookId",
-  ]);
+  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
   res.status(200).send({ user: userNoPassword });
 };
@@ -251,7 +262,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     throw new BadRequestError("Token has expired");
   }
 
-  await UserModel.update({
+  const updatedUser = await UserModel.update({
     data: {
       isEmailVerified: true,
       verificationToken: null,
@@ -260,6 +271,17 @@ export const verifyEmail = async (req: Request, res: Response) => {
     where: {
       id: user.id,
     },
+  });
+
+  const userJwt = jwt.sign(
+    {
+      email: updatedUser.email,
+    },
+    process.env.JWT_KEY!
+  );
+
+  res.cookie("session", {
+    jwt: userJwt,
   });
 
   return res.status(204).send();
@@ -273,9 +295,7 @@ export const resendEmail = async (req: Request, res: Response) => {
   }
 
   const verificationToken = uuidv4();
-  const expiration = getDateInXHours(
-    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
-  );
+  const expiration = getDateInXHours(Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS));
 
   await UserModel.update({
     data: {
@@ -323,9 +343,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 
   const token = uuidv4();
-  const expiration = getDateInXHours(
-    Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS)
-  );
+  const expiration = getDateInXHours(Number(process.env.VERIFICATION_TOKEN_EXPIRATION_HOURS));
 
   await UserModel.update({
     data: {
