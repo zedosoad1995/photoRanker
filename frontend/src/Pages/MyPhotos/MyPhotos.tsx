@@ -78,7 +78,9 @@ export default function MyPhotos() {
         const { height, width } = await getImageDimensionsFromBase64(base64Image);
 
         if (height < MIN_HEIGHT || width < MIN_WIDTH) {
-          toast.error(`Picture must be at least ${MIN_WIDTH}x${MIN_HEIGHT}`);
+          toast.error(`Picture must be at least ${MIN_WIDTH}x${MIN_HEIGHT}`, {
+            id: "image-too-small",
+          });
           return;
         }
 

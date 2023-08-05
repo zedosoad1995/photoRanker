@@ -2,14 +2,18 @@ import { useAuth } from "@/Contexts/auth";
 import { HOME } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
 import { GoogleLoginButton } from "react-social-login-buttons";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import {
+  INVALID_LOGIN_METHOD_EMAIL,
+  INVALID_LOGIN_METHOD_FACEBOOK,
+} from "../../../backend/src/constants/errorCodes";
 
 interface IGoogleButton {
   text?: string;
 }
 
-export default function GoogleButton({
-  text = "Sign in with Google",
-}: IGoogleButton) {
+export default function GoogleButton({ text = "Sign in with Google" }: IGoogleButton) {
   const navigate = useNavigate();
   const { loginGoogle } = useAuth();
 
@@ -18,8 +22,25 @@ export default function GoogleButton({
       client_id: import.meta.env.VITE_GOOGLE_AUTH_ID,
       scope: "openid profile email",
       callback: async (response) => {
-        await loginGoogle(response.code);
-        navigate(HOME);
+        try {
+          await loginGoogle(response.code).then();
+          navigate(HOME);
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            if (error.response?.data?.error === INVALID_LOGIN_METHOD_EMAIL) {
+              toast.error(
+                "You registered using your email directly. Please log in with that method",
+                { id: "must-login-email" }
+              );
+            } else if (error.response?.data?.error === INVALID_LOGIN_METHOD_FACEBOOK) {
+              toast.error("You registered using facebook. Please log in with that method", {
+                id: "must-login-facebook",
+              });
+            }
+          } else {
+            toast.error("Something went wrong", { id: "error-google-login" });
+          }
+        }
       },
       error_callback: (error) => {
         console.error(error);
