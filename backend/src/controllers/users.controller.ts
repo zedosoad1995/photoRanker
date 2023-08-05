@@ -10,6 +10,7 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { v4 as uuidv4 } from "uuid";
 import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
+import jwt from "jsonwebtoken";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -82,6 +83,17 @@ export const createOne = async (req: Request, res: Response) => {
     to: req.body.email,
     subject: "Email Verification",
     html,
+  });
+
+  const userJwt = jwt.sign(
+    {
+      email: user.email,
+    },
+    process.env.JWT_KEY!
+  );
+
+  res.cookie("session", {
+    jwt: userJwt,
   });
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
