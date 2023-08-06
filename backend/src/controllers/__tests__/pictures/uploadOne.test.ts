@@ -1,7 +1,8 @@
 import request from "supertest";
 import { app } from "@/app";
 import { rimrafSync } from "rimraf";
-import { LIMIT_PICTURES, TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { PICTURE } from "@/constants/messages";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
@@ -116,10 +117,7 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when no file is uploaded", async () => {
-    const response = await request(app)
-      .post("/api/pictures")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).post("/api/pictures").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(400);
     expect(response.body.message).toEqual(PICTURE.NO_FILE);
@@ -173,9 +171,7 @@ describe("Regular Logged User", () => {
     expect(picture?.userId).toEqual(regularUser.id);
 
     expect(
-      fs.existsSync(
-        normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!))
-      )
+      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
     ).toBeTruthy();
   });
 });
@@ -205,9 +201,7 @@ describe("Admin Logged User", () => {
     expect(picture?.userId).toEqual(adminUser.id);
 
     expect(
-      fs.existsSync(
-        normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!))
-      )
+      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
     ).toBeTruthy();
   });
 

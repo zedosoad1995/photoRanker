@@ -1,11 +1,6 @@
 import { PICTURE } from "@/constants/messages";
-import {
-  IMAGES_FOLDER_PATH,
-  IMG_HEIGHT,
-  IMG_WIDTH,
-  MIN_HEIGHT,
-  MIN_WIDTH,
-} from "@/constants/picture";
+import { IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { IMG_HEIGHT, IMG_WIDTH, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs";

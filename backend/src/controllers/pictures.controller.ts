@@ -1,5 +1,6 @@
 import { PICTURE } from "@/constants/messages";
-import { ELO_INIT, IMAGES_FOLDER_PATH, LIMIT_PICTURES } from "@/constants/picture";
+import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";

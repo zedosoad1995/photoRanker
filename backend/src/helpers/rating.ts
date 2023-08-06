@@ -1,4 +1,5 @@
-import { ELO_UPDATE_FACTOR, SENSITIVITY } from "@/constants/rating";
+import { ELO_UPDATE_FACTOR } from "@/constants/rating";
+import { SENSITIVITY } from "@shared/constants/rating";
 
 export const calculateNewRating = (
   isWin: boolean,
