@@ -17,7 +17,7 @@ import {
   INVALID_LOGIN_METHOD_FACEBOOK,
   INVALID_LOGIN_METHOD_GOOGLE,
   NON_EXISTENT_EMAIL,
-} from "@/constants/errorCodes";
+} from "@shared/constants/errorCodes";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { cookieOptions } from "@/constants/cookies";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;

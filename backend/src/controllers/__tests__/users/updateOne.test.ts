@@ -6,7 +6,7 @@ import _ from "underscore";
 import { User, UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { adjustDate, formatDate } from "@/helpers/date";
-import { MIN_AGE } from "@/constants/user";
+import { MIN_AGE } from "@shared/constants/user";
 
 const updateUserBody = _.omit(randomizeUser(), "email");
 

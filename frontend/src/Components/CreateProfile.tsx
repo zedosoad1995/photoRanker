@@ -1,7 +1,7 @@
 import Button from "@/Components/Button";
 import { useRef, useState } from "react";
 import { createProfile } from "@/Services/auth";
-import { GENDER } from "../../../backend/src/constants/user";
+import { GENDER } from "@shared/constants/user";
 import _ from "underscore";
 import PersonalInfoForm from "@/Pages/Register/Forms/PersonalInfoForm";
 import { useAuth } from "@/Contexts/auth";

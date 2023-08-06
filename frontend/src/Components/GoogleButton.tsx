@@ -7,7 +7,7 @@ import axios from "axios";
 import {
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_FACEBOOK,
-} from "../../../backend/src/constants/errorCodes";
+} from "@shared/constants/errorCodes";
 
 interface IGoogleButton {
   text?: string;

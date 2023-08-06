@@ -1,8 +1,12 @@
-import { Gender, UserRole } from "@prisma/client";
-
 export const MIN_AGE = 18;
-export const GENDER = Gender;
-export const ROLE = UserRole;
+export const GENDER = {
+  Male: "Male",
+  Female: "Female",
+};
+export const ROLE = {
+  ADMIN: "ADMIN",
+  REGULAR: "REGULAR",
+};
 export const ETHNICITY = ["White", "Black", "Asian", "Latino", "Other"];
 export const COUNTRIES = [
   "Afghanistan",

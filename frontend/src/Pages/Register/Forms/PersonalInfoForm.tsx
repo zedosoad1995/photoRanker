@@ -1,4 +1,4 @@
-import { COUNTRIES, ETHNICITY, GENDER } from "../../../../../backend/src/constants/user";
+import { COUNTRIES, ETHNICITY, GENDER } from "@shared/constants/user";
 import Select from "@/Components/Select";
 import DateField from "@/Components/DateField";
 import { useForm } from "react-hook-form";

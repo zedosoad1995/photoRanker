@@ -1,6 +1,6 @@
 import { Area } from "react-easy-crop";
 import Resizer from "react-image-file-resizer";
-import { IMG_HEIGHT, IMG_WIDTH } from "../../../backend/src/constants/picture";
+import { IMG_HEIGHT, IMG_WIDTH } from "@shared/constants/picture";
 
 export const base64toBlob = (dataURL: string) => {
   const arr = dataURL.split(",");

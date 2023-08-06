@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_GOOGLE,
-} from "../../../backend/src/constants/errorCodes";
+} from "@shared/constants/errorCodes";
 
 export default function FacebookCallback() {
   const { loginFacebook } = useAuth();

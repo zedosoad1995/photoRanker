@@ -2,7 +2,7 @@ import Button from "@/Components/Button";
 import { deleteImage, getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IPicture } from "../../../../backend/src/types/picture";
-import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "../../../../backend/src/constants/picture";
+import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/20/solid";

@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { register } from "@/Services/auth";
 import { HOME, LOGIN } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
-import { GENDER } from "../../../../backend/src/constants/user";
+import { GENDER } from "@shared/constants/user";
 import _ from "underscore";
 import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";

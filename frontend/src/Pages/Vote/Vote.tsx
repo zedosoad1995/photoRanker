@@ -3,9 +3,9 @@ import { getImage, getPicture } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
 import { IMatch } from "../../../../backend/src/types/match";
-import { SENSITIVITY } from "../../../../backend/src/constants/rating";
+import { SENSITIVITY } from "@shared/constants/rating";
 import Button from "@/Components/Button";
-import { IMG_WIDTH } from "../../../../backend/src/constants/picture";
+import { IMG_WIDTH } from "@shared/constants/picture";
 import { ImageCard } from "./ImageCard";
 import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 

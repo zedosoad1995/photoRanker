@@ -10,7 +10,7 @@ import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import { INVALID_CREDENTIALS } from "../../../backend/src/constants/errorCodes";
+import { INVALID_CREDENTIALS } from "@shared/constants/errorCodes";
 
 export default function SignIn() {
   const navigate = useNavigate();

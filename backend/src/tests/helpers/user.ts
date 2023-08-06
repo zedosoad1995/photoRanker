@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { formatDate } from "@/helpers/date";
-import { ETHNICITY, COUNTRIES, MIN_AGE } from "@/constants/user";
+import { ETHNICITY, COUNTRIES, MIN_AGE } from "@shared/constants/user";
 import { Gender, Prisma, UserRole } from "@prisma/client";
 import { UserModel } from "@/models/user";
 import { hashPassword } from "@/helpers/password";
