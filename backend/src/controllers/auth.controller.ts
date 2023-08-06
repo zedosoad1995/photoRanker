@@ -19,6 +19,7 @@ import {
   NON_EXISTENT_EMAIL,
 } from "@/constants/errorCodes";
 import { ForbiddenError } from "@/errors/ForbiddenError";
+import { cookieOptions } from "@/constants/cookies";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -42,9 +43,13 @@ export const signIn = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
@@ -106,9 +111,13 @@ export const signInGoogle = async (req: Request, res: Response) => {
       process.env.JWT_KEY!
     );
 
-    res.cookie("session", {
-      jwt: userJwt,
-    });
+    res.cookie(
+      "session",
+      {
+        jwt: userJwt,
+      },
+      cookieOptions
+    );
 
     const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
 
@@ -140,9 +149,13 @@ export const signInGoogle = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
@@ -198,9 +211,13 @@ export const signInFacebook = async (req: Request, res: Response) => {
       process.env.JWT_KEY!
     );
 
-    res.cookie("session", {
-      jwt: userJwt,
-    });
+    res.cookie(
+      "session",
+      {
+        jwt: userJwt,
+      },
+      cookieOptions
+    );
 
     const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
 
@@ -232,9 +249,13 @@ export const signInFacebook = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
@@ -280,9 +301,13 @@ export const verifyEmail = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   return res.status(204).send();
 };

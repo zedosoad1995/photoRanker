@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
 import jwt from "jsonwebtoken";
+import { cookieOptions } from "@/constants/cookies";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -92,9 +93,13 @@ export const createOne = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
