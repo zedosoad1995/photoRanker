@@ -14,5 +14,3 @@ export const createProfileSchema = z
       .refine(isAboveAge(MIN_AGE)),
   })
   .strict();
-
-export type ICreateProfile = z.infer<typeof createProfileSchema>;

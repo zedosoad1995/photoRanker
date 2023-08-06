@@ -1,8 +1,5 @@
 import api from "./index";
-import { ICreateUser } from "../../../backend/src/schemas/user/createUser";
-import { ICreateProfile } from "../../../backend/src/schemas/user/createProfile";
-import { ISignIn } from "../../../backend/src/schemas/auth/signIn";
-import { IUserRes, ICheckEmailRes } from "@/Types/user";
+import { IUserRes, ICheckEmailRes, ICreateUser, ICreateProfile, ISignIn } from "@/Types/user";
 
 export const login = async (data: ISignIn): Promise<IUserRes> => {
   return api.post("/auth/login", data);

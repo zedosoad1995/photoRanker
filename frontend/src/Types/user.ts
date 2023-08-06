@@ -22,3 +22,23 @@ export interface IUserRes {
 export interface ICheckEmailRes {
   exists: boolean;
 }
+
+export interface ISignIn {
+  email: string;
+  password: string;
+}
+
+export interface ICreateUser {
+  name: string;
+  email: string;
+  password: string;
+  ethnicity: (typeof ETHNICITY)[number];
+  countryOfOrigin: (typeof COUNTRIES)[number];
+  dateOfBirth: string | null;
+  gender: (typeof GENDER)[keyof typeof GENDER];
+}
+
+export type ICreateProfile = Pick<
+  ICreateUser,
+  "ethnicity" | "countryOfOrigin" | "dateOfBirth" | "gender"
+>;
