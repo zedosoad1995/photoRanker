@@ -2,12 +2,12 @@ import { getNewMatch } from "@/Services/match";
 import { getImage, getPicture } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
-import { IMatch } from "../../../../backend/src/types/match";
 import { SENSITIVITY } from "@shared/constants/rating";
 import Button from "@/Components/Button";
 import { IMG_WIDTH } from "@shared/constants/picture";
 import { ImageCard } from "./ImageCard";
 import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
+import { IMatch } from "@/Types/match";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -15,7 +15,7 @@ export default function Vote() {
   const [prob1, setProb1] = useState<number>();
   const [prob2, setProb2] = useState<number>();
 
-  const [match, setMatch] = useState<IMatch["match"]>();
+  const [match, setMatch] = useState<IMatch>();
   const [hasVoted, setHasVoted] = useState(false);
 
   const getMatch = async () => {

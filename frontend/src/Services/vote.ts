@@ -1,6 +1,6 @@
+import { IVoteRes } from "@/Types/vote";
 import api from "./index";
-import { IVote } from "../../../backend/src/types/vote";
 
-export const vote = async (matchId: string, winnerPictureId: string): Promise<IVote> => {
+export const vote = async (matchId: string, winnerPictureId: string): Promise<IVoteRes> => {
   return api.post("/votes", { matchId, winnerPictureId });
 };

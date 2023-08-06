@@ -2,12 +2,12 @@ export const MIN_AGE = 18;
 export const GENDER = {
   Male: "Male",
   Female: "Female",
-};
+} as const;
 export const ROLE = {
   ADMIN: "ADMIN",
   REGULAR: "REGULAR",
-};
-export const ETHNICITY = ["White", "Black", "Asian", "Latino", "Other"];
+} as const;
+export const ETHNICITY = ["White", "Black", "Asian", "Latino", "Other"] as const;
 export const COUNTRIES = [
   "Afghanistan",
   "Albania",
@@ -202,4 +202,4 @@ export const COUNTRIES = [
   "Yemen",
   "Zambia",
   "Zimbabwe",
-];
+] as const;

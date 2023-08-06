@@ -23,7 +23,7 @@ export default function GoogleButton({ text = "Sign in with Google" }: IGoogleBu
       scope: "openid profile email",
       callback: async (response) => {
         try {
-          await loginGoogle(response.code).then();
+          await loginGoogle(response.code);
           navigate(HOME);
         } catch (error) {
           if (axios.isAxiosError(error)) {

@@ -1,7 +1,6 @@
 import Button from "@/Components/Button";
 import { deleteImage, getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IPicture } from "../../../../backend/src/types/picture";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
@@ -9,6 +8,7 @@ import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import DeletePhotoModal from "./DeletePhotoModal";
 import { getLoggedUser } from "@/Utils/user";
 import { toast } from "react-hot-toast";
+import { IPicture } from "@/Types/picture";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);

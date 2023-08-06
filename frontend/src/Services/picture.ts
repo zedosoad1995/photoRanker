@@ -1,11 +1,11 @@
+import { IGetManyPictures, PictureRes } from "@/Types/picture";
 import api from "./index";
-import { IGetManyPictures, IGetPicture } from "../../../backend/src/types/picture";
 
 export const getManyPictures = async (userId?: string): Promise<IGetManyPictures> => {
   return api.get(`/pictures?userId=${userId}`);
 };
 
-export const getPicture = async (id: string): Promise<IGetPicture> => {
+export const getPicture = async (id: string): Promise<PictureRes> => {
   return api.get(`/pictures/${id}`);
 };
 
