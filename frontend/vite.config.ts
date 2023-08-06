@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  plugins: [react() /* mkcert() */],
+  plugins: [react(), mkcert()],
   resolve: {
     alias: [{ find: "@", replacement: fileURLToPath(new URL("./src", import.meta.url)) }],
   },
