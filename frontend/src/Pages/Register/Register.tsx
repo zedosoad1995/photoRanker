@@ -11,22 +11,13 @@ import _ from "underscore";
 import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";
 import { useAuth } from "@/Contexts/auth";
+import { ICreateUser } from "@/Types/user";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
 }
 
-interface IData {
-  email: string;
-  name: string;
-  password: string;
-  ethnicity: string;
-  countryOfOrigin: string;
-  gender: string;
-  dateOfBirth: string;
-}
-
-const INITIAL_DATA: IData = {
+const INITIAL_DATA: ICreateUser = {
   email: "",
   name: "",
   password: "",
@@ -53,7 +44,7 @@ export default function Register() {
   const isLastForm = formStage >= numForms - 1;
   const nextButtonLabel = isLastForm ? "Sign Up" : "Next";
 
-  const updateData = (data: Partial<IData>) => {
+  const updateData = (data: Partial<ICreateUser>) => {
     setData((prev) => {
       return { ...prev, ...data };
     });

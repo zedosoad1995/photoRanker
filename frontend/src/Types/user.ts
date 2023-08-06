@@ -34,7 +34,7 @@ export interface ICreateUser {
   password: string;
   ethnicity: (typeof ETHNICITY)[number];
   countryOfOrigin: (typeof COUNTRIES)[number];
-  dateOfBirth: string | null;
+  dateOfBirth: string;
   gender: (typeof GENDER)[keyof typeof GENDER];
 }
 

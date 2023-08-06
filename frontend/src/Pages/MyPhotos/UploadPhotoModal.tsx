@@ -52,7 +52,7 @@ export default function UploadPhotoModal({
     }
   };
 
-  const handleCompleteCrop = (croppedArea: Area, croppedAreaPixels: Area) => {
+  const handleCompleteCrop = (_: any, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 

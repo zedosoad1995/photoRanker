@@ -8,17 +8,13 @@ import {
   ICreateUserPersonalInfo,
 } from "@/Schemas/User/CreateUserPersonalInfo";
 import { forwardRef, useImperativeHandle } from "react";
+import { ICreateUser } from "@/Types/user";
 
-interface IData {
-  ethnicity: string;
-  countryOfOrigin: string;
-  gender: string;
-  dateOfBirth: string;
-  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
-}
+type IData = Pick<ICreateUser, "countryOfOrigin" | "ethnicity" | "dateOfBirth" | "gender">;
 
 type IProps = {
   updateData: (data: Partial<IData>) => void;
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
 } & IData;
 
 const PersonalInfoForm = forwardRef(

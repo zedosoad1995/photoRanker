@@ -5,19 +5,13 @@ import { GENDER } from "@shared/constants/user";
 import _ from "underscore";
 import PersonalInfoForm from "@/Pages/Register/Forms/PersonalInfoForm";
 import { useAuth } from "@/Contexts/auth";
+import { ICreateProfile } from "@/Types/user";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
 }
 
-interface IData {
-  ethnicity: string;
-  countryOfOrigin: string;
-  gender: string;
-  dateOfBirth: string;
-}
-
-const INITIAL_DATA: IData = {
+const INITIAL_DATA: ICreateProfile = {
   ethnicity: "White",
   countryOfOrigin: "Portugal",
   gender: GENDER.Male,
@@ -40,7 +34,7 @@ export default function CreateProfile() {
   const isLastForm = formStage >= numForms - 1;
   const nextButtonLabel = isLastForm ? "Create Profile" : "Next";
 
-  const updateData = (data: Partial<IData>) => {
+  const updateData = (data: Partial<ICreateProfile>) => {
     setData((prev) => {
       return { ...prev, ...data };
     });
