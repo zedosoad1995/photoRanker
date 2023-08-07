@@ -332,7 +332,7 @@ export const resendEmail = async (req: Request, res: Response) => {
     },
   });
 
-  const html = await getEmailHtml("src/views/emailVerification.ejs", {
+  const html = await getEmailHtml("emailVerification.ejs", {
     user: {
       name: loggedUser.name,
     },
@@ -380,7 +380,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     },
   });
 
-  const html = await getEmailHtml("src/views/resetPassword.ejs", {
+  const html = await getEmailHtml("resetPassword.ejs", {
     user: {
       name: user.name,
     },

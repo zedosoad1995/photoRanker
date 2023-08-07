@@ -13,6 +13,7 @@ import { validateQuery } from "@/middlewares/validateQuery";
 import { getManyPicturesSchema } from "@/schemas/user/query/getManyPictures";
 import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
+import { localStorageInteractor } from "@/container";
 
 const router = Router();
 
@@ -24,35 +25,17 @@ router.get(
   validateQuery(getManyPicturesSchema),
   getMany
 );
-router.get(
-  "/image/:imagePath",
-  checkAuth,
-  checkProfileCompleted,
-  checkEmailVerified,
-  getImageFile
-);
-router.get(
-  "/:pictureId",
-  checkAuth,
-  checkProfileCompleted,
-  checkEmailVerified,
-  getOne
-);
+router.get("/image/:imagePath", checkAuth, checkProfileCompleted, checkEmailVerified, getImageFile);
+router.get("/:pictureId", checkAuth, checkProfileCompleted, checkEmailVerified, getOne);
 router.post(
   "/",
   checkAuth,
   checkProfileCompleted,
   checkEmailVerified,
   convertFormDataToBuffer,
-  validateImage,
+  validateImage(localStorageInteractor),
   uploadOne
 );
-router.delete(
-  "/:pictureId",
-  checkAuth,
-  checkProfileCompleted,
-  checkEmailVerified,
-  deleteOne
-);
+router.delete("/:pictureId", checkAuth, checkProfileCompleted, checkEmailVerified, deleteOne);
 
 export default router;

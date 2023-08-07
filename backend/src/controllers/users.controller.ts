@@ -72,7 +72,7 @@ export const createOne = async (req: Request, res: Response) => {
     },
   });
 
-  const html = await getEmailHtml("src/views/emailVerification.ejs", {
+  const html = await getEmailHtml("emailVerification.ejs", {
     user: {
       name: req.body.name,
     },

@@ -33,9 +33,12 @@ export default function GoogleButton({ text = "Sign in with Google" }: IGoogleBu
                 { id: "must-login-email" }
               );
             } else if (error.response?.data?.error === INVALID_LOGIN_METHOD_FACEBOOK) {
-              toast.error("You already have an account with. Please log in with that method", {
-                id: "must-login-facebook",
-              });
+              toast.error(
+                "You already have an account with facebook. Please log in with that method",
+                {
+                  id: "must-login-facebook",
+                }
+              );
             }
           } else {
             toast.error("Something went wrong", { id: "error-google-login" });
