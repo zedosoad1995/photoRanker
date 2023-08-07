@@ -29,11 +29,11 @@ export default function GoogleButton({ text = "Sign in with Google" }: IGoogleBu
           if (axios.isAxiosError(error)) {
             if (error.response?.data?.error === INVALID_LOGIN_METHOD_EMAIL) {
               toast.error(
-                "You registered using your email directly. Please log in with that method",
+                "You already have an account with this email. Please log in with that method",
                 { id: "must-login-email" }
               );
             } else if (error.response?.data?.error === INVALID_LOGIN_METHOD_FACEBOOK) {
-              toast.error("You registered using facebook. Please log in with that method", {
+              toast.error("You already have an account with. Please log in with that method", {
                 id: "must-login-facebook",
               });
             }

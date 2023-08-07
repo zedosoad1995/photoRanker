@@ -127,12 +127,12 @@ export const signInGoogle = async (req: Request, res: Response) => {
   if (user.googleId === null) {
     if (user.password !== null) {
       throw new UnauthorizedError(
-        "You registered using your email directly. Please log in with that method",
+        "You already have an account with this email. Please log in with that method",
         INVALID_LOGIN_METHOD_EMAIL
       );
     } else if (user.facebookId !== null) {
       throw new UnauthorizedError(
-        "You registered using facebook. Please log in with that method",
+        "You already have an account with facebook. Please log in with that method",
         INVALID_LOGIN_METHOD_FACEBOOK
       );
     }
@@ -227,12 +227,12 @@ export const signInFacebook = async (req: Request, res: Response) => {
   if (user.facebookId === null) {
     if (user.password !== null) {
       throw new UnauthorizedError(
-        "You registered using your email directly. Please log in with that method",
+        "You already have an account with this email. Please log in with that method",
         INVALID_LOGIN_METHOD_EMAIL
       );
     } else if (user.googleId !== null) {
       throw new UnauthorizedError(
-        "You registered using google. Please log in with that method",
+        "You already have an account with google. Please log in with that method",
         INVALID_LOGIN_METHOD_GOOGLE
       );
     }
