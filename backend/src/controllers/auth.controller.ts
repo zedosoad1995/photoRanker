@@ -57,7 +57,7 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 export const signOut = (req: Request, res: Response) => {
-  res.clearCookie("session");
+  res.clearCookie("session", cookieOptions);
 
   res.status(204).send();
 };
