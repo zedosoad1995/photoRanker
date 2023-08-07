@@ -23,7 +23,7 @@ export const sendEmail = (options: Mail.Options) => {
 };
 
 export const getEmailHtml = async (emailPath: string, data: { [name: string]: any }) => {
-  const templatePath = path.resolve(VIEWS_FOLDER_PATH, emailPath);
+  const templatePath = path.resolve(process.cwd(), VIEWS_FOLDER_PATH, emailPath);
 
   return ejs.renderFile(templatePath, data);
 };

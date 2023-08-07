@@ -6,6 +6,7 @@ import { NotFoundError } from "@/errors/NotFoundError";
 import { errorHandler } from "@/middlewares/errorHandler";
 import routes from "@/routes";
 import cors from "cors";
+import { IMAGES_FOLDER_PATH } from "./constants/picture";
 
 const app = express();
 app.use(json());
@@ -16,6 +17,7 @@ app.use(
     origin: process.env.FRONTEND_URL,
   })
 );
+app.use("/image", express.static(IMAGES_FOLDER_PATH));
 app.use(routes);
 
 app.all("*", async (req, res) => {

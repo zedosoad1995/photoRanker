@@ -4,7 +4,7 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { NextFunction, Request, Response } from "express";
 import path from "path";
 import sharp from "sharp";
-import { StorageInteractor } from "@/types/StorageInteractor";
+import { StorageInteractor } from "@/types/storageInteractor";
 
 export const validateImage =
   (imageStorageInteractor: StorageInteractor) =>

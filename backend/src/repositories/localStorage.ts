@@ -4,7 +4,7 @@ import fs from "fs";
 import sharp from "sharp";
 import crypto from "crypto";
 import { IMG_HEIGHT, IMG_WIDTH } from "@shared/constants/picture";
-import { StorageInteractor } from "@/types/StorageInteractor";
+import { StorageInteractor } from "@/types/storageInteractor";
 
 export class LocalStorageInteractor implements StorageInteractor {
   constructor() {}
@@ -36,5 +36,9 @@ export class LocalStorageInteractor implements StorageInteractor {
     await sharp(imageBuffer).resize(IMG_WIDTH, IMG_HEIGHT).toFile(fullPath);
 
     return fullPath;
+  }
+
+  public getImage(imagePath: string) {
+    return `${process.env.BACKEND_URL}/image/${imagePath.replace(/\\/g, "/")}`;
   }
 }

@@ -36,8 +36,8 @@ export default function MyPhotos() {
         const picsInfo: IPicture[] = [];
         for (const pic of res.pictures) {
           try {
-            const tempPic = await getImage(pic.filepath);
-            pics.push(URL.createObjectURL(tempPic));
+            const { url } = await getImage(pic.filepath);
+            pics.push(url);
             picsInfo.push(pic);
           } catch (error) {}
         }
@@ -52,14 +52,6 @@ export default function MyPhotos() {
   useEffect(() => {
     getPictures();
   }, []);
-
-  useEffect(() => {
-    return () => {
-      pics.forEach((pic) => {
-        URL.revokeObjectURL(pic);
-      });
-    };
-  }, [pics]);
 
   const handlePictureUpload = async () => {
     await getPictures();

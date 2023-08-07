@@ -9,8 +9,8 @@ export const getPicture = async (id: string): Promise<PictureRes> => {
   return api.get(`/pictures/${id}`);
 };
 
-export const getImage = async (imagePath: string): Promise<Blob> => {
-  return api.get(`/pictures/image/${imagePath}`, { responseType: "blob" });
+export const getImage = async (imagePath: string): Promise<{ url: string }> => {
+  return api.get(`/pictures/image/${imagePath}`);
 };
 
 export const deleteImage = async (id: string): Promise<void> => {

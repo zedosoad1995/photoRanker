@@ -2,7 +2,7 @@ import { EXTENSION_TO_MIME_TYPE } from "@/constants/picture";
 import sharp from "sharp";
 import crypto from "crypto";
 import { IMG_HEIGHT, IMG_WIDTH } from "@shared/constants/picture";
-import { StorageInteractor } from "@/types/StorageInteractor";
+import { StorageInteractor } from "@/types/storageInteractor";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
@@ -38,5 +38,11 @@ export class S3Interactor implements StorageInteractor {
     await this.s3.send(new PutObjectCommand(params));
 
     return fileName;
+  }
+
+  public getImage(imagePath: string) {
+    return `https://${process.env.IMAGES_BUCKET}.s3.${
+      process.env.S3_REGION
+    }.amazonaws.com/${imagePath.replace(/\\/g, "/")}`;
   }
 }
