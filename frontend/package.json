@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "rimraf ./dist/ && tsc && vite build",
-    "build:netlify": "rimraf ./dist/ && tsc && vite build && copyfiles -u 1 ./netlify/_redirect ./dist",
+    "build:netlify": "rimraf ./dist/ && tsc && vite build && copyfiles -u 1 ./netlify/_redirects ./dist",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
