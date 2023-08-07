@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "dotenv -e .env.dev -- vite",
     "build": "rimraf ./dist/ && tsc && vite build",
     "build:netlify": "rimraf ./dist/ && tsc && vite build && copyfiles -u 1 ./netlify/_redirects ./dist",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -43,6 +43,7 @@
     "@vitejs/plugin-react-swc": "^3.3.2",
     "autoprefixer": "^10.4.14",
     "copyfiles": "^2.4.1",
+    "dotenv-cli": "^7.2.1",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",

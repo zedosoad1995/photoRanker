@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
     },
-    plugins: [react(), ...(env.VITE_ENV ? [mkcert()] : [])],
+    plugins: [react(), ...(env.VITE_ENV === "STG" ? [mkcert()] : [])],
     resolve: {
       alias: [
         { find: "@", replacement: fileURLToPath(new URL("./src", import.meta.url)) },

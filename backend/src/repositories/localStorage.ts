@@ -31,7 +31,7 @@ export class LocalStorageInteractor implements StorageInteractor {
     }
 
     const uniqueSuffix = crypto.randomBytes(18).toString("hex");
-    const fullPath = path.join(dayFolder, uniqueSuffix + extension);
+    const fullPath = path.join(dayFolder, `${uniqueSuffix}.${extension}`);
 
     await sharp(imageBuffer).resize(IMG_WIDTH, IMG_HEIGHT).toFile(fullPath);
 

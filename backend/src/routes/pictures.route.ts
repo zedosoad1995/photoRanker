@@ -13,7 +13,7 @@ import { validateQuery } from "@/middlewares/validateQuery";
 import { getManyPicturesSchema } from "@/schemas/user/query/getManyPictures";
 import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
-import { localStorageInteractor } from "@/container";
+import { localStorageInteractor, s3Interactor } from "@/container";
 
 const router = Router();
 
@@ -33,7 +33,7 @@ router.post(
   checkProfileCompleted,
   checkEmailVerified,
   convertFormDataToBuffer,
-  validateImage(localStorageInteractor),
+  validateImage(s3Interactor),
   uploadOne
 );
 router.delete("/:pictureId", checkAuth, checkProfileCompleted, checkEmailVerified, deleteOne);

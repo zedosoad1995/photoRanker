@@ -4,9 +4,10 @@ import crypto from "crypto";
 import { IMG_HEIGHT, IMG_WIDTH } from "@shared/constants/picture";
 import { StorageInteractor } from "@/types/StorageInteractor";
 import { BadRequestError } from "@/errors/BadRequestError";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 export class S3Interactor implements StorageInteractor {
-  constructor(private s3: AWS.S3) {}
+  constructor(private s3: S3Client) {}
 
   async saveNewImage(imageBuffer: Buffer, extension: string) {
     const currentDate = new Date();
@@ -15,7 +16,7 @@ export class S3Interactor implements StorageInteractor {
     const day = currentDate.getDate().toString().padStart(2, "0");
 
     const uniqueSuffix = crypto.randomBytes(18).toString("hex");
-    const fileName = `${year}/${month}/${day}/${uniqueSuffix}${extension}`;
+    const fileName = `${year}/${month}/${day}/${uniqueSuffix}.${extension}`;
 
     const resizedImageBuffer = await sharp(imageBuffer).resize(IMG_WIDTH, IMG_HEIGHT).toBuffer();
 
@@ -32,10 +33,9 @@ export class S3Interactor implements StorageInteractor {
       Key: fileName,
       Body: resizedImageBuffer,
       ContentType: EXTENSION_TO_MIME_TYPE[extension as keyof typeof EXTENSION_TO_MIME_TYPE],
-      ACL: "public-read",
     };
 
-    await this.s3.putObject(params).promise();
+    await this.s3.send(new PutObjectCommand(params));
 
     return fileName;
   }
