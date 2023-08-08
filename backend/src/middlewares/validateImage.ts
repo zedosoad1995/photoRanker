@@ -1,5 +1,5 @@
 import { PICTURE } from "@/constants/messages";
-import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
+import { IMG_HEIGHT, IMG_WIDTH, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { NextFunction, Request, Response } from "express";
 import path from "path";
@@ -24,7 +24,11 @@ export const validateImage =
       throw new BadRequestError(PICTURE.IMAGE_DIM_TOO_SMALL);
     }
 
-    const fullPath = await imageStorageInteractor.saveNewImage(req.file.buffer, extension);
+    const resizedImageBuffer = await sharp(req.file.buffer)
+      .resize(IMG_WIDTH, IMG_HEIGHT)
+      .toBuffer();
+
+    const fullPath = await imageStorageInteractor.saveNewImage(resizedImageBuffer, extension);
 
     req.file.path = fullPath;
 

@@ -121,7 +121,7 @@ export const getImageFile =
     }
 
     res.status(200).json({
-      url: storageInteractor.getImage(imagePath),
+      url: storageInteractor.getImageUrl(imagePath),
     });
   };
 

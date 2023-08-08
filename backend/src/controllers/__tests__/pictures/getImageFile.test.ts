@@ -18,9 +18,7 @@ afterAll(() => {
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app)
-      .get("/api/pictures/image/imagePath")
-      .send();
+    const response = await request(app).get("/api/pictures/image/imagePath").send();
 
     expect(response.status).toEqual(401);
   });
@@ -103,7 +101,7 @@ describe("Regular Logged User", () => {
     expect(response.status).toEqual(403);
   });
 
-  it("returns 200 and image, when user tries to its own picture", async () => {
+  it("returns 200, when user tries its own picture", async () => {
     const picture = await PictureSeeder.seedOne({ userId: regularUserId });
 
     const response = await request(app)
@@ -114,7 +112,7 @@ describe("Regular Logged User", () => {
     expect(response.status).toEqual(200);
   });
 
-  it("returns 200 and image, when user tries other's picture, given that it is in an active match", async () => {
+  it("returns 200, when user tries other's picture, given that it is in an active match", async () => {
     const user = await UserSeeder.createOne();
     const picture = await PictureSeeder.seedOne({ userId: user.id });
     const match = await MatchSeeder.seedOne({
@@ -150,7 +148,7 @@ describe("Admin Logged User", () => {
     adminUserId = res.user.id;
   });
 
-  it("returns 200 and image, when user tries to its own picture", async () => {
+  it("returns 200, when user tries to its own picture", async () => {
     const picture = await PictureSeeder.seedOne({ userId: adminUserId });
 
     const response = await request(app)
@@ -161,7 +159,7 @@ describe("Admin Logged User", () => {
     expect(response.status).toEqual(200);
   });
 
-  it("returns 200 and image, when user tries other's picture, not in an active match", async () => {
+  it("returns 200, when user tries other's picture, not in an active match", async () => {
     const user = await UserSeeder.createOne();
     const picture = await PictureSeeder.seedOne({ userId: user.id });
 

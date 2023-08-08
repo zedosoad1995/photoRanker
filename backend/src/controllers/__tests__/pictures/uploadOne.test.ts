@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "@/app";
 import { rimrafSync } from "rimraf";
-import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { IMAGES_FOLDER_PATH, TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { PICTURE } from "@/constants/messages";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
@@ -11,6 +11,7 @@ import fs from "fs";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { normalizedJoin } from "@/helpers/file";
 import { UserModel } from "@/models/user";
+import { mainStorageInteractor } from "@/container";
 
 beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
@@ -156,8 +157,11 @@ describe("Regular Logged User", () => {
     expect(response.status).toEqual(400);
   });
 
-  it("Creates Picture assigned to logged user, adds image file to folder", async () => {
+  it("Creates Picture assigned to logged user", async () => {
     await PictureSeeder.deleteAll();
+    const saveNewImageMock = jest
+      .spyOn(mainStorageInteractor, "saveNewImage")
+      .mockResolvedValue(`${IMAGES_FOLDER_PATH}/123456789.jpg`);
 
     const response = await request(app)
       .post("/api/pictures")
@@ -170,9 +174,9 @@ describe("Regular Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(regularUser.id);
 
-    expect(
-      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
-    ).toBeTruthy();
+    expect(saveNewImageMock).toBeCalledTimes(1);
+
+    saveNewImageMock.mockRestore();
   });
 });
 
@@ -186,8 +190,11 @@ describe("Admin Logged User", () => {
     adminUser = res.user;
   });
 
-  it("Creates Picture assigned to logged user, adds image file to folder", async () => {
+  it("Creates Picture assigned to logged user", async () => {
     await PictureSeeder.deleteAll();
+    const saveNewImageMock = jest
+      .spyOn(mainStorageInteractor, "saveNewImage")
+      .mockResolvedValue(`${IMAGES_FOLDER_PATH}/123456789.jpg`);
 
     const response = await request(app)
       .post("/api/pictures")
@@ -200,12 +207,16 @@ describe("Admin Logged User", () => {
     const picture = await PictureModel.findFirst();
     expect(picture?.userId).toEqual(adminUser.id);
 
-    expect(
-      fs.existsSync(normalizedJoin(TEST_IMAGES_FOLDER_PATH, decodeURI(picture?.filepath!)))
-    ).toBeTruthy();
+    expect(saveNewImageMock).toBeCalledTimes(1);
+
+    saveNewImageMock.mockRestore();
   });
 
   it("Creates Picture, even when regular user picture limit is passed", async () => {
+    const saveNewImageMock = jest
+      .spyOn(mainStorageInteractor, "saveNewImage")
+      .mockResolvedValue(`${IMAGES_FOLDER_PATH}/123456789.jpg`);
+
     await PictureSeeder.seedMany({
       data: { userId: adminUser.id },
       numRepeat: LIMIT_PICTURES,
@@ -224,5 +235,7 @@ describe("Admin Logged User", () => {
       },
     });
     expect(numPictures).toBe(LIMIT_PICTURES + 1);
+
+    saveNewImageMock.mockRestore();
   });
 });
