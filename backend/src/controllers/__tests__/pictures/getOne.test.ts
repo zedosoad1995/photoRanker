@@ -123,7 +123,7 @@ describe("Regular Logged User", () => {
       },
     });
     await UserModel.update({
-      data: { activeMatchId: match.id },
+      data: { activeMatch: { connect: { id: match.id } } },
       where: {
         id: regularUserId,
       },

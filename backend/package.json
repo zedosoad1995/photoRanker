@@ -4,9 +4,10 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "build": "rimraf ./build/ && tsc && tsc-alias && copyfiles -u 1 ./src/views/* ./build/backend/src && mkdirp ./build/backend/storage/images",
+    "build": "npm run clean:build && tsc && tsc-alias && copyfiles -u 1 ./src/views/* ./build/backend/src && mkdirp ./build/backend/storage/images",
+    "clean:build": "rimraf ./build/",
     "dev": "dotenv -e .env.dev -- nodemon --files src/index.ts",
-    "test": "dotenv -e .env.test -- npx jest --runInBand --bail",
+    "test": "npm run clean:build && dotenv -e .env.test -- npm run test:migrate && dotenv -e .env.test -- npx jest --runInBand --bail",
     "test:migrate": "dotenv -e .env.test -- npx prisma migrate deploy",
     "clean:images": "rimraf --glob storage/images/*",
     "insertImages": "ts-node scripts/insertMultiplePictures.ts"
