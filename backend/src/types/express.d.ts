@@ -4,9 +4,11 @@ import * as express from "express";
 declare global {
   namespace Express {
     interface Request {
-      loggedUser?: Prisma.UserGetPayload<{include: {
-        activeMatch: true
-      }}>;
+      loggedUser?: Prisma.UserGetPayload<{
+        include: {
+          activeMatch: true;
+        };
+      }>;
     }
   }
 }

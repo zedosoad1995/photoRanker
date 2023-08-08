@@ -81,8 +81,8 @@ model Match {
 
 model Report {
   id              String   @id @default(uuid())
-  picture         Picture  @relation(fields: [pictureId], references: [id])
-  userReporting   User     @relation(fields: [userReportingId], references: [id])
+  picture         Picture  @relation(fields: [pictureId], references: [id], onDelete: Cascade)
+  userReporting   User     @relation(fields: [userReportingId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   pictureId       String
