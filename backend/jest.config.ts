@@ -5,7 +5,9 @@ export default {
   testEnvironment: "node",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^@shared/(.*)$": "<rootDir>/../shared/$1",
   },
-  globalSetup: "<rootDir>/src/tests/setup.ts",
+  setupFilesAfterEnv: ["<rootDir>/src/tests/setup.ts"],
+  globalSetup: "<rootDir>/src/tests/globalSetup.ts",
   globalTeardown: "<rootDir>/src/tests/teardown.ts",
 };

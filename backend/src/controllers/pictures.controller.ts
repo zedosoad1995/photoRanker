@@ -1,14 +1,16 @@
 import { PICTURE } from "@/constants/messages";
-import { ELO_INIT, IMAGES_FOLDER_PATH, LIMIT_PICTURES } from "@/constants/picture";
+import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
-import { normalizedJoin, removeFolders } from "@/helpers/file";
+import { removeFolders } from "@/helpers/file";
 import { isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { Prisma, User } from "@prisma/client";
 import { Request, Response } from "express";
+import { StorageInteractor } from "@/types/storageInteractor";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
@@ -79,48 +81,49 @@ export const getOne = async (req: Request, res: Response) => {
   });
 };
 
-export const getImageFile = async (req: Request, res: Response) => {
-  const imagePath = req.params.imagePath;
-  const loggedUser = req.loggedUser!;
+export const getImageFile =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const imagePath = req.params.imagePath;
+    const loggedUser = req.loggedUser!;
 
-  const picture = await PictureModel.findFirst({
-    where: {
-      filepath: encodeURI(imagePath),
-    },
-    include: {
-      user: true,
-    },
-  });
+    const picture = await PictureModel.findFirst({
+      where: {
+        filepath: encodeURI(imagePath),
+      },
+      include: {
+        user: true,
+      },
+    });
 
-  if (!picture) {
-    throw new NotFoundError("Picture does not exist");
-  }
-
-  if (isRegular(loggedUser.role)) {
-    const activeMatch = loggedUser.activeMatchId
-      ? await MatchModel.findUnique({
-          where: {
-            id: loggedUser.activeMatchId,
-          },
-          include: {
-            pictures: true,
-          },
-        })
-      : undefined;
-
-    const isPictureInActiveMatch =
-      activeMatch &&
-      activeMatch.pictures.map((picture) => picture.filepath).includes(encodeURI(imagePath));
-
-    if (picture?.userId !== loggedUser.id && !isPictureInActiveMatch) {
-      throw new ForbiddenError("User cannot access this picture");
+    if (!picture) {
+      throw new NotFoundError("Picture does not exist");
     }
-  }
 
-  const fullPath = normalizedJoin(process.cwd(), IMAGES_FOLDER_PATH, decodeURI(imagePath));
+    if (isRegular(loggedUser.role)) {
+      const activeMatch = loggedUser.activeMatchId
+        ? await MatchModel.findUnique({
+            where: {
+              id: loggedUser.activeMatchId,
+            },
+            include: {
+              pictures: true,
+            },
+          })
+        : undefined;
 
-  res.sendFile(fullPath);
-};
+      const isPictureInActiveMatch =
+        activeMatch &&
+        activeMatch.pictures.map((picture) => picture.filepath).includes(encodeURI(imagePath));
+
+      if (picture?.userId !== loggedUser.id && !isPictureInActiveMatch) {
+        throw new ForbiddenError("User cannot access this picture");
+      }
+    }
+
+    res.status(200).json({
+      url: storageInteractor.getImageUrl(imagePath),
+    });
+  };
 
 export const uploadOne = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;

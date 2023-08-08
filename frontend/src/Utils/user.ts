@@ -1,6 +1,6 @@
-import { IGetMeRes, IUserNoPassword } from "../../../backend/src/types/user";
+import { IUser } from "@/Types/user";
 
-export const getLoggedUser = (): IUserNoPassword["user"] | null => {
+export const getLoggedUser = (): IUser | null => {
   const storedUser = localStorage.getItem("user");
 
   if (!storedUser) {
@@ -10,7 +10,7 @@ export const getLoggedUser = (): IUserNoPassword["user"] | null => {
   return JSON.parse(storedUser);
 };
 
-export const setLoggedUser = (user?: IGetMeRes["user"]): void => {
+export const setLoggedUser = (user?: IUser): void => {
   if (!user) return;
 
   localStorage.setItem("user", JSON.stringify(user));

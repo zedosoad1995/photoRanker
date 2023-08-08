@@ -1,4 +1,4 @@
-import { COUNTRIES, ETHNICITY, MIN_AGE } from "@/constants/user";
+import { COUNTRIES, ETHNICITY, MIN_AGE } from "@shared/constants/user";
 import { isAboveAge, isValidDateFormat } from "@/helpers/date";
 import { Gender } from "@prisma/client";
 import { z } from "zod";
@@ -14,5 +14,3 @@ export const createProfileSchema = z
       .refine(isAboveAge(MIN_AGE)),
   })
   .strict();
-
-export type ICreateProfile = z.infer<typeof createProfileSchema>;

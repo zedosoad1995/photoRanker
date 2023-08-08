@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { IGetMeRes } from "../../../backend/src/types/user";
 import {
   logout as logoutService,
   login as loginService,
@@ -7,9 +6,10 @@ import {
   loginGoogle as loginGoogleService,
   loginFacebook as loginFacebookService,
 } from "@/Services/auth";
+import { IUser } from "@/Types/user";
 
 export interface IAuthContext {
-  user?: IGetMeRes["user"];
+  user?: IUser;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginGoogle: (code: string) => Promise<void>;
@@ -25,7 +25,7 @@ interface IAuthProvider {
 }
 
 export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
-  const [user, setUser] = useState<IGetMeRes["user"]>();
+  const [user, setUser] = useState<IUser>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

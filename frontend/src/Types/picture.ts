@@ -8,7 +8,7 @@ export interface IPicture {
   updatedAt: Date;
 }
 
-export interface IGetPicture {
+export interface PictureRes {
   picture: IPicture;
 }
 

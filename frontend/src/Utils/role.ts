@@ -1,4 +1,4 @@
-import { ROLE } from "../../../backend/src/constants/user";
+import { ROLE } from "@shared/constants/user";
 
 export const isRegular = (role: string) => {
   return role === ROLE.REGULAR;

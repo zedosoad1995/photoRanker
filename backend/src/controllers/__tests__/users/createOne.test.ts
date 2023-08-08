@@ -6,8 +6,8 @@ import { randomizeUser } from "@/tests/helpers/user";
 import { UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import nodemailer, { Transporter, SentMessageInfo } from "nodemailer";
-import { adjustDate, calculateAge, formatDate } from "@/helpers/date";
-import { MIN_AGE } from "@/constants/user";
+import { adjustDate, formatDate } from "@/helpers/date";
+import { MIN_AGE } from "@shared/constants/user";
 
 jest.mock("nodemailer");
 const mockedNodeMailer = nodemailer as jest.Mocked<typeof nodemailer>;

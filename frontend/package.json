@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "dotenv -e .env.dev -- vite",
+    "build": "rimraf ./dist/ && tsc && vite build",
+    "build:netlify": "rimraf ./dist/ && tsc && vite build && copyfiles -u 1 ./netlify/_redirects ./dist",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -41,12 +42,16 @@
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "autoprefixer": "^10.4.14",
+    "copyfiles": "^2.4.1",
+    "dotenv-cli": "^7.2.1",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
     "postcss": "^8.4.25",
+    "rimraf": "^5.0.1",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",
-    "vite": "^4.4.0"
+    "vite": "^4.4.0",
+    "vite-plugin-mkcert": "^1.16.0"
   }
 }

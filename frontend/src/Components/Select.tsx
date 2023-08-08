@@ -7,7 +7,7 @@ import Label from "./Label";
 import { inputField } from "@/globalClasses";
 
 interface ISelect {
-  options: string[];
+  options: readonly string[];
   label?: string;
   value: string;
   onChange: (value: any) => void;

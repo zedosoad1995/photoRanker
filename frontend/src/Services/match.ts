@@ -1,6 +1,6 @@
 import api from "./index";
-import { IMatch } from "../../../backend/src/types/match";
+import { IMatchRes } from "@/Types/match";
 
-export const getNewMatch = async (): Promise<IMatch> => {
+export const getNewMatch = async (): Promise<IMatchRes> => {
   return api.post("/matches");
 };

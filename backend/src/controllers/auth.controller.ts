@@ -17,8 +17,9 @@ import {
   INVALID_LOGIN_METHOD_FACEBOOK,
   INVALID_LOGIN_METHOD_GOOGLE,
   NON_EXISTENT_EMAIL,
-} from "@/constants/errorCodes";
+} from "@shared/constants/errorCodes";
 import { ForbiddenError } from "@/errors/ForbiddenError";
+import { cookieOptions } from "@/constants/cookies";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -42,9 +43,13 @@ export const signIn = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
@@ -52,7 +57,7 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 export const signOut = (req: Request, res: Response) => {
-  res.clearCookie("session");
+  res.clearCookie("session", cookieOptions);
 
   res.status(204).send();
 };
@@ -106,9 +111,13 @@ export const signInGoogle = async (req: Request, res: Response) => {
       process.env.JWT_KEY!
     );
 
-    res.cookie("session", {
-      jwt: userJwt,
-    });
+    res.cookie(
+      "session",
+      {
+        jwt: userJwt,
+      },
+      cookieOptions
+    );
 
     const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
 
@@ -118,12 +127,12 @@ export const signInGoogle = async (req: Request, res: Response) => {
   if (user.googleId === null) {
     if (user.password !== null) {
       throw new UnauthorizedError(
-        "You registered using your email directly. Please log in with that method",
+        "You already have an account with this email. Please log in with that method",
         INVALID_LOGIN_METHOD_EMAIL
       );
     } else if (user.facebookId !== null) {
       throw new UnauthorizedError(
-        "You registered using facebook. Please log in with that method",
+        "You already have an account with facebook. Please log in with that method",
         INVALID_LOGIN_METHOD_FACEBOOK
       );
     }
@@ -140,9 +149,13 @@ export const signInGoogle = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
@@ -198,9 +211,13 @@ export const signInFacebook = async (req: Request, res: Response) => {
       process.env.JWT_KEY!
     );
 
-    res.cookie("session", {
-      jwt: userJwt,
-    });
+    res.cookie(
+      "session",
+      {
+        jwt: userJwt,
+      },
+      cookieOptions
+    );
 
     const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
 
@@ -210,12 +227,12 @@ export const signInFacebook = async (req: Request, res: Response) => {
   if (user.facebookId === null) {
     if (user.password !== null) {
       throw new UnauthorizedError(
-        "You registered using your email directly. Please log in with that method",
+        "You already have an account with this email. Please log in with that method",
         INVALID_LOGIN_METHOD_EMAIL
       );
     } else if (user.googleId !== null) {
       throw new UnauthorizedError(
-        "You registered using google. Please log in with that method",
+        "You already have an account with google. Please log in with that method",
         INVALID_LOGIN_METHOD_GOOGLE
       );
     }
@@ -232,9 +249,13 @@ export const signInFacebook = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
 
@@ -280,9 +301,13 @@ export const verifyEmail = async (req: Request, res: Response) => {
     process.env.JWT_KEY!
   );
 
-  res.cookie("session", {
-    jwt: userJwt,
-  });
+  res.cookie(
+    "session",
+    {
+      jwt: userJwt,
+    },
+    cookieOptions
+  );
 
   return res.status(204).send();
 };
@@ -307,7 +332,7 @@ export const resendEmail = async (req: Request, res: Response) => {
     },
   });
 
-  const html = await getEmailHtml("src/views/emailVerification.ejs", {
+  const html = await getEmailHtml("emailVerification.ejs", {
     user: {
       name: loggedUser.name,
     },
@@ -355,7 +380,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     },
   });
 
-  const html = await getEmailHtml("src/views/resetPassword.ejs", {
+  const html = await getEmailHtml("resetPassword.ejs", {
     user: {
       name: user.name,
     },

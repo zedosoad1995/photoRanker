@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_GOOGLE,
-} from "../../../backend/src/constants/errorCodes";
+} from "@shared/constants/errorCodes";
 
 export default function FacebookCallback() {
   const { loginFacebook } = useAuth();
@@ -26,13 +26,16 @@ export default function FacebookCallback() {
             if (axios.isAxiosError(error)) {
               if (error.response?.data?.error === INVALID_LOGIN_METHOD_EMAIL) {
                 toast.error(
-                  "You registered using your email directly. Please log in with that method",
+                  "You already have an account with this email. Please log in with that method",
                   { id: "must-login-email" }
                 );
               } else if (error.response?.data?.error === INVALID_LOGIN_METHOD_GOOGLE) {
-                toast.error("You registered using google. Please log in with that method", {
-                  id: "must-login-google",
-                });
+                toast.error(
+                  "You already have an account with google. Please log in with that method",
+                  {
+                    id: "must-login-google",
+                  }
+                );
               }
             } else {
               toast.error("Something went wrong", { id: "error-login-facebook" });

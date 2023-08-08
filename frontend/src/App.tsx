@@ -1,5 +1,5 @@
 function App() {
-  return <div>asdasd</div>;
+  return <div></div>;
 }
 
 export default App;

@@ -7,7 +7,7 @@ import axios from "axios";
 import {
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_FACEBOOK,
-} from "../../../backend/src/constants/errorCodes";
+} from "@shared/constants/errorCodes";
 
 interface IGoogleButton {
   text?: string;
@@ -23,19 +23,22 @@ export default function GoogleButton({ text = "Sign in with Google" }: IGoogleBu
       scope: "openid profile email",
       callback: async (response) => {
         try {
-          await loginGoogle(response.code).then();
+          await loginGoogle(response.code);
           navigate(HOME);
         } catch (error) {
           if (axios.isAxiosError(error)) {
             if (error.response?.data?.error === INVALID_LOGIN_METHOD_EMAIL) {
               toast.error(
-                "You registered using your email directly. Please log in with that method",
+                "You already have an account with this email. Please log in with that method",
                 { id: "must-login-email" }
               );
             } else if (error.response?.data?.error === INVALID_LOGIN_METHOD_FACEBOOK) {
-              toast.error("You registered using facebook. Please log in with that method", {
-                id: "must-login-facebook",
-              });
+              toast.error(
+                "You already have an account with facebook. Please log in with that method",
+                {
+                  id: "must-login-facebook",
+                }
+              );
             }
           } else {
             toast.error("Something went wrong", { id: "error-google-login" });

@@ -3,13 +3,13 @@ import { Dialog } from "@headlessui/react";
 import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
-import { AGE_OPTIONS } from "@/constants/user";
+import { AGE_OPTIONS } from "@/Constants/user";
 import { getLoggedUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
-import { MIN_AGE } from "../../../../backend/src/constants/user";
+import { MIN_AGE } from "@shared/constants/user";
 
 interface IUploadPhotoModal {
   image: { image: string; width: number; height: number } | null;
@@ -52,7 +52,7 @@ export default function UploadPhotoModal({
     }
   };
 
-  const handleCompleteCrop = (croppedArea: Area, croppedAreaPixels: Area) => {
+  const handleCompleteCrop = (_: any, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 

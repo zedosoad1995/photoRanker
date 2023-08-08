@@ -1,4 +1,4 @@
-import { SENSITIVITY } from "@/constants/rating";
+import { SENSITIVITY } from "@shared/constants/rating";
 import { calculateNewRating } from "@/helpers/rating";
 
 interface IPlayer {

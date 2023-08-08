@@ -1,10 +1,5 @@
-import {
-  IMAGE_SIZE_LIMIT,
-  IMAGE_UPLOAD_KEY,
-  LIMIT_PICTURES,
-  MIN_HEIGHT,
-  MIN_WIDTH,
-} from "./picture";
+import { IMAGE_SIZE_LIMIT, IMAGE_UPLOAD_KEY } from "./picture";
+import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import bytes from "bytes";
 
 export const PICTURE = {

@@ -1,4 +1,4 @@
-import { COUNTRIES, ETHNICITY, GENDER } from "../../../../../backend/src/constants/user";
+import { COUNTRIES, ETHNICITY, GENDER } from "@shared/constants/user";
 import Select from "@/Components/Select";
 import DateField from "@/Components/DateField";
 import { useForm } from "react-hook-form";
@@ -8,17 +8,13 @@ import {
   ICreateUserPersonalInfo,
 } from "@/Schemas/User/CreateUserPersonalInfo";
 import { forwardRef, useImperativeHandle } from "react";
+import { ICreateUser } from "@/Types/user";
 
-interface IData {
-  ethnicity: string;
-  countryOfOrigin: string;
-  gender: string;
-  dateOfBirth: string;
-  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
-}
+type IData = Pick<ICreateUser, "countryOfOrigin" | "ethnicity" | "dateOfBirth" | "gender">;
 
 type IProps = {
   updateData: (data: Partial<IData>) => void;
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>;
 } & IData;
 
 const PersonalInfoForm = forwardRef(
