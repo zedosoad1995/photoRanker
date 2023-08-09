@@ -8,6 +8,7 @@ import { IMG_WIDTH } from "@shared/constants/picture";
 import { ImageCard } from "./ImageCard";
 import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 import { IMatch } from "@/Types/match";
+import { FlagButton } from "./FlagButton";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -156,11 +157,14 @@ export default function Vote() {
         />
       </div>
       {pic1 && pic2 && (
-        <div className="w-28 mx-auto mt-5">
-          <Button style="secondary" onClick={handleSkipMatch}>
-            Skip
-          </Button>
-        </div>
+        <>
+          <div className="flex max-w-[40vh] sm:w-40 mx-auto mt-3 sm:mt-5 gap-2">
+            <Button style="primary" variant="outline" onClick={handleSkipMatch}>
+              Skip
+            </Button>
+            <FlagButton pic1={pic1} pic2={pic2} />
+          </div>
+        </>
       )}
     </>
   );

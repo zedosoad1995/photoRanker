@@ -4,7 +4,8 @@ interface IButton {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   size?: "medium" | "large";
   isFull?: boolean;
-  style?: "primary" | "secondary" | "danger" | "none";
+  style?: "primary" | "danger" | "none";
+  variant?: "solid" | "outline";
   disabled?: boolean;
 }
 
@@ -15,29 +16,37 @@ export default function Button({
   size = "medium",
   isFull = true,
   style = "primary",
+  variant = "solid",
   disabled = false,
 }: IButton) {
   let className = "";
 
   switch (style) {
     case "primary":
-      className =
-        "text-white shadow-sm " +
-        (disabled
-          ? "bg-[#cac7fe] text-[#4038ca] opacity-50"
-          : "bg-primary hover:bg-primary-hover focus-visible:outline-primary");
-      break;
-    case "secondary":
-      className =
-        "shadow-sm " +
-        (disabled
-          ? "bg-[#4038ca] text-[#4038ca] opacity-50"
-          : "border border-[#4038ca] text-[#4038ca] hover:bg-[#efeeff]");
+      if (variant === "solid") {
+        className =
+          "text-white shadow-sm " +
+          (disabled
+            ? "bg-[#cac7fe] text-[#4038ca] opacity-50"
+            : "bg-primary hover:bg-primary-hover focus-visible:outline-primary");
+      } else if (variant === "outline") {
+        className =
+          "shadow-sm border border-[#4038ca] text-[#4038ca] " +
+          (disabled ? "opacity-50" : "hover:bg-[#efeeff]");
+      }
+
       break;
     case "danger":
-      className =
-        "text-white shadow-sm " +
-        (disabled ? "bg-[#fccdcc] text-[#b32422] opacity-50" : "bg-[#e94c4a] hover:bg-[#d63230]");
+      if (variant === "solid") {
+        className =
+          "text-white shadow-sm " +
+          (disabled ? "bg-[#fccdcc] text-[#b32422] opacity-50" : "bg-[#e94c4a] hover:bg-[#d63230]");
+      } else if (variant === "outline") {
+        className =
+          "shadow-sm border border-[#b32522] text-[#b32522] " +
+          (disabled ? "opacity-50" : "hover:bg-[#fef2f2]");
+      }
+
       break;
     case "none":
     default:
@@ -48,7 +57,7 @@ export default function Button({
     <button
       disabled={disabled}
       type={type}
-      className={`flex justify-center rounded-md font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+      className={`flex justify-center items-center rounded-md font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         size === "medium" ? "px-3 py-1.5 text-sm" : "px-5 py-2.5 text-base"
       } ${isFull ? "w-full" : ""} ${className}`}
       onClick={onClick}
