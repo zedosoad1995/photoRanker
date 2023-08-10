@@ -11,7 +11,7 @@ import { getManyReportsSchema } from "@/schemas/report/query/getManyReports";
 
 const router = Router();
 
-router.post(
+router.get(
   "/",
   checkAuth,
   checkAdmin,

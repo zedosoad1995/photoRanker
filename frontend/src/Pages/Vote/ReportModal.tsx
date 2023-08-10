@@ -5,7 +5,7 @@ import { useState } from "react";
 interface IReportModal {
   isOpen: boolean;
   onClose: () => void;
-  onDelete: () => void;
+  onReport: (seletedPics: [boolean, boolean]) => void;
   pic1: string;
   pic2: string;
 }
@@ -13,19 +13,29 @@ interface IReportModal {
 export default function ReportModal({
   isOpen,
   onClose: handleClose,
-  onDelete: handleDelete,
+  onReport: handleReport,
   pic1,
   pic2,
 }: IReportModal) {
   const [isPic1Selected, setIsPic1Selected] = useState(false);
   const [isPic2Selected, setIsPic2Selected] = useState(false);
 
+  const handleClickReportButton = () => {
+    handleReport([isPic1Selected, isPic2Selected]);
+  };
+
+  const alteredHandleClose = () => {
+    handleClose();
+    setIsPic1Selected(false);
+    setIsPic2Selected(false);
+  };
+
   return (
     <Dialog
       as="div"
       className="fixed inset-0 flex items-center justify-center mx-5"
       open={isOpen}
-      onClose={handleClose}
+      onClose={alteredHandleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
       <Dialog.Panel className="bg-white p-6 w-[500px] rounded-xl z-10 max-h-[80vh] overflow-y-auto">
@@ -48,14 +58,14 @@ export default function ReportModal({
           />
         </div>
         <div className="flex justify-end gap-2 mt-8">
-          <Button onClick={handleClose} isFull={false} style="none">
+          <Button onClick={alteredHandleClose} isFull={false} style="none">
             Cancel
           </Button>
           <Button
-            onClick={handleDelete}
+            onClick={handleClickReportButton}
             isFull={false}
             style="danger"
-            variant="outline"
+            variant="solid"
             disabled={!isPic1Selected && !isPic2Selected}
           >
             Report
