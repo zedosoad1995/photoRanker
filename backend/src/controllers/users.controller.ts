@@ -24,7 +24,7 @@ export const getOne = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   const loggedUser = req.loggedUser!;
 
-  if (!isAdmin(loggedUser.role) && userId !== loggedUser.id) {
+  if ((!isAdmin(loggedUser.role) || loggedUser.isBanned) && userId !== loggedUser.id) {
     throw new ForbiddenError();
   }
 

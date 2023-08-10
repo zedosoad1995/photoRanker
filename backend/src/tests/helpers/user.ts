@@ -35,6 +35,7 @@ export const loginUser = async (role: UserRole) => {
       }),
       isProfileCompleted: true,
       isEmailVerified: true,
+      isBanned: false,
     },
   });
 

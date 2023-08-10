@@ -22,10 +22,19 @@ import { createProfileSchema } from "@/schemas/user/createProfile";
 import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { checkRegular } from "@/middlewares/checkRegular";
+import { checkBanned } from "@/middlewares/checkBanned";
 
 const router = Router();
 
-router.get("/", checkAuth, checkAdmin, checkProfileCompleted, checkEmailVerified, getMany);
+router.get(
+  "/",
+  checkAuth,
+  checkAdmin,
+  checkBanned,
+  checkProfileCompleted,
+  checkEmailVerified,
+  getMany
+);
 router.get("/me", checkAuth, getMe);
 router.get("/:userId", checkAuth, checkProfileCompleted, checkEmailVerified, getOne);
 
@@ -35,6 +44,7 @@ router.patch(
   "/:userId",
   checkAuth,
   checkAdmin,
+  checkBanned,
   checkProfileCompleted,
   checkEmailVerified,
   validateForm(updateUserSchema),
@@ -44,13 +54,22 @@ router.patch(
 router.post("/check-email", validateForm(checkEmailExistsSchema), checkEmailExists);
 
 router.delete("/me", checkAuth, checkRegular, deleteMe);
-router.delete("/:userId", checkAuth, checkAdmin, deleteOne);
+router.delete("/:userId", checkAuth, checkAdmin, checkBanned, deleteOne);
 
-router.put("/ban/:userId", checkAuth, checkAdmin, checkProfileCompleted, checkEmailVerified, ban);
+router.put(
+  "/ban/:userId",
+  checkAuth,
+  checkAdmin,
+  checkBanned,
+  checkProfileCompleted,
+  checkEmailVerified,
+  ban
+);
 router.put(
   "/unban/:userId",
   checkAuth,
   checkAdmin,
+  checkBanned,
   checkProfileCompleted,
   checkEmailVerified,
   unban
