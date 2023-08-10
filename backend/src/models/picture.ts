@@ -7,9 +7,18 @@ import { BadRequestError } from "@/errors/BadRequestError";
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
     where: {
-      userId: {
-        not: loggedUserId,
-      },
+      AND: [
+        {
+          userId: {
+            not: loggedUserId,
+          },
+        },
+        {
+          user: {
+            isBanned: false,
+          },
+        },
+      ],
     },
   });
 
@@ -43,6 +52,11 @@ function getRandomPicture(numPictures: number, loggedUserId: string, opponentPic
           not: loggedUserId,
         },
       },
+      {
+        user: {
+          isBanned: false,
+        },
+      },
     ],
   };
 
@@ -68,9 +82,18 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
 
   const numPictures = await prisma.picture.count({
     where: {
-      userId: {
-        not: loggedUserId,
-      },
+      AND: [
+        {
+          userId: {
+            not: loggedUserId,
+          },
+        },
+        {
+          user: {
+            isBanned: false,
+          },
+        },
+      ],
     },
   });
 
@@ -81,9 +104,18 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
   // Get picture with the least amount of votes
   const picture1 = await prisma.picture.findFirst({
     where: {
-      userId: {
-        not: loggedUserId,
-      },
+      AND: [
+        {
+          userId: {
+            not: loggedUserId,
+          },
+        },
+        {
+          user: {
+            isBanned: false,
+          },
+        },
+      ],
     },
     orderBy: {
       numVotes: "asc",
@@ -116,10 +148,13 @@ function getPicturesWithClosestElos(
 ): Promise<(Picture & { abs_diff: number })[]> {
   return prisma.$queryRaw(
     Prisma.sql`
-      SELECT *,
-        ABS(${opponentPicture.elo.toFixed(2)}::numeric  - elo) as abs_diff
-      FROM "Picture"
-      WHERE "userId" != ${loggedUserId} AND id != ${opponentPicture.id}
+      SELECT pic.*,
+        ABS(${opponentPicture.elo.toFixed(2)}::numeric  - pic.elo) as abs_diff
+      FROM "Picture" AS pic
+      INNER JOIN "User" AS usr ON pic."userId" = usr.id
+      WHERE pic."userId" != ${loggedUserId} AND pic.id != ${
+      opponentPicture.id
+    } AND usr."isBanned" IS false
       ORDER BY abs_diff ASC
       LIMIT ${limit};`
   );
