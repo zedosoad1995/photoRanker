@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  ban,
   checkEmailExists,
   createOne,
   createProfile,
@@ -8,6 +9,7 @@ import {
   getMany,
   getMe,
   getOne,
+  unban,
   updateOne,
 } from "@/controllers/users.controller";
 import { validateForm } from "@/middlewares/validateForm";
@@ -43,5 +45,15 @@ router.post("/check-email", validateForm(checkEmailExistsSchema), checkEmailExis
 
 router.delete("/me", checkAuth, checkRegular, deleteMe);
 router.delete("/:userId", checkAuth, checkAdmin, deleteOne);
+
+router.put("/ban/:userId", checkAuth, checkAdmin, checkProfileCompleted, checkEmailVerified, ban);
+router.put(
+  "/unban/:userId",
+  checkAuth,
+  checkAdmin,
+  checkProfileCompleted,
+  checkEmailVerified,
+  unban
+);
 
 export default router;

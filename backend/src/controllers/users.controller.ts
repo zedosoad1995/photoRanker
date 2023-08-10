@@ -200,3 +200,50 @@ export const deleteOne = async (req: Request, res: Response) => {
 
   res.status(204).send();
 };
+
+export const ban = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+  const userId = req.params.userId;
+
+  if (userId === loggedUser.id) {
+    throw new ForbiddenError("You cannot ban yourself");
+  }
+
+  const user = await UserModel.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError("User does not exist");
+  }
+
+  const bannedUser = await UserModel.update({
+    data: { isBanned: true },
+    where: { id: userId },
+  });
+
+  res.status(200).send({ user: bannedUser });
+};
+
+export const unban = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  const user = await UserModel.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError("User does not exist");
+  }
+
+  const unbannedUser = await UserModel.update({
+    data: { isBanned: false },
+    where: { id: userId },
+  });
+
+  res.status(200).send({ user: unbannedUser });
+};
