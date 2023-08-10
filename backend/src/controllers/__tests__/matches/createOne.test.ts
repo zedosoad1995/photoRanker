@@ -101,6 +101,21 @@ describe("Regular Logged User", () => {
     expect(response.status).toEqual(400);
   });
 
+  it("does not show pictures from banned users", async () => {
+    const bannedUser = await UserSeeder.createOne({ isBanned: true });
+
+    await PictureSeeder.seedMany({
+      data: {
+        userId: bannedUser.id,
+      },
+      numRepeat: 2,
+    });
+
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
+
+    expect(response.status).toEqual(400);
+  });
+
   it("creates new match, with activeUser not null", async () => {
     await PictureSeeder.seedMany({
       data: {
