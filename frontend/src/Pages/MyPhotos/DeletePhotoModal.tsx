@@ -1,17 +1,42 @@
 import { Dialog } from "@headlessui/react";
 import Button from "@/Components/Button";
+import { deleteImage } from "@/Services/picture";
+import { IPicture } from "@/Types/picture";
 
 interface IDeletePhotoModal {
   isOpen: boolean;
   onClose: () => void;
-  onDelete: () => void;
+  picToDeleteIndex: number | null;
+  setPics: React.Dispatch<React.SetStateAction<string[]>>;
+  setPicsInfo: React.Dispatch<React.SetStateAction<IPicture[]>>;
+  picsInfo: IPicture[];
+  getPictures: () => Promise<void> | undefined;
 }
 
 export default function DeletePhotoModal({
   isOpen,
   onClose: handleClose,
-  onDelete: handleDelete,
+  picToDeleteIndex,
+  setPics,
+  setPicsInfo,
+  picsInfo,
+  getPictures,
 }: IDeletePhotoModal) {
+  const handleDelete = async () => {
+    if (picToDeleteIndex === null) return;
+
+    setPicsInfo((pics) => [
+      ...pics.slice(0, picToDeleteIndex),
+      ...pics.slice(picToDeleteIndex + 1),
+    ]);
+    setPics((pics) => [...pics.slice(0, picToDeleteIndex), ...pics.slice(picToDeleteIndex + 1)]);
+
+    handleClose();
+
+    await deleteImage(picsInfo[picToDeleteIndex].id);
+    getPictures();
+  };
+
   return (
     <Dialog
       as="div"

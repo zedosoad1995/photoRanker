@@ -29,10 +29,6 @@ export const checkEmailExists = async (email: string): Promise<ICheckEmailRes> =
   return api.post("/users/check-email", { email });
 };
 
-export const getMe = async (): Promise<IUserRes> => {
-  return api.get("/users/me");
-};
-
 export const resendEmail = async (): Promise<void> => {
   return api.post("/auth/resend-email");
 };

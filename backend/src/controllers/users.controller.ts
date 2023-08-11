@@ -12,6 +12,9 @@ import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
 import jwt from "jsonwebtoken";
 import { cookieOptions } from "@/constants/cookies";
+import { prisma } from "@/models";
+import { BannedUserModel } from "@/models/bannerUser";
+import { BANNED_ACCOUNT } from "@shared/constants/errorCodes";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -24,7 +27,7 @@ export const getOne = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   const loggedUser = req.loggedUser!;
 
-  if (!isAdmin(loggedUser.role) && userId !== loggedUser.id) {
+  if ((!isAdmin(loggedUser.role) || loggedUser.isBanned) && userId !== loggedUser.id) {
     throw new ForbiddenError();
   }
 
@@ -49,6 +52,18 @@ export const getMe = async (req: Request, res: Response) => {
 
 export const createOne = async (req: Request, res: Response) => {
   const hashedPassword = await hashPassword(req.body.password);
+
+  const bannedUser = await BannedUserModel.findUnique({
+    where: {
+      email: req.body.email,
+    },
+  });
+  if (bannedUser) {
+    throw new ForbiddenError(
+      "This email has been banned. You cannot create another account",
+      BANNED_ACCOUNT
+    );
+  }
 
   const userSameEmail = await UserModel.findUnique({
     where: {
@@ -199,4 +214,61 @@ export const deleteOne = async (req: Request, res: Response) => {
   });
 
   res.status(204).send();
+};
+
+export const ban = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+  const userId = req.params.userId;
+
+  if (userId === loggedUser.id) {
+    throw new ForbiddenError("You cannot ban yourself");
+  }
+
+  const user = await UserModel.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError("User does not exist");
+  }
+
+  const [bannedUser, _] = await prisma.$transaction([
+    UserModel.update({
+      data: { isBanned: true },
+      where: { id: userId },
+    }),
+    BannedUserModel.create({
+      data: { email: user.email },
+    }),
+  ]);
+
+  res.status(200).send({ user: bannedUser });
+};
+
+export const unban = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  const user = await UserModel.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError("User does not exist");
+  }
+
+  const [unbannedUser, _] = await prisma.$transaction([
+    UserModel.update({
+      data: { isBanned: false },
+      where: { id: userId },
+    }),
+    BannedUserModel.delete({
+      where: { email: user.email },
+    }),
+  ]);
+
+  res.status(200).send({ user: unbannedUser });
 };

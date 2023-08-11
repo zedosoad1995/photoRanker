@@ -5,7 +5,7 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { removeFolders } from "@/helpers/file";
-import { isRegular } from "@/helpers/role";
+import { isAdmin, isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { Prisma, User } from "@prisma/client";
@@ -25,6 +25,12 @@ export const getMany = async (req: Request, res: Response) => {
     whereQuery.userId = userId;
   } else if (isRegular(loggedUser.role)) {
     whereQuery.userId = loggedUser.id;
+  }
+
+  if (isAdmin(loggedUser.role)) {
+    whereQuery.user = {
+      isBanned: false,
+    };
   }
 
   const pictures = await PictureModel.findMany({
@@ -57,10 +63,10 @@ export const getOne = async (req: Request, res: Response) => {
   }
 
   if (isRegular(loggedUser.role)) {
-    const activeMatch = loggedUser.activeMatchId
+    const activeMatch = loggedUser.activeMatch?.id
       ? await MatchModel.findUnique({
           where: {
-            id: loggedUser.activeMatchId,
+            id: loggedUser.activeMatch.id,
           },
           include: {
             pictures: true,
@@ -100,10 +106,10 @@ export const getImageFile =
     }
 
     if (isRegular(loggedUser.role)) {
-      const activeMatch = loggedUser.activeMatchId
+      const activeMatch = loggedUser.activeMatch?.id
         ? await MatchModel.findUnique({
             where: {
-              id: loggedUser.activeMatchId,
+              id: loggedUser.activeMatch.id,
             },
             include: {
               pictures: true,

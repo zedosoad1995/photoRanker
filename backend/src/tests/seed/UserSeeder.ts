@@ -16,9 +16,7 @@ export const UserSeeder = {
     return this.createOne(data);
   },
 
-  async seedMany(
-    { data = {}, numRepeat = 1 }: SeedInputMany = { data: {}, numRepeat: 1 }
-  ) {
+  async seedMany({ data = {}, numRepeat = 1 }: SeedInputMany = { data: {}, numRepeat: 1 }) {
     await this.deleteAll();
     return this.createMany({ data, numRepeat });
   },
@@ -34,9 +32,7 @@ export const UserSeeder = {
     });
   },
 
-  async createMany(
-    { data = {}, numRepeat = 1 }: SeedInputMany = { data: {}, numRepeat: 1 }
-  ) {
+  async createMany({ data = {}, numRepeat = 1 }: SeedInputMany = { data: {}, numRepeat: 1 }) {
     if (Array.isArray(data)) {
       return Promise.all(
         data.map((row) =>

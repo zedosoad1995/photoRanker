@@ -18,7 +18,11 @@ export const checkAuth = async (req: Request, res: Response, next: NextFunction)
       where: {
         email: payload.email,
       },
+      include: {
+        activeMatch: true,
+      },
     });
+
     if (!user) {
       throw new UnauthorizedError();
     }

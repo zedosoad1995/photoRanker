@@ -12,6 +12,7 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
 import {
+  BANNED_ACCOUNT,
   INVALID_CREDENTIALS,
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_FACEBOOK,
@@ -20,6 +21,7 @@ import {
 } from "@shared/constants/errorCodes";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { cookieOptions } from "@/constants/cookies";
+import { BannedUserModel } from "@/models/bannerUser";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -94,6 +96,18 @@ export const signInGoogle = async (req: Request, res: Response) => {
   });
 
   if (!user) {
+    const bannedUser = await BannedUserModel.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (bannedUser) {
+      throw new ForbiddenError(
+        "This email has been banned. You cannot create another account",
+        BANNED_ACCOUNT
+      );
+    }
+
     const newUser = await UserModel.create({
       data: {
         email,
@@ -194,6 +208,18 @@ export const signInFacebook = async (req: Request, res: Response) => {
   });
 
   if (!user) {
+    const bannedUser = await BannedUserModel.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (bannedUser) {
+      throw new ForbiddenError(
+        "This email has been banned. You cannot create another account",
+        BANNED_ACCOUNT
+      );
+    }
+
     const newUser = await UserModel.create({
       data: {
         email,

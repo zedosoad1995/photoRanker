@@ -8,6 +8,7 @@ import { IMG_WIDTH } from "@shared/constants/picture";
 import { ImageCard } from "./ImageCard";
 import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 import { IMatch } from "@/Types/match";
+import { FlagButton } from "./FlagButton";
 
 export default function Vote() {
   const [pic1, setPic1] = useState<string>();
@@ -19,9 +20,6 @@ export default function Vote() {
   const [hasVoted, setHasVoted] = useState(false);
 
   const getMatch = async () => {
-    if (pic1) URL.revokeObjectURL(pic1);
-    if (pic2) URL.revokeObjectURL(pic2);
-
     const { match } = await getNewMatch();
     setMatch(match);
 
@@ -48,13 +46,6 @@ export default function Vote() {
   useEffect(() => {
     getMatch();
   }, []);
-
-  useEffect(() => {
-    return () => {
-      if (pic1) URL.revokeObjectURL(pic1);
-      if (pic2) URL.revokeObjectURL(pic2);
-    };
-  }, [pic1, pic1]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -113,7 +104,7 @@ export default function Vote() {
 
   return (
     <>
-      <div className="hidden sm:flex gap-[1vw] justify-center">
+      <div className="hidden xs:flex gap-[1vw] justify-center">
         <ImageCard
           id="leftImage"
           className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
@@ -137,10 +128,10 @@ export default function Vote() {
           }}
         />
       </div>
-      <div className="flex sm:hidden flex-col gap-[1vw] items-center justify-start">
+      <div className="flex xs:hidden flex-col gap-[1vw] items-center justify-start">
         <ImageCard
           id="upImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[0].id)}
           pic={pic1}
           prob={prob1}
@@ -148,19 +139,22 @@ export default function Vote() {
         />
         <ImageCard
           id="downImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[40vh] bg-cover bg-center bg-no-repeat"
+          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
           onClick={handleClickImage(match?.pictures[1].id)}
           pic={pic2}
           prob={prob2}
           hasVoted={hasVoted}
         />
       </div>
-      {pic1 && pic2 && (
-        <div className="w-28 mx-auto mt-5">
-          <Button style="secondary" onClick={handleSkipMatch}>
-            Skip
-          </Button>
-        </div>
+      {pic1 && pic2 && match && (
+        <>
+          <div className="flex max-w-[35vh] xs:w-40 mx-auto mt-3 xs:mt-5 gap-2">
+            <Button style="primary" variant="outline" onClick={handleSkipMatch}>
+              Skip
+            </Button>
+            <FlagButton pic1={pic1} pic2={pic2} match={match} getMatch={getMatch} />
+          </div>
+        </>
       )}
     </>
   );

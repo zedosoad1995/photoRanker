@@ -2,11 +2,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   logout as logoutService,
   login as loginService,
-  getMe,
   loginGoogle as loginGoogleService,
   loginFacebook as loginFacebookService,
 } from "@/Services/auth";
 import { IUser } from "@/Types/user";
+import { getMe } from "@/Services/user";
 
 export interface IAuthContext {
   user?: IUser;

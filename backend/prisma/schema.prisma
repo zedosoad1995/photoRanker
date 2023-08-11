@@ -21,14 +21,15 @@ model User {
   role                        UserRole  @default(REGULAR)
   isProfileCompleted          Boolean   @default(false)
   isEmailVerified             Boolean   @default(false)
+  isBanned                    Boolean   @default(false)
   verificationToken           String?
   verificationTokenExpiration DateTime?
   resetPasswordToken          String?
   resetPasswordExpiration     DateTime?
-  activeMatch                 Match?    @relation(name: "activeMatch", fields: [activeMatchId], references: [id])
-  activeMatchId               String?   @unique
+  activeMatch                 Match?    @relation(name: "activeMatch")
   pictures                    Picture[]
   votes                       Vote[]    @relation(name: "voter")
+  reports                     Report[]
   createdAt                   DateTime  @default(now())
   updatedAt                   DateTime  @updatedAt
 }
@@ -52,6 +53,7 @@ model Picture {
   userId      String
   matches     Match[]
   votesWinner Vote[]   @relation(name: "winnerPicture")
+  reports     Report[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -69,10 +71,28 @@ model Vote {
 }
 
 model Match {
-  id         String    @id @default(uuid())
-  activeUser User?     @relation(name: "activeMatch")
-  pictures   Picture[]
-  vote       Vote?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id           String    @id @default(uuid())
+  activeUser   User?     @relation(name: "activeMatch", fields: [activeUserId], references: [id], onDelete: Cascade)
+  activeUserId String?   @unique
+  pictures     Picture[]
+  votes        Vote?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Report {
+  id              String   @id @default(uuid())
+  picture         Picture  @relation(fields: [pictureId], references: [id], onDelete: Cascade)
+  userReporting   User     @relation(fields: [userReportingId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  pictureId       String
+  userReportingId String
+}
+
+model BannedUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

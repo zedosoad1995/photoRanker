@@ -35,10 +35,12 @@ export default function SignIn() {
         navigate(HOME);
       })
       .catch((error) => {
-        if (axios.isAxiosError(error) && error.response?.data?.error === INVALID_CREDENTIALS) {
-          toast.error("Invalid Credentials", {
-            id: "invalid-credentials",
-          });
+        if (axios.isAxiosError(error)) {
+          if (error.response?.data?.error === INVALID_CREDENTIALS) {
+            toast.error("Invalid Credentials", {
+              id: "invalid-credentials",
+            });
+          }
         }
       });
   };
