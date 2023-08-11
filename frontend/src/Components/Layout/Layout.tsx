@@ -4,8 +4,9 @@ import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
 import { HOME, LOGIN } from "@/Constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
-import CreateProfile from "../CreateProfile";
-import UnverifiedEmail from "../UnverifiedEmail";
+import CreateProfile from "./CreateProfile";
+import UnverifiedEmail from "./UnverifiedEmail";
+import Banned from "./Banned";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -53,6 +54,15 @@ export default function Layout() {
         <Navbar onLogout={handleLogout} isProfileCreated={false} />
         <div className="p-4 md:p-12">
           <UnverifiedEmail />
+        </div>
+      </>
+    );
+  } else if (user.isBanned) {
+    return (
+      <>
+        <Navbar onLogout={handleLogout} isProfileCreated={false} />
+        <div className="p-4 md:p-12">
+          <Banned email={user.email} />
         </div>
       </>
     );
