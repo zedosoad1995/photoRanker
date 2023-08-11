@@ -31,7 +31,6 @@ export const checkAuth = async (req: Request, res: Response, next: NextFunction)
 
     return next();
   } catch (err) {
-    console.log(err);
     throw new UnauthorizedError();
   }
 };

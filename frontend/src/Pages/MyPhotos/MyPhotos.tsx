@@ -11,6 +11,7 @@ import { toast } from "react-hot-toast";
 import { IPicture } from "@/Types/picture";
 import { isAdmin, isRegular } from "@/Utils/role";
 import Menu from "@/Components/Menu";
+import BanUserModal from "./BanUserModal";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -27,12 +28,16 @@ export default function MyPhotos() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
+  const [isOpenBan, setIsOpenBan] = useState(false);
+  const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
   const loggedUser = useMemo(() => getLoggedUser(), []);
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
   const getPictures = () => {
-    return getManyPictures(loggedUser?.id)
+    if (!loggedUser) return;
+
+    return getManyPictures(isAdmin(loggedUser.role) ? "" : loggedUser.id)
       .then(async (res) => {
         const pics: string[] = [];
         const picsInfo: IPicture[] = [];
@@ -90,13 +95,19 @@ export default function MyPhotos() {
     }
   };
 
-  const handleClickDeletePic =
-    (index: number) => async (event: React.MouseEvent<SVGSVGElement>) => {
-      event.stopPropagation();
+  const handleClickDeletePic = (index: number) => async (event: React.MouseEvent) => {
+    event.stopPropagation();
 
-      setIsOpenDelete(true);
-      setPicToDeleteIndex(index);
-    };
+    setIsOpenDelete(true);
+    setPicToDeleteIndex(index);
+  };
+
+  const handleClickBanUser = (index: number) => async (event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    setIsOpenBan(true);
+    setUserIdToBan(picsInfo[index].userId);
+  };
 
   const handleDeletePic = async () => {
     if (picToDeleteIndex != null) {
@@ -115,6 +126,10 @@ export default function MyPhotos() {
 
   const handleCloseDeleteModal = () => {
     setIsOpenDelete(false);
+  };
+
+  const handleCloseBanModal = () => {
+    setIsOpenBan(false);
   };
 
   const EmptyPlaceholder = () => {
@@ -144,6 +159,7 @@ export default function MyPhotos() {
 
   return (
     <>
+      <BanUserModal isOpen={isOpenBan} onClose={handleCloseBanModal} userIdToBan={userIdToBan} />
       <DeletePhotoModal
         isOpen={isOpenDelete}
         onDelete={handleDeletePic}
@@ -182,10 +198,15 @@ export default function MyPhotos() {
                         <div className="absolute right-[2%] top-[2%] origin-top-right">
                           <Menu
                             items={[
-                              { id: "delete", label: "Delete Photo" },
-                              { id: "ban", label: "Ban User" },
+                              {
+                                label: "Delete Photo",
+                                onClick: handleClickDeletePic(index),
+                              },
+                              {
+                                label: "Ban User",
+                                onClick: handleClickBanUser(index),
+                              },
                             ]}
-                            onSelectItem={(id: string) => () => {}}
                           >
                             <EllipsisVerticalIcon className="p-[2px] h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200" />
                           </Menu>
