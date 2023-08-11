@@ -75,3 +75,5 @@ describe("Admin Logged User", () => {
     expect(user?.isBanned).toBe(true);
   });
 });
+
+it.todo("Check if banned user was inserted");

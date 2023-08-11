@@ -12,6 +12,9 @@ import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";
 import { useAuth } from "@/Contexts/auth";
 import { ICreateUser } from "@/Types/user";
+import { BANNED_ACCOUNT } from "@shared/constants/errorCodes";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 interface IFormRef {
   checkValid: () => Promise<boolean>;
@@ -55,10 +58,20 @@ export default function Register() {
     if (!isValid) return;
 
     if (isLastForm) {
-      await register(data);
-      await updateUser();
+      try {
+        await register(data);
+        await updateUser();
 
-      navigate(HOME);
+        navigate(HOME);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.data?.error === BANNED_ACCOUNT) {
+            toast.error("Account has been banned", {
+              id: "banned-account",
+            });
+          }
+        }
+      }
     } else {
       setFormStage((val) => val + 1);
     }

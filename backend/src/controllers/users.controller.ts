@@ -14,6 +14,7 @@ import jwt from "jsonwebtoken";
 import { cookieOptions } from "@/constants/cookies";
 import { prisma } from "@/models";
 import { BannedUserModel } from "@/models/bannerUser";
+import { BANNED_ACCOUNT } from "@shared/constants/errorCodes";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -51,6 +52,18 @@ export const getMe = async (req: Request, res: Response) => {
 
 export const createOne = async (req: Request, res: Response) => {
   const hashedPassword = await hashPassword(req.body.password);
+
+  const bannedUser = await BannedUserModel.findUnique({
+    where: {
+      email: req.body.email,
+    },
+  });
+  if (bannedUser) {
+    throw new ForbiddenError(
+      "This email has been banned. You cannot create another account",
+      BANNED_ACCOUNT
+    );
+  }
 
   const userSameEmail = await UserModel.findUnique({
     where: {
@@ -252,8 +265,8 @@ export const unban = async (req: Request, res: Response) => {
       data: { isBanned: false },
       where: { id: userId },
     }),
-    BannedUserModel.create({
-      data: { email: user.email },
+    BannedUserModel.delete({
+      where: { email: user.email },
     }),
   ]);
 
