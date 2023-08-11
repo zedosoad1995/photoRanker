@@ -89,3 +89,10 @@ model Report {
   pictureId       String
   userReportingId String
 }
+
+model BannedUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

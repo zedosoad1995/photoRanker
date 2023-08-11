@@ -12,6 +12,8 @@ import { getEmailHtml, sendEmail } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
 import jwt from "jsonwebtoken";
 import { cookieOptions } from "@/constants/cookies";
+import { prisma } from "@/models";
+import { BannedUserModel } from "@/models/bannerUser";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -219,10 +221,15 @@ export const ban = async (req: Request, res: Response) => {
     throw new NotFoundError("User does not exist");
   }
 
-  const bannedUser = await UserModel.update({
-    data: { isBanned: true },
-    where: { id: userId },
-  });
+  const [bannedUser, _] = await prisma.$transaction([
+    UserModel.update({
+      data: { isBanned: true },
+      where: { id: userId },
+    }),
+    BannedUserModel.create({
+      data: { email: user.email },
+    }),
+  ]);
 
   res.status(200).send({ user: bannedUser });
 };
@@ -240,10 +247,15 @@ export const unban = async (req: Request, res: Response) => {
     throw new NotFoundError("User does not exist");
   }
 
-  const unbannedUser = await UserModel.update({
-    data: { isBanned: false },
-    where: { id: userId },
-  });
+  const [unbannedUser, _] = await prisma.$transaction([
+    UserModel.update({
+      data: { isBanned: false },
+      where: { id: userId },
+    }),
+    BannedUserModel.create({
+      data: { email: user.email },
+    }),
+  ]);
 
   res.status(200).send({ user: unbannedUser });
 };
