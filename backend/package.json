@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "npm run clean:build && tsc && tsc-alias && copyfiles -u 1 ./src/views/* ./build/backend/src && mkdirp ./build/backend/storage/images",
+    "build:stg": "npx prisma migrate deploy && npm run clean:build && tsc && tsc-alias && copyfiles -u 1 ./src/views/* ./build/backend/src && mkdirp ./build/backend/storage/images",
     "clean:build": "rimraf ./build/",
     "dev": "dotenv -e .env.dev -- nodemon --files src/index.ts",
     "test": "npm run clean:build && dotenv -e .env.test -- npm run test:migrate && dotenv -e .env.test -- npx jest --runInBand --bail",
