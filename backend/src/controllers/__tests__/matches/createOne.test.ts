@@ -101,6 +101,21 @@ describe("Regular Logged User", () => {
     expect(response.status).toEqual(400);
   });
 
+  it("does not show pictures from banned users", async () => {
+    const bannedUser = await UserSeeder.createOne({ isBanned: true });
+
+    await PictureSeeder.seedMany({
+      data: {
+        userId: bannedUser.id,
+      },
+      numRepeat: 2,
+    });
+
+    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
+
+    expect(response.status).toEqual(400);
+  });
+
   it("creates new match, with activeUser not null", async () => {
     await PictureSeeder.seedMany({
       data: {
@@ -125,52 +140,6 @@ describe("Regular Logged User", () => {
 
     expect(match).toBeTruthy();
     expect(match?.activeUser).toBeTruthy();
-  });
-
-  it("creates new match, deletes active match belonging to logged user, ignores active matches from other users", async () => {
-    await PictureSeeder.seedMany({
-      data: {
-        userId: otherUser.id,
-      },
-      numRepeat: 2,
-    });
-
-    const [matchOtherUser, matchLoggedUser] = await MatchSeeder.seedMany({
-      data: [
-        {
-          activeUser: {
-            connect: {
-              id: otherUser.id,
-            },
-          },
-        },
-        {
-          activeUser: {
-            connect: {
-              id: regularUser.id,
-            },
-          },
-        },
-      ],
-    });
-
-    const response = await request(app).post("/api/matches").set("Cookie", regularCookie).send();
-
-    expect(response.status).toEqual(201);
-
-    const matchOtherUserDB = await MatchModel.findUnique({
-      where: {
-        id: matchOtherUser.id,
-      },
-    });
-    const matchLoggedUserDB = await MatchModel.findUnique({
-      where: {
-        id: matchLoggedUser.id,
-      },
-    });
-
-    expect(matchOtherUserDB).toBeTruthy();
-    expect(matchLoggedUserDB).toBeFalsy();
   });
 });
 

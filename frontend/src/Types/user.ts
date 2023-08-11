@@ -11,6 +11,7 @@ export interface IUser {
   role: (typeof ROLE)[keyof typeof ROLE];
   isProfileCompleted: boolean;
   isEmailVerified: boolean;
+  isBanned: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

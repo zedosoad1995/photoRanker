@@ -1,14 +1,17 @@
 import Button from "@/Components/Button";
-import { deleteImage, getImage, getManyPictures } from "@/Services/picture";
+import { getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
-import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { ArrowUpTrayIcon, EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import DeletePhotoModal from "./DeletePhotoModal";
 import { getLoggedUser } from "@/Utils/user";
 import { toast } from "react-hot-toast";
 import { IPicture } from "@/Types/picture";
+import { isAdmin, isRegular } from "@/Utils/role";
+import Menu from "@/Components/Menu";
+import BanUserModal from "./BanUserModal";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -25,12 +28,16 @@ export default function MyPhotos() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
+  const [isOpenBan, setIsOpenBan] = useState(false);
+  const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
   const loggedUser = useMemo(() => getLoggedUser(), []);
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
   const getPictures = () => {
-    return getManyPictures(loggedUser?.id)
+    if (!loggedUser) return;
+
+    return getManyPictures(isAdmin(loggedUser.role) ? "" : loggedUser.id)
       .then(async (res) => {
         const pics: string[] = [];
         const picsInfo: IPicture[] = [];
@@ -88,31 +95,26 @@ export default function MyPhotos() {
     }
   };
 
-  const handleClickDeletePic =
-    (index: number) => async (event: React.MouseEvent<SVGSVGElement>) => {
-      event.stopPropagation();
+  const handleClickDeletePic = (index: number) => async (event: React.MouseEvent) => {
+    event.stopPropagation();
 
-      setIsOpenDelete(true);
-      setPicToDeleteIndex(index);
-    };
+    setIsOpenDelete(true);
+    setPicToDeleteIndex(index);
+  };
 
-  const handleDeletePic = async () => {
-    if (picToDeleteIndex != null) {
-      setPicsInfo((pics) => [
-        ...pics.slice(0, picToDeleteIndex),
-        ...pics.slice(picToDeleteIndex + 1),
-      ]);
-      setPics((pics) => [...pics.slice(0, picToDeleteIndex), ...pics.slice(picToDeleteIndex + 1)]);
+  const handleClickBanUser = (index: number) => async (event: React.MouseEvent) => {
+    event.stopPropagation();
 
-      handleCloseDeleteModal();
-
-      await deleteImage(picsInfo[picToDeleteIndex].id);
-      getPictures();
-    }
+    setIsOpenBan(true);
+    setUserIdToBan(picsInfo[index].userId);
   };
 
   const handleCloseDeleteModal = () => {
     setIsOpenDelete(false);
+  };
+
+  const handleCloseBanModal = () => {
+    setIsOpenBan(false);
   };
 
   const EmptyPlaceholder = () => {
@@ -142,10 +144,20 @@ export default function MyPhotos() {
 
   return (
     <>
+      <BanUserModal
+        isOpen={isOpenBan}
+        onClose={handleCloseBanModal}
+        userIdToBan={userIdToBan}
+        getPictures={getPictures}
+      />
       <DeletePhotoModal
         isOpen={isOpenDelete}
-        onDelete={handleDeletePic}
+        picToDeleteIndex={picToDeleteIndex}
         onClose={handleCloseDeleteModal}
+        getPictures={getPictures}
+        picsInfo={picsInfo}
+        setPics={setPics}
+        setPicsInfo={setPicsInfo}
       />
       <UploadPhotoModal
         image={selectedImage}
@@ -174,13 +186,36 @@ export default function MyPhotos() {
             <div className="-mx-3">
               {pics.map((pic, index) => (
                 <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
-                  <div className="cursor-pointer shadow-md rounded-md overflow-hidden">
+                  <div className="cursor-pointer rounded-b-md shadow-md">
                     <div className="relative">
-                      <XMarkIcon
-                        onClick={handleClickDeletePic(index)}
-                        className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
-                      />
-                      <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
+                      {loggedUser && isAdmin(loggedUser.role) && (
+                        <div className="absolute right-[2%] top-[2%] origin-top-right">
+                          <Menu
+                            items={[
+                              {
+                                label: "Delete Photo",
+                                onClick: handleClickDeletePic(index),
+                              },
+                              {
+                                label: "Ban User",
+                                onClick: handleClickBanUser(index),
+                                disabled: loggedUser.id === picsInfo[index].userId,
+                              },
+                            ]}
+                          >
+                            <EllipsisVerticalIcon className="p-[2px] h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200" />
+                          </Menu>
+                        </div>
+                      )}
+                      {loggedUser && isRegular(loggedUser.role) && (
+                        <XMarkIcon
+                          onClick={handleClickDeletePic(index)}
+                          className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
+                        />
+                      )}
+                      <div className="rounded-t-md overflow-hidden">
+                        <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
+                      </div>
                     </div>
                     <div className="p-3 font-semibold text-sm">
                       <div>elo: {picsInfo[index].elo}</div>

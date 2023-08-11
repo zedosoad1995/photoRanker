@@ -5,6 +5,7 @@ import { GoogleLoginButton } from "react-social-login-buttons";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import {
+  BANNED_ACCOUNT,
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_FACEBOOK,
 } from "@shared/constants/errorCodes";
@@ -39,6 +40,10 @@ export default function GoogleButton({ text = "Sign in with Google" }: IGoogleBu
                   id: "must-login-facebook",
                 }
               );
+            } else if (error.response?.data?.error === BANNED_ACCOUNT) {
+              toast.error("Account has been banned", {
+                id: "banned-account",
+              });
             }
           } else {
             toast.error("Something went wrong", { id: "error-google-login" });

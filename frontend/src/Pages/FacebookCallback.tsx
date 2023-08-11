@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
+  BANNED_ACCOUNT,
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_GOOGLE,
 } from "@shared/constants/errorCodes";
@@ -36,6 +37,10 @@ export default function FacebookCallback() {
                     id: "must-login-google",
                   }
                 );
+              } else if (error.response?.data?.error === BANNED_ACCOUNT) {
+                toast.error("Account has been banned", {
+                  id: "banned-account",
+                });
               }
             } else {
               toast.error("Something went wrong", { id: "error-login-facebook" });
