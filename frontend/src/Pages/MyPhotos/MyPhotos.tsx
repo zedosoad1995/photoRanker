@@ -1,5 +1,5 @@
 import Button from "@/Components/Button";
-import { deleteImage, getImage, getManyPictures } from "@/Services/picture";
+import { getImage, getManyPictures } from "@/Services/picture";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
@@ -109,21 +109,6 @@ export default function MyPhotos() {
     setUserIdToBan(picsInfo[index].userId);
   };
 
-  const handleDeletePic = async () => {
-    if (picToDeleteIndex != null) {
-      setPicsInfo((pics) => [
-        ...pics.slice(0, picToDeleteIndex),
-        ...pics.slice(picToDeleteIndex + 1),
-      ]);
-      setPics((pics) => [...pics.slice(0, picToDeleteIndex), ...pics.slice(picToDeleteIndex + 1)]);
-
-      handleCloseDeleteModal();
-
-      await deleteImage(picsInfo[picToDeleteIndex].id);
-      getPictures();
-    }
-  };
-
   const handleCloseDeleteModal = () => {
     setIsOpenDelete(false);
   };
@@ -159,11 +144,20 @@ export default function MyPhotos() {
 
   return (
     <>
-      <BanUserModal isOpen={isOpenBan} onClose={handleCloseBanModal} userIdToBan={userIdToBan} />
+      <BanUserModal
+        isOpen={isOpenBan}
+        onClose={handleCloseBanModal}
+        userIdToBan={userIdToBan}
+        getPictures={getPictures}
+      />
       <DeletePhotoModal
         isOpen={isOpenDelete}
-        onDelete={handleDeletePic}
+        picToDeleteIndex={picToDeleteIndex}
         onClose={handleCloseDeleteModal}
+        getPictures={getPictures}
+        picsInfo={picsInfo}
+        setPics={setPics}
+        setPicsInfo={setPicsInfo}
       />
       <UploadPhotoModal
         image={selectedImage}
@@ -205,6 +199,7 @@ export default function MyPhotos() {
                               {
                                 label: "Ban User",
                                 onClick: handleClickBanUser(index),
+                                disabled: loggedUser.id === picsInfo[index].userId,
                               },
                             ]}
                           >

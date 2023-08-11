@@ -8,9 +8,15 @@ interface IBanUserModal {
   isOpen: boolean;
   onClose: () => void;
   userIdToBan: string | null;
+  getPictures: () => Promise<void> | undefined;
 }
 
-export default function BanUserModal({ isOpen, onClose: handleClose, userIdToBan }: IBanUserModal) {
+export default function BanUserModal({
+  isOpen,
+  onClose: handleClose,
+  userIdToBan,
+  getPictures,
+}: IBanUserModal) {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -27,6 +33,7 @@ export default function BanUserModal({ isOpen, onClose: handleClose, userIdToBan
     try {
       await banUser(userIdToBan);
       toast.success(`User ${email} has been banned`, { id: "ban-user-success" });
+      getPictures();
       handleClose();
     } catch (error) {
       toast.error("Something went wrong", { id: "ban-user-fail" });
