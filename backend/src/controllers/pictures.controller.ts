@@ -5,12 +5,13 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { removeFolders } from "@/helpers/file";
-import { isAdmin, isRegular } from "@/helpers/role";
+import { isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
-import { Prisma, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { StorageInteractor } from "@/types/storageInteractor";
+import _ from "underscore";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
@@ -20,25 +21,11 @@ export const getMany = async (req: Request, res: Response) => {
     throw new ForbiddenError("User cannot use this endpoint to access pictures from other users");
   }
 
-  const whereQuery: Prisma.PictureWhereInput = {};
-  if (userId) {
-    whereQuery.userId = userId;
-  } else if (isRegular(loggedUser.role)) {
-    whereQuery.userId = loggedUser.id;
-  }
-
-  if (isAdmin(loggedUser.role)) {
-    whereQuery.user = {
-      isBanned: false,
-    };
-  }
-
-  const pictures = await PictureModel.findMany({
-    where: whereQuery,
-    orderBy: {
-      elo: "desc",
-    },
-  });
+  const pictures = await PictureModel.getPicturesWithPercentile(
+    userId,
+    loggedUser.id,
+    loggedUser.role
+  );
 
   res.status(200).json({
     pictures,

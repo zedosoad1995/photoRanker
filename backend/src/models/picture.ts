@@ -3,6 +3,7 @@ import { prisma } from ".";
 import { Picture, Prisma } from "@prisma/client";
 import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
+import { isAdmin, isRegular } from "@/helpers/role";
 
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
@@ -160,8 +161,39 @@ function getPicturesWithClosestElos(
   );
 }
 
+function getPicturesWithPercentile(
+  userId: string | undefined,
+  loggedUserId: string,
+  role: string
+): Promise<(Picture & { percentile: number })[]> {
+  const whereQuery: (boolean | string)[] = [true];
+
+  if (userId) {
+    whereQuery.push(`pic."userId" = '${userId}'`);
+  } else if (isRegular(role)) {
+    whereQuery.push(`pic."userId" = '${loggedUserId}'`);
+  }
+
+  if (isAdmin(role)) {
+    whereQuery.push(`usr."isBanned" IS FALSE`);
+  }
+
+  return prisma.$queryRawUnsafe(`
+      SELECT 
+        pic.*,
+        100 * PERCENT_RANK() OVER (ORDER BY pic.elo) AS percentile
+      FROM 
+        "Picture" AS pic
+      INNER JOIN "User" as usr
+        ON pic."userId" = usr.id 
+      WHERE 
+        ${whereQuery.join(" AND ")}
+      ORDER BY pic.elo DESC;`);
+}
+
 export const PictureModel = {
   ...prisma.picture,
   getRandomMatch,
   getMatchWithClosestEloStrategy,
+  getPicturesWithPercentile,
 };
