@@ -1,15 +1,15 @@
 import { Dialog } from "@headlessui/react";
 import Button from "@/Components/Button";
 import { deleteImage } from "@/Services/picture";
-import { IPicture } from "@/Types/picture";
+import { IPictureWithPercentile } from "@/Types/picture";
 
 interface IDeletePhotoModal {
   isOpen: boolean;
   onClose: () => void;
   picToDeleteIndex: number | null;
   setPics: React.Dispatch<React.SetStateAction<string[]>>;
-  setPicsInfo: React.Dispatch<React.SetStateAction<IPicture[]>>;
-  picsInfo: IPicture[];
+  setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
+  picsInfo: IPictureWithPercentile[];
   getPictures: () => Promise<void> | undefined;
 }
 

@@ -8,7 +8,7 @@ import { ArrowUpTrayIcon, EllipsisVerticalIcon, XMarkIcon } from "@heroicons/rea
 import DeletePhotoModal from "./DeletePhotoModal";
 import { getLoggedUser } from "@/Utils/user";
 import { toast } from "react-hot-toast";
-import { IPicture } from "@/Types/picture";
+import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin, isRegular } from "@/Utils/role";
 import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
@@ -23,7 +23,7 @@ export default function MyPhotos() {
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [pics, setPics] = useState<string[]>([]);
-  const [picsInfo, setPicsInfo] = useState<IPicture[]>([]);
+  const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
@@ -40,7 +40,7 @@ export default function MyPhotos() {
     return getManyPictures(isAdmin(loggedUser.role) ? "" : loggedUser.id)
       .then(async (res) => {
         const pics: string[] = [];
-        const picsInfo: IPicture[] = [];
+        const picsInfo: IPictureWithPercentile[] = [];
         for (const pic of res.pictures) {
           try {
             const { url } = await getImage(pic.filepath);
@@ -218,7 +218,7 @@ export default function MyPhotos() {
                       </div>
                     </div>
                     <div className="p-3 font-semibold text-sm">
-                      <div>elo: {picsInfo[index].elo}</div>
+                      <div>score: {(picsInfo[index].percentile / 10).toFixed(1)}</div>
                       <div>votes: {picsInfo[index].numVotes}</div>
                     </div>
                   </div>
