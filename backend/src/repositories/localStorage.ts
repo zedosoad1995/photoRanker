@@ -40,4 +40,14 @@ export class LocalStorageInteractor implements StorageInteractor {
   public getImageUrl(imagePath: string) {
     return `${process.env.BACKEND_URL}/image/${imagePath.replace(/\\/g, "/")}`;
   }
+
+  public async deleteImage(encodedImagePage: string) {
+    const fullPath = path.join(IMAGES_FOLDER_PATH, decodeURI(encodedImagePage.replace(/\\/g, "/")));
+
+    try {
+      fs.unlinkSync(fullPath);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }

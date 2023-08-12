@@ -41,4 +41,6 @@ export class S3Interactor implements StorageInteractor {
       process.env.S3_REGION
     }.amazonaws.com/${imagePath.replace(/\\/g, "/")}`;
   }
+
+  public async deleteImage(encodedImagePage: string) {}
 }

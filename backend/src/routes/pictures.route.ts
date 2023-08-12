@@ -59,7 +59,7 @@ router.delete(
   checkBanned,
   checkProfileCompleted,
   checkEmailVerified,
-  deleteOne
+  deleteOne(mainStorageInteractor)
 );
 
 export default router;
