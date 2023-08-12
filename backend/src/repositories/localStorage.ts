@@ -42,7 +42,7 @@ export class LocalStorageInteractor implements StorageInteractor {
   }
 
   public async deleteImage(encodedImagePage: string) {
-    const fullPath = path.join(IMAGES_FOLDER_PATH, decodeURI(encodedImagePage.replace(/\\/g, "/")));
+    const fullPath = path.join(IMAGES_FOLDER_PATH, decodeURI(encodedImagePage).replace(/\\/g, "/"));
 
     try {
       fs.unlinkSync(fullPath);

@@ -1,8 +1,8 @@
-import { EXTENSION_TO_MIME_TYPE } from "@/constants/picture";
+import { EXTENSION_TO_MIME_TYPE, IMAGES_FOLDER_PATH } from "@/constants/picture";
 import crypto from "crypto";
 import { StorageInteractor } from "@/types/storageInteractor";
 import { BadRequestError } from "@/errors/BadRequestError";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export class S3Interactor implements StorageInteractor {
   constructor(private s3: S3Client) {}
@@ -42,5 +42,18 @@ export class S3Interactor implements StorageInteractor {
     }.amazonaws.com/${imagePath.replace(/\\/g, "/")}`;
   }
 
-  public async deleteImage(encodedImagePage: string) {}
+  public async deleteImage(encodedImagePage: string) {
+    const key = decodeURI(encodedImagePage).replace(/\\/g, "/");
+
+    try {
+      await this.s3.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.IMAGES_BUCKET as string,
+          Key: key,
+        })
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
