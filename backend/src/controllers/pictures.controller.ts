@@ -18,16 +18,24 @@ export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
   const userId = req.query.userId as string | undefined;
   const hasReport = parseBoolean(req.query.hasReport as string | undefined);
+  const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
+  const isBanned = parseBoolean(req.query.isBanned as string | undefined);
 
   if (userId && isRegular(loggedUser.role) && loggedUser.id !== userId) {
     throw new ForbiddenError("User cannot use this endpoint to access pictures from other users");
+  }
+
+  if (belongsToMe !== undefined && userId !== undefined) {
+    throw new BadRequestError("Cannot call belongsToMe and userId simulataneously");
   }
 
   const pictures = await PictureModel.getPicturesWithPercentile(
     userId,
     loggedUser.id,
     loggedUser.role,
-    hasReport
+    hasReport,
+    belongsToMe,
+    isBanned
   );
 
   res.status(200).json({

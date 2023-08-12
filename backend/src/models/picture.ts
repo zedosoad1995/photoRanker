@@ -165,7 +165,9 @@ function getPicturesWithPercentile(
   userId: string | undefined,
   loggedUserId: string,
   role: string,
-  hasReport: boolean | undefined
+  hasReport: boolean | undefined,
+  belongsToMe: boolean | undefined,
+  isBanned: boolean | undefined
 ): Promise<(Picture & { percentile: number })[]> {
   const whereQuery: (boolean | string)[] = [true];
   const joinQuery: string[] = [];
@@ -180,19 +182,21 @@ function getPicturesWithPercentile(
 
   if (userId) {
     whereQuery.push(`pic."userId" = '${userId}'`);
-    joinQuery.push(USER_JOIN);
   } else if (isRegular(role)) {
     whereQuery.push(`pic."userId" = '${loggedUserId}'`);
-    joinQuery.push(USER_JOIN);
   }
 
   if (isAdmin(role)) {
-    whereQuery.push(`usr."isBanned" IS FALSE`);
+    whereQuery.push(`usr."isBanned" IS ${isBanned ? "TRUE" : "FALSE"}`);
     joinQuery.push(USER_JOIN);
 
     if (hasReport !== undefined) {
       whereQuery.push(`report.id IS ${hasReport ? "NOT NULL" : "NULL"}`);
       joinQuery.push(REPORT_LEFT_JOIN);
+    }
+
+    if (belongsToMe !== undefined) {
+      whereQuery.push(`pic."userId" ${belongsToMe ? "=" : "!="} '${loggedUserId}'`);
     }
   }
 

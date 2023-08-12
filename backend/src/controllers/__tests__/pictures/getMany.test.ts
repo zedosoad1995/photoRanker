@@ -212,7 +212,7 @@ describe("Admin Logged User", () => {
         expect(response.status).toEqual(422);
       });
 
-      it("throws error, when 'userId' has not a valid value", async () => {
+      it("throws error, when 'userId' has an invalid value", async () => {
         const response = await request(app)
           .get(`/api/pictures?hasReport=TRUE`)
           .set("Cookie", adminCookie)
@@ -243,6 +243,128 @@ describe("Admin Logged User", () => {
       it("Returns non-reported pictures, if hasReports is false", async () => {
         const response = await request(app)
           .get("/api/pictures?hasReport=false")
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(2);
+      });
+    });
+
+    describe("belongsToMe", () => {
+      beforeAll(async () => {
+        const randomUser = await UserSeeder.createOne();
+
+        await PictureSeeder.seedOne({ userId: randomUser.id });
+        await PictureSeeder.createMany({
+          data: {
+            userId: adminUserId,
+          },
+          numRepeat: 2,
+        });
+      });
+
+      it("throws error, when 'belongsToMe' is an array", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?belongsToMe=true&belongsToMe=false`)
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("throws error, when 'belongsToMe' has an invalid value", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?belongsToMe=TRUE`)
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("Returns all pictures, if belongsToMe is undefined", async () => {
+        for (const url of ["/api/pictures?belongsToMe=", "/api/pictures"]) {
+          const response = await request(app).get(url).set("Cookie", adminCookie).send();
+
+          expect(response.status).toEqual(200);
+          expect(response.body.pictures).toHaveLength(3);
+        }
+      });
+
+      it("Returns loggedUser pictures, if belongsToMe is true", async () => {
+        const response = await request(app)
+          .get("/api/pictures?belongsToMe=true")
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(2);
+      });
+
+      it("Returns non-loggedUser pictures, if belongsToMe is false", async () => {
+        const response = await request(app)
+          .get("/api/pictures?belongsToMe=false")
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(1);
+      });
+    });
+
+    describe("isBanned", () => {
+      beforeAll(async () => {
+        const randomUser = await UserSeeder.createOne({ isBanned: true });
+
+        await PictureSeeder.seedOne({ userId: randomUser.id });
+        await PictureSeeder.createMany({
+          data: {
+            userId: adminUserId,
+          },
+          numRepeat: 2,
+        });
+      });
+
+      it("throws error, when 'isBanned' is an array", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?isBanned=true&isBanned=false`)
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("throws error, when 'isBanned' has an invalid value", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?isBanned=TRUE`)
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("Returns non-banned pictures, if isBanned is undefined", async () => {
+        for (const url of ["/api/pictures?isBanned=", "/api/pictures"]) {
+          const response = await request(app).get(url).set("Cookie", adminCookie).send();
+
+          expect(response.status).toEqual(200);
+          expect(response.body.pictures).toHaveLength(2);
+        }
+      });
+
+      it("Returns banned pictures, if isBanned is true", async () => {
+        const response = await request(app)
+          .get("/api/pictures?isBanned=true")
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(1);
+      });
+
+      it("Returns non-isBanned pictures, if isBanned is false", async () => {
+        const response = await request(app)
+          .get("/api/pictures?isBanned=false")
           .set("Cookie", adminCookie)
           .send();
 
