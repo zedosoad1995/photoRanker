@@ -7,9 +7,7 @@ import { PICTURE } from "@/constants/messages";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
 import { PictureModel } from "@/models/picture";
-import fs from "fs";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
-import { normalizedJoin } from "@/helpers/file";
 import { UserModel } from "@/models/user";
 import { mainStorageInteractor } from "@/container";
 

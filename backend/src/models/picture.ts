@@ -164,18 +164,36 @@ function getPicturesWithClosestElos(
 function getPicturesWithPercentile(
   userId: string | undefined,
   loggedUserId: string,
-  role: string
+  role: string,
+  hasReport: boolean | undefined
 ): Promise<(Picture & { percentile: number })[]> {
   const whereQuery: (boolean | string)[] = [true];
+  const joinQuery: string[] = [];
+
+  const USER_JOIN = `
+      INNER JOIN "User" as usr
+        ON pic."userId" = usr.id`;
+
+  const REPORT_LEFT_JOIN = `
+      LEFT JOIN "Report" as report
+        ON pic.id = report."pictureId"`;
 
   if (userId) {
     whereQuery.push(`pic."userId" = '${userId}'`);
+    joinQuery.push(USER_JOIN);
   } else if (isRegular(role)) {
     whereQuery.push(`pic."userId" = '${loggedUserId}'`);
+    joinQuery.push(USER_JOIN);
   }
 
   if (isAdmin(role)) {
     whereQuery.push(`usr."isBanned" IS FALSE`);
+    joinQuery.push(USER_JOIN);
+
+    if (Boolean(hasReport)) {
+      whereQuery.push(`report.id IS ${hasReport ? "NOT NULL" : "NULL"}`);
+      joinQuery.push(REPORT_LEFT_JOIN);
+    }
   }
 
   return prisma.$queryRawUnsafe(`
@@ -184,8 +202,7 @@ function getPicturesWithPercentile(
         100 * PERCENT_RANK() OVER (ORDER BY pic.elo) AS percentile
       FROM 
         "Picture" AS pic
-      INNER JOIN "User" as usr
-        ON pic."userId" = usr.id 
+      ${[...new Set(joinQuery)].join("\n")} 
       WHERE 
         ${whereQuery.join(" AND ")}
       ORDER BY pic.elo DESC;`);

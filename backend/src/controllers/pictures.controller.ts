@@ -12,10 +12,12 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { StorageInteractor } from "@/types/storageInteractor";
 import _ from "underscore";
+import { parseBoolean } from "@/helpers/query";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
   const userId = req.query.userId as string | undefined;
+  const hasReport = parseBoolean(req.query.hasReport as string | undefined);
 
   if (userId && isRegular(loggedUser.role) && loggedUser.id !== userId) {
     throw new ForbiddenError("User cannot use this endpoint to access pictures from other users");
@@ -24,7 +26,8 @@ export const getMany = async (req: Request, res: Response) => {
   const pictures = await PictureModel.getPicturesWithPercentile(
     userId,
     loggedUser.id,
-    loggedUser.role
+    loggedUser.role,
+    hasReport
   );
 
   res.status(200).json({

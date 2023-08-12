@@ -10,11 +10,11 @@ import { checkAuth } from "@/middlewares/checkAuth";
 import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
 import { validateImage } from "@/middlewares/validateImage";
 import { validateQuery } from "@/middlewares/validateQuery";
-import { getManyPicturesSchema } from "@/schemas/user/query/getManyPictures";
 import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { mainStorageInteractor } from "@/container";
 import { checkBanned } from "@/middlewares/checkBanned";
+import { getManyPicturesSchema } from "@/schemas/picture/query/getManyPictures";
 
 const router = Router();
 
