@@ -28,9 +28,7 @@ afterAll(() => {
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
-    const response = await request(app)
-      .delete(`/api/pictures/${pictureId}`)
-      .send();
+    const response = await request(app).delete(`/api/pictures/${pictureId}`).send();
 
     expect(response.status).toEqual(401);
   });
@@ -159,3 +157,5 @@ describe("Admin Logged User", () => {
     expect(existingPicture).toBeFalsy();
   });
 });
+
+it.todo("Check picture in folder is deleted");

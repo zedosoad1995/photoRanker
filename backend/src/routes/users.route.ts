@@ -23,6 +23,7 @@ import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { checkRegular } from "@/middlewares/checkRegular";
 import { checkBanned } from "@/middlewares/checkBanned";
+import { mainStorageInteractor } from "@/container";
 
 const router = Router();
 
@@ -53,8 +54,8 @@ router.patch(
 
 router.post("/check-email", validateForm(checkEmailExistsSchema), checkEmailExists);
 
-router.delete("/me", checkAuth, checkRegular, deleteMe);
-router.delete("/:userId", checkAuth, checkAdmin, checkBanned, deleteOne);
+router.delete("/me", checkAuth, checkRegular, deleteMe(mainStorageInteractor));
+router.delete("/:userId", checkAuth, checkAdmin, checkBanned, deleteOne(mainStorageInteractor));
 
 router.put(
   "/ban/:userId",
