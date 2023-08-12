@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
-import Select from "@/Components/Select";
+import Select from "@/Components/AutoCompleteSelect";
 import { AGE_OPTIONS } from "@/Constants/user";
 import { getLoggedUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";

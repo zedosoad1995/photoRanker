@@ -12,6 +12,7 @@ import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin, isRegular } from "@/Utils/role";
 import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
+import Select from "@/Components/Select";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -33,6 +34,8 @@ export default function MyPhotos() {
 
   const loggedUser = useMemo(() => getLoggedUser(), []);
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
+
+  const [filterSelectedOptions, setFilterSelectedOptions] = useState<string[]>([]);
 
   const getPictures = () => {
     if (!loggedUser) return;
@@ -117,6 +120,16 @@ export default function MyPhotos() {
     setIsOpenBan(false);
   };
 
+  const handleFilterSelect = (selectedOption: string) => {
+    setFilterSelectedOptions((vals) => {
+      if (vals.includes(selectedOption)) {
+        return vals.filter((val) => val != selectedOption);
+      }
+
+      return [...vals, selectedOption];
+    });
+  };
+
   const EmptyPlaceholder = () => {
     return (
       <div className="flex flex-col items-center">
@@ -179,10 +192,20 @@ export default function MyPhotos() {
               onChange={handleFileChange}
               className="hidden"
             />
-            <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={false}>
-              <span className="mr-3 text-xl !leading-5">+</span>
-              <span>Add Photo</span>
-            </Button>
+            <div className="flex gap-4">
+              <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={false}>
+                <span className="mr-3 text-xl !leading-5">+</span>
+                <span>Add Photo</span>
+              </Button>
+              <div className="w-44">
+                <Select
+                  onChange={handleFilterSelect}
+                  options={["Banned Users", "Reported Pictures", "My Pictures"]}
+                  value={filterSelectedOptions}
+                  title="Filters"
+                />
+              </div>
+            </div>
             <div className="-mx-3">
               {pics.map((pic, index) => (
                 <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
