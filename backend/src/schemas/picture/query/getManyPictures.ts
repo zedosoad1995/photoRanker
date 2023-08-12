@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const getManyPicturesSchema = z
   .object({
-    hasReport: z.boolean(),
-    belongsToMe: z.boolean(),
-    isBanned: z.boolean(),
+    hasReport: z.enum(["false", "true", ""]),
+    belongsToMe: z.enum(["false", "true", ""]),
+    isBanned: z.enum(["false", "true", ""]),
     userId: z.string(),
   })
   .partial();

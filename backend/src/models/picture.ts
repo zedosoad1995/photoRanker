@@ -190,7 +190,7 @@ function getPicturesWithPercentile(
     whereQuery.push(`usr."isBanned" IS FALSE`);
     joinQuery.push(USER_JOIN);
 
-    if (Boolean(hasReport)) {
+    if (hasReport !== undefined) {
       whereQuery.push(`report.id IS ${hasReport ? "NOT NULL" : "NULL"}`);
       joinQuery.push(REPORT_LEFT_JOIN);
     }

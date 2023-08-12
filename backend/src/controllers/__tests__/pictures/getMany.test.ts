@@ -7,6 +7,7 @@ import { User } from "@prisma/client";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { UserModel } from "@/models/user";
+import { ReportSeeder } from "@/tests/seed/ReportSeeder";
 
 const NUM_PICTURES = 10;
 
@@ -65,10 +66,7 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .get("/api/pictures")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).get("/api/pictures").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(403);
   });
@@ -83,19 +81,13 @@ describe("Regular Logged User", () => {
       },
     });
 
-    const response = await request(app)
-      .get("/api/pictures")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).get("/api/pictures").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(403);
   });
 
   it("returns a list of pictures belonging to logged user", async () => {
-    const response = await request(app)
-      .get("/api/pictures")
-      .set("Cookie", regularCookie)
-      .send();
+    const response = await request(app).get("/api/pictures").set("Cookie", regularCookie).send();
 
     expect(response.status).toEqual(200);
     expect(response.body.pictures).toHaveLength(1);
@@ -149,10 +141,12 @@ describe("Regular Logged User", () => {
 
 describe("Admin Logged User", () => {
   let adminCookie: string;
+  let adminUserId: string;
 
   beforeAll(async () => {
     const res = await loginAdmin();
     adminCookie = res.cookie;
+    adminUserId = res.user.id;
 
     await PictureSeeder.seedMany({
       data: { userId: res.user.id },
@@ -161,24 +155,21 @@ describe("Admin Logged User", () => {
   });
 
   it("returns a list of pictures", async () => {
-    const response = await request(app)
-      .get("/api/pictures")
-      .set("Cookie", adminCookie)
-      .send();
+    const response = await request(app).get("/api/pictures").set("Cookie", adminCookie).send();
 
     expect(response.status).toEqual(200);
     expect(response.body.pictures).toHaveLength(NUM_PICTURES);
   });
 
   describe("Query", () => {
-    let randomUser: User;
-
-    beforeAll(async () => {
-      randomUser = await UserSeeder.createOne();
-      await PictureSeeder.createOne({ userId: randomUser.id });
-    });
-
     describe("userId", () => {
+      let randomUser: User;
+
+      beforeAll(async () => {
+        randomUser = await UserSeeder.createOne();
+        await PictureSeeder.createOne({ userId: randomUser.id });
+      });
+
       it("returns pictures from 'userId'", async () => {
         const response = await request(app)
           .get(`/api/pictures?userId=${randomUser.id}`)
@@ -188,6 +179,75 @@ describe("Admin Logged User", () => {
         expect(response.status).toEqual(200);
         expect(response.body.pictures).toHaveLength(1);
         expect(response.body.pictures[0].userId).toEqual(randomUser.id);
+      });
+    });
+
+    describe("hasReport", () => {
+      beforeAll(async () => {
+        const pictures = await PictureSeeder.seedMany({
+          data: { userId: adminUserId },
+          numRepeat: 3,
+        });
+
+        await ReportSeeder.seedOne({
+          picture: {
+            connect: {
+              id: pictures[0].id,
+            },
+          },
+          userReporting: {
+            connect: {
+              id: adminUserId,
+            },
+          },
+        });
+      });
+
+      it("throws error, when 'hasReport' is an array", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?hasReport=true&hasReport=false`)
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("throws error, when 'userId' has not a valid value", async () => {
+        const response = await request(app)
+          .get(`/api/pictures?hasReport=TRUE`)
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(422);
+      });
+
+      it("Returns all pictures, if hasReports is undefined", async () => {
+        for (const url of ["/api/pictures?hasReport=", "/api/pictures"]) {
+          const response = await request(app).get(url).set("Cookie", adminCookie).send();
+
+          expect(response.status).toEqual(200);
+          expect(response.body.pictures).toHaveLength(3);
+        }
+      });
+
+      it("Returns reported pictures, if hasReports is true", async () => {
+        const response = await request(app)
+          .get("/api/pictures?hasReport=true")
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(1);
+      });
+
+      it("Returns non-reported pictures, if hasReports is false", async () => {
+        const response = await request(app)
+          .get("/api/pictures?hasReport=false")
+          .set("Cookie", adminCookie)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.pictures).toHaveLength(2);
       });
     });
   });
