@@ -179,6 +179,10 @@ function getPicturesWithPercentile(
   const orderKey = Object.keys(orderByObj)[0];
   const orderValue = Object.values(orderByObj)[0];
 
+  const PIC_GROUP_BY =
+    (getAllColumnNames() ?? ["id"]).map((col) => `pic."${col}"`).join(", ") +
+    ", pic_perc.percentile";
+
   const USER_JOIN = `
       INNER JOIN "User" as usr
         ON pic."userId" = usr.id`;
@@ -212,7 +216,7 @@ function getPicturesWithPercentile(
 
     if (hasReport !== undefined) {
       whereQuery.push(`report.id IS ${hasReport ? "NOT NULL" : "NULL"}`);
-      groupByQuery = `GROUP BY pic.id`;
+      groupByQuery = `GROUP BY ${PIC_GROUP_BY}`;
       joinQuery.push(REPORT_LEFT_JOIN);
     }
 
@@ -224,23 +228,36 @@ function getPicturesWithPercentile(
     if (["reportedDate"].includes(orderKey)) {
       joinQuery.push(REPORT_LEFT_JOIN);
       whereQuery.push(`report.id IS NOT NULL`);
-      groupByQuery = `GROUP BY pic.id`;
+      groupByQuery = `GROUP BY ${PIC_GROUP_BY}`;
       orderByField = `MAX(report."createdAt")`;
       orderByDir = orderValue;
     }
   }
 
   return prisma.$queryRawUnsafe(`
-      SELECT 
-        pic.*,
-        100 * PERCENT_RANK() OVER (ORDER BY pic.elo) AS percentile
-      FROM 
-        "Picture" AS pic
+      SELECT pic.*, pic_perc.percentile
+      FROM "Picture" AS pic
+      LEFT JOIN (
+        SELECT 
+          pic.id,
+          100 * PERCENT_RANK() OVER (ORDER BY pic.elo) AS percentile
+        FROM 
+          "Picture" AS pic
+        WHERE pic."numVotes" > 0
+      ) AS pic_perc
+        ON pic.id = pic_perc.id
       ${[...new Set(joinQuery)].join("\n")} 
       WHERE 
         ${whereQuery.join(" AND ")}
       ${groupByQuery}
       ORDER BY ${orderByField} ${orderByDir};`);
+}
+
+function getAllColumnNames() {
+  return Prisma.dmmf.datamodel.models
+    .find((model) => model.name === "Picture")
+    ?.fields.filter((f) => f.kind === "scalar")
+    .map((f) => f.name);
 }
 
 export const PictureModel = {
