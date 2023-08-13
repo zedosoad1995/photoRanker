@@ -36,7 +36,7 @@ export default function MyPhotos() {
   const loggedUser = useMemo(() => getLoggedUser(), []);
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
-  const [filterSelectedOptions, setFilterSelectedOptions] = useState<string[]>([]);
+  const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
 
   const getPictures = (
     queryParams: {
@@ -133,17 +133,14 @@ export default function MyPhotos() {
   };
 
   const handleFilterSelect = (selectedOption: string) => {
-    setFilterSelectedOptions((vals) => {
-      let retOptions: string[] = [];
-
-      if (vals.includes(selectedOption)) {
-        retOptions = vals.filter((val) => val != selectedOption);
-      } else {
-        retOptions = [...vals, selectedOption];
+    setFilterSelectedOption((val) => {
+      if (val === selectedOption) {
+        getPictures();
+        return "";
       }
 
-      getPictures(Object.fromEntries(retOptions.map((option) => [option, true])));
-      return retOptions;
+      getPictures({ [selectedOption]: true });
+      return selectedOption;
     });
   };
 
@@ -219,11 +216,11 @@ export default function MyPhotos() {
                   <Select
                     onChange={handleFilterSelect}
                     options={[
-                      { id: "isBanned", label: "Banned Users" },
-                      { id: "hasReport", label: "Reported Pictures" },
                       { id: "belongsToMe", label: "My Pictures" },
+                      { id: "hasReport", label: "Reported Pictures" },
+                      { id: "isBanned", label: "Banned Users" },
                     ]}
-                    value={filterSelectedOptions}
+                    value={filterSelectedOption}
                     title="Filters"
                   />
                 </div>

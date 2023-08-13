@@ -12,8 +12,7 @@ interface ISelectMultiple {
   options: readonly IValue[];
   title: string;
   label?: string;
-  value: string[];
-  isMultiple?: boolean;
+  value: string | string[];
   onChange: (value: any) => void;
 }
 
@@ -22,14 +21,21 @@ export default function SelectMultiple({
   title,
   label,
   value,
-  isMultiple,
   onChange: handleChange,
 }: ISelectMultiple) {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
+  const hasMultiple = Array.isArray(value);
+
   const closeOpenMenus = (event: MouseEvent) => {
     if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  const handleSelectOption = () => {
+    if (!hasMultiple) {
       setIsOpen(false);
     }
   };
@@ -46,7 +52,7 @@ export default function SelectMultiple({
     <div>
       {label && <Label name={label} />}
       <div ref={selectRef} className={`${label ? "mt-2" : ""} relative`}>
-        <Listbox value={value} onChange={handleChange} multiple={isMultiple}>
+        <Listbox value={value} onChange={handleChange}>
           <Listbox.Button
             onClick={() => setIsOpen((val) => !val)}
             className="relative w-full rounded-md pl-1.5 shadow-sm ring-1 ring-inset ring-normal-contour  sm:text-sm sm:leading-6 h-10"
@@ -64,17 +70,18 @@ export default function SelectMultiple({
               }`}
             >
               {options.map((option) => {
-                const isSelected = value.some((val) => option.id === val);
+                if (hasMultiple) {
+                  var isSelected = value.some((val) => option.id === val);
+                } else {
+                  var isSelected = value === option.id;
+                }
 
                 return (
                   <Listbox.Option
                     key={option.id}
                     value={option.id}
-                    className={({ active }) =>
-                      `relative cursor-pointer select-none py-2 pl-4 pr-9 ${
-                        active ? "bg-primary-contrast text-primary-text" : ""
-                      }`
-                    }
+                    onClick={handleSelectOption}
+                    className="relative cursor-pointer select-none py-2 pl-4 pr-9 hover:bg-primary-contrast hover:text-primary-text"
                   >
                     <span
                       className={`block truncate ${isSelected ? "font-medium" : "font-normal"}`}
