@@ -12,7 +12,7 @@ import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin, isRegular } from "@/Utils/role";
 import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
-import Select from "@/Components/Select";
+import Select from "@/Components/SelectMultiple";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -27,6 +27,7 @@ export default function MyPhotos() {
   const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [areTherePictures, setAreThePictures] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
   const [isOpenBan, setIsOpenBan] = useState(false);
@@ -37,10 +38,19 @@ export default function MyPhotos() {
 
   const [filterSelectedOptions, setFilterSelectedOptions] = useState<string[]>([]);
 
-  const getPictures = () => {
+  const getPictures = (
+    queryParams: {
+      hasReport?: boolean;
+      belongsToMe?: boolean;
+      isBanned?: boolean;
+    } = {}
+  ) => {
     if (!loggedUser) return;
 
-    return getManyPictures(isAdmin(loggedUser.role) ? "" : loggedUser.id)
+    return getManyPictures({
+      ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
+      ...queryParams,
+    })
       .then(async (res) => {
         const pics: string[] = [];
         const picsInfo: IPictureWithPercentile[] = [];
@@ -53,6 +63,8 @@ export default function MyPhotos() {
         }
         setPics(pics);
         setPicsInfo(picsInfo);
+
+        if (!areTherePictures) setAreThePictures(pics.length > 0);
       })
       .finally(() => {
         setIsLoading(false);
@@ -122,11 +134,16 @@ export default function MyPhotos() {
 
   const handleFilterSelect = (selectedOption: string) => {
     setFilterSelectedOptions((vals) => {
+      let retOptions: string[] = [];
+
       if (vals.includes(selectedOption)) {
-        return vals.filter((val) => val != selectedOption);
+        retOptions = vals.filter((val) => val != selectedOption);
+      } else {
+        retOptions = [...vals, selectedOption];
       }
 
-      return [...vals, selectedOption];
+      getPictures(Object.fromEntries(retOptions.map((option) => [option, true])));
+      return retOptions;
     });
   };
 
@@ -182,8 +199,8 @@ export default function MyPhotos() {
         }}
       />
       <div className="flow-root pb-4 md:pb-12 w-full md:w-[650px] lg:w-[900px] xl:w-[1150px] mx-auto">
-        {!isLoading && pics.length === 0 && <EmptyPlaceholder />}
-        {!isLoading && pics.length > 0 && (
+        {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
+        {!isLoading && (pics.length > 0 || areTherePictures) && (
           <>
             <input
               type="file"
@@ -197,14 +214,20 @@ export default function MyPhotos() {
                 <span className="mr-3 text-xl !leading-5">+</span>
                 <span>Add Photo</span>
               </Button>
-              <div className="w-44">
-                <Select
-                  onChange={handleFilterSelect}
-                  options={["Banned Users", "Reported Pictures", "My Pictures"]}
-                  value={filterSelectedOptions}
-                  title="Filters"
-                />
-              </div>
+              {loggedUser && isAdmin(loggedUser.role) && (
+                <div className="w-48">
+                  <Select
+                    onChange={handleFilterSelect}
+                    options={[
+                      { id: "isBanned", label: "Banned Users" },
+                      { id: "hasReport", label: "Reported Pictures" },
+                      { id: "belongsToMe", label: "My Pictures" },
+                    ]}
+                    value={filterSelectedOptions}
+                    title="Filters"
+                  />
+                </div>
+              )}
             </div>
             <div className="-mx-3">
               {pics.map((pic, index) => (

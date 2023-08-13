@@ -155,7 +155,7 @@ function getPicturesWithClosestElos(
       INNER JOIN "User" AS usr ON pic."userId" = usr.id
       WHERE pic."userId" != ${loggedUserId} AND pic.id != ${
       opponentPicture.id
-    } AND usr."isBanned" IS false
+    } AND usr."isBanned" = FALSE
       ORDER BY abs_diff ASC
       LIMIT ${limit};`
   );

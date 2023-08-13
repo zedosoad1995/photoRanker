@@ -3,23 +3,28 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import Label from "./Label";
 import { useState, useRef, useEffect } from "react";
 
-interface ISelect {
-  options: readonly string[];
+interface IValue {
+  id: string;
+  label: string;
+}
+
+interface ISelectMultiple {
+  options: readonly IValue[];
   title: string;
   label?: string;
-  value: string | string[];
+  value: string[];
   isMultiple?: boolean;
   onChange: (value: any) => void;
 }
 
-export default function Select({
+export default function SelectMultiple({
   options,
   title,
   label,
   value,
   isMultiple,
   onChange: handleChange,
-}: ISelect) {
+}: ISelectMultiple) {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -59,12 +64,12 @@ export default function Select({
               }`}
             >
               {options.map((option) => {
-                const isSelected = value.includes(option);
+                const isSelected = value.some((val) => option.id === val);
 
                 return (
                   <Listbox.Option
-                    key={option}
-                    value={option}
+                    key={option.id}
+                    value={option.id}
                     className={({ active }) =>
                       `relative cursor-pointer select-none py-2 pl-4 pr-9 ${
                         active ? "bg-primary-contrast text-primary-text" : ""
@@ -74,7 +79,7 @@ export default function Select({
                     <span
                       className={`block truncate ${isSelected ? "font-medium" : "font-normal"}`}
                     >
-                      {option}
+                      {option.label}
                     </span>
                     {isSelected ? (
                       <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-primary-text">
