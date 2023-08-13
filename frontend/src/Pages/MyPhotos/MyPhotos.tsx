@@ -216,48 +216,66 @@ export default function MyPhotos() {
               onChange={handleFileChange}
               className="hidden"
             />
-            <div className="flex gap-4">
+            <div
+              className={`${
+                isAdmin(loggedUser.role) ? "min-[520px]:flex" : "min-[330px]:flex"
+              } gap-4`}
+            >
               <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={false}>
                 <span className="mr-3 text-xl !leading-5">+</span>
                 <span>Add Photo</span>
               </Button>
-              {isAdmin(loggedUser.role) && (
-                <div className="w-40">
+              <div
+                className={`${
+                  isAdmin(loggedUser.role) ? "max-[520px]:mt-4" : "max-[330px]:mt-4"
+                } flex gap-4`}
+              >
+                {isAdmin(loggedUser.role) && (
+                  <div
+                    className={`${
+                      isAdmin(loggedUser.role) ? "min-[520px]:w-40" : "min-[330px]:w-40"
+                    } w-full`}
+                  >
+                    <Select
+                      onChange={handleFilterSelect}
+                      options={[
+                        { id: "belongsToMe", label: "My Pictures" },
+                        { id: "hasReport", label: "Reported Pictures" },
+                        { id: "isBanned", label: "Banned Users" },
+                      ]}
+                      value={filterSelectedOption}
+                      title="Filters"
+                    />
+                  </div>
+                )}
+                <div
+                  className={`${
+                    isAdmin(loggedUser.role) ? "min-[520px]:w-40" : "min-[330px]:w-40"
+                  } w-full`}
+                >
                   <Select
-                    onChange={handleFilterSelect}
+                    onChange={handleSortSelect}
                     options={[
-                      { id: "belongsToMe", label: "My Pictures" },
-                      { id: "hasReport", label: "Reported Pictures" },
-                      { id: "isBanned", label: "Banned Users" },
+                      { id: DEFAULT_SORT, label: "Score Highest to Lowest" },
+                      { id: "score asc", label: "Score Lowest to Highest" },
+                      { id: "numVotes desc", label: "Votes Highest to Lowest" },
+                      { id: "numVotes asc", label: "Votes Lowest to Highest" },
+                      { id: "createdAt desc", label: "Creation Date Highest to Lowest" },
+                      { id: "createdAt asc", label: "Creation Date Lowest to Highest" },
+                      ...(isAdmin(loggedUser.role)
+                        ? [
+                            { id: "reportedDate desc", label: "Reported Date Highest to Lowest" },
+                            { id: "reportedDate asc", label: "Reported Date Lowest to Highest" },
+                          ]
+                        : []),
                     ]}
-                    value={filterSelectedOption}
-                    title="Filters"
+                    value={sortValue}
+                    title="Sort"
                   />
                 </div>
-              )}
-              <div className="w-40">
-                <Select
-                  onChange={handleSortSelect}
-                  options={[
-                    { id: DEFAULT_SORT, label: "Score Highest to Lowest" },
-                    { id: "score asc", label: "Score Lowest to Highest" },
-                    { id: "numVotes desc", label: "Votes Highest to Lowest" },
-                    { id: "numVotes asc", label: "Votes Lowest to Highest" },
-                    { id: "createdAt desc", label: "Creation Date Highest to Lowest" },
-                    { id: "createdAt asc", label: "Creation Date Lowest to Highest" },
-                    ...(isAdmin(loggedUser.role)
-                      ? [
-                          { id: "reportedDate desc", label: "Reported Date Highest to Lowest" },
-                          { id: "reportedDate asc", label: "Reported Date Lowest to Highest" },
-                        ]
-                      : []),
-                  ]}
-                  value={sortValue}
-                  title="Sort"
-                />
               </div>
             </div>
-            <div className="-mx-3">
+            <div className="-mx-3 mt-1">
               {pics.map((pic, index) => (
                 <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
                   <div className="cursor-pointer rounded-b-md shadow-md">
