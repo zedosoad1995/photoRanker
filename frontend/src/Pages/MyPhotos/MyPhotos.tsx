@@ -292,7 +292,12 @@ export default function MyPhotos() {
                       </div>
                     </div>
                     <div className="p-3 font-semibold text-sm">
-                      <div>score: {(picsInfo[index].percentile / 10).toFixed(1)}</div>
+                      <div>
+                        score:{" "}
+                        {picsInfo[index].numVotes > 0
+                          ? (picsInfo[index].percentile / 10).toFixed(1)
+                          : "-"}
+                      </div>
                       <div>votes: {picsInfo[index].numVotes}</div>
                     </div>
                   </div>
