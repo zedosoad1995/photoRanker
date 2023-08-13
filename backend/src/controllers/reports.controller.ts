@@ -1,3 +1,4 @@
+import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { parseOrderBy } from "@/helpers/query";
@@ -11,7 +12,7 @@ export const getMany = async (req: Request, res: Response) => {
 
   const orderByQuery = parseOrderBy({
     orderBy: orderBy as string | undefined,
-    orderByDir: orderByDir as string | undefined,
+    orderByDir: orderByDir as ORDER_BY_DIR_OPTIONS_TYPE | undefined,
   });
 
   const reports = await ReportModel.findMany({

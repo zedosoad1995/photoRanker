@@ -8,10 +8,13 @@ import { ArrowUpTrayIcon, EllipsisVerticalIcon, XMarkIcon } from "@heroicons/rea
 import DeletePhotoModal from "./DeletePhotoModal";
 import { getLoggedUser } from "@/Utils/user";
 import { toast } from "react-hot-toast";
-import { IPicture } from "@/Types/picture";
+import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin, isRegular } from "@/Utils/role";
 import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
+import Select from "@/Components/Select";
+
+const DEFAULT_SORT = "score desc";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -23,9 +26,10 @@ export default function MyPhotos() {
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [pics, setPics] = useState<string[]>([]);
-  const [picsInfo, setPicsInfo] = useState<IPicture[]>([]);
+  const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [areTherePictures, setAreThePictures] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
   const [isOpenBan, setIsOpenBan] = useState(false);
@@ -34,13 +38,24 @@ export default function MyPhotos() {
   const loggedUser = useMemo(() => getLoggedUser(), []);
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
+  const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
+  const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
+
   const getPictures = () => {
     if (!loggedUser) return;
 
-    return getManyPictures(isAdmin(loggedUser.role) ? "" : loggedUser.id)
+    const orderByKey = sortValue.split(" ")[0];
+    const orderByDir = sortValue.split(" ")[1];
+
+    return getManyPictures({
+      ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
+      ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
+      orderBy: orderByKey,
+      orderByDir,
+    })
       .then(async (res) => {
         const pics: string[] = [];
-        const picsInfo: IPicture[] = [];
+        const picsInfo: IPictureWithPercentile[] = [];
         for (const pic of res.pictures) {
           try {
             const { url } = await getImage(pic.filepath);
@@ -50,6 +65,8 @@ export default function MyPhotos() {
         }
         setPics(pics);
         setPicsInfo(picsInfo);
+
+        if (!areTherePictures) setAreThePictures(pics.length > 0);
       })
       .finally(() => {
         setIsLoading(false);
@@ -58,7 +75,7 @@ export default function MyPhotos() {
 
   useEffect(() => {
     getPictures();
-  }, []);
+  }, [sortValue, filterSelectedOption]);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -117,6 +134,26 @@ export default function MyPhotos() {
     setIsOpenBan(false);
   };
 
+  const handleFilterSelect = (selectedOption: string) => {
+    setFilterSelectedOption((val) => {
+      if (val === selectedOption) {
+        return "";
+      }
+
+      return selectedOption;
+    });
+  };
+
+  const handleSortSelect = (selectedOption: string) => {
+    const orderByKey = selectedOption.split(" ")[0];
+
+    if (orderByKey === "reportedDate") {
+      setFilterSelectedOption("hasReport");
+    }
+
+    setSortValue(selectedOption);
+  };
+
   const EmptyPlaceholder = () => {
     return (
       <div className="flex flex-col items-center">
@@ -169,8 +206,8 @@ export default function MyPhotos() {
         }}
       />
       <div className="flow-root pb-4 md:pb-12 w-full md:w-[650px] lg:w-[900px] xl:w-[1150px] mx-auto">
-        {!isLoading && pics.length === 0 && <EmptyPlaceholder />}
-        {!isLoading && pics.length > 0 && (
+        {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
+        {loggedUser && !isLoading && (pics.length > 0 || areTherePictures) && (
           <>
             <input
               type="file"
@@ -179,10 +216,47 @@ export default function MyPhotos() {
               onChange={handleFileChange}
               className="hidden"
             />
-            <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={false}>
-              <span className="mr-3 text-xl !leading-5">+</span>
-              <span>Add Photo</span>
-            </Button>
+            <div className="flex gap-4">
+              <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={false}>
+                <span className="mr-3 text-xl !leading-5">+</span>
+                <span>Add Photo</span>
+              </Button>
+              {isAdmin(loggedUser.role) && (
+                <div className="w-40">
+                  <Select
+                    onChange={handleFilterSelect}
+                    options={[
+                      { id: "belongsToMe", label: "My Pictures" },
+                      { id: "hasReport", label: "Reported Pictures" },
+                      { id: "isBanned", label: "Banned Users" },
+                    ]}
+                    value={filterSelectedOption}
+                    title="Filters"
+                  />
+                </div>
+              )}
+              <div className="w-40">
+                <Select
+                  onChange={handleSortSelect}
+                  options={[
+                    { id: DEFAULT_SORT, label: "Score Highest to Lowest" },
+                    { id: "score asc", label: "Score Lowest to Highest" },
+                    { id: "numVotes desc", label: "Votes Highest to Lowest" },
+                    { id: "numVotes asc", label: "Votes Lowest to Highest" },
+                    { id: "createdAt desc", label: "Creation Date Highest to Lowest" },
+                    { id: "createdAt asc", label: "Creation Date Lowest to Highest" },
+                    ...(isAdmin(loggedUser.role)
+                      ? [
+                          { id: "reportedDate desc", label: "Reported Date Highest to Lowest" },
+                          { id: "reportedDate asc", label: "Reported Date Lowest to Highest" },
+                        ]
+                      : []),
+                  ]}
+                  value={sortValue}
+                  title="Sort"
+                />
+              </div>
+            </div>
             <div className="-mx-3">
               {pics.map((pic, index) => (
                 <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
@@ -218,7 +292,12 @@ export default function MyPhotos() {
                       </div>
                     </div>
                     <div className="p-3 font-semibold text-sm">
-                      <div>elo: {picsInfo[index].elo}</div>
+                      <div>
+                        score:{" "}
+                        {picsInfo[index].numVotes > 0
+                          ? (picsInfo[index].percentile / 10).toFixed(1)
+                          : "-"}
+                      </div>
                       <div>votes: {picsInfo[index].numVotes}</div>
                     </div>
                   </div>

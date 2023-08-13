@@ -1,81 +1,98 @@
-"use client";
-
-import { useState } from "react";
-import { Combobox } from "@headlessui/react";
+import { Listbox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import Label from "./Label";
-import { inputField } from "@/globalClasses";
+import { useState, useRef, useEffect } from "react";
 
-interface ISelect {
-  options: readonly string[];
-  label?: string;
-  value: string;
-  onChange: (value: any) => void;
-  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+interface IValue {
+  id: string;
+  label: string;
 }
 
-export default function Select({
-  options,
-  label,
-  value,
-  onChange: handleChange,
-  onKeyDown: handleKeyDown,
-}: ISelect) {
-  const [query, setQuery] = useState("");
+interface ISelect {
+  options: readonly IValue[];
+  title: string;
+  label?: string;
+  value: string | string[];
+  onChange: (value: any) => void;
+}
 
-  const filteredOptions =
-    query === ""
-      ? options
-      : options.filter((option) => {
-          return option.toLowerCase().includes(query.toLowerCase());
-        });
+export default function Select({ options, title, label, value, onChange: handleChange }: ISelect) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  const hasMultiple = Array.isArray(value);
+
+  const closeOpenMenus = (event: MouseEvent) => {
+    if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  const handleSelectOption = () => {
+    if (!hasMultiple) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", closeOpenMenus);
+
+    return () => {
+      document.removeEventListener("mousedown", closeOpenMenus);
+    };
+  }, []);
 
   return (
     <div>
       {label && <Label name={label} />}
-      <div className="mt-2 relative">
-        <Combobox value={value} onChange={handleChange}>
-          <div className="relative">
-            <Combobox.Input
-              onChange={(event) => setQuery(event.target.value)}
-              className={`pr-6 ${inputField}`}
-              onKeyDown={handleKeyDown}
-            />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon className="h-5 w-5 text-light-text" />
-            </Combobox.Button>
-          </div>
-          <Combobox.Options
-            className={`absolute mt-1 max-h-44 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm z-10 ${
-              filteredOptions.length === 0 ? "hidden" : ""
-            }`}
+      <div ref={selectRef} className={`${label ? "mt-2" : ""} relative`}>
+        <Listbox value={value} onChange={handleChange}>
+          <Listbox.Button
+            onClick={() => setIsOpen((val) => !val)}
+            className="relative w-full rounded-md pl-1.5 shadow-sm ring-1 ring-inset ring-normal-contour  sm:text-sm sm:leading-6 h-10"
           >
-            {filteredOptions.map((option) => (
-              <Combobox.Option
-                key={option}
-                value={option}
-                className={({ active }) =>
-                  `relative cursor-default select-none py-2 px-4 ${
-                    active ? "bg-primary-contrast text-primary-text" : ""
-                  }`
+            <div className="truncate flex">{title}</div>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronUpDownIcon className="h-5 w-5 text-light-text" />
+            </div>
+          </Listbox.Button>
+          {isOpen && (
+            <Listbox.Options
+              static
+              className={`absolute mt-1 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm z-10 ${
+                options.length === 0 || !isOpen ? "hidden" : ""
+              }`}
+            >
+              {options.map((option) => {
+                if (hasMultiple) {
+                  var isSelected = value.some((val) => option.id === val);
+                } else {
+                  var isSelected = value === option.id;
                 }
-              >
-                {({ selected }) => (
-                  <>
-                    <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
-                      {option}
+
+                return (
+                  <Listbox.Option
+                    key={option.id}
+                    value={option.id}
+                    onClick={handleSelectOption}
+                    className="relative cursor-pointer select-none py-2 pl-4 pr-9 hover:bg-primary-contrast hover:text-primary-text"
+                  >
+                    <span
+                      className={`block truncate ${isSelected ? "font-medium" : "font-normal"}`}
+                    >
+                      {option.label}
                     </span>
-                    {selected ? (
+                    {isSelected ? (
                       <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-primary-text">
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
                       </span>
                     ) : null}
-                  </>
-                )}
-              </Combobox.Option>
-            ))}
-          </Combobox.Options>
-        </Combobox>
+                  </Listbox.Option>
+                );
+              })}
+            </Listbox.Options>
+          )}
+        </Listbox>
       </div>
     </div>
   );

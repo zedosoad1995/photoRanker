@@ -21,7 +21,7 @@ export default function Menu({ children, items }: IMenu) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <HMenu.Items className="absolute bg-white rounded-md right-0 origin-top-right w-max shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+        <HMenu.Items className="absolute bg-white py-1 rounded-md right-0 origin-top-right w-max shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
           {items.map((item) => (
             <HMenu.Item
               as="div"
@@ -31,7 +31,11 @@ export default function Menu({ children, items }: IMenu) {
               className={`text-sm ${item.disabled ? "opacity-40 cursor-default" : ""}`}
             >
               {({ active }) => (
-                <div className={`${active ? "bg-light-contour" : ""} px-4 py-2`}>{item.label}</div>
+                <div
+                  className={`${active ? "bg-primary-contrast text-primary-text" : ""} px-4 py-2`}
+                >
+                  {item.label}
+                </div>
               )}
             </HMenu.Item>
           ))}
