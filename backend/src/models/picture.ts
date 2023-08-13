@@ -212,6 +212,7 @@ function getPicturesWithPercentile(
 
     if (hasReport !== undefined) {
       whereQuery.push(`report.id IS ${hasReport ? "NOT NULL" : "NULL"}`);
+      groupByQuery = `GROUP BY pic.id`;
       joinQuery.push(REPORT_LEFT_JOIN);
     }
 

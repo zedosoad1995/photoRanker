@@ -41,20 +41,17 @@ export default function MyPhotos() {
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
 
-  const getPictures = (
-    queryParams: {
-      hasReport?: boolean;
-      belongsToMe?: boolean;
-      isBanned?: boolean;
-      orderBy?: string;
-      orderByDir?: string;
-    } = {}
-  ) => {
+  const getPictures = () => {
     if (!loggedUser) return;
+
+    const orderByKey = sortValue.split(" ")[0];
+    const orderByDir = sortValue.split(" ")[1];
 
     return getManyPictures({
       ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
-      ...queryParams,
+      ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
+      orderBy: orderByKey,
+      orderByDir,
     })
       .then(async (res) => {
         const pics: string[] = [];
@@ -78,7 +75,7 @@ export default function MyPhotos() {
 
   useEffect(() => {
     getPictures();
-  }, []);
+  }, [sortValue, filterSelectedOption]);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -140,28 +137,21 @@ export default function MyPhotos() {
   const handleFilterSelect = (selectedOption: string) => {
     setFilterSelectedOption((val) => {
       if (val === selectedOption) {
-        getPictures();
         return "";
       }
 
-      getPictures({ [selectedOption]: true });
       return selectedOption;
     });
   };
 
   const handleSortSelect = (selectedOption: string) => {
     const orderByKey = selectedOption.split(" ")[0];
-    const orderByDir = selectedOption.split(" ")[1];
 
     if (orderByKey === "reportedDate") {
       setFilterSelectedOption("hasReport");
-      setSortValue(selectedOption);
-      getPictures({ hasReport: true, orderBy: orderByKey, orderByDir });
-      return;
     }
 
     setSortValue(selectedOption);
-    getPictures({ orderBy: orderByKey, orderByDir });
   };
 
   const EmptyPlaceholder = () => {
