@@ -5,40 +5,47 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { removeFolders } from "@/helpers/file";
-import { isAdmin, isRegular } from "@/helpers/role";
+import { isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
-import { Prisma, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { StorageInteractor } from "@/types/storageInteractor";
+import _ from "underscore";
+import { parseBoolean, parseOrderBy } from "@/helpers/query";
+import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
   const userId = req.query.userId as string | undefined;
+  const hasReport = parseBoolean(req.query.hasReport as string | undefined);
+  const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
+  const isBanned = parseBoolean(req.query.isBanned as string | undefined);
+  const orderBy = req.query.orderBy as string | undefined;
+  const orderByDir = req.query.orderByDir as string | undefined;
+
+  const orderByQuery = parseOrderBy({
+    orderBy: orderBy as string | undefined,
+    orderByDir: orderByDir as ORDER_BY_DIR_OPTIONS_TYPE | undefined,
+  });
 
   if (userId && isRegular(loggedUser.role) && loggedUser.id !== userId) {
     throw new ForbiddenError("User cannot use this endpoint to access pictures from other users");
   }
 
-  const whereQuery: Prisma.PictureWhereInput = {};
-  if (userId) {
-    whereQuery.userId = userId;
-  } else if (isRegular(loggedUser.role)) {
-    whereQuery.userId = loggedUser.id;
+  if (belongsToMe !== undefined && userId !== undefined) {
+    throw new BadRequestError("Cannot call belongsToMe and userId simulataneously");
   }
 
-  if (isAdmin(loggedUser.role)) {
-    whereQuery.user = {
-      isBanned: false,
-    };
-  }
-
-  const pictures = await PictureModel.findMany({
-    where: whereQuery,
-    orderBy: {
-      elo: "desc",
-    },
-  });
+  const pictures = await PictureModel.getPicturesWithPercentile(
+    userId,
+    loggedUser.id,
+    loggedUser.role,
+    hasReport,
+    belongsToMe,
+    isBanned,
+    orderByQuery
+  );
 
   res.status(200).json({
     pictures,
@@ -167,29 +174,32 @@ export const uploadOne = async (req: Request, res: Response) => {
   });
 };
 
-export const deleteOne = async (req: Request, res: Response) => {
-  const pictureId = req.params.pictureId;
-  const loggedUser = req.loggedUser as User;
+export const deleteOne =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const pictureId = req.params.pictureId;
+    const loggedUser = req.loggedUser as User;
 
-  const existingPicture = await PictureModel.findUnique({
-    where: {
-      id: pictureId,
-    },
-  });
+    const existingPicture = await PictureModel.findUnique({
+      where: {
+        id: pictureId,
+      },
+    });
 
-  if (!existingPicture) {
-    throw new NotFoundError("Picture does not exist");
-  }
+    if (!existingPicture) {
+      throw new NotFoundError("Picture does not exist");
+    }
 
-  if (isRegular(loggedUser.role) && existingPicture.userId !== loggedUser.id) {
-    throw new ForbiddenError("User cannot delete this picture");
-  }
+    if (isRegular(loggedUser.role) && existingPicture.userId !== loggedUser.id) {
+      throw new ForbiddenError("User cannot delete this picture");
+    }
 
-  await PictureModel.delete({
-    where: {
-      id: pictureId,
-    },
-  });
+    const deletePicture = await PictureModel.delete({
+      where: {
+        id: pictureId,
+      },
+    });
 
-  res.sendStatus(204);
-};
+    await storageInteractor.deleteImage(deletePicture.filepath);
+
+    res.sendStatus(204);
+  };

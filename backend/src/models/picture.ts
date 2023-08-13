@@ -3,6 +3,8 @@ import { prisma } from ".";
 import { Picture, Prisma } from "@prisma/client";
 import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
+import { isAdmin, isRegular } from "@/helpers/role";
+import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
@@ -154,14 +156,96 @@ function getPicturesWithClosestElos(
       INNER JOIN "User" AS usr ON pic."userId" = usr.id
       WHERE pic."userId" != ${loggedUserId} AND pic.id != ${
       opponentPicture.id
-    } AND usr."isBanned" IS false
+    } AND usr."isBanned" = FALSE
       ORDER BY abs_diff ASC
       LIMIT ${limit};`
   );
+}
+
+function getPicturesWithPercentile(
+  userId: string | undefined,
+  loggedUserId: string,
+  role: string,
+  hasReport: boolean | undefined,
+  belongsToMe: boolean | undefined,
+  isBanned: boolean | undefined,
+  orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
+): Promise<(Picture & { percentile: number })[]> {
+  const whereQuery: (boolean | string)[] = [true];
+  const joinQuery: string[] = [];
+  let groupByQuery = "";
+  let orderByField = "pic.elo";
+  let orderByDir = "DESC";
+  const orderKey = Object.keys(orderByObj)[0];
+  const orderValue = Object.values(orderByObj)[0];
+
+  const USER_JOIN = `
+      INNER JOIN "User" as usr
+        ON pic."userId" = usr.id`;
+
+  // TODO: have inner and left join. Use inner instead of where not null (performance gain?)
+  const REPORT_LEFT_JOIN = `
+      LEFT JOIN "Report" as report
+        ON pic.id = report."pictureId"`;
+
+  // Filtering
+  if (userId) {
+    whereQuery.push(`pic."userId" = '${userId}'`);
+  } else if (isRegular(role)) {
+    whereQuery.push(`pic."userId" = '${loggedUserId}'`);
+  }
+
+  // Sorting
+  if (["score", "numVotes", "createdAt"].includes(orderKey)) {
+    if (orderKey === "score") {
+      orderByField = `pic.elo`;
+    } else {
+      orderByField = `pic."${orderKey}"`;
+    }
+    orderByDir = orderValue;
+  }
+
+  if (isAdmin(role)) {
+    // Filtering
+    whereQuery.push(`usr."isBanned" IS ${isBanned ? "TRUE" : "FALSE"}`);
+    joinQuery.push(USER_JOIN);
+
+    if (hasReport !== undefined) {
+      whereQuery.push(`report.id IS ${hasReport ? "NOT NULL" : "NULL"}`);
+      groupByQuery = `GROUP BY pic.id`;
+      joinQuery.push(REPORT_LEFT_JOIN);
+    }
+
+    if (belongsToMe !== undefined) {
+      whereQuery.push(`pic."userId" ${belongsToMe ? "=" : "!="} '${loggedUserId}'`);
+    }
+
+    // Sorting
+    if (["reportedDate"].includes(orderKey)) {
+      joinQuery.push(REPORT_LEFT_JOIN);
+      whereQuery.push(`report.id IS NOT NULL`);
+      groupByQuery = `GROUP BY pic.id`;
+      orderByField = `MAX(report."createdAt")`;
+      orderByDir = orderValue;
+    }
+  }
+
+  return prisma.$queryRawUnsafe(`
+      SELECT 
+        pic.*,
+        100 * PERCENT_RANK() OVER (ORDER BY pic.elo) AS percentile
+      FROM 
+        "Picture" AS pic
+      ${[...new Set(joinQuery)].join("\n")} 
+      WHERE 
+        ${whereQuery.join(" AND ")}
+      ${groupByQuery}
+      ORDER BY ${orderByField} ${orderByDir};`);
 }
 
 export const PictureModel = {
   ...prisma.picture,
   getRandomMatch,
   getMatchWithClosestEloStrategy,
+  getPicturesWithPercentile,
 };

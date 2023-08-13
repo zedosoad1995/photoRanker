@@ -29,8 +29,24 @@ export const signIn = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const user = await UserModel.findUnique({ where: { email } });
-  if (!user || !user.password) {
+  if (!user) {
     throw new UnauthorizedError("Invalid credentials", INVALID_CREDENTIALS);
+  }
+
+  if (user.password === null) {
+    if (user.googleId !== null) {
+      throw new UnauthorizedError(
+        "You already have an account with google. Please log in with that method",
+        INVALID_LOGIN_METHOD_GOOGLE
+      );
+    } else if (user.facebookId !== null) {
+      throw new UnauthorizedError(
+        "You already have an account with facebook. Please log in with that method",
+        INVALID_LOGIN_METHOD_FACEBOOK
+      );
+    } else {
+      throw new UnauthorizedError("Invalid credentials", INVALID_CREDENTIALS);
+    }
   }
 
   const isPasswordMatch = await comparePasswords(password, user.password);

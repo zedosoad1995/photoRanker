@@ -1,5 +1,5 @@
 import { COUNTRIES, ETHNICITY, GENDER } from "@shared/constants/user";
-import Select from "@/Components/Select";
+import Select from "@/Components/AutoCompleteSelect";
 import DateField from "@/Components/DateField";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

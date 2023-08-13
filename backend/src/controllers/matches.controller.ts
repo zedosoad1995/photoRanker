@@ -10,7 +10,7 @@ export const createOne = async (req: Request, res: Response) => {
   const match = await MatchModel.upsert({
     update: {
       pictures: {
-        connect: [
+        set: [
           {
             id: picture1.id,
           },

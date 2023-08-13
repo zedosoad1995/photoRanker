@@ -15,6 +15,8 @@ import { cookieOptions } from "@/constants/cookies";
 import { prisma } from "@/models";
 import { BannedUserModel } from "@/models/bannerUser";
 import { BANNED_ACCOUNT } from "@shared/constants/errorCodes";
+import { StorageInteractor } from "@/types/storageInteractor";
+import { PictureModel } from "@/models/picture";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -189,32 +191,54 @@ export const checkEmailExists = async (req: Request, res: Response) => {
   });
 };
 
-export const deleteMe = async (req: Request, res: Response) => {
-  const loggedUser = req.loggedUser!;
+export const deleteMe =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const loggedUser = req.loggedUser!;
 
-  await UserModel.delete({
-    where: { id: loggedUser.id },
-  });
+    const pictures = await PictureModel.findMany({
+      where: {
+        userId: loggedUser.id,
+      },
+    });
 
-  res.clearCookie("session");
+    await UserModel.delete({
+      where: { id: loggedUser.id },
+    });
 
-  res.status(204).send();
-};
+    res.clearCookie("session");
 
-export const deleteOne = async (req: Request, res: Response) => {
-  const loggedUser = req.loggedUser!;
-  const userId = req.params.userId;
+    for (const picture of pictures) {
+      await storageInteractor.deleteImage(picture.filepath);
+    }
 
-  if (userId === loggedUser.id && isAdmin(loggedUser.role)) {
-    throw new ForbiddenError("Admin user cannot delete itseld");
-  }
+    res.status(204).send();
+  };
 
-  await UserModel.delete({
-    where: { id: userId },
-  });
+export const deleteOne =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const loggedUser = req.loggedUser!;
+    const userId = req.params.userId;
 
-  res.status(204).send();
-};
+    if (userId === loggedUser.id && isAdmin(loggedUser.role)) {
+      throw new ForbiddenError("Admin user cannot delete itseld");
+    }
+
+    const pictures = await PictureModel.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    await UserModel.delete({
+      where: { id: userId },
+    });
+
+    for (const picture of pictures) {
+      await storageInteractor.deleteImage(picture.filepath);
+    }
+
+    res.status(204).send();
+  };
 
 export const ban = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;

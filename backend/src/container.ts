@@ -12,4 +12,4 @@ const s3 = new S3Client({
 
 export const localStorageInteractor = new LocalStorageInteractor();
 export const s3Interactor = new S3Interactor(s3);
-export const mainStorageInteractor = s3Interactor;
+export const mainStorageInteractor = localStorageInteractor;
