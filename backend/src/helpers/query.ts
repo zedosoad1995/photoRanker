@@ -1,11 +1,11 @@
-import { ORDER_BY_DIR } from "@/constants/query";
+import { ORDER_BY_DIR, ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 
 export const parseOrderBy = ({
   orderBy,
   orderByDir = ORDER_BY_DIR.ASC,
 }: {
   orderBy?: string;
-  orderByDir?: string;
+  orderByDir?: ORDER_BY_DIR_OPTIONS_TYPE;
 }) => {
   if (!orderBy) return {};
 

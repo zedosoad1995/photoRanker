@@ -12,7 +12,7 @@ import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin, isRegular } from "@/Utils/role";
 import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
-import Select from "@/Components/SelectMultiple";
+import Select from "@/Components/Select";
 
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);

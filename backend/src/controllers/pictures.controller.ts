@@ -12,7 +12,8 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { StorageInteractor } from "@/types/storageInteractor";
 import _ from "underscore";
-import { parseBoolean } from "@/helpers/query";
+import { parseBoolean, parseOrderBy } from "@/helpers/query";
+import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
@@ -20,6 +21,13 @@ export const getMany = async (req: Request, res: Response) => {
   const hasReport = parseBoolean(req.query.hasReport as string | undefined);
   const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
   const isBanned = parseBoolean(req.query.isBanned as string | undefined);
+  const orderBy = req.query.orderBy as string | undefined;
+  const orderByDir = req.query.orderByDir as string | undefined;
+
+  const orderByQuery = parseOrderBy({
+    orderBy: orderBy as string | undefined,
+    orderByDir: orderByDir as ORDER_BY_DIR_OPTIONS_TYPE | undefined,
+  });
 
   if (userId && isRegular(loggedUser.role) && loggedUser.id !== userId) {
     throw new ForbiddenError("User cannot use this endpoint to access pictures from other users");
@@ -35,7 +43,8 @@ export const getMany = async (req: Request, res: Response) => {
     loggedUser.role,
     hasReport,
     belongsToMe,
-    isBanned
+    isBanned,
+    orderByQuery
   );
 
   res.status(200).json({

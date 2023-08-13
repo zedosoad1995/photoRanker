@@ -8,7 +8,7 @@ interface IValue {
   label: string;
 }
 
-interface ISelectMultiple {
+interface ISelect {
   options: readonly IValue[];
   title: string;
   label?: string;
@@ -16,13 +16,7 @@ interface ISelectMultiple {
   onChange: (value: any) => void;
 }
 
-export default function SelectMultiple({
-  options,
-  title,
-  label,
-  value,
-  onChange: handleChange,
-}: ISelectMultiple) {
+export default function Select({ options, title, label, value, onChange: handleChange }: ISelect) {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 

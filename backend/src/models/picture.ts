@@ -4,6 +4,7 @@ import { Picture, Prisma } from "@prisma/client";
 import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
+import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
@@ -167,10 +168,15 @@ function getPicturesWithPercentile(
   role: string,
   hasReport: boolean | undefined,
   belongsToMe: boolean | undefined,
-  isBanned: boolean | undefined
+  isBanned: boolean | undefined,
+  orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
 ): Promise<(Picture & { percentile: number })[]> {
   const whereQuery: (boolean | string)[] = [true];
   const joinQuery: string[] = [];
+  let orderByField = "pic.elo";
+  let orderByDir = "DESC";
+  const orderKey = Object.keys(orderByObj)[0];
+  const orderValue = Object.values(orderByObj)[0];
 
   const USER_JOIN = `
       INNER JOIN "User" as usr
@@ -180,13 +186,25 @@ function getPicturesWithPercentile(
       LEFT JOIN "Report" as report
         ON pic.id = report."pictureId"`;
 
+  // Filtering
   if (userId) {
     whereQuery.push(`pic."userId" = '${userId}'`);
   } else if (isRegular(role)) {
     whereQuery.push(`pic."userId" = '${loggedUserId}'`);
   }
 
+  // Sorting
+  if (["score", "numVotes", "createdAt"].includes(orderKey)) {
+    if (orderKey === "score") {
+      orderByField = `pic.elo`;
+    } else {
+      orderByField = `pic.${orderKey}`;
+    }
+    orderByDir = orderValue;
+  }
+
   if (isAdmin(role)) {
+    // Filtering
     whereQuery.push(`usr."isBanned" IS ${isBanned ? "TRUE" : "FALSE"}`);
     joinQuery.push(USER_JOIN);
 
@@ -197,6 +215,13 @@ function getPicturesWithPercentile(
 
     if (belongsToMe !== undefined) {
       whereQuery.push(`pic."userId" ${belongsToMe ? "=" : "!="} '${loggedUserId}'`);
+    }
+
+    // Sorting
+    if (["reportedDate"].includes(orderKey)) {
+      joinQuery.push(REPORT_LEFT_JOIN);
+      orderByField = `report.createdAt`;
+      orderByDir = orderValue;
     }
   }
 
@@ -209,7 +234,7 @@ function getPicturesWithPercentile(
       ${[...new Set(joinQuery)].join("\n")} 
       WHERE 
         ${whereQuery.join(" AND ")}
-      ORDER BY pic.elo DESC;`);
+      ORDER BY ${orderByField} ${orderByDir};`);
 }
 
 export const PictureModel = {
