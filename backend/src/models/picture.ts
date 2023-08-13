@@ -184,13 +184,17 @@ function getPicturesWithPercentile(
     ", pic_perc.percentile";
 
   const USER_JOIN = `
-      INNER JOIN "User" as usr
-        ON pic."userId" = usr.id`;
+    INNER JOIN "User" as usr
+    ON pic."userId" = usr.id`;
 
   // TODO: have inner and left join. Use inner instead of where not null (performance gain?)
   const REPORT_LEFT_JOIN = `
-      LEFT JOIN "Report" as report
-        ON pic.id = report."pictureId"`;
+    LEFT JOIN "Report" as report
+    ON pic.id = report."pictureId"`;
+
+  const NO_BANNED_USERS_WHERE = `usr."isBanned" is FALSE`;
+  let joinInnerQuery: string[] = [USER_JOIN];
+  let whereInnerQuery: string[] = [`pic."numVotes" > 0`, NO_BANNED_USERS_WHERE];
 
   // Filtering
   if (userId) {
@@ -213,6 +217,11 @@ function getPicturesWithPercentile(
     // Filtering
     whereQuery.push(`usr."isBanned" IS ${isBanned ? "TRUE" : "FALSE"}`);
     joinQuery.push(USER_JOIN);
+
+    if (isBanned) {
+      joinInnerQuery = joinInnerQuery.filter((q) => q != USER_JOIN);
+      whereInnerQuery = whereInnerQuery.filter((q) => q != NO_BANNED_USERS_WHERE);
+    }
 
     if (hasReport !== undefined) {
       whereQuery.push(`report.id IS ${hasReport ? "NOT NULL" : "NULL"}`);
@@ -243,7 +252,9 @@ function getPicturesWithPercentile(
           100 * PERCENT_RANK() OVER (ORDER BY pic.elo) AS percentile
         FROM 
           "Picture" AS pic
-        WHERE pic."numVotes" > 0
+        ${joinInnerQuery}
+        WHERE 
+          ${whereInnerQuery.join(" AND ")}
       ) AS pic_perc
         ON pic.id = pic_perc.id
       ${[...new Set(joinQuery)].join("\n")} 
