@@ -7,6 +7,8 @@ export const getManyPictures = async (
     hasReport?: boolean;
     belongsToMe?: boolean;
     isBanned?: boolean;
+    orderBy?: string;
+    orderByDir?: string;
   } = {}
 ): Promise<IGetManyPictures> => {
   return api.get(

@@ -14,6 +14,8 @@ import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
 import Select from "@/Components/Select";
 
+const DEFAULT_SORT = "score desc";
+
 export default function MyPhotos() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -37,12 +39,15 @@ export default function MyPhotos() {
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
+  const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
 
   const getPictures = (
     queryParams: {
       hasReport?: boolean;
       belongsToMe?: boolean;
       isBanned?: boolean;
+      orderBy?: string;
+      orderByDir?: string;
     } = {}
   ) => {
     if (!loggedUser) return;
@@ -144,6 +149,21 @@ export default function MyPhotos() {
     });
   };
 
+  const handleSortSelect = (selectedOption: string) => {
+    const orderByKey = selectedOption.split(" ")[0];
+    const orderByDir = selectedOption.split(" ")[1];
+
+    if (orderByKey === "reportedDate") {
+      setFilterSelectedOption("hasReport");
+      setSortValue(selectedOption);
+      getPictures({ hasReport: true, orderBy: orderByKey, orderByDir });
+      return;
+    }
+
+    setSortValue(selectedOption);
+    getPictures({ orderBy: orderByKey, orderByDir });
+  };
+
   const EmptyPlaceholder = () => {
     return (
       <div className="flex flex-col items-center">
@@ -197,7 +217,7 @@ export default function MyPhotos() {
       />
       <div className="flow-root pb-4 md:pb-12 w-full md:w-[650px] lg:w-[900px] xl:w-[1150px] mx-auto">
         {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
-        {!isLoading && (pics.length > 0 || areTherePictures) && (
+        {loggedUser && !isLoading && (pics.length > 0 || areTherePictures) && (
           <>
             <input
               type="file"
@@ -211,8 +231,8 @@ export default function MyPhotos() {
                 <span className="mr-3 text-xl !leading-5">+</span>
                 <span>Add Photo</span>
               </Button>
-              {loggedUser && isAdmin(loggedUser.role) && (
-                <div className="w-48">
+              {isAdmin(loggedUser.role) && (
+                <div className="w-40">
                   <Select
                     onChange={handleFilterSelect}
                     options={[
@@ -225,6 +245,27 @@ export default function MyPhotos() {
                   />
                 </div>
               )}
+              <div className="w-40">
+                <Select
+                  onChange={handleSortSelect}
+                  options={[
+                    { id: DEFAULT_SORT, label: "Score Highest to Lowest" },
+                    { id: "score asc", label: "Score Lowest to Highest" },
+                    { id: "numVotes desc", label: "Votes Highest to Lowest" },
+                    { id: "numVotes asc", label: "Votes Lowest to Highest" },
+                    { id: "createdAt desc", label: "Creation Date Highest to Lowest" },
+                    { id: "createdAt asc", label: "Creation Date Lowest to Highest" },
+                    ...(isAdmin(loggedUser.role)
+                      ? [
+                          { id: "reportedDate desc", label: "Reported Date Highest to Lowest" },
+                          { id: "reportedDate asc", label: "Reported Date Lowest to Highest" },
+                        ]
+                      : []),
+                  ]}
+                  value={sortValue}
+                  title="Sort"
+                />
+              </div>
             </div>
             <div className="-mx-3">
               {pics.map((pic, index) => (

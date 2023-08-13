@@ -173,6 +173,7 @@ function getPicturesWithPercentile(
 ): Promise<(Picture & { percentile: number })[]> {
   const whereQuery: (boolean | string)[] = [true];
   const joinQuery: string[] = [];
+  let groupByQuery = "";
   let orderByField = "pic.elo";
   let orderByDir = "DESC";
   const orderKey = Object.keys(orderByObj)[0];
@@ -182,6 +183,7 @@ function getPicturesWithPercentile(
       INNER JOIN "User" as usr
         ON pic."userId" = usr.id`;
 
+  // TODO: have inner and left join. Use inner instead of where not null (performance gain?)
   const REPORT_LEFT_JOIN = `
       LEFT JOIN "Report" as report
         ON pic.id = report."pictureId"`;
@@ -198,7 +200,7 @@ function getPicturesWithPercentile(
     if (orderKey === "score") {
       orderByField = `pic.elo`;
     } else {
-      orderByField = `pic.${orderKey}`;
+      orderByField = `pic."${orderKey}"`;
     }
     orderByDir = orderValue;
   }
@@ -220,7 +222,9 @@ function getPicturesWithPercentile(
     // Sorting
     if (["reportedDate"].includes(orderKey)) {
       joinQuery.push(REPORT_LEFT_JOIN);
-      orderByField = `report.createdAt`;
+      whereQuery.push(`report.id IS NOT NULL`);
+      groupByQuery = `GROUP BY pic.id`;
+      orderByField = `MAX(report."createdAt")`;
       orderByDir = orderValue;
     }
   }
@@ -234,6 +238,7 @@ function getPicturesWithPercentile(
       ${[...new Set(joinQuery)].join("\n")} 
       WHERE 
         ${whereQuery.join(" AND ")}
+      ${groupByQuery}
       ORDER BY ${orderByField} ${orderByDir};`);
 }
 
