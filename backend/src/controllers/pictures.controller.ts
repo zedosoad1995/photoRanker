@@ -1,5 +1,5 @@
 import { PICTURE } from "@/constants/messages";
-import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
@@ -14,6 +14,7 @@ import { StorageInteractor } from "@/types/storageInteractor";
 import _ from "underscore";
 import { parseBoolean, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
+import { RATING_INI } from "@/constants/rating";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
@@ -160,7 +161,7 @@ export const uploadOne = async (req: Request, res: Response) => {
   const picture = await PictureModel.create({
     data: {
       filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
-      elo: ELO_INIT,
+      rating: RATING_INI,
       user: {
         connect: {
           id: req.loggedUser?.id,

@@ -47,9 +47,9 @@ enum Gender {
 model Picture {
   id              String   @id @default(uuid())
   filepath        String
-  rating          Float
-  ratingDeviation Float
-  volatility      Float
+  rating          Float    @default(0)
+  ratingDeviation Float    @default(0)
+  volatility      Float    @default(0)
   numVotes        Int      @default(0)
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String

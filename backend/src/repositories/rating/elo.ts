@@ -2,15 +2,19 @@ import { ELO_UPDATE_FACTOR } from "@/constants/rating";
 import { RatingRepo } from "@/types/ratingRepo";
 import { SENSITIVITY } from "@shared/constants/rating";
 
-export class Elo implements RatingRepo<number> {
-  public calculateNewRating(p1: number, p2: number, isWin: boolean) {
+interface IPlayer {
+  rating: number;
+}
+
+export class Elo implements RatingRepo {
+  public calculateNewRating({ rating: p1 }: IPlayer, { rating: p2 }: IPlayer, isWin: boolean) {
     const outcome = Number(isWin);
 
     const expectedOutcome = this.getWinProbability(p1, p2);
 
     const newRating = p1 + ELO_UPDATE_FACTOR * (outcome - expectedOutcome);
 
-    return newRating;
+    return { rating: newRating };
   }
 
   public getWinProbability(p1: number, p2: number) {

@@ -134,8 +134,8 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
   }
 
   const selectedIdx = randomWeightedClosestElo(
-    pictures.map((p) => p.elo),
-    picture1.elo
+    pictures.map((p) => p.rating),
+    picture1.rating
   );
 
   const picture2 = pictures[selectedIdx];
@@ -151,7 +151,7 @@ function getPicturesWithClosestElos(
   return prisma.$queryRaw(
     Prisma.sql`
       SELECT pic.*,
-        ABS(${opponentPicture.elo.toFixed(2)}::numeric  - pic.elo) as abs_diff
+        ABS(${opponentPicture.rating.toFixed(2)}::numeric  - pic.rating) as abs_diff
       FROM "Picture" AS pic
       INNER JOIN "User" AS usr ON pic."userId" = usr.id
       WHERE pic."userId" != ${loggedUserId} AND pic.id != ${
@@ -175,7 +175,7 @@ function getPicturesWithPercentile(
   const whereQuery: (boolean | string)[] = [true];
   const joinQuery: string[] = [];
   let groupByQuery = "";
-  let orderByField = "pic.elo";
+  let orderByField = "pic.rating";
   let orderByDir = "DESC";
   const orderKey = Object.keys(orderByObj)[0];
   const orderValue = Object.values(orderByObj)[0];
@@ -207,7 +207,7 @@ function getPicturesWithPercentile(
   // Sorting
   if (["score", "numVotes", "createdAt"].includes(orderKey)) {
     if (orderKey === "score") {
-      orderByField = `pic.elo`;
+      orderByField = `pic.rating`;
     } else {
       orderByField = `pic."${orderKey}"`;
     }
@@ -250,7 +250,7 @@ function getPicturesWithPercentile(
       LEFT JOIN (
         SELECT 
           pic.id,
-          100 * PERCENT_RANK() OVER (ORDER BY pic.elo) AS percentile
+          100 * PERCENT_RANK() OVER (ORDER BY pic.rating) AS percentile
         FROM 
           "Picture" AS pic
         ${joinInnerQuery}

@@ -3,11 +3,11 @@ import { RatingRepo } from "@/types/ratingRepo";
 
 interface IPlayer {
   rating: number;
-  rd: number;
-  vol: number;
+  ratingDeviation: number;
+  volatility: number;
 }
 
-export class Glicko2 implements RatingRepo<IPlayer> {
+export class Glicko2 implements RatingRepo {
   public calculateNewRating(p1: IPlayer, p2: IPlayer, isWin: boolean) {
     const mu = this.getNormalizedRating(p1);
     const muj = this.getNormalizedRating(p2);
@@ -15,19 +15,19 @@ export class Glicko2 implements RatingRepo<IPlayer> {
     const rdj = this.getNormalizedVolatility(p2);
 
     const gj = this.getG(rdj);
-    const winProb = this.getWinProb(mu, muj, rdj, gj);
-    const v = this.getV(winProb, mu, muj, rdj, gj);
+    const winProb = this.getWinProb(mu, muj, gj);
+    const v = this.getV(winProb, gj);
 
     const delta = this.getDelta(isWin, winProb, gj, v);
 
-    const newVol = this.getNewVolatility(delta, p1.vol, rd, v);
+    const newVol = this.getNewVolatility(delta, p1.volatility, rd, v);
     const newNormRd = this.getNewNormalizedRd(rd, newVol, v);
     const newMu = this.getNewNormalizedRating(mu, newNormRd, gj, isWin, winProb);
 
     return {
       rating: GLICKO_SCALE * newMu + RATING_INI,
-      rd: GLICKO_SCALE * newNormRd,
-      vol: newVol,
+      ratingDeviation: GLICKO_SCALE * newNormRd,
+      volatility: newVol,
     };
   }
 
@@ -37,7 +37,7 @@ export class Glicko2 implements RatingRepo<IPlayer> {
     const rdj = this.getNormalizedVolatility(p2);
 
     const gj = this.getG(rdj);
-    return this.getWinProb(mu, muj, rdj, gj);
+    return this.getWinProb(mu, muj, gj);
   }
 
   private getNormalizedRating = (p: IPlayer) => {
@@ -45,18 +45,18 @@ export class Glicko2 implements RatingRepo<IPlayer> {
   };
 
   private getNormalizedVolatility = (p: IPlayer) => {
-    return p.rd / GLICKO_SCALE;
+    return p.ratingDeviation / GLICKO_SCALE;
   };
 
   private getG = (vol: number) => {
     return 1 / Math.sqrt(1 + (3 * vol * vol) / (Math.PI * Math.PI));
   };
 
-  private getWinProb = (mu: number, muj: number, volj: number, gj: number) => {
+  private getWinProb = (mu: number, muj: number, gj: number) => {
     return 1 / (1 + Math.exp(-gj * (mu - muj)));
   };
 
-  private getV = (winProb: number, mu: number, muj: number, volj: number, gj: number) => {
+  private getV = (winProb: number, gj: number) => {
     const lossProb = 1 - winProb;
 
     return 1 / (gj * gj * winProb * lossProb);
