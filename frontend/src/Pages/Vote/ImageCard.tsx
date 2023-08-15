@@ -41,7 +41,7 @@ export const ImageCard = ({
         setIsImageHovered(false);
       }}
     >
-      {hasVoted ? `${prob}%` : ""}
+      {hasVoted ? `${prob?.toFixed(1)}%` : ""}
     </div>
   );
 };

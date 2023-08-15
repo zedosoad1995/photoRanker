@@ -272,7 +272,7 @@ function getAllColumnNames() {
     .map((f) => f.name);
 }
 
-function omitRatingParams(pic: Picture & Record<string, any>) {
+function omitRatingParams(pic: Partial<Picture> & Record<string, any>) {
   return _.omit(pic, "rating", "ratingDeviation", "volatility");
 }
 

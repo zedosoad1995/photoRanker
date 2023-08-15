@@ -4,12 +4,12 @@ import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/AutoCompleteSelect";
 import { AGE_OPTIONS } from "@/Constants/user";
-import { getLoggedUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
 import { MIN_AGE } from "@shared/constants/user";
+import { useAuth } from "@/Contexts/auth";
 
 interface IUploadPhotoModal {
   image: { image: string; width: number; height: number } | null;
@@ -26,14 +26,15 @@ export default function UploadPhotoModal({
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
+  const { user: loggedUser } = useAuth();
+
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [age, setAge] = useState(() => {
-    const user = getLoggedUser();
-    if (!user?.dateOfBirth) return String(MIN_AGE);
+    if (!loggedUser?.dateOfBirth) return String(MIN_AGE);
 
-    return calculateAge(user.dateOfBirth).toString();
+    return calculateAge(loggedUser.dateOfBirth).toString();
   });
 
   const handleUpload = async () => {

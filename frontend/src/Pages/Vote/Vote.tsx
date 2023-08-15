@@ -1,5 +1,5 @@
 import { getNewMatch } from "@/Services/match";
-import { getImage, getPicture } from "@/Services/picture";
+import { getImage } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
 import Button from "@/Components/Button";
@@ -30,15 +30,8 @@ export default function Vote() {
       setPic2(url);
     });
 
-    /* const picInfo1 = await getPicture(match.pictures[0].id);
-    const picInfo2 = await getPicture(match.pictures[1].id); */
-
-    /* const prob1 = Math.round(
-      100 / (1 + Math.pow(10, (picInfo2.picture.r - picInfo1.picture.elo) / SENSITIVITY))
-    );
-    const prob2 = 100 - prob1; */
-    const prob1 = 50;
-    const prob2 = 50;
+    const prob1 = match.winProbability * 100;
+    const prob2 = 100 - prob1;
 
     setProb1(prob1);
     setProb2(prob2);

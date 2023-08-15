@@ -14,7 +14,7 @@ import { StorageInteractor } from "@/types/storageInteractor";
 import _ from "underscore";
 import { parseBoolean, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
-import { RATING_INI } from "@/constants/rating";
+import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
@@ -164,6 +164,8 @@ export const uploadOne = async (req: Request, res: Response) => {
     data: {
       filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
       rating: RATING_INI,
+      ratingDeviation: RD_INI,
+      volatility: VOLATILITY_INI,
       user: {
         connect: {
           id: req.loggedUser?.id,

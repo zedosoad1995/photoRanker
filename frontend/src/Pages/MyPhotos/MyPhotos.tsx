@@ -1,22 +1,24 @@
 import Button from "@/Components/Button";
 import { getImage, getManyPictures } from "@/Services/picture";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon, EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import DeletePhotoModal from "./DeletePhotoModal";
-import { getLoggedUser } from "@/Utils/user";
 import { toast } from "react-hot-toast";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin, isRegular } from "@/Utils/role";
 import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
 import Select from "@/Components/Select";
+import { useAuth } from "@/Contexts/auth";
 
 const DEFAULT_SORT = "score desc";
 
 export default function MyPhotos() {
+  const { user: loggedUser } = useAuth();
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [selectedImage, setSelectedImage] = useState<{
@@ -35,7 +37,6 @@ export default function MyPhotos() {
   const [isOpenBan, setIsOpenBan] = useState(false);
   const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
-  const loggedUser = useMemo(() => getLoggedUser(), []);
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
