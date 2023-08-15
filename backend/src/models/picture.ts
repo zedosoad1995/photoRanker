@@ -162,6 +162,7 @@ function getPicturesWithClosestElos(
   );
 }
 
+// TODO: Improve this function code
 function getPicturesWithPercentile(
   userId: string | undefined,
   loggedUserId: string,
