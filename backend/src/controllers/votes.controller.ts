@@ -88,7 +88,7 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     },
   });
 
-  const [vote, ...other] = await prisma.$transaction([
+  const [vote, _] = await prisma.$transaction([
     createNewVote,
     makeMatchInactive,
     updateWinnerPictureScore,

@@ -3,6 +3,7 @@ export const RATING_INI = 1000;
 
 // Elo
 export const ELO_UPDATE_FACTOR = 32;
+export const SENSITIVITY = 400;
 
 // GLICKO-2
 export const VOLATILITY_INI = 0.001; // 0.06 in the paper

@@ -272,9 +272,14 @@ function getAllColumnNames() {
     .map((f) => f.name);
 }
 
+function omitRatingParams(pic: Picture & Record<string, any>) {
+  return _.omit(pic, "rating", "ratingDeviation", "volatility");
+}
+
 export const PictureModel = {
   ...prisma.picture,
   getRandomMatch,
   getMatchWithClosestEloStrategy,
   getPicturesWithPercentile,
+  omitRatingParams,
 };

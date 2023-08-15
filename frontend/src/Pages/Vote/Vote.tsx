@@ -2,7 +2,6 @@ import { getNewMatch } from "@/Services/match";
 import { getImage, getPicture } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
-import { SENSITIVITY } from "@shared/constants/rating";
 import Button from "@/Components/Button";
 import { IMG_WIDTH } from "@shared/constants/picture";
 import { ImageCard } from "./ImageCard";
@@ -31,13 +30,15 @@ export default function Vote() {
       setPic2(url);
     });
 
-    const picInfo1 = await getPicture(match.pictures[0].id);
-    const picInfo2 = await getPicture(match.pictures[1].id);
+    /* const picInfo1 = await getPicture(match.pictures[0].id);
+    const picInfo2 = await getPicture(match.pictures[1].id); */
 
-    const prob1 = Math.round(
-      100 / (1 + Math.pow(10, (picInfo2.picture.elo - picInfo1.picture.elo) / SENSITIVITY))
+    /* const prob1 = Math.round(
+      100 / (1 + Math.pow(10, (picInfo2.picture.r - picInfo1.picture.elo) / SENSITIVITY))
     );
-    const prob2 = 100 - prob1;
+    const prob2 = 100 - prob1; */
+    const prob1 = 50;
+    const prob2 = 50;
 
     setProb1(prob1);
     setProb2(prob2);

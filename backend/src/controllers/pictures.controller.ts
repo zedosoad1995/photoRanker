@@ -48,8 +48,10 @@ export const getMany = async (req: Request, res: Response) => {
     orderByQuery
   );
 
+  const picturesWithOmmited = pictures.map((pic) => PictureModel.omitRatingParams(pic));
+
   res.status(200).json({
-    pictures,
+    pictures: picturesWithOmmited,
   });
 };
 
@@ -91,7 +93,7 @@ export const getOne = async (req: Request, res: Response) => {
   }
 
   res.status(200).json({
-    picture,
+    picture: PictureModel.omitRatingParams(picture),
   });
 };
 
@@ -171,7 +173,7 @@ export const uploadOne = async (req: Request, res: Response) => {
   });
 
   res.status(201).json({
-    picture,
+    picture: PictureModel.omitRatingParams(picture),
   });
 };
 
