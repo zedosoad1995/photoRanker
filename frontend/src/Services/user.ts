@@ -6,7 +6,6 @@ export const getUser = async (userId: string): Promise<IUserRes> => {
 };
 
 export const getMe = async (): Promise<IUserRes> => {
-  console.log("cona");
   return api.get("/users/me");
 };
 

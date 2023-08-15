@@ -55,17 +55,22 @@ export default function MyPhotos() {
       orderByDir,
     })
       .then(async (res) => {
-        const pics: string[] = [];
-        const picsInfo: IPictureWithPercentile[] = [];
-        for (const pic of res.pictures) {
-          try {
+        const resPics = await Promise.allSettled(
+          res.pictures.map(async (pic) => {
             const { url } = await getImage(pic.filepath);
-            pics.push(url);
-            picsInfo.push(pic);
-          } catch (error) {}
-        }
-        setPics(pics);
-        setPicsInfo(picsInfo);
+            return { url, pic };
+          })
+        );
+
+        const successfulPics = resPics
+          .filter(
+            (res): res is PromiseFulfilledResult<{ url: string; pic: IPictureWithPercentile }> =>
+              res.status === "fulfilled"
+          )
+          .map((res) => res.value);
+
+        setPics(successfulPics.map(({ url }) => url));
+        setPicsInfo(successfulPics.map(({ pic }) => pic));
 
         if (!areTherePictures) setAreThePictures(pics.length > 0);
       })
