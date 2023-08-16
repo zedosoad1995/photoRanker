@@ -4,16 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
-import { ArrowUpTrayIcon, EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
 import DeletePhotoModal from "./DeletePhotoModal";
 import { toast } from "react-hot-toast";
 import { IPictureWithPercentile } from "@/Types/picture";
-import { isAdmin, isRegular } from "@/Utils/role";
-import Menu from "@/Components/Menu";
+import { isAdmin } from "@/Utils/role";
 import BanUserModal from "./BanUserModal";
 import Select from "@/Components/Select";
 import { useAuth } from "@/Contexts/auth";
 import { useQueryClient } from "react-query";
+import { Spinner } from "@/Components/Loading/Spinner";
+import { PhotoCard } from "./ImageCard";
 
 const DEFAULT_SORT = "score desc";
 
@@ -40,30 +41,33 @@ export default function MyPhotos() {
   const [isOpenBan, setIsOpenBan] = useState(false);
   const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
+  const [isFetchingFilter, setIsFetchingFilter] = useState(false);
+
   const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
 
-  const getPictures = () => {
-    if (!loggedUser) return;
+  const getPictures = async () => {
+    try {
+      if (!loggedUser) return;
 
-    const orderByKey = sortValue.split(" ")[0];
-    const orderByDir = sortValue.split(" ")[1];
+      const orderByKey = sortValue.split(" ")[0];
+      const orderByDir = sortValue.split(" ")[1];
 
-    return getManyPictures({
-      ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
-      ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
-      orderBy: orderByKey,
-      orderByDir,
-    })
-      .then(async (res) => {
+      const res = await getManyPictures({
+        ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
+        ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
+        orderBy: orderByKey,
+        orderByDir,
+      }).then(async (res) => {
         const resPics = await Promise.all(
           res.pictures.map(async (pic) => {
             const { url } = await queryClient.fetchQuery(["getImage", pic.filepath], {
               queryFn: () => getImage(pic.filepath),
               staleTime: Infinity,
             });
+
             return { url, pic };
           })
         );
@@ -72,10 +76,13 @@ export default function MyPhotos() {
         setPicsInfo(resPics.map(({ pic }) => pic));
 
         if (!areTherePictures) setAreThePictures(pics.length > 0);
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
+
+      return res;
+    } finally {
+      setIsLoading(false);
+      setIsFetchingFilter(false);
+    }
   };
 
   useEffect(() => {
@@ -140,6 +147,7 @@ export default function MyPhotos() {
   };
 
   const handleFilterSelect = (selectedOption: string) => {
+    setIsFetchingFilter(true);
     setFilterSelectedOption((val) => {
       if (val === selectedOption) {
         return "";
@@ -150,6 +158,7 @@ export default function MyPhotos() {
   };
 
   const handleSortSelect = (selectedOption: string) => {
+    setIsFetchingFilter(true);
     const orderByKey = selectedOption.split(" ")[0];
 
     if (orderByKey === "reportedDate") {
@@ -186,6 +195,7 @@ export default function MyPhotos() {
 
   return (
     <>
+      {isLoading && <Spinner />}
       <BanUserModal
         isOpen={isOpenBan}
         onClose={handleCloseBanModal}
@@ -278,58 +288,20 @@ export default function MyPhotos() {
                     title="Sort"
                   />
                 </div>
+                {isFetchingFilter && <Spinner />}
               </div>
             </div>
             <div className="-mx-3 mt-1">
               {pics.map((pic, index) => (
-                <div key={pic} className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
-                  <div className="cursor-pointer rounded-b-md shadow-md">
-                    <div className="relative">
-                      {loggedUser && isAdmin(loggedUser.role) && (
-                        <div className="absolute right-[2%] top-[2%] origin-top-right">
-                          <Menu
-                            items={[
-                              {
-                                label: "Delete Photo",
-                                onClick: handleClickDeletePic(index),
-                              },
-                              {
-                                label: "Ban User",
-                                onClick: handleClickBanUser(index),
-                                disabled: loggedUser.id === picsInfo[index].userId,
-                              },
-                            ]}
-                          >
-                            <EllipsisVerticalIcon className="p-[2px] h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200" />
-                          </Menu>
-                        </div>
-                      )}
-                      {loggedUser && isRegular(loggedUser.role) && (
-                        <XMarkIcon
-                          onClick={handleClickDeletePic(index)}
-                          className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
-                        />
-                      )}
-                      <div className="rounded-t-md overflow-hidden">
-                        <img
-                          className="mx-auto w-full"
-                          src={pic}
-                          loading="lazy"
-                          alt={`picture-${index}`}
-                        />
-                      </div>
-                    </div>
-                    <div className="p-3 font-semibold text-sm">
-                      <div>
-                        score:{" "}
-                        {picsInfo[index].numVotes > 0
-                          ? (picsInfo[index].percentile / 10).toFixed(1)
-                          : "-"}
-                      </div>
-                      <div>votes: {picsInfo[index].numVotes}</div>
-                    </div>
-                  </div>
-                </div>
+                <PhotoCard
+                  key={pic}
+                  index={index}
+                  loggedUser={loggedUser}
+                  onClickBanUser={handleClickBanUser(index)}
+                  onClickDeletePic={handleClickDeletePic(index)}
+                  pic={pic}
+                  picInfo={picsInfo[index]}
+                />
               ))}
             </div>
           </>

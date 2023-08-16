@@ -10,6 +10,7 @@ import { IMatch } from "@/Types/match";
 import { FlagButton } from "./FlagButton";
 import useDeferredState from "@/Hooks/useDeferredPromise";
 import { loadImage } from "@/Utils/image";
+import { Spinner } from "@/Components/Loading/Spinner";
 
 export default function Vote() {
   const [{ pic1, pic2, match, prob1, prob2 }, setState, applyUpdates] = useDeferredState<{
@@ -27,24 +28,33 @@ export default function Vote() {
   });
 
   const [hasVoted, setHasVoted] = useState(false);
+  const [isLoadingMatch, setIsLoadingMatch] = useState(true);
   const [isLoadingPic1, setIsLoadingPic1] = useState(false);
   const [isLoadingPic2, setIsLoadingPic2] = useState(false);
+  const [isPic1Loaded, setIsPic1Loaded] = useState(false);
+  const [isPic2Loaded, setIsPic2Loaded] = useState(false);
+
+  const isImagesFetching = isPic1Loaded || isPic2Loaded;
 
   const getMatch = async (mustWaitDefer = false) => {
     setIsLoadingPic1(true);
     setIsLoadingPic2(true);
+    setIsPic1Loaded(true);
+    setIsPic2Loaded(true);
 
     const { match } = await getNewMatch();
 
     setState("match", match, mustWaitDefer);
 
     getImage(match.pictures[0].filepath).then(({ url }) => {
+      setIsLoadingPic1(false);
       setState("pic1", url, mustWaitDefer);
-      loadImage(url).finally(() => setIsLoadingPic1(false));
+      loadImage(url).finally(() => setIsPic1Loaded(false));
     });
     getImage(match.pictures[1].filepath).then(({ url }) => {
+      setIsLoadingPic2(false);
       setState("pic2", url, mustWaitDefer);
-      loadImage(url).finally(() => setIsLoadingPic2(false));
+      loadImage(url).finally(() => setIsPic2Loaded(false));
     });
 
     const prob1 = match.winProbability * 100;
@@ -52,10 +62,16 @@ export default function Vote() {
 
     setState("prob1", prob1, mustWaitDefer);
     setState("prob2", prob2, mustWaitDefer);
+
+    setIsLoadingMatch(false);
   };
 
   useEffect(() => {
-    getMatch();
+    getMatch().catch(() => {
+      setIsLoadingMatch(false);
+      setIsLoadingPic1(false);
+      setIsLoadingPic2(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -66,12 +82,12 @@ export default function Vote() {
           ? document.getElementById("downImage")
           : document.getElementById("rightImage");
         if (rightImage && !hasVoted) {
-          rightImage.classList.add("!bg-[length:101%]");
+          rightImage.classList.add("!bg-[length:102%]");
 
           setTimeout(() => {
-            rightImage.classList.remove("!bg-[length:101%]");
+            rightImage.classList.remove("!bg-[length:102%]");
             rightImage.click();
-          }, 200);
+          }, 100);
         }
       } else if (event.key === "ArrowLeft") {
         const leftImage = isScreenSmallerOrEqualTo("sm")
@@ -83,7 +99,7 @@ export default function Vote() {
 
           setTimeout(() => {
             leftImage.classList.remove("!bg-[length:102%]");
-          }, 200);
+          }, 100);
         }
       }
     };
@@ -117,7 +133,8 @@ export default function Vote() {
 
   return (
     <>
-      {pic1 && pic2 && (
+      {(isLoadingMatch || isLoadingPic1 || isLoadingPic2) && <Spinner />}
+      {pic1 && pic2 && match && (
         <>
           <div className="hidden xs:flex gap-[1vw] justify-center">
             <ImageCard
@@ -126,7 +143,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[0].id)}
               pic={pic1}
               prob={prob1}
-              isLoading={isLoadingPic1 || isLoadingPic2}
+              isLoading={isImagesFetching}
               hasVoted={hasVoted}
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
@@ -138,7 +155,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[1].id)}
               pic={pic2}
               prob={prob2}
-              isLoading={isLoadingPic1 || isLoadingPic2}
+              isLoading={isImagesFetching}
               hasVoted={hasVoted}
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
@@ -152,7 +169,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[0].id)}
               pic={pic1}
               prob={prob1}
-              isLoading={isLoadingPic1 || isLoadingPic2}
+              isLoading={isImagesFetching}
               hasVoted={hasVoted}
             />
             <ImageCard
@@ -161,7 +178,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[1].id)}
               pic={pic2}
               prob={prob2}
-              isLoading={isLoadingPic1 || isLoadingPic2}
+              isLoading={isImagesFetching}
               hasVoted={hasVoted}
             />
           </div>
