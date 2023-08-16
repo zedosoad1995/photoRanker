@@ -8,32 +8,50 @@ import { ImageCard } from "./ImageCard";
 import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 import { IMatch } from "@/Types/match";
 import { FlagButton } from "./FlagButton";
+import useDeferredState from "@/Hooks/useDeferredPromise";
+import { loadImage } from "@/Utils/image";
 
 export default function Vote() {
-  const [pic1, setPic1] = useState<string>();
-  const [pic2, setPic2] = useState<string>();
-  const [prob1, setProb1] = useState<number>();
-  const [prob2, setProb2] = useState<number>();
+  const [{ pic1, pic2, match, prob1, prob2 }, setState, applyUpdates] = useDeferredState<{
+    pic1?: string;
+    pic2?: string;
+    prob1?: number;
+    prob2?: number;
+    match?: IMatch;
+  }>({
+    pic1: undefined,
+    pic2: undefined,
+    prob1: undefined,
+    prob2: undefined,
+    match: undefined,
+  });
 
-  const [match, setMatch] = useState<IMatch>();
   const [hasVoted, setHasVoted] = useState(false);
+  const [isLoadingPic1, setIsLoadingPic1] = useState(false);
+  const [isLoadingPic2, setIsLoadingPic2] = useState(false);
 
-  const getMatch = async () => {
+  const getMatch = async (mustWaitDefer = false) => {
+    setIsLoadingPic1(true);
+    setIsLoadingPic2(true);
+
     const { match } = await getNewMatch();
-    setMatch(match);
+
+    setState("match", match, mustWaitDefer);
 
     getImage(match.pictures[0].filepath).then(({ url }) => {
-      setPic1(url);
+      setState("pic1", url, mustWaitDefer);
+      loadImage(url).finally(() => setIsLoadingPic1(false));
     });
     getImage(match.pictures[1].filepath).then(({ url }) => {
-      setPic2(url);
+      setState("pic2", url, mustWaitDefer);
+      loadImage(url).finally(() => setIsLoadingPic2(false));
     });
 
     const prob1 = match.winProbability * 100;
     const prob2 = 100 - prob1;
 
-    setProb1(prob1);
-    setProb2(prob2);
+    setState("prob1", prob1, mustWaitDefer);
+    setState("prob2", prob2, mustWaitDefer);
   };
 
   useEffect(() => {
@@ -85,8 +103,10 @@ export default function Vote() {
     }
 
     setHasVoted(true);
+    getMatch(true);
+
     setTimeout(() => {
-      getMatch();
+      applyUpdates();
       setHasVoted(false);
     }, 1000);
   };
@@ -106,6 +126,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[0].id)}
               pic={pic1}
               prob={prob1}
+              isLoading={isLoadingPic1 || isLoadingPic2}
               hasVoted={hasVoted}
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
@@ -117,6 +138,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[1].id)}
               pic={pic2}
               prob={prob2}
+              isLoading={isLoadingPic1 || isLoadingPic2}
               hasVoted={hasVoted}
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
@@ -130,6 +152,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[0].id)}
               pic={pic1}
               prob={prob1}
+              isLoading={isLoadingPic1 || isLoadingPic2}
               hasVoted={hasVoted}
             />
             <ImageCard
@@ -138,6 +161,7 @@ export default function Vote() {
               onClick={handleClickImage(match?.pictures[1].id)}
               pic={pic2}
               prob={prob2}
+              isLoading={isLoadingPic1 || isLoadingPic2}
               hasVoted={hasVoted}
             />
           </div>

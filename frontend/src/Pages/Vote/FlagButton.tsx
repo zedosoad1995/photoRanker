@@ -10,7 +10,7 @@ interface IFlagButton {
   pic1: string;
   pic2: string;
   match: IMatch;
-  getMatch: () => Promise<void>;
+  getMatch: (mustWaitDefer?: boolean) => Promise<any>;
 }
 
 export const FlagButton = ({ pic1, pic2, match, getMatch }: IFlagButton) => {

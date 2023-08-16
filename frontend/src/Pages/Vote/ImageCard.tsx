@@ -9,6 +9,7 @@ export const ImageCard = ({
   id,
   hasVoted,
   style,
+  isLoading,
 }: {
   className: string;
   pic: string | undefined;
@@ -17,8 +18,9 @@ export const ImageCard = ({
   id?: string;
   hasVoted: boolean;
   style?: React.CSSProperties;
+  isLoading: boolean;
 }) => {
-  const { img } = useProgressiveImage(pic);
+  const { img } = useProgressiveImage(pic, !isLoading);
 
   const [isImageHovered, setIsImageHovered] = useState(false);
 
