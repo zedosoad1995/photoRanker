@@ -65,10 +65,10 @@ export default function UploadPhotoModal({
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white p-6 !pb-10 w-[500px] rounded-xl z-10">
+      <Dialog.Panel className="bg-white mx-2 p-6 w-[500px] rounded-xl z-10 max-h-[90vh] overflow-y-auto">
         <div className="font-bold text-center text-lg">Adjust Photo</div>
-        <div className="w-[350px] mx-auto">
-          <div className="relative w-[350px] h-[350px] mx-auto mt-8">
+        <div className="w-[80%] mx-auto">
+          <div className="relative w-full aspect-square mx-auto mt-8">
             {image && (
               <Cropper
                 image={image.image}
