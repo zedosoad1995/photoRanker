@@ -311,7 +311,12 @@ export default function MyPhotos() {
                         />
                       )}
                       <div className="rounded-t-md overflow-hidden">
-                        <img className="mx-auto w-full" src={pic} alt={`picture-${index}`} />
+                        <img
+                          className="mx-auto w-full"
+                          src={pic}
+                          loading="lazy"
+                          alt={`picture-${index}`}
+                        />
                       </div>
                     </div>
                     <div className="p-3 font-semibold text-sm">

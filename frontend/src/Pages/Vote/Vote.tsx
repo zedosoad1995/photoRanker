@@ -22,11 +22,10 @@ export default function Vote() {
     const { match } = await getNewMatch();
     setMatch(match);
 
-    await getImage(match.pictures[0].filepath).then(({ url }) => {
+    getImage(match.pictures[0].filepath).then(({ url }) => {
       setPic1(url);
     });
-
-    await getImage(match.pictures[1].filepath).then(({ url }) => {
+    getImage(match.pictures[1].filepath).then(({ url }) => {
       setPic2(url);
     });
 
@@ -98,48 +97,52 @@ export default function Vote() {
 
   return (
     <>
-      <div className="hidden xs:flex gap-[1vw] justify-center">
-        <ImageCard
-          id="leftImage"
-          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
-          onClick={handleClickImage(match?.pictures[0].id)}
-          pic={pic1}
-          prob={prob1}
-          hasVoted={hasVoted}
-          style={{
-            width: `min(40vw,${IMG_WIDTH}px)`,
-          }}
-        />
-        <ImageCard
-          id="rightImage"
-          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
-          onClick={handleClickImage(match?.pictures[1].id)}
-          pic={pic2}
-          prob={prob2}
-          hasVoted={hasVoted}
-          style={{
-            width: `min(40vw,${IMG_WIDTH}px)`,
-          }}
-        />
-      </div>
-      <div className="flex xs:hidden flex-col gap-[1vw] items-center justify-start">
-        <ImageCard
-          id="upImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
-          onClick={handleClickImage(match?.pictures[0].id)}
-          pic={pic1}
-          prob={prob1}
-          hasVoted={hasVoted}
-        />
-        <ImageCard
-          id="downImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
-          onClick={handleClickImage(match?.pictures[1].id)}
-          pic={pic2}
-          prob={prob2}
-          hasVoted={hasVoted}
-        />
-      </div>
+      {pic1 && pic2 && (
+        <>
+          <div className="hidden xs:flex gap-[1vw] justify-center">
+            <ImageCard
+              id="leftImage"
+              className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
+              onClick={handleClickImage(match?.pictures[0].id)}
+              pic={pic1}
+              prob={prob1}
+              hasVoted={hasVoted}
+              style={{
+                width: `min(40vw,${IMG_WIDTH}px)`,
+              }}
+            />
+            <ImageCard
+              id="rightImage"
+              className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
+              onClick={handleClickImage(match?.pictures[1].id)}
+              pic={pic2}
+              prob={prob2}
+              hasVoted={hasVoted}
+              style={{
+                width: `min(40vw,${IMG_WIDTH}px)`,
+              }}
+            />
+          </div>
+          <div className="flex xs:hidden flex-col gap-[1vw] items-center justify-start">
+            <ImageCard
+              id="upImage"
+              className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
+              onClick={handleClickImage(match?.pictures[0].id)}
+              pic={pic1}
+              prob={prob1}
+              hasVoted={hasVoted}
+            />
+            <ImageCard
+              id="downImage"
+              className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
+              onClick={handleClickImage(match?.pictures[1].id)}
+              pic={pic2}
+              prob={prob2}
+              hasVoted={hasVoted}
+            />
+          </div>
+        </>
+      )}
       {pic1 && pic2 && match && (
         <>
           <div className="flex max-w-[35vh] xs:w-40 mx-auto mt-3 xs:mt-5 gap-2">

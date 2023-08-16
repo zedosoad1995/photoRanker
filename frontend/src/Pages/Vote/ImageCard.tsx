@@ -1,3 +1,4 @@
+import { useProgressiveImage } from "@/Hooks/useProgressiveImage";
 import { useState } from "react";
 
 export const ImageCard = ({
@@ -17,6 +18,8 @@ export const ImageCard = ({
   hasVoted: boolean;
   style?: React.CSSProperties;
 }) => {
+  const { img } = useProgressiveImage(pic);
+
   const [isImageHovered, setIsImageHovered] = useState(false);
 
   const divClass = `${className} text-white font-bold text-xl]`;
@@ -29,7 +32,7 @@ export const ImageCard = ({
       style={{
         backgroundImage: `${
           hasVoted ? "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8))," : ""
-        } url(${pic})`,
+        } url(${img})`,
         backgroundSize: isImageHovered ? "101%" : "100%",
         transition: "background-size 0.3s ease",
         ...style,
