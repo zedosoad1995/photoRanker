@@ -13,11 +13,14 @@ import Menu from "@/Components/Menu";
 import BanUserModal from "./BanUserModal";
 import Select from "@/Components/Select";
 import { useAuth } from "@/Contexts/auth";
+import { useQueryClient } from "react-query";
 
 const DEFAULT_SORT = "score desc";
 
 export default function MyPhotos() {
   const { user: loggedUser } = useAuth();
+
+  const queryClient = useQueryClient();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -55,22 +58,18 @@ export default function MyPhotos() {
       orderByDir,
     })
       .then(async (res) => {
-        const resPics = await Promise.allSettled(
+        const resPics = await Promise.all(
           res.pictures.map(async (pic) => {
-            const { url } = await getImage(pic.filepath);
+            const { url } = await queryClient.fetchQuery(["getImage", pic.filepath], {
+              queryFn: () => getImage(pic.filepath),
+              staleTime: Infinity,
+            });
             return { url, pic };
           })
         );
 
-        const successfulPics = resPics
-          .filter(
-            (res): res is PromiseFulfilledResult<{ url: string; pic: IPictureWithPercentile }> =>
-              res.status === "fulfilled"
-          )
-          .map((res) => res.value);
-
-        setPics(successfulPics.map(({ url }) => url));
-        setPicsInfo(successfulPics.map(({ pic }) => pic));
+        setPics(resPics.map(({ url }) => url));
+        setPicsInfo(resPics.map(({ pic }) => pic));
 
         if (!areTherePictures) setAreThePictures(pics.length > 0);
       })
