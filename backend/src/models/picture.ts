@@ -170,13 +170,15 @@ function getPicturesWithPercentile(
   hasReport: boolean | undefined,
   belongsToMe: boolean | undefined,
   isBanned: boolean | undefined,
+  limit: number | undefined,
+  cursor: string | undefined,
   orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
 ): Promise<(Picture & { percentile: number })[]> {
   const whereQuery: (boolean | string)[] = [true];
   const joinQuery: string[] = [];
   let groupByQuery = "";
-  let orderByField = "pic.rating";
-  let orderByDir = "DESC";
+  let orderByField = "pic_perc.percentile";
+  let orderByDir: ORDER_BY_DIR_OPTIONS_TYPE = "desc";
   const orderKey = Object.keys(orderByObj)[0];
   const orderValue = Object.values(orderByObj)[0];
 
@@ -207,7 +209,7 @@ function getPicturesWithPercentile(
   // Sorting
   if (["score", "numVotes", "createdAt"].includes(orderKey)) {
     if (orderKey === "score") {
-      orderByField = `pic.rating`;
+      orderByField = `pic_perc.percentile`;
     } else {
       orderByField = `pic."${orderKey}"`;
     }
@@ -244,6 +246,14 @@ function getPicturesWithPercentile(
     }
   }
 
+  // Limit
+  const limitQuery = limit != undefined ? `LIMIT ${limit}` : "";
+
+  // cursor
+  if (cursor) {
+    whereQuery.push(`${orderByField} ${orderByDir === "asc" ? ">" : "<"} ${cursor}`);
+  }
+
   return prisma.$queryRawUnsafe(`
       SELECT pic.*, pic_perc.percentile
       FROM "Picture" AS pic
@@ -262,7 +272,8 @@ function getPicturesWithPercentile(
       WHERE 
         ${whereQuery.join(" AND ")}
       ${groupByQuery}
-      ORDER BY ${orderByField} ${orderByDir};`);
+      ORDER BY ${orderByField} ${orderByDir} NULLS LAST
+      ${limitQuery};`);
 }
 
 function getAllColumnNames() {

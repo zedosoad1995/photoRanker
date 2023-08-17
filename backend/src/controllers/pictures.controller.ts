@@ -12,7 +12,7 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { StorageInteractor } from "@/types/storageInteractor";
 import _ from "underscore";
-import { parseBoolean, parseOrderBy } from "@/helpers/query";
+import { parseBoolean, parseNumber, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
 
@@ -22,6 +22,8 @@ export const getMany = async (req: Request, res: Response) => {
   const hasReport = parseBoolean(req.query.hasReport as string | undefined);
   const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
   const isBanned = parseBoolean(req.query.isBanned as string | undefined);
+  const limit = parseNumber(req.query.limit as string | undefined);
+  const cursor = req.query.cursor as string | undefined;
   const orderBy = req.query.orderBy as string | undefined;
   const orderByDir = req.query.orderByDir as string | undefined;
 
@@ -45,6 +47,8 @@ export const getMany = async (req: Request, res: Response) => {
     hasReport,
     belongsToMe,
     isBanned,
+    limit,
+    cursor,
     orderByQuery
   );
 

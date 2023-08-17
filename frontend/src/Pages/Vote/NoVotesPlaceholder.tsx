@@ -24,7 +24,7 @@ export const NoVotesPlaceholder = () => {
         </svg>
       </div>
       <div className="text-center text-sm md:text-base">
-        <div className="font-bold text-lg">No Votes</div>
+        <div className="font-bold text-xl">No Votes</div>
         <div>Currently no Images to show.</div>
         <div>Come back later for more!</div>
       </div>
