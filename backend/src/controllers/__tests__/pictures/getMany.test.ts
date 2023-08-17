@@ -376,3 +376,5 @@ describe("Admin Logged User", () => {
 });
 
 it.todo("Order By Query tests");
+it.todo("limit Query tests");
+it.todo("cursor Query tests");
