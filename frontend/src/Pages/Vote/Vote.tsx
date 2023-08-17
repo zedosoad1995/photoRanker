@@ -11,6 +11,7 @@ import { FlagButton } from "./FlagButton";
 import useDeferredState from "@/Hooks/useDeferredPromise";
 import { loadImage } from "@/Utils/image";
 import { Spinner } from "@/Components/Loading/Spinner";
+import { NoVotesPlaceholder } from "./NoVotesPlaceholder";
 
 export default function Vote() {
   const [{ pic1, pic2, match, prob1, prob2 }, setState, applyUpdates] = useDeferredState<{
@@ -47,12 +48,10 @@ export default function Vote() {
     setState("match", match, mustWaitDefer);
 
     getImage(match.pictures[0].filepath).then(({ url }) => {
-      setIsLoadingPic1(false);
       setState("pic1", url, mustWaitDefer);
       loadImage(url).finally(() => setIsPic1Loaded(false));
     });
     getImage(match.pictures[1].filepath).then(({ url }) => {
-      setIsLoadingPic2(false);
       setState("pic2", url, mustWaitDefer);
       loadImage(url).finally(() => setIsPic2Loaded(false));
     });
@@ -62,8 +61,6 @@ export default function Vote() {
 
     setState("prob1", prob1, mustWaitDefer);
     setState("prob2", prob2, mustWaitDefer);
-
-    setIsLoadingMatch(false);
   };
 
   useEffect(() => {
@@ -133,7 +130,8 @@ export default function Vote() {
 
   return (
     <>
-      {(isLoadingMatch || isLoadingPic1 || isLoadingPic2) && <Spinner />}
+      {isLoadingMatch && (isLoadingPic1 || isLoadingPic2) && <Spinner />}
+      {!isLoadingMatch && !match && <NoVotesPlaceholder />}
       {pic1 && pic2 && match && (
         <>
           <div className="hidden xs:flex gap-[1vw] justify-center">
