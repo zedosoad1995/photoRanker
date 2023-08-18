@@ -16,6 +16,7 @@ import { useQueryClient } from "react-query";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { PhotoCard } from "./ImageCard";
 import usePrevious from "@/Hooks/usePrevious";
+import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
 
 const DEFAULT_SORT = "score desc";
 
@@ -109,28 +110,17 @@ export default function MyPhotos() {
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const THRESHOLD = 300;
+  const handleScrollUpdate = () => {
+    if (nextCursor) {
+      isLoadingPageRef.current = true;
+      setIsLoadingPage(true);
+      getPictures(nextCursor);
+    }
+  };
 
-      if (
-        window.innerHeight + document.documentElement.scrollTop <
-          document.documentElement.scrollHeight - THRESHOLD ||
-        isLoadingPageRef.current
-      ) {
-        return;
-      }
-
-      if (nextCursor) {
-        isLoadingPageRef.current = true;
-        setIsLoadingPage(true);
-        getPictures(nextCursor);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [nextCursor]);
+  useInfiniteScroll({ isLoading: isLoadingPageRef.current, onUpdate: handleScrollUpdate }, [
+    nextCursor,
+  ]);
 
   useEffect(() => {
     getPictures();
