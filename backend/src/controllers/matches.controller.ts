@@ -1,8 +1,9 @@
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
+import { RatingRepo } from "@/types/ratingRepo";
 import { Request, Response } from "express";
 
-export const createOne = async (req: Request, res: Response) => {
+export const createOne = (ratingRepo: RatingRepo) => async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
   var [picture1, picture2] = await PictureModel.getMatchWithClosestEloStrategy(loggedUser.id);
@@ -41,10 +42,17 @@ export const createOne = async (req: Request, res: Response) => {
         select: {
           id: true,
           filepath: true,
+          rating: true,
+          ratingDeviation: true,
+          volatility: true,
         },
       },
     },
   });
 
-  res.status(201).send({ match });
+  const winProbability = ratingRepo.getWinProbability(match.pictures[0], match.pictures[1]);
+
+  const picturesWithOmmited = match.pictures.map((pic) => PictureModel.omitRatingParams(pic));
+
+  res.status(201).send({ match: { ...match, pictures: picturesWithOmmited, winProbability } });
 };

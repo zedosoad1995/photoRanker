@@ -25,6 +25,7 @@
     "react-hook-form": "^7.45.1",
     "react-hot-toast": "^2.4.1",
     "react-image-file-resizer": "^0.4.8",
+    "react-query": "^3.39.3",
     "react-router-dom": "^6.14.1",
     "react-social-login-buttons": "^3.9.1",
     "react-tailwindcss-datepicker": "^1.6.3",

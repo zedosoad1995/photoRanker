@@ -11,6 +11,7 @@ import { VoteModel } from "@/models/vote";
 import { MatchModel } from "@/models/match";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { RD_INI, VOLATILITY_INI } from "@/constants/rating";
 
 beforeEach(() => {
   rimrafSync(TEST_IMAGES_FOLDER_PATH + "/*", { glob: true });
@@ -232,7 +233,9 @@ describe("Regular Logged User", () => {
       const pictures = await PictureSeeder.seedMany({
         data: {
           userId: regularUser.id,
-          elo: INITIAL_ELO,
+          rating: INITIAL_ELO,
+          ratingDeviation: RD_INI,
+          volatility: VOLATILITY_INI,
           numVotes: INITIAL_NUM_VOTES,
         },
         numRepeat: 2,
@@ -315,8 +318,8 @@ describe("Regular Logged User", () => {
       const winnerPicture = match?.pictures.find((picture) => picture.id === winnerPictureId);
       const loserPicture = match?.pictures.find((picture) => picture.id !== winnerPictureId);
 
-      expect(winnerPicture?.elo).toBeGreaterThan(INITIAL_ELO);
-      expect(loserPicture?.elo).toBeLessThan(INITIAL_ELO);
+      expect(winnerPicture?.rating).toBeGreaterThan(INITIAL_ELO);
+      expect(loserPicture?.rating).toBeLessThan(INITIAL_ELO);
       expect(winnerPicture?.numVotes).toEqual(INITIAL_NUM_VOTES + 1);
       expect(loserPicture?.numVotes).toEqual(INITIAL_NUM_VOTES + 1);
     });

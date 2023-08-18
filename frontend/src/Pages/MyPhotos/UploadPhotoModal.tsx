@@ -4,12 +4,12 @@ import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/AutoCompleteSelect";
 import { AGE_OPTIONS } from "@/Constants/user";
-import { getLoggedUser } from "@/Utils/user";
 import { calculateAge } from "@/Utils/date";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
 import { MIN_AGE } from "@shared/constants/user";
+import { useAuth } from "@/Contexts/auth";
 
 interface IUploadPhotoModal {
   image: { image: string; width: number; height: number } | null;
@@ -26,14 +26,15 @@ export default function UploadPhotoModal({
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
+  const { user: loggedUser } = useAuth();
+
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [age, setAge] = useState(() => {
-    const user = getLoggedUser();
-    if (!user?.dateOfBirth) return String(MIN_AGE);
+    if (!loggedUser?.dateOfBirth) return String(MIN_AGE);
 
-    return calculateAge(user.dateOfBirth).toString();
+    return calculateAge(loggedUser.dateOfBirth).toString();
   });
 
   const handleUpload = async () => {
@@ -64,10 +65,10 @@ export default function UploadPhotoModal({
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white p-6 !pb-10 w-[500px] rounded-xl z-10">
+      <Dialog.Panel className="bg-white mx-2 p-6 w-[500px] rounded-xl z-10 max-h-[90vh] overflow-y-auto">
         <div className="font-bold text-center text-lg">Adjust Photo</div>
-        <div className="w-[350px] mx-auto">
-          <div className="relative w-[350px] h-[350px] mx-auto mt-8">
+        <div className="w-[80%] mx-auto">
+          <div className="relative w-full aspect-square mx-auto mt-8">
             {image && (
               <Cropper
                 image={image.image}

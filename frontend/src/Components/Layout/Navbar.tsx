@@ -36,24 +36,20 @@ export default function Navbar({
             <Bars3Icon onClick={handleClickMenu} className="h-6 w-6 cursor-pointer" />
           </div>
           <div className="hidden md:flex items-center justify-between gap-8 w-full">
-            {navbarOptions.map(({ label, url }, index) => {
-              const isLast = index === navbarOptions.length - 1;
-
-              return (
-                <NavLink
-                  key={label}
-                  to={url}
-                  className={({ isActive }) =>
-                    `text-lg font-semibold hover:text-primary-hover cursor-pointer ${
-                      isLast ? "flex-1" : ""
-                    } ${isActive ? "text-primary-hover" : ""}`
-                  }
-                >
-                  {label}
-                </NavLink>
-              );
-            })}
-            <div>
+            {navbarOptions.map(({ label, url }) => (
+              <NavLink
+                key={label}
+                to={url}
+                className={({ isActive }) =>
+                  `text-lg font-semibold hover:text-primary-hover cursor-pointer ${
+                    isActive ? "text-primary-hover" : ""
+                  }`
+                }
+              >
+                {label}
+              </NavLink>
+            ))}
+            <div className="ml-auto">
               <Button onClick={handleLogout} size="large">
                 Logout
               </Button>

@@ -19,3 +19,9 @@ export const parseBoolean = (value: string | undefined) => {
     return false;
   }
 };
+
+export const parseNumber = (value: string | undefined) => {
+  if (value === undefined || isNaN(Number(value))) return undefined;
+
+  return Number(value);
+};

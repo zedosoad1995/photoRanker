@@ -10,7 +10,7 @@ import Banned from "./Banned";
 
 export default function Layout() {
   const navigate = useNavigate();
-  const { user, loading, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
 
   const [open, setOpen] = useState(false);
 
@@ -28,16 +28,16 @@ export default function Layout() {
   };
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       if (!user) {
         navigate(LOGIN);
       } else if (!user.isProfileCompleted || !user.isEmailVerified) {
         navigate(HOME);
       }
     }
-  }, [loading, user]);
+  }, [isLoading, user]);
 
-  if (loading || !user) {
+  if (isLoading || !user) {
     return <></>;
   } else if (!user.isProfileCompleted) {
     return (

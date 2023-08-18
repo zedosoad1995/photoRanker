@@ -1,13 +1,13 @@
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
-import { calculateNewRating } from "@/helpers/rating";
 import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { VoteModel } from "@/models/vote";
+import { RatingRepo } from "@/types/ratingRepo";
 import { Request, Response } from "express";
 
-export const vote = async (req: Request, res: Response) => {
+export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
   const matchId = req.body.matchId;
   const winnerPictureId = req.body.winnerPictureId;
@@ -30,13 +30,9 @@ export const vote = async (req: Request, res: Response) => {
     throw new ForbiddenError("User cannot access this match");
   }
 
-  const winnerPicture = match.pictures.find(
-    (picture) => picture.id === winnerPictureId
-  );
+  const winnerPicture = match.pictures.find((picture) => picture.id === winnerPictureId);
   if (!winnerPicture) {
-    throw new NotFoundError(
-      "Voted picture does not exist, or does not belong to this match"
-    );
+    throw new NotFoundError("Voted picture does not exist, or does not belong to this match");
   }
 
   const createNewVote = VoteModel.create({
@@ -70,9 +66,7 @@ export const vote = async (req: Request, res: Response) => {
     },
   });
 
-  const loserPicture = match.pictures.find(
-    (picture) => picture.id !== winnerPictureId
-  )!;
+  const loserPicture = match.pictures.find((picture) => picture.id !== winnerPictureId)!;
 
   const updateWinnerPictureScore = PictureModel.update({
     where: {
@@ -80,7 +74,7 @@ export const vote = async (req: Request, res: Response) => {
     },
     data: {
       numVotes: winnerPicture.numVotes + 1,
-      elo: calculateNewRating(true, winnerPicture.elo, loserPicture.elo),
+      ...ratingRepo.calculateNewRating(winnerPicture, loserPicture, true),
     },
   });
 
@@ -90,11 +84,11 @@ export const vote = async (req: Request, res: Response) => {
     },
     data: {
       numVotes: loserPicture.numVotes + 1,
-      elo: calculateNewRating(false, loserPicture.elo, winnerPicture.elo),
+      ...ratingRepo.calculateNewRating(loserPicture, winnerPicture, false),
     },
   });
 
-  const [vote, ...other] = await prisma.$transaction([
+  const [vote, _] = await prisma.$transaction([
     createNewVote,
     makeMatchInactive,
     updateWinnerPictureScore,

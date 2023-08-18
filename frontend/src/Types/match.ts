@@ -4,6 +4,7 @@ export interface IMatch {
     id: string;
     filepath: string;
   }[];
+  winProbability: number;
   createdAt: Date;
   updatedAt: Date;
 }
