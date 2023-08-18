@@ -25,7 +25,7 @@ export class SupabaseInteractor implements StorageInteractor {
     }
 
     const res = await this.supabaseClient.storage
-      .from("photo_ranker")
+      .from(process.env.SUPABASE_BUCKET as string)
       .upload(fileName, imageBuffer, {
         contentType: EXTENSION_TO_MIME_TYPE[extension as keyof typeof EXTENSION_TO_MIME_TYPE],
       });
@@ -44,7 +44,9 @@ export class SupabaseInteractor implements StorageInteractor {
   public async deleteImage(encodedImagePage: string) {
     const imagePath = decodeURI(encodedImagePage).replace(/\\/g, "/");
 
-    const res = await this.supabaseClient.storage.from("photo_ranker").remove([imagePath]);
+    const res = await this.supabaseClient.storage
+      .from(process.env.SUPABASE_BUCKET as string)
+      .remove([imagePath]);
     if (res.error) {
       console.error(res);
     }
