@@ -1,50 +1,74 @@
 import { getNewMatch } from "@/Services/match";
-import { getImage, getPicture } from "@/Services/picture";
+import { getImage } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect } from "react";
-import { SENSITIVITY } from "@shared/constants/rating";
 import Button from "@/Components/Button";
 import { IMG_WIDTH } from "@shared/constants/picture";
 import { ImageCard } from "./ImageCard";
 import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 import { IMatch } from "@/Types/match";
 import { FlagButton } from "./FlagButton";
+import useDeferredState from "@/Hooks/useDeferredState";
+import { loadImage } from "@/Utils/image";
+import { Spinner } from "@/Components/Loading/Spinner";
+import { NoVotesPlaceholder } from "./NoVotesPlaceholder";
 
 export default function Vote() {
-  const [pic1, setPic1] = useState<string>();
-  const [pic2, setPic2] = useState<string>();
-  const [prob1, setProb1] = useState<number>();
-  const [prob2, setProb2] = useState<number>();
+  const [{ pic1, pic2, match, prob1, prob2 }, setState, applyUpdates] = useDeferredState<{
+    pic1?: string;
+    pic2?: string;
+    prob1?: number;
+    prob2?: number;
+    match?: IMatch;
+  }>({
+    pic1: undefined,
+    pic2: undefined,
+    prob1: undefined,
+    prob2: undefined,
+    match: undefined,
+  });
 
-  const [match, setMatch] = useState<IMatch>();
   const [hasVoted, setHasVoted] = useState(false);
+  const [isLoadingMatch, setIsLoadingMatch] = useState(true);
+  const [isLoadingPic1, setIsLoadingPic1] = useState(false);
+  const [isLoadingPic2, setIsLoadingPic2] = useState(false);
+  const [isPic1Loaded, setIsPic1Loaded] = useState(false);
+  const [isPic2Loaded, setIsPic2Loaded] = useState(false);
 
-  const getMatch = async () => {
+  const isImagesFetching = isPic1Loaded || isPic2Loaded;
+
+  const getMatch = async (mustWaitDefer = false) => {
+    setIsLoadingPic1(true);
+    setIsLoadingPic2(true);
+    setIsPic1Loaded(true);
+    setIsPic2Loaded(true);
+
     const { match } = await getNewMatch();
-    setMatch(match);
 
-    await getImage(match.pictures[0].filepath).then(({ url }) => {
-      setPic1(url);
+    setState("match", match, mustWaitDefer);
+
+    getImage(match.pictures[0].filepath).then(({ url }) => {
+      setState("pic1", url, mustWaitDefer);
+      loadImage(url).finally(() => setIsPic1Loaded(false));
+    });
+    getImage(match.pictures[1].filepath).then(({ url }) => {
+      setState("pic2", url, mustWaitDefer);
+      loadImage(url).finally(() => setIsPic2Loaded(false));
     });
 
-    await getImage(match.pictures[1].filepath).then(({ url }) => {
-      setPic2(url);
-    });
-
-    const picInfo1 = await getPicture(match.pictures[0].id);
-    const picInfo2 = await getPicture(match.pictures[1].id);
-
-    const prob1 = Math.round(
-      100 / (1 + Math.pow(10, (picInfo2.picture.elo - picInfo1.picture.elo) / SENSITIVITY))
-    );
+    const prob1 = match.winProbability * 100;
     const prob2 = 100 - prob1;
 
-    setProb1(prob1);
-    setProb2(prob2);
+    setState("prob1", prob1, mustWaitDefer);
+    setState("prob2", prob2, mustWaitDefer);
   };
 
   useEffect(() => {
-    getMatch();
+    getMatch().finally(() => {
+      setIsLoadingMatch(false);
+      setIsLoadingPic1(false);
+      setIsLoadingPic2(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -55,12 +79,12 @@ export default function Vote() {
           ? document.getElementById("downImage")
           : document.getElementById("rightImage");
         if (rightImage && !hasVoted) {
-          rightImage.classList.add("!bg-[length:101%]");
+          rightImage.classList.add("!bg-[length:102%]");
 
           setTimeout(() => {
-            rightImage.classList.remove("!bg-[length:101%]");
+            rightImage.classList.remove("!bg-[length:102%]");
             rightImage.click();
-          }, 200);
+          }, 100);
         }
       } else if (event.key === "ArrowLeft") {
         const leftImage = isScreenSmallerOrEqualTo("sm")
@@ -72,7 +96,7 @@ export default function Vote() {
 
           setTimeout(() => {
             leftImage.classList.remove("!bg-[length:102%]");
-          }, 200);
+          }, 100);
         }
       }
     };
@@ -92,8 +116,10 @@ export default function Vote() {
     }
 
     setHasVoted(true);
+    getMatch(true);
+
     setTimeout(() => {
-      getMatch();
+      applyUpdates();
       setHasVoted(false);
     }, 1000);
   };
@@ -104,48 +130,58 @@ export default function Vote() {
 
   return (
     <>
-      <div className="hidden xs:flex gap-[1vw] justify-center">
-        <ImageCard
-          id="leftImage"
-          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
-          onClick={handleClickImage(match?.pictures[0].id)}
-          pic={pic1}
-          prob={prob1}
-          hasVoted={hasVoted}
-          style={{
-            width: `min(40vw,${IMG_WIDTH}px)`,
-          }}
-        />
-        <ImageCard
-          id="rightImage"
-          className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
-          onClick={handleClickImage(match?.pictures[1].id)}
-          pic={pic2}
-          prob={prob2}
-          hasVoted={hasVoted}
-          style={{
-            width: `min(40vw,${IMG_WIDTH}px)`,
-          }}
-        />
-      </div>
-      <div className="flex xs:hidden flex-col gap-[1vw] items-center justify-start">
-        <ImageCard
-          id="upImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
-          onClick={handleClickImage(match?.pictures[0].id)}
-          pic={pic1}
-          prob={prob1}
-          hasVoted={hasVoted}
-        />
-        <ImageCard
-          id="downImage"
-          className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
-          onClick={handleClickImage(match?.pictures[1].id)}
-          pic={pic2}
-          prob={prob2}
-          hasVoted={hasVoted}
-        />
-      </div>
+      {isLoadingMatch && (isLoadingPic1 || isLoadingPic2) && <Spinner />}
+      {!isLoadingMatch && !match && <NoVotesPlaceholder />}
+      {pic1 && pic2 && match && (
+        <>
+          <div className="hidden xs:flex gap-[1vw] justify-center">
+            <ImageCard
+              id="leftImage"
+              className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
+              onClick={handleClickImage(match?.pictures[0].id)}
+              pic={pic1}
+              prob={prob1}
+              isLoading={isImagesFetching}
+              hasVoted={hasVoted}
+              style={{
+                width: `min(40vw,${IMG_WIDTH}px)`,
+              }}
+            />
+            <ImageCard
+              id="rightImage"
+              className={`flex justify-center items-center cursor-pointer rounded-lg aspect-square bg-cover bg-center bg-no-repeat`}
+              onClick={handleClickImage(match?.pictures[1].id)}
+              pic={pic2}
+              prob={prob2}
+              isLoading={isImagesFetching}
+              hasVoted={hasVoted}
+              style={{
+                width: `min(40vw,${IMG_WIDTH}px)`,
+              }}
+            />
+          </div>
+          <div className="flex xs:hidden flex-col gap-[1vw] items-center justify-start">
+            <ImageCard
+              id="upImage"
+              className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
+              onClick={handleClickImage(match?.pictures[0].id)}
+              pic={pic1}
+              prob={prob1}
+              isLoading={isImagesFetching}
+              hasVoted={hasVoted}
+            />
+            <ImageCard
+              id="downImage"
+              className="flex justify-center items-center cursor-pointer rounded-lg w-full aspect-square !max-w-[35vh] bg-cover bg-center bg-no-repeat"
+              onClick={handleClickImage(match?.pictures[1].id)}
+              pic={pic2}
+              prob={prob2}
+              isLoading={isImagesFetching}
+              hasVoted={hasVoted}
+            />
+          </div>
+        </>
+      )}
       {pic1 && pic2 && match && (
         <>
           <div className="flex max-w-[35vh] xs:w-40 mx-auto mt-3 xs:mt-5 gap-2">

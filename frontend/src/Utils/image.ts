@@ -110,3 +110,16 @@ export const resizeImage = (image: Blob): Promise<Blob> =>
       "blob"
     );
   });
+
+export const loadImage = (src: string) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      resolve(true);
+    };
+    img.onerror = () => {
+      reject();
+    };
+  });
+};

@@ -29,6 +29,7 @@ import CheckingValidation from "./Pages/CheckingValidation.tsx";
 import ForgotPassword from "./Pages/ForgotPassword.tsx";
 import ResetPassword from "./Pages/ResetPassword.tsx";
 import { Toaster } from "react-hot-toast";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const router = createBrowserRouter([
   {
@@ -82,13 +83,17 @@ const router = createBrowserRouter([
   },
 ]);
 
+export const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_AUTH_ID!}>
-      <AuthProvider>
-        <Toaster position="top-center" reverseOrder={false} />
-        <RouterProvider router={router} />
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Toaster position="top-center" reverseOrder={false} />
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </QueryClientProvider>
     </GoogleOAuthProvider>
   </React.StrictMode>
 );

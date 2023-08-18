@@ -1,30 +1,58 @@
 import { SENSITIVITY } from "@shared/constants/rating";
-import { calculateNewRating } from "@/helpers/rating";
+import { calculateGlick2WinProb, updatePlayerGlicko2 } from "@/helpers/rating";
+import { randomGaussian } from "@/helpers/math";
+
+interface IPlayerGlicko {
+  rating: number;
+  rd: number;
+  vol: number;
+}
 
 interface IPlayer {
   id: number;
-  realElo: number;
-  estimatedElo: number;
+  realElo: IPlayerGlicko;
+  estimatedElo: IPlayerGlicko;
   votes: number;
 }
 
 type IStrategy = "RANDOM" | "CLOSEST";
 
-const NUM_MATCHES = 50 * 1000;
 const NUM_REPS = 1;
 const STRATEGY: IStrategy = "CLOSEST";
 const hasVotingStrategy = true;
-const PARAM1 = 1e-2;
-const PARAM2 = 1e1;
+const PARAM1 = 1;
+const PARAM2 = 1;
 const NUM_PLAYERS = 100;
+const MATCHES_PER_PLAYER = 1000;
+const NUM_MATCHES = (NUM_PLAYERS / 2) * MATCHES_PER_PLAYER;
 
-function generateRandomNumbers(min: number, max: number, n: number) {
-  let randomNumbers = [];
+const RATING_INI = 1500; // 1500 in the paper
+const VOLATILITY_INI = 0.0001;
+const GLICKO_SCALE = 173.7178;
+const TAU = 0.5; // 0.3 - 1.2
+const RD_INI = 350; // Rating Deviation
+
+const RANDOM_VOTING_PROB = 0.0;
+const RATING_MISALIGNMENT_95 = 0;
+const VAR = (RATING_MISALIGNMENT_95 / 2) ** 2;
+
+const GLICKO_INI = {
+  rating: RATING_INI,
+  rd: RD_INI,
+  vol: VOLATILITY_INI,
+};
+
+function generateRandomPlayers(min: number, max: number, n: number): IPlayerGlicko[] {
+  let randomPlayers = [];
   for (let i = 0; i < n; i++) {
-    let randomNumber = Math.random() * (max - min + 1) + min;
-    randomNumbers.push(randomNumber);
+    let randomPlayer: IPlayerGlicko = {
+      rating: Math.random() * (max - min + 1) + min,
+      rd: RD_INI,
+      vol: VOLATILITY_INI,
+    };
+    randomPlayers.push(randomPlayer);
   }
-  return randomNumbers;
+  return randomPlayers;
 }
 
 /* const ELOS = [
@@ -43,12 +71,12 @@ const positionDists: number[] = [];
 Array(NUM_REPS)
   .fill(0)
   .forEach(() => {
-    const ELOS = generateRandomNumbers(0, 2500, NUM_PLAYERS);
+    const ELOS = generateRandomPlayers(0, 2500, NUM_PLAYERS);
 
     const players = ELOS.map((elo, index) => ({
       id: index,
       realElo: elo,
-      estimatedElo: 1000,
+      estimatedElo: GLICKO_INI,
       votes: 0,
     }));
 
@@ -61,27 +89,45 @@ Array(NUM_REPS)
         const winnerIndex = players.findIndex((player) => player.id === winner.id);
         const loserIndex = players.findIndex((player) => player.id === loser.id);
 
-        const winnerElo = winner.estimatedElo;
-        const loserElo = loser.estimatedElo;
-
-        players[winnerIndex].estimatedElo = calculateNewRating(true, winnerElo, loserElo);
+        players[winnerIndex].estimatedElo = updatePlayerGlicko2(
+          winner.estimatedElo,
+          loser.estimatedElo,
+          true
+        );
         players[winnerIndex].votes += 1;
-        players[loserIndex].estimatedElo = calculateNewRating(false, loserElo, winnerElo);
+        players[loserIndex].estimatedElo = updatePlayerGlicko2(
+          loser.estimatedElo,
+          winner.estimatedElo,
+          false
+        );
         players[loserIndex].votes += 1;
       });
 
-    const elosAvg = ELOS.reduce((acc, elo) => acc + elo, 0) / ELOS.length;
+    const elosAvg = ELOS.reduce((acc, elo) => acc + elo.rating, 0) / ELOS.length;
 
     errors.push(
       players.reduce(
-        (acc, el) => acc + Math.abs(Math.round(el.estimatedElo - 1000 + elosAvg) - el.realElo),
+        (acc, el) =>
+          acc +
+          Math.abs(Math.round(el.estimatedElo.rating - RATING_INI + elosAvg) - el.realElo.rating),
         0
       )
     );
 
     positionDists.push(calculatePositionDiff(players));
 
-    console.log(players);
+    const confInterval = findConfidenceInterval(players);
+
+    console.log(
+      confInterval,
+      confInterval.reduce((acc, el) => acc + Number(!(el[1] >= el[0] && el[1] <= el[2])), 0)
+    );
+
+    /* console.log(
+      players,
+      players.reduce((acc, curr) => acc + curr.estimatedElo.rating, 0),
+      players.reduce((acc, curr) => acc + curr.realElo.rating, 0)
+    ); */
   });
 
 console.log(
@@ -116,8 +162,8 @@ function getMatch(players: IPlayer[]) {
     player2 =
       remainingPlayers[
         randomWeightedElement(
-          remainingPlayers.map((p) => p.estimatedElo),
-          player1.estimatedElo
+          remainingPlayers.map((p) => p.estimatedElo.rating),
+          player1.estimatedElo.rating
         )
       ];
 
@@ -132,7 +178,7 @@ function randomPlayer(players: IPlayer[]) {
   return players[randomIndex];
 }
 
-function closestPlayer(players: IPlayer[], targetElo: number) {
+/* function closestPlayer(players: IPlayer[], targetElo: number) {
   let bestMatch = players[0];
   let bestDiff = Math.abs(players[0].estimatedElo - targetElo);
 
@@ -146,7 +192,7 @@ function closestPlayer(players: IPlayer[], targetElo: number) {
   }
 
   return bestMatch;
-}
+} */
 
 function playerWithFewestVotes(players: IPlayer[]) {
   const fewestVotes = Math.min(...players.map((p) => p.votes));
@@ -175,24 +221,72 @@ function randomWeightedElement(array: number[], target: number) {
 }
 
 function getWinner(player1: IPlayer, player2: IPlayer) {
-  const winProb = calculateWinProb(player1, player2);
+  const winProb = calculateWinProb(
+    randomGaussian(player1.realElo.rating, VAR),
+    randomGaussian(player2.realElo.rating, VAR)
+  );
 
-  const winner = Math.random() > winProb ? player2 : player1;
+  if (Math.random() < RANDOM_VOTING_PROB) {
+    var winner = Math.random() > 0.5 ? player2 : player1;
+  } else {
+    var winner = Math.random() > winProb ? player2 : player1;
+  }
   const loser = player1.id === winner.id ? player2 : player1;
 
   return [winner, loser];
 }
 
-function calculateWinProb(player1: IPlayer, player2: IPlayer) {
-  return 1 / (1 + Math.pow(10, (player2.realElo - player1.realElo) / SENSITIVITY));
+function calculateWinProb(player1: number, player2: number) {
+  return 1 / (1 + Math.pow(10, (player2 - player1) / SENSITIVITY));
 }
 
 function calculatePositionDiff(players: IPlayer[]) {
-  const orderedByEstimations = [...players.sort((a, b) => a.estimatedElo - b.estimatedElo)];
-  const orderedByReal = [...players.sort((a, b) => a.realElo - b.realElo)];
+  const orderedByEstimations = [
+    ...players.sort((a, b) => a.estimatedElo.rating - b.estimatedElo.rating),
+  ];
+  const orderedByReal = [...players.sort((a, b) => a.realElo.rating - b.realElo.rating)];
 
   return orderedByEstimations.reduce(
     (acc, el, index) => acc + Math.abs(index - orderedByReal.findIndex((r) => r.id === el.id)),
     0
   );
+}
+
+function findConfidenceInterval(players: IPlayer[]) {
+  const orderedByEstimations = [
+    ...players.sort((a, b) => a.estimatedElo.rating - b.estimatedElo.rating),
+  ];
+
+  const orderedByReal = [...players.sort((a, b) => a.realElo.rating - b.realElo.rating)];
+
+  const calculateScore = (score: number) => {
+    const index = orderedByEstimations.findIndex((p) => score < p.estimatedElo.rating);
+
+    if (index === -1) return 10;
+
+    return Number(((index * 10) / orderedByEstimations.length).toFixed(1));
+  };
+
+  const calculateRealScore = (score: number) => {
+    const index = orderedByReal.findIndex((p) => score < p.realElo.rating);
+
+    if (index === -1) return 10;
+
+    return Number(((index * 10) / orderedByEstimations.length).toFixed(1));
+  };
+
+  const ret = [];
+  for (const player of players) {
+    const rating = player.estimatedElo;
+
+    ret.push([
+      calculateScore(rating.rating - rating.rd * 1.2),
+      //calculateScore(rating.rating),
+      calculateRealScore(player.realElo.rating),
+      calculateScore(rating.rating + rating.rd * 1.2),
+      calculateScore(rating.rating),
+    ]);
+  }
+
+  return ret;
 }

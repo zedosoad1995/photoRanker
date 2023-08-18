@@ -6,6 +6,7 @@ import { validateForm } from "@/middlewares/validateForm";
 import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { checkBanned } from "@/middlewares/checkBanned";
+import { glicko2 } from "@/container";
 
 const router = Router();
 
@@ -16,7 +17,7 @@ router.post(
   checkProfileCompleted,
   checkEmailVerified,
   validateForm(voteSchema),
-  vote
+  vote(glicko2)
 );
 
 export default router;

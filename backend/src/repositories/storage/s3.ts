@@ -1,4 +1,4 @@
-import { EXTENSION_TO_MIME_TYPE, IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { EXTENSION_TO_MIME_TYPE } from "@/constants/picture";
 import crypto from "crypto";
 import { StorageInteractor } from "@/types/storageInteractor";
 import { BadRequestError } from "@/errors/BadRequestError";

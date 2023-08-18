@@ -1,5 +1,5 @@
 import { PICTURE } from "@/constants/messages";
-import { ELO_INIT, IMAGES_FOLDER_PATH } from "@/constants/picture";
+import { IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
@@ -12,8 +12,9 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { StorageInteractor } from "@/types/storageInteractor";
 import _ from "underscore";
-import { parseBoolean, parseOrderBy } from "@/helpers/query";
+import { parseBoolean, parseNumber, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
+import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
 
 export const getMany = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
@@ -21,6 +22,8 @@ export const getMany = async (req: Request, res: Response) => {
   const hasReport = parseBoolean(req.query.hasReport as string | undefined);
   const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
   const isBanned = parseBoolean(req.query.isBanned as string | undefined);
+  const limit = parseNumber(req.query.limit as string | undefined);
+  const cursor = req.query.cursor as string | undefined;
   const orderBy = req.query.orderBy as string | undefined;
   const orderByDir = req.query.orderByDir as string | undefined;
 
@@ -37,18 +40,23 @@ export const getMany = async (req: Request, res: Response) => {
     throw new BadRequestError("Cannot call belongsToMe and userId simulataneously");
   }
 
-  const pictures = await PictureModel.getPicturesWithPercentile(
+  const { pictures, nextCursor } = await PictureModel.getPicturesWithPercentile(
     userId,
     loggedUser.id,
     loggedUser.role,
     hasReport,
     belongsToMe,
     isBanned,
+    limit,
+    cursor,
     orderByQuery
   );
 
+  const picturesWithOmmited = pictures.map((pic) => PictureModel.omitRatingParams(pic));
+
   res.status(200).json({
-    pictures,
+    pictures: picturesWithOmmited,
+    nextCursor,
   });
 };
 
@@ -90,7 +98,7 @@ export const getOne = async (req: Request, res: Response) => {
   }
 
   res.status(200).json({
-    picture,
+    picture: PictureModel.omitRatingParams(picture),
   });
 };
 
@@ -160,7 +168,9 @@ export const uploadOne = async (req: Request, res: Response) => {
   const picture = await PictureModel.create({
     data: {
       filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
-      elo: ELO_INIT,
+      rating: RATING_INI,
+      ratingDeviation: RD_INI,
+      volatility: VOLATILITY_INI,
       user: {
         connect: {
           id: req.loggedUser?.id,
@@ -170,7 +180,7 @@ export const uploadOne = async (req: Request, res: Response) => {
   });
 
   res.status(201).json({
-    picture,
+    picture: PictureModel.omitRatingParams(picture),
   });
 };
 
