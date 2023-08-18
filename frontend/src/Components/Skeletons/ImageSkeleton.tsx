@@ -6,7 +6,7 @@ interface IImageSkeleton {
 export const ImageSkeleton = ({ divClass, style }: IImageSkeleton) => {
   return (
     <div
-      className={`${divClass} flex items-center justify-center bg-gray-300 rounded sm:w-96 dark:bg-gray-700 animate-pulse`}
+      className={`${divClass} flex items-center justify-center bg-gray-300 rounded dark:bg-gray-700 animate-pulse`}
       style={style}
     >
       <svg

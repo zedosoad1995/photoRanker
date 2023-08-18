@@ -2,10 +2,10 @@ import { EXTENSION_TO_MIME_TYPE } from "@/constants/picture";
 import crypto from "crypto";
 import { StorageInteractor } from "@/types/storageInteractor";
 import { BadRequestError } from "@/errors/BadRequestError";
-import { PutObjectCommand, S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export class S3Interactor implements StorageInteractor {
-  constructor(private s3: S3Client) {}
+export class SupabaseInteractor implements StorageInteractor {
+  constructor(private supabaseClient: SupabaseClient) {}
 
   async saveNewImage(imageBuffer: Buffer, extension: string) {
     const currentDate = new Date();
@@ -24,36 +24,29 @@ export class S3Interactor implements StorageInteractor {
       );
     }
 
-    const params = {
-      Bucket: process.env.IMAGES_BUCKET as string,
-      Key: fileName,
-      Body: imageBuffer,
-      ContentType: EXTENSION_TO_MIME_TYPE[extension as keyof typeof EXTENSION_TO_MIME_TYPE],
-    };
+    const res = await this.supabaseClient.storage
+      .from("photo_ranker")
+      .upload(fileName, imageBuffer, {
+        contentType: EXTENSION_TO_MIME_TYPE[extension as keyof typeof EXTENSION_TO_MIME_TYPE],
+      });
 
-    await this.s3.send(new PutObjectCommand(params));
+    if (res.error) {
+      console.error(res);
+    }
 
     return fileName;
   }
 
   public getImageUrl(imagePath: string) {
-    return `https://${process.env.IMAGES_BUCKET}.s3.${
-      process.env.S3_REGION
-    }.amazonaws.com/${imagePath.replace(/\\/g, "/")}`;
+    return `${process.env.SUPABASE_STORAGE_URL}/${imagePath.replace(/\\/g, "/")}`;
   }
 
   public async deleteImage(encodedImagePage: string) {
-    const key = decodeURI(encodedImagePage).replace(/\\/g, "/");
+    const imagePath = decodeURI(encodedImagePage).replace(/\\/g, "/");
 
-    try {
-      await this.s3.send(
-        new DeleteObjectCommand({
-          Bucket: process.env.IMAGES_BUCKET as string,
-          Key: key,
-        })
-      );
-    } catch (error) {
-      console.error(error);
+    const res = await this.supabaseClient.storage.from("photo_ranker").remove([imagePath]);
+    if (res.error) {
+      console.error(res);
     }
   }
 }
