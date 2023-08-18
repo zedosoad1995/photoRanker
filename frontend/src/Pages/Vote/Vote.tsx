@@ -8,7 +8,7 @@ import { ImageCard } from "./ImageCard";
 import { isScreenSmallerOrEqualTo } from "@/Utils/screen";
 import { IMatch } from "@/Types/match";
 import { FlagButton } from "./FlagButton";
-import useDeferredState from "@/Hooks/useDeferredPromise";
+import useDeferredState from "@/Hooks/useDeferredState";
 import { loadImage } from "@/Utils/image";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { NoVotesPlaceholder } from "./NoVotesPlaceholder";

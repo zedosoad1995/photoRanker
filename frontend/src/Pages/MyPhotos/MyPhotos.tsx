@@ -15,6 +15,7 @@ import { useAuth } from "@/Contexts/auth";
 import { useQueryClient } from "react-query";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { PhotoCard } from "./ImageCard";
+import usePrevious from "@/Hooks/usePrevious";
 
 const DEFAULT_SORT = "score desc";
 
@@ -35,7 +36,11 @@ export default function MyPhotos() {
   const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPage, setIsLoadingPage] = useState(false);
+
   const [nextCursor, setNextCursor] = useState<string>();
+  const prevCursor = usePrevious(nextCursor);
+
   const [areTherePictures, setAreThePictures] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
@@ -65,7 +70,7 @@ export default function MyPhotos() {
         ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
         orderBy: orderByKey,
         orderByDir,
-        limit: 10,
+        limit: 30,
         cursor,
       }).then(async (res) => {
         setNextCursor(res.nextCursor);
@@ -82,10 +87,14 @@ export default function MyPhotos() {
         );
 
         setPics((val) =>
-          cursor ? [...val, ...resPics.map(({ url }) => url)] : resPics.map(({ url }) => url)
+          cursor
+            ? [...new Set([...val, ...resPics.map(({ url }) => url)])]
+            : resPics.map(({ url }) => url)
         );
         setPicsInfo((val) =>
-          cursor ? [...val, ...resPics.map(({ pic }) => pic)] : resPics.map(({ pic }) => pic)
+          cursor
+            ? [...new Set([...val, ...resPics.map(({ pic }) => pic)])]
+            : resPics.map(({ pic }) => pic)
         );
 
         if (!areTherePictures) setAreThePictures(pics.length > 0);
@@ -96,12 +105,13 @@ export default function MyPhotos() {
       setIsLoading(false);
       setIsFetchingFilter(false);
       isLoadingPageRef.current = false;
+      setIsLoadingPage(false);
     }
   };
 
   useEffect(() => {
     const handleScroll = () => {
-      const THRESHOLD = 50;
+      const THRESHOLD = 300;
 
       if (
         window.innerHeight + document.documentElement.scrollTop <
@@ -113,6 +123,7 @@ export default function MyPhotos() {
 
       if (nextCursor) {
         isLoadingPageRef.current = true;
+        setIsLoadingPage(true);
         getPictures(nextCursor);
       }
     };
@@ -208,6 +219,10 @@ export default function MyPhotos() {
     setSortValue(selectedOption);
   };
 
+  const updatePicturesAfterDelete = () => {
+    return getPictures(prevCursor);
+  };
+
   const EmptyPlaceholder = () => {
     return (
       <div className="flex flex-col items-center">
@@ -246,7 +261,7 @@ export default function MyPhotos() {
         isOpen={isOpenDelete}
         picToDeleteIndex={picToDeleteIndex}
         onClose={handleCloseDeleteModal}
-        getPictures={getPictures}
+        getPictures={updatePicturesAfterDelete}
         picsInfo={picsInfo}
         setPics={setPics}
         setPicsInfo={setPicsInfo}
@@ -347,6 +362,7 @@ export default function MyPhotos() {
           </>
         )}
       </div>
+      {isLoadingPage && <Spinner />}
     </>
   );
 }

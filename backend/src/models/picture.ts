@@ -5,7 +5,7 @@ import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
-import { decrypt, encrypt } from "@/helpers/crypto";
+import { base64ToString, toBase64 } from "@/helpers/crypto";
 
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
@@ -274,7 +274,7 @@ async function getPicturesWithPercentile(
   }
 
   // cursor
-  const decryptedCursor = cursor !== undefined ? decrypt(cursor) : undefined;
+  const decryptedCursor = cursor !== undefined ? base64ToString(cursor) : undefined;
   if (decryptedCursor !== undefined && decryptedCursor.split(",").length === 2) {
     const [cursorId, cursorMainField] = decryptedCursor.split(",");
 
@@ -296,11 +296,11 @@ async function getPicturesWithPercentile(
     } else {
       if (useHaving) {
         havingQuery.push(
-          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ))`
+          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ) OR ${firstOrderBy.orderByField} IS NULL)`
         );
       } else {
         whereQuery.push(
-          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ))`
+          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ) OR ${firstOrderBy.orderByField} IS NULL)`
         );
       }
     }
@@ -355,7 +355,7 @@ async function getPicturesWithPercentile(
 
   return {
     pictures: picturesWithoutCursor,
-    nextCursor: nextCursor ? encrypt(nextCursor) : undefined,
+    nextCursor: nextCursor ? toBase64(nextCursor) : undefined,
   };
 }
 
