@@ -8,35 +8,50 @@ datasource db {
 }
 
 model User {
-  id                          String    @id @default(uuid())
+  id                          String      @id @default(uuid())
   name                        String
-  email                       String    @unique
+  email                       String      @unique
   password                    String?
   googleId                    String?
   facebookId                  String?
   ethnicity                   String?
   countryOfOrigin             String?
   dateOfBirth                 String?
-  gender                      Gender?   @default(Male)
-  role                        UserRole  @default(REGULAR)
-  isProfileCompleted          Boolean   @default(false)
-  isEmailVerified             Boolean   @default(false)
-  isBanned                    Boolean   @default(false)
+  gender                      Gender?     @default(Male)
+  role                        UserRole    @default(REGULAR)
+  isProfileCompleted          Boolean     @default(false)
+  isEmailVerified             Boolean     @default(false)
+  isBanned                    Boolean     @default(false)
   verificationToken           String?
   verificationTokenExpiration DateTime?
   resetPasswordToken          String?
   resetPasswordExpiration     DateTime?
-  activeMatch                 Match?    @relation(name: "activeMatch")
+  activeMatch                 Match?      @relation(name: "activeMatch")
   pictures                    Picture[]
-  votes                       Vote[]    @relation(name: "voter")
+  votes                       Vote[]      @relation(name: "voter")
   reports                     Report[]
-  createdAt                   DateTime  @default(now())
-  updatedAt                   DateTime  @updatedAt
+  preference                  Preference?
+  createdAt                   DateTime    @default(now())
+  updatedAt                   DateTime    @updatedAt
 }
 
 enum UserRole {
   ADMIN
   REGULAR
+}
+
+model Preference {
+  id             String   @id @default(uuid())
+  contentMinAge  Int?
+  contentMaxAge  Int?
+  contentGender  Gender?
+  exposureMinAge Int?
+  exposureMaxAge Int?
+  exposureGender Gender?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userId         String   @unique
 }
 
 enum Gender {
