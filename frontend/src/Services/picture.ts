@@ -9,10 +9,13 @@ export const getManyPictures = async (
     isBanned?: boolean;
     orderBy?: string;
     orderByDir?: string;
+    limit?: number;
+    cursor?: string;
   } = {}
 ): Promise<IGetManyPictures> => {
   return api.get(
     `/pictures?${Object.entries(queryParams)
+      .filter(([_, value]) => value !== undefined)
       .map(([key, value]) => `${key}=${value}`)
       .join("&")}`
   );

@@ -40,7 +40,7 @@ export const getMany = async (req: Request, res: Response) => {
     throw new BadRequestError("Cannot call belongsToMe and userId simulataneously");
   }
 
-  const pictures = await PictureModel.getPicturesWithPercentile(
+  const { pictures, nextCursor } = await PictureModel.getPicturesWithPercentile(
     userId,
     loggedUser.id,
     loggedUser.role,
@@ -56,6 +56,7 @@ export const getMany = async (req: Request, res: Response) => {
 
   res.status(200).json({
     pictures: picturesWithOmmited,
+    nextCursor,
   });
 };
 

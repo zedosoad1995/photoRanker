@@ -23,4 +23,5 @@ export interface PictureRes {
 
 export interface IGetManyPictures {
   pictures: IPictureWithPercentile[];
+  nextCursor: string | undefined;
 }

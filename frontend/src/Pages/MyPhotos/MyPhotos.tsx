@@ -35,11 +35,14 @@ export default function MyPhotos() {
   const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState<string>();
   const [areTherePictures, setAreThePictures] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
   const [isOpenBan, setIsOpenBan] = useState(false);
   const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
+
+  const isLoadingPageRef = useRef(false);
 
   const [isFetchingFilter, setIsFetchingFilter] = useState(false);
 
@@ -48,9 +51,11 @@ export default function MyPhotos() {
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
 
-  const getPictures = async () => {
+  const getPictures = async (cursor?: string) => {
     try {
       if (!loggedUser) return;
+
+      isLoadingPageRef.current = true;
 
       const orderByKey = sortValue.split(" ")[0];
       const orderByDir = sortValue.split(" ")[1];
@@ -60,7 +65,11 @@ export default function MyPhotos() {
         ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
         orderBy: orderByKey,
         orderByDir,
+        limit: 10,
+        cursor,
       }).then(async (res) => {
+        setNextCursor(res.nextCursor);
+
         const resPics = await Promise.all(
           res.pictures.map(async (pic) => {
             const { url } = await queryClient.fetchQuery(["getImage", pic.filepath], {
@@ -72,8 +81,12 @@ export default function MyPhotos() {
           })
         );
 
-        setPics(resPics.map(({ url }) => url));
-        setPicsInfo(resPics.map(({ pic }) => pic));
+        setPics((val) =>
+          cursor ? [...val, ...resPics.map(({ url }) => url)] : resPics.map(({ url }) => url)
+        );
+        setPicsInfo((val) =>
+          cursor ? [...val, ...resPics.map(({ pic }) => pic)] : resPics.map(({ pic }) => pic)
+        );
 
         if (!areTherePictures) setAreThePictures(pics.length > 0);
       });
@@ -82,8 +95,31 @@ export default function MyPhotos() {
     } finally {
       setIsLoading(false);
       setIsFetchingFilter(false);
+      isLoadingPageRef.current = false;
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const THRESHOLD = 50;
+
+      if (
+        window.innerHeight + document.documentElement.scrollTop <
+          document.documentElement.scrollHeight - THRESHOLD ||
+        isLoadingPageRef.current
+      ) {
+        return;
+      }
+
+      if (nextCursor) {
+        isLoadingPageRef.current = true;
+        getPictures(nextCursor);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [nextCursor]);
 
   useEffect(() => {
     getPictures();
@@ -150,6 +186,10 @@ export default function MyPhotos() {
     setIsFetchingFilter(true);
     setFilterSelectedOption((val) => {
       if (val === selectedOption) {
+        if (val === "hasReport" && sortValue.includes("reportedDate")) {
+          setSortValue(DEFAULT_SORT);
+        }
+
         return "";
       }
 

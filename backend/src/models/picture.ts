@@ -5,6 +5,7 @@ import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
+import { decrypt, encrypt } from "@/helpers/crypto";
 
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
@@ -163,7 +164,7 @@ function getPicturesWithClosestElos(
 }
 
 // TODO: Improve this function code
-function getPicturesWithPercentile(
+async function getPicturesWithPercentile(
   userId: string | undefined,
   loggedUserId: string,
   role: string,
@@ -173,14 +174,22 @@ function getPicturesWithPercentile(
   limit: number | undefined,
   cursor: string | undefined,
   orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
-): Promise<(Picture & { percentile: number })[]> {
+): Promise<{ pictures: (Picture & { percentile: number })[]; nextCursor: string | undefined }> {
   const whereQuery: (boolean | string)[] = [true];
+  const havingQuery: string[] = [];
   const joinQuery: string[] = [];
   let groupByQuery = "";
-  let orderByField = "pic_perc.percentile";
-  let orderByDir: ORDER_BY_DIR_OPTIONS_TYPE = "desc";
+  const orderByQuery: { orderByField: string; orderByDir: ORDER_BY_DIR_OPTIONS_TYPE }[] = [
+    { orderByField: "pic_perc.percentile", orderByDir: "desc" },
+    { orderByField: "pic.id", orderByDir: "asc" },
+  ];
+
   const orderKey = Object.keys(orderByObj)[0];
   const orderValue = Object.values(orderByObj)[0];
+  const extraSelectField = [];
+
+  let orderType: "date" | "number" = "number";
+  let useHaving = false;
 
   const PIC_GROUP_BY =
     (getAllColumnNames() ?? ["id"]).map((col) => `pic."${col}"`).join(", ") +
@@ -209,11 +218,14 @@ function getPicturesWithPercentile(
   // Sorting
   if (["score", "numVotes", "createdAt"].includes(orderKey)) {
     if (orderKey === "score") {
-      orderByField = `pic_perc.percentile`;
+      orderByQuery[0].orderByField = `pic_perc.percentile`;
     } else {
-      orderByField = `pic."${orderKey}"`;
+      orderByQuery[0].orderByField = `pic."${orderKey}"`;
     }
-    orderByDir = orderValue;
+    orderByQuery[0].orderByDir = orderValue;
+    if (orderKey === "createdAt") {
+      orderType = "date";
+    }
   }
 
   if (isAdmin(role)) {
@@ -241,21 +253,71 @@ function getPicturesWithPercentile(
       joinQuery.push(REPORT_LEFT_JOIN);
       whereQuery.push(`report.id IS NOT NULL`);
       groupByQuery = `GROUP BY ${PIC_GROUP_BY}`;
-      orderByField = `MAX(report."createdAt")`;
-      orderByDir = orderValue;
+      orderByQuery[0].orderByField = `MAX(report."createdAt")`;
+      orderByQuery[0].orderByDir = orderValue;
+      orderType = "date";
+      useHaving = true;
     }
   }
 
   // Limit
-  const limitQuery = limit != undefined ? `LIMIT ${limit}` : "";
-
-  // cursor
-  if (cursor) {
-    whereQuery.push(`${orderByField} ${orderByDir === "asc" ? ">" : "<"} ${cursor}`);
+  let limitQuery = "";
+  if (limit !== undefined) {
+    limitQuery = `LIMIT ${limit + 1}`;
+    if (orderType === "date") {
+      extraSelectField.push(
+        `to_char(${orderByQuery[0].orderByField}, 'YYYY-MM-DD HH24:MI:SS.MS') AS cursor`
+      );
+    } else {
+      extraSelectField.push(`${orderByQuery[0].orderByField} AS cursor`);
+    }
   }
 
-  return prisma.$queryRawUnsafe(`
-      SELECT pic.*, pic_perc.percentile
+  // cursor
+  const decryptedCursor = cursor !== undefined ? decrypt(cursor) : undefined;
+  if (decryptedCursor !== undefined && decryptedCursor.split(",").length === 2) {
+    const [cursorId, cursorMainField] = decryptedCursor.split(",");
+
+    const firstOrderBy = orderByQuery[0];
+    const sign = firstOrderBy.orderByDir === "asc" ? ">" : "<";
+
+    let transformedMainField: any = cursorMainField;
+
+    if (orderType === "date") {
+      transformedMainField = `'${new Date(cursorMainField + "Z").toISOString()}'`;
+    }
+
+    if (transformedMainField === "null") {
+      if (useHaving) {
+        havingQuery.push(`${firstOrderBy.orderByField} IS NULL AND pic.id > '${cursorId}'`);
+      } else {
+        whereQuery.push(`${firstOrderBy.orderByField} IS NULL AND pic.id > '${cursorId}'`);
+      }
+    } else {
+      if (useHaving) {
+        havingQuery.push(
+          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ))`
+        );
+      } else {
+        whereQuery.push(
+          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ))`
+        );
+      }
+    }
+  }
+
+  orderByQuery[0].orderByDir += " NULLS LAST";
+  const orderBy = orderByQuery.reduce((acc, el, index) => {
+    return acc + `${index > 0 ? "," : ""} ${el.orderByField} ${el.orderByDir}`;
+  }, "");
+
+  const having = havingQuery.length > 0 ? `HAVING ${havingQuery.join(" AND ")}` : "";
+
+  const pictures: (Picture & { percentile: number } & { cursor?: any })[] =
+    await prisma.$queryRawUnsafe(`
+      SELECT pic.*, pic_perc.percentile ${
+        extraSelectField.length > 0 ? ", " + extraSelectField.join(", ") : ""
+      }
       FROM "Picture" AS pic
       LEFT JOIN (
         SELECT 
@@ -272,8 +334,29 @@ function getPicturesWithPercentile(
       WHERE 
         ${whereQuery.join(" AND ")}
       ${groupByQuery}
-      ORDER BY ${orderByField} ${orderByDir} NULLS LAST
+      ${having}
+      ORDER BY ${orderBy}
       ${limitQuery};`);
+
+  const isLast = limit !== undefined && pictures.length < limit + 1;
+
+  const picturesWithoutLast = isLast ? pictures : pictures.slice(0, -1);
+
+  let nextCursor: string | undefined;
+  if (!isLast && limit !== undefined) {
+    const lastPic = picturesWithoutLast[picturesWithoutLast.length - 1];
+
+    if (lastPic.cursor !== undefined) {
+      nextCursor = lastPic.id + "," + String(lastPic.cursor);
+    }
+  }
+
+  const picturesWithoutCursor = picturesWithoutLast.map((pic) => _.omit(pic, "cursor"));
+
+  return {
+    pictures: picturesWithoutCursor,
+    nextCursor: nextCursor ? encrypt(nextCursor) : undefined,
+  };
 }
 
 function getAllColumnNames() {

@@ -64,7 +64,7 @@ export default function Vote() {
   };
 
   useEffect(() => {
-    getMatch().catch(() => {
+    getMatch().finally(() => {
       setIsLoadingMatch(false);
       setIsLoadingPic1(false);
       setIsLoadingPic2(false);

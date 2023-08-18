@@ -7,7 +7,10 @@ export const getManyPicturesSchema = z
     belongsToMe: z.enum(["false", "true", ""]),
     isBanned: z.enum(["false", "true", ""]),
     userId: z.string(),
-    limit: z.number().min(1),
+    limit: z
+      .string()
+      .refine((limit) => !isNaN(parseInt(limit)), "Expected number")
+      .refine((limit) => parseInt(limit) > 0, "Must be greater than zero"),
     cursor: z.string(),
     orderBy: z.enum(["score", "numVotes", "createdAt", "reportedDate"]),
     orderByDir: z.enum(Object.values(ORDER_BY_DIR) as unknown as [string, ...string[]]),
