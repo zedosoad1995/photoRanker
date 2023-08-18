@@ -338,12 +338,12 @@ async function getPicturesWithPercentile(
       ORDER BY ${orderBy}
       ${limitQuery};`);
 
-  const isLast = limit !== undefined && pictures.length < limit + 1;
+  const hasMore = limit !== undefined && pictures.length === limit + 1;
 
-  const picturesWithoutLast = isLast ? pictures : pictures.slice(0, -1);
+  const picturesWithoutLast = hasMore ? pictures.slice(0, -1) : pictures;
 
   let nextCursor: string | undefined;
-  if (!isLast && limit !== undefined) {
+  if (hasMore) {
     const lastPic = picturesWithoutLast[picturesWithoutLast.length - 1];
 
     if (lastPic.cursor !== undefined) {
