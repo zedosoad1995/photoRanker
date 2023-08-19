@@ -42,10 +42,10 @@ enum UserRole {
 
 model Preference {
   id             String   @id @default(uuid())
-  contentMinAge  Int?
+  contentMinAge  Int      @default(18)
   contentMaxAge  Int?
   contentGender  Gender?
-  exposureMinAge Int?
+  exposureMinAge Int      @default(18)
   exposureMaxAge Int?
   exposureGender Gender?
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
