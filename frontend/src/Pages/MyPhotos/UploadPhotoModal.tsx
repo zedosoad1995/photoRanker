@@ -84,7 +84,6 @@ export default function UploadPhotoModal({
           </div>
           <div className="mb-4 mt-1">
             <input
-              id="default-range"
               type="range"
               min="1"
               max="3"
@@ -93,7 +92,7 @@ export default function UploadPhotoModal({
               onChange={(event) => {
                 setZoom(Number(event.currentTarget.value));
               }}
-              className="bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 w-full h-1"
+              className="bg-gray-200 rounded-lg appearance-none cursor-pointer  w-full h-1"
             />
           </div>
           <div className="mb-6">

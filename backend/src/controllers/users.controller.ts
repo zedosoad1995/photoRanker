@@ -83,7 +83,7 @@ export const createOne = async (req: Request, res: Response) => {
     data: {
       ...req.body,
       preference: {
-        create: true,
+        create: {},
       },
       password: hashedPassword,
       isProfileCompleted: true,
@@ -148,7 +148,7 @@ export const createProfile = async (req: Request, res: Response) => {
     data: {
       ...body,
       preference: {
-        create: true,
+        create: {},
       },
       isProfileCompleted: true,
     },

@@ -17,6 +17,7 @@ router.patch(
   checkBanned,
   checkProfileCompleted,
   checkEmailVerified,
+  // @ts-ignore
   validateForm(updatePreferenceSchema),
   updateOne
 );
