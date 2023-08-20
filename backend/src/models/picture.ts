@@ -290,6 +290,9 @@ async function getPicturesWithPercentile(
   hasReport: boolean | undefined,
   belongsToMe: boolean | undefined,
   isBanned: boolean | undefined,
+  gender: string | undefined,
+  minAge: number | undefined,
+  maxAge: number | undefined,
   limit: number | undefined,
   cursor: string | undefined,
   orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
@@ -365,6 +368,22 @@ async function getPicturesWithPercentile(
 
     if (belongsToMe !== undefined) {
       whereQuery.push(`pic."userId" ${belongsToMe ? "=" : "!="} '${loggedUserId}'`);
+    }
+
+    if (gender) {
+      whereQuery.push(`usr.gender = '${gender}'`);
+    }
+
+    if (minAge) {
+      whereQuery.push(
+        `usr."dateOfBirth" < '${formatDate(adjustDate(new Date(), { years: -minAge, days: 1 }))}'`
+      );
+    }
+
+    if (maxAge) {
+      whereQuery.push(
+        `usr."dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`
+      );
     }
 
     // Sorting
