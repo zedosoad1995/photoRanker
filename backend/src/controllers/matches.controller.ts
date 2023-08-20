@@ -1,12 +1,22 @@
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
+import { PreferenceModel } from "@/models/preference";
 import { RatingRepo } from "@/types/ratingRepo";
 import { Request, Response } from "express";
 
 export const createOne = (ratingRepo: RatingRepo) => async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  var [picture1, picture2] = await PictureModel.getMatchWithClosestEloStrategy(loggedUser.id);
+  const userPreferences = await PreferenceModel.findUnique({
+    where: {
+      userId: loggedUser.id,
+    },
+  });
+
+  var [picture1, picture2] = await PictureModel.getMatchWithClosestEloStrategy(
+    loggedUser,
+    userPreferences
+  );
 
   const match = await MatchModel.upsert({
     update: {

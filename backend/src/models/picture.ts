@@ -1,11 +1,12 @@
 import _ from "underscore";
 import { prisma } from ".";
-import { Picture, Prisma } from "@prisma/client";
+import { Picture, Preference, Prisma, User } from "@prisma/client";
 import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
+import { adjustDate, calculateAge, formatDate } from "@/helpers/date";
 
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
@@ -80,7 +81,10 @@ function getRandomPicture(numPictures: number, loggedUserId: string, opponentPic
   });
 }
 
-const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
+const getMatchWithClosestEloStrategy = async (
+  loggedUser: User,
+  userPreferences: Preference | null
+) => {
   const MAX_RETRIEVED_PICS = 100;
 
   const numPictures = await prisma.picture.count({
@@ -88,7 +92,7 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
       AND: [
         {
           userId: {
-            not: loggedUserId,
+            not: loggedUser.id,
           },
         },
         {
@@ -104,18 +108,94 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
     throw new BadRequestError("Not enought pictures for the match");
   }
 
-  // Get picture with the least amount of votes
+  const preferencesQuery: Prisma.UserWhereInput[] = [];
+
+  if (userPreferences) {
+    if (userPreferences.contentGender) {
+      preferencesQuery.push({
+        gender: userPreferences.contentGender,
+      });
+    }
+
+    if (userPreferences.contentMaxAge) {
+      preferencesQuery.push({
+        dateOfBirth: {
+          gt: formatDate(adjustDate(new Date(), { years: -userPreferences.contentMaxAge - 1 })),
+        },
+      });
+    }
+
+    preferencesQuery.push({
+      dateOfBirth: {
+        lt: formatDate(adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })),
+      },
+    });
+  }
+
+  const preferencesVoterQuery: Prisma.PreferenceWhereInput[] = [];
+
+  preferencesVoterQuery.push({
+    OR: [
+      {
+        exposureGender: loggedUser.gender,
+      },
+      {
+        exposureGender: null,
+      },
+    ],
+  });
+
+  if (loggedUser.dateOfBirth) {
+    const loggedUserAge = calculateAge(loggedUser.dateOfBirth);
+
+    preferencesVoterQuery.push({
+      OR: [
+        {
+          exposureMaxAge: {
+            gte: loggedUserAge,
+          },
+        },
+        {
+          exposureMaxAge: null,
+        },
+      ],
+    });
+
+    preferencesVoterQuery.push({
+      OR: [
+        {
+          exposureMinAge: {
+            lte: loggedUserAge,
+          },
+        },
+      ],
+    });
+  }
+
+  // Get picture with the least amount of votes. And in the preferences
   const picture1 = await prisma.picture.findFirst({
     where: {
       AND: [
         {
           userId: {
-            not: loggedUserId,
+            not: loggedUser.id,
           },
         },
         {
           user: {
             isBanned: false,
+          },
+        },
+        {
+          user: {
+            AND: preferencesQuery,
+          },
+        },
+        {
+          user: {
+            preference: {
+              AND: preferencesVoterQuery,
+            },
           },
         },
       ],
@@ -129,7 +209,12 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
     throw new BadRequestError("Not enought pictures for the match");
   }
 
-  let pictures = await getPicturesWithClosestElos(picture1, loggedUserId, MAX_RETRIEVED_PICS);
+  let pictures = await getPicturesWithClosestElos(
+    picture1,
+    loggedUser,
+    MAX_RETRIEVED_PICS,
+    userPreferences
+  );
   if (pictures.length === 0) {
     throw new BadRequestError("Not enought pictures for the match");
   }
@@ -146,21 +231,61 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
 
 function getPicturesWithClosestElos(
   opponentPicture: Picture,
-  loggedUserId: string,
-  limit: number
+  loggedUser: User,
+  limit: number,
+  userPreferences: Preference | null
 ): Promise<(Picture & { abs_diff: number })[]> {
-  return prisma.$queryRaw(
-    Prisma.sql`
+  const whereQuery: string[] = [];
+
+  if (userPreferences) {
+    if (userPreferences.contentGender) {
+      whereQuery.push(`usr.gender = '${userPreferences.contentGender}'`);
+    }
+
+    if (userPreferences.contentMaxAge) {
+      whereQuery.push(
+        `usr."dateOfBirth" > '${formatDate(
+          adjustDate(new Date(), { years: -userPreferences.contentMaxAge - 1 })
+        )}'`
+      );
+    }
+
+    whereQuery.push(
+      `usr."dateOfBirth" < '${formatDate(
+        adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })
+      )}'`
+    );
+  }
+
+  whereQuery.push(
+    `(preference."exposureGender" = '${loggedUser.gender}' OR preference."exposureGender" IS NULL)`
+  );
+
+  if (loggedUser.dateOfBirth) {
+    const loggedUserAge = calculateAge(loggedUser.dateOfBirth);
+
+    whereQuery.push(
+      `(preference."exposureMaxAge" >= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
+    );
+
+    whereQuery.push(
+      `(preference."exposureMinAge" <= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
+    );
+  }
+
+  const where = whereQuery.length ? "AND " + whereQuery.join(" AND ") : "";
+
+  return prisma.$queryRawUnsafe(`
       SELECT pic.*,
         ABS(${opponentPicture.rating.toFixed(2)}::numeric  - pic.rating) as abs_diff
       FROM "Picture" AS pic
       INNER JOIN "User" AS usr ON pic."userId" = usr.id
-      WHERE pic."userId" != ${loggedUserId} AND pic.id != ${
-      opponentPicture.id
-    } AND usr."isBanned" = FALSE
+      INNER JOIN "Preference" AS preference ON usr.id = preference."userId"
+      WHERE pic."userId" != '${loggedUser.id}' AND pic.id != '${
+    opponentPicture.id
+  }' AND usr."isBanned" = FALSE ${where}
       ORDER BY abs_diff ASC
-      LIMIT ${limit};`
-  );
+      LIMIT ${limit};`);
 }
 
 // TODO: Improve this function code

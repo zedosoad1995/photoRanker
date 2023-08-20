@@ -170,8 +170,18 @@ const MultipleRangeSlider = ({
     setHighlightWidth(width);
     setInitialLeft(computePosition(initialValue[0], sliderLeftHandleRef) + "px");
     setInitialRight(computePosition(initialValue[1], sliderRightHandleRef) + "px");
-    setIsInitialized(true);
   }, []);
+
+  useEffect(() => {
+    if (
+      highlightLeft.length &&
+      highlightWidth.length &&
+      initialLeft.length &&
+      initialRight.length
+    ) {
+      setIsInitialized(true);
+    }
+  }, [highlightLeft, highlightWidth, initialLeft, initialRight]);
 
   useEffect(() => {
     const updateHandlePositions = () => {
@@ -194,7 +204,7 @@ const MultipleRangeSlider = ({
   return (
     <div
       onClick={handleClickTrack}
-      className={`relative cursor-pointer h-5 ${isInitialized ? "" : "h-0"}`}
+      className={`relative cursor-pointer h-5 ${isInitialized ? "visible" : "invisible"}`}
       ref={sliderContainerRef}
     >
       <div className="bg-gray-200 rounded-lg w-full h-1 absolute top-1/2 transform -translate-y-1/2"></div>
