@@ -88,7 +88,6 @@ const getMatchWithClosestEloStrategy = async (
   userPreferences: Preference | null
 ) => {
   const MAX_RETRIEVED_PICS = 100;
-  const isMale = Math.random() > 0.5;
 
   const preferencesQuery: Prisma.UserWhereInput[] = [];
 
@@ -111,12 +110,6 @@ const getMatchWithClosestEloStrategy = async (
       dateOfBirth: {
         lt: formatDate(adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })),
       },
-    });
-  }
-
-  if (!userPreferences?.contentGender) {
-    preferencesQuery.push({
-      gender: isMale ? Gender.Male : Gender.Female,
     });
   }
 
@@ -191,6 +184,9 @@ const getMatchWithClosestEloStrategy = async (
     orderBy: {
       numVotes: "asc",
     },
+    include: {
+      user: true,
+    },
   });
 
   if (!picture1) {
@@ -202,7 +198,7 @@ const getMatchWithClosestEloStrategy = async (
     loggedUser,
     MAX_RETRIEVED_PICS,
     userPreferences,
-    isMale
+    picture1.user.gender
   );
   if (pictures.length === 0) {
     throw new BadRequestError("Not enought pictures for the match");
@@ -223,7 +219,7 @@ function getPicturesWithClosestElos(
   loggedUser: User,
   limit: number,
   userPreferences: Preference | null,
-  isMale: boolean
+  gender: string | null
 ): Promise<(Picture & { abs_diff: number })[]> {
   const whereQuery: string[] = [];
 
@@ -247,8 +243,8 @@ function getPicturesWithClosestElos(
     );
   }
 
-  if (!userPreferences?.contentGender) {
-    whereQuery.push(`usr.gender = '${isMale ? Gender.Male : Gender.Female}'`);
+  if (!userPreferences?.contentGender && gender) {
+    whereQuery.push(`usr.gender = '${gender}'`);
   }
 
   whereQuery.push(
