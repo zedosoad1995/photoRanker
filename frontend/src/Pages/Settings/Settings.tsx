@@ -1,6 +1,6 @@
 import Button from "@/Components/Button";
 import DeleteAccountModal from "./DeleteAccountModal";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { deleteMe } from "@/Services/user";
 import { useAuth } from "@/Contexts/auth";
 import { isAdmin } from "@/Utils/role";
@@ -10,13 +10,13 @@ import { getPreferences, updatePreferences } from "@/Services/preference";
 import { GENDER, MIN_AGE } from "@shared/constants/user";
 import { IUpdatePreferencesBody } from "@/Types/preference";
 import { Spinner } from "@/Components/Loading/Spinner";
+import { debounce } from "underscore";
 
 export default function Settings() {
   const { user, logout } = useAuth();
 
-  const preferencesRef = useRef<IUpdatePreferencesBody>();
-
   const [isLoading, setIsLoading] = useState(true);
+  const [canUpdate, setCanUpdate] = useState(false);
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
 
   const [contentGender, setContentGender] = useState<(typeof GENDER)[keyof typeof GENDER] | null>(
@@ -34,6 +34,14 @@ export default function Settings() {
   const [initialExposureMaxAge, setInitialExposureMaxAge] = useState<number | null>(null);
   const [exposureMinAge, setExposureMinAge] = useState(MIN_AGE);
   const [exposureMaxAge, setExposureMaxAge] = useState<number | null>(null);
+
+  const debouncedUpdatePreferences = useCallback(
+    debounce(
+      (userId: string, body: IUpdatePreferencesBody) => updatePreferences(userId, body),
+      1000
+    ),
+    [updatePreferences]
+  );
 
   const handleOpenDeleteAccountModal = () => {
     setIsDeleteAccountModalOpen(true);
@@ -87,25 +95,35 @@ export default function Settings() {
   }, [user]);
 
   useEffect(() => {
-    preferencesRef.current = {
+    if (isLoading) {
+      return;
+    }
+
+    setCanUpdate(true);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!user || !canUpdate) {
+      return;
+    }
+
+    debouncedUpdatePreferences(user.id, {
       contentGender,
       contentMaxAge,
       contentMinAge,
       exposureGender,
       exposureMaxAge,
       exposureMinAge,
-    };
-  }, [contentGender, contentMaxAge, contentMinAge, exposureGender, exposureMaxAge, exposureMinAge]);
-
-  useEffect(() => {
-    return () => {
-      if (!user || !preferencesRef.current || isLoading) {
-        return;
-      }
-
-      updatePreferences(user.id, preferencesRef.current);
-    };
-  }, [user, isLoading]);
+    });
+  }, [
+    user,
+    contentGender,
+    contentMaxAge,
+    contentMinAge,
+    exposureGender,
+    exposureMaxAge,
+    exposureMinAge,
+  ]);
 
   return (
     <>
