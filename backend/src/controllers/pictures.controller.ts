@@ -45,8 +45,7 @@ export const getMany = async (req: Request, res: Response) => {
 
   const { pictures, nextCursor } = await PictureModel.getPicturesWithPercentile(
     userId,
-    loggedUser.id,
-    loggedUser.role,
+    loggedUser,
     hasReport,
     belongsToMe,
     isBanned,

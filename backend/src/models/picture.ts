@@ -285,8 +285,7 @@ function getPicturesWithClosestElos(
 // TODO: Improve this function code
 async function getPicturesWithPercentile(
   userId: string | undefined,
-  loggedUserId: string,
-  role: string,
+  loggedUser: User,
   hasReport: boolean | undefined,
   belongsToMe: boolean | undefined,
   isBanned: boolean | undefined,
@@ -297,6 +296,9 @@ async function getPicturesWithPercentile(
   cursor: string | undefined,
   orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
 ): Promise<{ pictures: (Picture & { percentile: number })[]; nextCursor: string | undefined }> {
+  const loggedUserId = loggedUser.id;
+  const role = loggedUser.role;
+
   const whereQuery: (boolean | string)[] = [true];
   const havingQuery: string[] = [];
   const joinQuery: string[] = [];
@@ -329,6 +331,12 @@ async function getPicturesWithPercentile(
   const NO_BANNED_USERS_WHERE = `usr."isBanned" is FALSE`;
   let joinInnerQuery: string[] = [USER_JOIN];
   let whereInnerQuery: string[] = [`pic."numVotes" > 0`, NO_BANNED_USERS_WHERE];
+
+  if (isRegular(role) || belongsToMe) {
+    whereInnerQuery.push(`usr.gender = '${loggedUser.gender}'`);
+  } else if (gender) {
+    whereInnerQuery.push(`usr.gender = '${gender}'`);
+  }
 
   // Filtering
   if (userId) {
