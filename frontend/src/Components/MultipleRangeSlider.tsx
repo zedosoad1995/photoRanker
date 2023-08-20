@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 interface IMultipleRangeSlider {
   initialValue: [number, number];
@@ -23,6 +23,12 @@ const MultipleRangeSlider = ({
   const leftValueRef = useRef(initialValue[0]);
   const rightValueRef = useRef(initialValue[1]);
   const betweenTrailRef = useRef<HTMLDivElement>(null);
+
+  const [initialLeft, setInitialLeft] = useState("");
+  const [initialRight, setInitialRight] = useState("");
+  const [highlightLeft, setHighlightLeft] = useState("");
+  const [highlightWidth, setHighlightWidth] = useState("");
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const moveHandle = (
     e: React.MouseEvent | MouseEvent,
@@ -134,44 +140,84 @@ const MultipleRangeSlider = ({
     };
   }, []);
 
-  useEffect(() => {
-    setInitialHighlight();
-  }, []);
+  const computePosition = (val: number, ref: React.RefObject<HTMLDivElement>) => {
+    if (!sliderContainerRef.current || !ref.current) return 0;
 
-  const setInitialHighlight = () => {
-    if (!sliderLeftHandleRef.current || !sliderRightHandleRef.current || !betweenTrailRef.current)
-      return;
-
-    const leftHandlePosition = sliderLeftHandleRef.current.offsetLeft;
-    const rightHandlePosition = sliderRightHandleRef.current.offsetLeft;
-
-    const highlightWidth = rightHandlePosition - leftHandlePosition;
-    betweenTrailRef.current.style.left =
-      leftHandlePosition + sliderLeftHandleRef.current.offsetWidth / 2 + "px";
-    betweenTrailRef.current.style.width = highlightWidth + "px";
+    const containerWidth =
+      sliderContainerRef.current.getBoundingClientRect().width - ref.current.offsetWidth;
+    const position = ((val - min) / (max - min)) * containerWidth;
+    return position;
   };
 
+  const computeHighlighter = (left: number, right: number) => {
+    if (!sliderContainerRef.current || !sliderLeftHandleRef.current) return ["0", "0"];
+
+    const containerWidth =
+      sliderContainerRef.current.getBoundingClientRect().width -
+      sliderLeftHandleRef.current.offsetWidth;
+
+    const positionLeft =
+      ((left - min) / (max - min)) * containerWidth + sliderLeftHandleRef.current.offsetWidth / 2;
+    const width =
+      ((right - left) / (max - min)) * containerWidth + sliderLeftHandleRef.current.offsetWidth / 2;
+
+    return [positionLeft + "px", width + "px"];
+  };
+
+  useEffect(() => {
+    const [left, width] = computeHighlighter(initialValue[0], initialValue[1]);
+    setHighlightLeft(left);
+    setHighlightWidth(width);
+    setInitialLeft(computePosition(initialValue[0], sliderLeftHandleRef) + "px");
+    setInitialRight(computePosition(initialValue[1], sliderRightHandleRef) + "px");
+    setIsInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    const updateHandlePositions = () => {
+      const [left, width] = computeHighlighter(leftValueRef.current, rightValueRef.current);
+      setHighlightLeft(left);
+      setHighlightWidth(width);
+      setInitialLeft(computePosition(leftValueRef.current, sliderLeftHandleRef) + "px");
+      setInitialRight(computePosition(rightValueRef.current, sliderRightHandleRef) + "px");
+    };
+
+    window.addEventListener("resize", updateHandlePositions);
+
+    return () => {
+      window.removeEventListener("resize", updateHandlePositions);
+    };
+  }, []);
+
+  const areBothMax = leftValueRef.current === rightValueRef.current && leftValueRef.current === max;
+
   return (
-    <div onClick={handleClickTrack} className="relative cursor-pointer" ref={sliderContainerRef}>
+    <div
+      onClick={handleClickTrack}
+      className={`relative cursor-pointer h-5 ${isInitialized ? "" : "h-0"}`}
+      ref={sliderContainerRef}
+    >
       <div className="bg-gray-200 rounded-lg w-full h-1 absolute top-1/2 transform -translate-y-1/2"></div>
       <div
         ref={betweenTrailRef}
         className="bg-primary-hover rounded-lg w-full h-[6px] absolute top-1/2 transform -translate-y-1/2"
         style={{
-          left: "0px",
-          width: "opx",
+          left: highlightLeft,
+          width: highlightWidth,
         }}
       ></div>
       <div
         ref={sliderLeftHandleRef}
-        className="w-4 h-4 bg-white border border-normal-contour hover:border-primary rounded-full absolute top-1/2 transform -translate-y-1/2 cursor-pointer"
-        style={{ left: `${((initialValue[0] - min) / (max - min)) * 100}%` }}
+        className={`w-4 h-4 bg-white border border-normal-contour hover:border-primary rounded-full absolute top-1/2 transform -translate-y-1/2 cursor-pointer ${
+          areBothMax ? "z-10" : ""
+        }`}
+        style={{ left: initialLeft }}
         onMouseDown={handleMouseDown(sliderLeftHandleRef)}
       ></div>
       <div
         ref={sliderRightHandleRef}
         className="w-4 h-4 bg-white border border-normal-contour hover:border-primary rounded-full absolute top-1/2 transform -translate-y-1/2 cursor-pointer"
-        style={{ left: `${((initialValue[1] - min) / (max - min)) * 100}%` }}
+        style={{ left: initialRight }}
         onMouseDown={handleMouseDown(sliderRightHandleRef)}
       ></div>
     </div>

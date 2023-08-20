@@ -32,33 +32,37 @@ export const updateOne = async (req: Request, res: Response) => {
     throw new NotFoundError("Preference not found");
   }
 
-  PreferenceModel.checkMinMaxAges(
-    "contentMaxAge",
-    req.body.contentMaxAge,
-    "contentMinAge",
-    currPreference.contentMinAge
-  );
+  if (!req.body.contentMinAge || !req.body.contentMaxAge) {
+    PreferenceModel.checkMinMaxAges(
+      "contentMaxAge",
+      req.body.contentMaxAge,
+      "contentMinAge",
+      currPreference.contentMinAge
+    );
 
-  PreferenceModel.checkMinMaxAges(
-    "contentMinAge",
-    req.body.contentMinAge,
-    "contentMaxAge",
-    currPreference.contentMaxAge
-  );
+    PreferenceModel.checkMinMaxAges(
+      "contentMinAge",
+      req.body.contentMinAge,
+      "contentMaxAge",
+      currPreference.contentMaxAge
+    );
+  }
 
-  PreferenceModel.checkMinMaxAges(
-    "exposureMaxAge",
-    req.body.exposureMaxAge,
-    "exposureMinAge",
-    currPreference.exposureMinAge
-  );
+  if (!req.body.exposureMinAge || !req.body.exposureMaxAge) {
+    PreferenceModel.checkMinMaxAges(
+      "exposureMaxAge",
+      req.body.exposureMaxAge,
+      "exposureMinAge",
+      currPreference.exposureMinAge
+    );
 
-  PreferenceModel.checkMinMaxAges(
-    "exposureMinAge",
-    req.body.exposureMinAge,
-    "exposureMaxAge",
-    currPreference.exposureMaxAge
-  );
+    PreferenceModel.checkMinMaxAges(
+      "exposureMinAge",
+      req.body.exposureMinAge,
+      "exposureMaxAge",
+      currPreference.exposureMaxAge
+    );
+  }
 
   const updatedPreference = await PreferenceModel.update({
     data: req.body,

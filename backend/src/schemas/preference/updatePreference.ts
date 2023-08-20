@@ -20,17 +20,10 @@ export const updatePreferenceSchema = z
   .strict()
   .partial()
   .refine(
-    (data) => data.contentMaxAge && data.contentMinAge && data.contentMaxAge >= data.contentMinAge,
-    {
-      message: "contentMaxAge must be greater than or equal to contentMinAge",
-      path: ["contentMaxAge"],
-    }
-  )
-  .refine(
     (data) =>
-      data.exposureMaxAge && data.exposureMinAge && data.exposureMaxAge >= data.exposureMinAge,
+      !data.contentMaxAge || !data.contentMinAge || data.contentMaxAge >= data.contentMinAge,
     {
-      message: "exposureMaxAge must be greater than or equal to exposureMinAge",
-      path: ["exposureMaxAge"],
+      message: "'contentMaxAge' must be greater or equal than 'contentMinAge'",
+      path: ["contentMaxAge"],
     }
   );

@@ -1,20 +1,39 @@
 import Button from "@/Components/Button";
 import DeleteAccountModal from "./DeleteAccountModal";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { deleteMe } from "@/Services/user";
 import { useAuth } from "@/Contexts/auth";
 import { isAdmin } from "@/Utils/role";
 import ButtonGroup from "@/Components/ButtonGroup";
 import MultipleRangeSlider from "@/Components/MultipleRangeSlider";
+import { getPreferences, updatePreferences } from "@/Services/preference";
+import { GENDER, MIN_AGE } from "@shared/constants/user";
+import { IUpdatePreferencesBody } from "@/Types/preference";
+import { Spinner } from "@/Components/Loading/Spinner";
 
 export default function Settings() {
   const { user, logout } = useAuth();
 
-  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
-  const [showMeGender, setShowMeGender] = useState("Both");
+  const preferencesRef = useRef<IUpdatePreferencesBody>();
 
-  const [left, setLeft] = useState(18);
-  const [right, setRight] = useState(27);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
+
+  const [contentGender, setContentGender] = useState<(typeof GENDER)[keyof typeof GENDER] | null>(
+    null
+  );
+  const [initialContentMinAge, setInitialContentMinAge] = useState(MIN_AGE);
+  const [initialContentMaxAge, setInitialContentMaxAge] = useState<number | null>(null);
+  const [contentMinAge, setContentMinAge] = useState(MIN_AGE);
+  const [contentMaxAge, setContentMaxAge] = useState<number | null>(null);
+
+  const [exposureGender, setExposureGender] = useState<(typeof GENDER)[keyof typeof GENDER] | null>(
+    null
+  );
+  const [initialExposureMinAge, setInitialExposureMinAge] = useState(MIN_AGE);
+  const [initialExposureMaxAge, setInitialExposureMaxAge] = useState<number | null>(null);
+  const [exposureMinAge, setExposureMinAge] = useState(MIN_AGE);
+  const [exposureMaxAge, setExposureMaxAge] = useState<number | null>(null);
 
   const handleOpenDeleteAccountModal = () => {
     setIsDeleteAccountModalOpen(true);
@@ -27,9 +46,66 @@ export default function Settings() {
     setIsDeleteAccountModalOpen(false);
   };
 
-  const handleShowMeGenderSelection = (selectedGender: string) => {
-    setShowMeGender(selectedGender);
+  const handleShowMeGenderSelection = (
+    selectedGender: (typeof GENDER)[keyof typeof GENDER] | "Both"
+  ) => {
+    if (selectedGender === "Both") {
+      setContentGender(null);
+    } else {
+      setContentGender(selectedGender);
+    }
   };
+
+  const handleVoterGenderSelection = (
+    selectedGender: (typeof GENDER)[keyof typeof GENDER] | "Both"
+  ) => {
+    if (selectedGender === "Both") {
+      setExposureGender(null);
+    } else {
+      setExposureGender(selectedGender);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    getPreferences(user.id).then(({ preference }) => {
+      setContentGender(preference.contentGender);
+      setExposureGender(preference.exposureGender);
+      setInitialContentMinAge(preference.contentMinAge);
+      setInitialExposureMinAge(preference.exposureMinAge);
+      setInitialContentMaxAge(preference.contentMaxAge);
+      setInitialExposureMaxAge(preference.exposureMaxAge);
+      setContentMinAge(preference.contentMinAge);
+      setExposureMinAge(preference.exposureMinAge);
+      setContentMaxAge(preference.contentMaxAge);
+      setExposureMaxAge(preference.exposureMaxAge);
+      setIsLoading(false);
+    });
+  }, [user]);
+
+  useEffect(() => {
+    preferencesRef.current = {
+      contentGender,
+      contentMaxAge,
+      contentMinAge,
+      exposureGender,
+      exposureMaxAge,
+      exposureMinAge,
+    };
+  }, [contentGender, contentMaxAge, contentMinAge, exposureGender, exposureMaxAge, exposureMinAge]);
+
+  useEffect(() => {
+    return () => {
+      if (!user || !preferencesRef.current || isLoading) {
+        return;
+      }
+
+      updatePreferences(user.id, preferencesRef.current);
+    };
+  }, [user, isLoading]);
 
   return (
     <>
@@ -40,46 +116,89 @@ export default function Settings() {
         }}
         onDelete={handleCloseDeleteAccountModal}
       />
-      <div className="text-3xl font-semibold text-center mb-5">Settings</div>
-      <hr className="my-2" />
-      <div className="font-bold">Show me</div>
-      <div className="flex justify-between mt-3 mb-1">
-        <div className="flex-[50%]">
-          <div className="mb-1">Gender</div>
-          <ButtonGroup
-            selectedOption={showMeGender}
-            options={["Male", "Female", "Both"]}
-            onClick={handleShowMeGenderSelection}
-          />
-        </div>
-        <div className="flex-[50%] flex flex-col">
-          <div className="flex justify-between mb-3">
-            <div>Age Range</div>
-            <div>
-              {left}-{right}
+      {isLoading && <Spinner />}
+      {isLoading === false && (
+        <>
+          <div className="text-3xl font-semibold text-center mb-5">Settings</div>
+          <hr className="my-4" />
+          <div className="font-bold">Show me</div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-0 mt-3 mb-1">
+            <div className="w-full sm:w-[50%] lg:w-[41.6%]">
+              <div className="mb-1">Gender</div>
+              <ButtonGroup
+                selectedOption={contentGender ?? "Both"}
+                options={[GENDER.Male, GENDER.Female, "Both"]}
+                //@ts-ignore
+                onClick={handleShowMeGenderSelection}
+              />
+            </div>
+            <div className="w-full sm:w-[50%] lg:w-[41.6%] flex flex-col">
+              <div className="flex justify-between mb-1 max-w-full sm:max-w-xs">
+                <div>Age Range</div>
+                <div>
+                  {contentMinAge}-
+                  {contentMaxAge === null || contentMaxAge === 100 ? "100+" : contentMaxAge}
+                </div>
+              </div>
+              <div className="max-w-full sm:max-w-xs">
+                <MultipleRangeSlider
+                  initialValue={[initialContentMinAge, initialContentMaxAge ?? 100]}
+                  min={18}
+                  max={100}
+                  onChange={(leftVal: number, rightVal: number) => {
+                    setContentMinAge(leftVal);
+                    setContentMaxAge(rightVal);
+                  }}
+                />
+              </div>
             </div>
           </div>
-          <MultipleRangeSlider
-            initialValue={[22, 31]}
-            min={18}
-            max={100}
-            onChange={(leftVal: number, rightVal: number) => {
-              setLeft(leftVal);
-              setRight(rightVal);
-            }}
-          />
-        </div>
-      </div>
-      <hr className="my-2" />
-      <div className="max-w-sm mx-auto mt-5">
-        <Button
-          onClick={handleOpenDeleteAccountModal}
-          disabled={user ? isAdmin(user.role) : true}
-          style="danger"
-        >
-          Delete Account
-        </Button>
-      </div>
+          <hr className="my-4" />
+          <div className="font-bold">Get votes from</div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-0 mt-3 mb-1">
+            <div className="w-full sm:w-[50%] lg:w-[41.6%]">
+              <div className="mb-1">Gender</div>
+              <ButtonGroup
+                selectedOption={exposureGender ?? "Both"}
+                options={[GENDER.Male, GENDER.Female, "Both"]}
+                //@ts-ignore
+                onClick={handleVoterGenderSelection}
+              />
+            </div>
+            <div className="w-full sm:w-[50%] lg:w-[41.6%] flex flex-col">
+              <div className="flex justify-between mb-1 max-w-full sm:max-w-xs">
+                <div>Age Range</div>
+                <div>
+                  {exposureMinAge}-
+                  {exposureMaxAge === null || exposureMaxAge === 100 ? "100+" : exposureMaxAge}
+                </div>
+              </div>
+              <div className="max-w-full sm:max-w-xs">
+                <MultipleRangeSlider
+                  initialValue={[initialExposureMinAge, initialExposureMaxAge ?? 100]}
+                  min={18}
+                  max={100}
+                  onChange={(leftVal: number, rightVal: number) => {
+                    setExposureMinAge(leftVal);
+                    setExposureMaxAge(rightVal);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          <hr className="my-4" />
+          <div className="max-w-full sm:max-w-sm mx-auto mt-5">
+            <Button
+              onClick={handleOpenDeleteAccountModal}
+              disabled={user ? isAdmin(user.role) : true}
+              style="danger"
+              variant="outline"
+            >
+              Delete Account
+            </Button>
+          </div>
+        </>
+      )}
     </>
   );
 }
