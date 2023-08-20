@@ -1,6 +1,6 @@
 import _ from "underscore";
 import { prisma } from ".";
-import { Picture, Preference, Prisma, User } from "@prisma/client";
+import { Gender, Picture, Preference, Prisma, User } from "@prisma/client";
 import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
@@ -8,6 +8,7 @@ import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, calculateAge, formatDate } from "@/helpers/date";
 
+// TODO: random gender
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
     where: {
@@ -45,6 +46,7 @@ const getRandomMatch = async (loggedUserId: string) => {
   return [picture1, picture2];
 };
 
+// TODO: Preferences logic
 function getRandomPicture(numPictures: number, loggedUserId: string, opponentPicId?: string) {
   const extraValue = opponentPicId === undefined ? 0 : 1;
   const randomNumPic = _.random(numPictures - 1 - extraValue);
@@ -86,27 +88,7 @@ const getMatchWithClosestEloStrategy = async (
   userPreferences: Preference | null
 ) => {
   const MAX_RETRIEVED_PICS = 100;
-
-  const numPictures = await prisma.picture.count({
-    where: {
-      AND: [
-        {
-          userId: {
-            not: loggedUser.id,
-          },
-        },
-        {
-          user: {
-            isBanned: false,
-          },
-        },
-      ],
-    },
-  });
-
-  if (numPictures < 2) {
-    throw new BadRequestError("Not enought pictures for the match");
-  }
+  const isMale = Math.random() > 0.5;
 
   const preferencesQuery: Prisma.UserWhereInput[] = [];
 
@@ -129,6 +111,12 @@ const getMatchWithClosestEloStrategy = async (
       dateOfBirth: {
         lt: formatDate(adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })),
       },
+    });
+  }
+
+  if (!userPreferences?.contentGender) {
+    preferencesQuery.push({
+      gender: isMale ? Gender.Male : Gender.Female,
     });
   }
 
@@ -213,7 +201,8 @@ const getMatchWithClosestEloStrategy = async (
     picture1,
     loggedUser,
     MAX_RETRIEVED_PICS,
-    userPreferences
+    userPreferences,
+    isMale
   );
   if (pictures.length === 0) {
     throw new BadRequestError("Not enought pictures for the match");
@@ -233,7 +222,8 @@ function getPicturesWithClosestElos(
   opponentPicture: Picture,
   loggedUser: User,
   limit: number,
-  userPreferences: Preference | null
+  userPreferences: Preference | null,
+  isMale: boolean
 ): Promise<(Picture & { abs_diff: number })[]> {
   const whereQuery: string[] = [];
 
@@ -255,6 +245,10 @@ function getPicturesWithClosestElos(
         adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })
       )}'`
     );
+  }
+
+  if (!userPreferences?.contentGender) {
+    whereQuery.push(`usr.gender = '${isMale ? Gender.Male : Gender.Female}'`);
   }
 
   whereQuery.push(

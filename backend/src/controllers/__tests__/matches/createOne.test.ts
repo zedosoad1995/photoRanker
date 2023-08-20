@@ -164,3 +164,5 @@ describe("Admin Logged User", () => {
     expect(response.status).toEqual(201);
   });
 });
+
+it.todo("Test preferences");
