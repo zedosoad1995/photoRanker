@@ -9,8 +9,14 @@ export const getManyPicturesSchema = z
     belongsToMe: z.enum(["false", "true", ""]),
     isBanned: z.enum(["false", "true", ""]),
     userId: z.string(),
-    minAge: z.number().min(MIN_AGE),
-    maxAge: z.number().min(MIN_AGE),
+    minAge: z
+      .string()
+      .refine((minAge) => !isNaN(parseInt(minAge)), "Expected number")
+      .refine((minAge) => parseInt(minAge) >= MIN_AGE, `Must be greater of equal to ${MIN_AGE}`),
+    maxAge: z
+      .string()
+      .refine((maxAge) => !isNaN(parseInt(maxAge)), "Expected number")
+      .refine((maxAge) => parseInt(maxAge) >= MIN_AGE, `Must be greater of equal to ${MIN_AGE}`),
     gender: z.union([z.enum(Object.values(Gender) as unknown as [string, ...string[]]), z.null()]),
     limit: z
       .string()
@@ -21,7 +27,10 @@ export const getManyPicturesSchema = z
     orderByDir: z.enum(Object.values(ORDER_BY_DIR) as unknown as [string, ...string[]]),
   })
   .partial()
-  .refine((data) => !data.maxAge || !data.minAge || data.maxAge >= data.minAge, {
-    message: "'maxAge' must be greater or equal than 'minAge'",
-    path: ["maxAge"],
-  });
+  .refine(
+    (data) => !data.maxAge || !data.minAge || parseInt(data.maxAge) >= parseInt(data.minAge),
+    {
+      message: "'maxAge' must be greater or equal than 'minAge'",
+      path: ["maxAge"],
+    }
+  );

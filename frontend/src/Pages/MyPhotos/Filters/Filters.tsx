@@ -13,6 +13,7 @@ interface IFilters {
   handleSortSelect: (value: string) => void;
   genderOption: string;
   handleGenderSelect: (value: string) => void;
+  updateAgeRange: (minAge: number, maxAge: number) => void;
 }
 
 const Filters = ({
@@ -24,6 +25,7 @@ const Filters = ({
   handleSortSelect,
   genderOption,
   handleGenderSelect,
+  updateAgeRange,
 }: IFilters) => {
   return (
     <>
@@ -62,7 +64,7 @@ const Filters = ({
             initialValue={[18, 100]}
             min={18}
             max={100}
-            onChange={(leftVal: number, rightVal: number) => {}}
+            onChange={updateAgeRange}
           />
         </div>
       </div>
@@ -75,7 +77,7 @@ const Filters = ({
           initialValue={[18, 100]}
           min={18}
           max={100}
-          onChange={(leftVal: number, rightVal: number) => {}}
+          onChange={updateAgeRange}
         />
       </div>
       {isFetchingFilter && <Spinner />}

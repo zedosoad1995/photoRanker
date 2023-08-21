@@ -1,6 +1,6 @@
 import Button from "@/Components/Button";
 import { getImage, getManyPictures } from "@/Services/picture";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
@@ -18,6 +18,7 @@ import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
 import { GENDER } from "@shared/constants/user";
 import Filters from "./Filters/Filters";
+import { debounce } from "underscore";
 
 const DEFAULT_SORT = "score desc";
 
@@ -58,6 +59,8 @@ export default function MyPhotos() {
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
   const [genderOption, setGenderOption] = useState<string>(GENDER.Female);
+  const [minAge, setMinAge] = useState<number>();
+  const [maxAge, setMaxAge] = useState<number>();
 
   const getPictures = async (cursor?: string) => {
     try {
@@ -68,11 +71,15 @@ export default function MyPhotos() {
       const orderByKey = sortValue.split(" ")[0];
       const orderByDir = sortValue.split(" ")[1];
 
+      console.log(minAge, maxAge, 100);
+
       const res = await getManyPictures({
         ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
         ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
         gender: genderOption,
         orderBy: orderByKey,
+        minAge,
+        maxAge,
         orderByDir,
         limit: 30,
         cursor,
@@ -127,7 +134,7 @@ export default function MyPhotos() {
 
   useEffect(() => {
     getPictures();
-  }, [sortValue, filterSelectedOption, genderOption]);
+  }, [sortValue, filterSelectedOption, genderOption, minAge, maxAge]);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -218,6 +225,15 @@ export default function MyPhotos() {
     setGenderOption(selectedOption);
   };
 
+  const debouncedUpdateAgeRange = useCallback(
+    debounce((minAge: number, maxAge: number) => {
+      setIsFetchingFilter(true);
+      setMaxAge(maxAge);
+      setMinAge(minAge);
+    }, 400),
+    []
+  );
+
   const updatePicturesAfterDelete = () => {
     return getPictures(prevCursor);
   };
@@ -305,6 +321,7 @@ export default function MyPhotos() {
                 handleSortSelect={handleSortSelect}
                 genderOption={genderOption}
                 handleGenderSelect={handleGenderSelect}
+                updateAgeRange={debouncedUpdateAgeRange}
               />
             </div>
             <div className="-mx-3 mt-1">
