@@ -57,7 +57,7 @@ export default function Button({
     <button
       disabled={disabled}
       type={type}
-      className={`flex justify-center items-center rounded-md font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+      className={`flex justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         size === "medium" ? "px-3 py-1.5 text-sm" : "px-5 py-2.5 text-base"
       } ${isFull ? "w-full" : ""} ${className}`}
       onClick={onClick}

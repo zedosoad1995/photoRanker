@@ -10,13 +10,14 @@ import { toast } from "react-hot-toast";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin } from "@/Utils/role";
 import BanUserModal from "./BanUserModal";
-import Select from "@/Components/Select";
 import { useAuth } from "@/Contexts/auth";
 import { useQueryClient } from "react-query";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { PhotoCard } from "./ImageCard";
 import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
+import { GENDER } from "@shared/constants/user";
+import Filters from "./Filters/Filters";
 
 const DEFAULT_SORT = "score desc";
 
@@ -56,6 +57,7 @@ export default function MyPhotos() {
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
+  const [genderOption, setGenderOption] = useState<string>(GENDER.Female);
 
   const getPictures = async (cursor?: string) => {
     try {
@@ -69,6 +71,7 @@ export default function MyPhotos() {
       const res = await getManyPictures({
         ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
         ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
+        gender: genderOption,
         orderBy: orderByKey,
         orderByDir,
         limit: 30,
@@ -124,7 +127,7 @@ export default function MyPhotos() {
 
   useEffect(() => {
     getPictures();
-  }, [sortValue, filterSelectedOption]);
+  }, [sortValue, filterSelectedOption, genderOption]);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -209,6 +212,12 @@ export default function MyPhotos() {
     setSortValue(selectedOption);
   };
 
+  const handleGenderSelect = (selectedOption: string) => {
+    setIsFetchingFilter(true);
+
+    setGenderOption(selectedOption);
+  };
+
   const updatePicturesAfterDelete = () => {
     return getPictures(prevCursor);
   };
@@ -277,64 +286,26 @@ export default function MyPhotos() {
               className="hidden"
             />
             <div
-              className={`${
-                isAdmin(loggedUser.role) ? "min-[520px]:flex" : "min-[330px]:flex"
-              } gap-4`}
+              className={`flex gap-4 flex-col ${
+                isAdmin(loggedUser.role) ? "lg:flex-row" : "min-[330px]:flex-row"
+              }`}
             >
-              <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={false}>
-                <span className="mr-3 text-xl !leading-5">+</span>
-                <span>Add Photo</span>
-              </Button>
-              <div
-                className={`${
-                  isAdmin(loggedUser.role) ? "max-[520px]:mt-4" : "max-[330px]:mt-4"
-                } flex gap-4`}
-              >
-                {isAdmin(loggedUser.role) && (
-                  <div
-                    className={`${
-                      isAdmin(loggedUser.role) ? "min-[520px]:w-40" : "min-[330px]:w-40"
-                    } w-full`}
-                  >
-                    <Select
-                      onChange={handleFilterSelect}
-                      options={[
-                        { id: "belongsToMe", label: "My Pictures" },
-                        { id: "hasReport", label: "Reported Pictures" },
-                        { id: "isBanned", label: "Banned Users" },
-                      ]}
-                      value={filterSelectedOption}
-                      title="Filters"
-                    />
-                  </div>
-                )}
-                <div
-                  className={`${
-                    isAdmin(loggedUser.role) ? "min-[520px]:w-40" : "min-[330px]:w-40"
-                  } w-full`}
-                >
-                  <Select
-                    onChange={handleSortSelect}
-                    options={[
-                      { id: DEFAULT_SORT, label: "Score Highest to Lowest" },
-                      { id: "score asc", label: "Score Lowest to Highest" },
-                      { id: "numVotes desc", label: "Votes Highest to Lowest" },
-                      { id: "numVotes asc", label: "Votes Lowest to Highest" },
-                      { id: "createdAt desc", label: "Creation Date Highest to Lowest" },
-                      { id: "createdAt asc", label: "Creation Date Lowest to Highest" },
-                      ...(isAdmin(loggedUser.role)
-                        ? [
-                            { id: "reportedDate desc", label: "Reported Date Highest to Lowest" },
-                            { id: "reportedDate asc", label: "Reported Date Lowest to Highest" },
-                          ]
-                        : []),
-                    ]}
-                    value={sortValue}
-                    title="Sort"
-                  />
-                </div>
-                {isFetchingFilter && <Spinner />}
+              <div className="w-full sm:w-fit">
+                <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={true}>
+                  <span className="mr-3 text-xl !leading-5">+</span>
+                  <span>Add Photo</span>
+                </Button>
               </div>
+              <Filters
+                isAdmin={isAdmin(loggedUser.role)}
+                isFetchingFilter={isFetchingFilter}
+                filterSelectedOption={filterSelectedOption}
+                handleFilterSelect={handleFilterSelect}
+                sortValue={sortValue}
+                handleSortSelect={handleSortSelect}
+                genderOption={genderOption}
+                handleGenderSelect={handleGenderSelect}
+              />
             </div>
             <div className="-mx-3 mt-1">
               {pics.map((pic, index) => (
