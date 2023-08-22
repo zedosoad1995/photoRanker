@@ -1,7 +1,7 @@
 import { getNewMatch } from "@/Services/match";
 import { getImage } from "@/Services/picture";
 import { vote } from "@/Services/vote";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
 import { IMG_WIDTH } from "@shared/constants/picture";
 import { ImageCard } from "./ImageCard";
@@ -28,33 +28,43 @@ export default function Vote() {
     match: undefined,
   });
 
-  const [hasVoted, setHasVoted] = useState(false);
+  const hasVoted = useRef(false);
+  const canGoToNextRef = useRef(true);
+  const isPic1Loaded = useRef(false);
+  const isPic2Loaded = useRef(false);
+  const [_, setRerender] = useState(false);
   const [isLoadingMatch, setIsLoadingMatch] = useState(true);
   const [isLoadingPic1, setIsLoadingPic1] = useState(false);
   const [isLoadingPic2, setIsLoadingPic2] = useState(false);
-  const [isPic1Loaded, setIsPic1Loaded] = useState(false);
-  const [isPic2Loaded, setIsPic2Loaded] = useState(false);
 
-  const isImagesFetching = isPic1Loaded || isPic2Loaded;
+  const isImagesFetching = !isPic1Loaded.current || !isPic2Loaded.current;
 
   const getMatch = async (mustWaitDefer = false) => {
     setIsLoadingPic1(true);
     setIsLoadingPic2(true);
-    setIsPic1Loaded(true);
-    setIsPic2Loaded(true);
+    isPic1Loaded.current = false;
+    isPic2Loaded.current = false;
 
     const { match } = await getNewMatch();
 
     setState("match", match, mustWaitDefer);
 
-    getImage(match.pictures[0].filepath).then(({ url }) => {
-      setState("pic1", url, mustWaitDefer);
-      loadImage(url).finally(() => setIsPic1Loaded(false));
-    });
-    getImage(match.pictures[1].filepath).then(({ url }) => {
-      setState("pic2", url, mustWaitDefer);
-      loadImage(url).finally(() => setIsPic2Loaded(false));
-    });
+    getImage(match.pictures[0].filepath)
+      .then(({ url }) => {
+        setState("pic1", url, mustWaitDefer);
+        loadImage(url).finally(() => (isPic1Loaded.current = true));
+      })
+      .catch(() => {
+        isPic1Loaded.current = true;
+      });
+    getImage(match.pictures[1].filepath)
+      .then(({ url }) => {
+        setState("pic2", url, mustWaitDefer);
+        loadImage(url).finally(() => (isPic2Loaded.current = true));
+      })
+      .catch(() => {
+        isPic2Loaded.current = true;
+      });
 
     const prob1 = match.winProbability * 100;
     const prob2 = 100 - prob1;
@@ -79,7 +89,7 @@ export default function Vote() {
           ? document.getElementById("downImage")
           : document.getElementById("rightImage");
 
-        if (rightImage && !hasVoted) {
+        if (rightImage && !hasVoted.current) {
           rightImage.classList.add("!bg-[length:103%]");
           rightImage.click();
 
@@ -91,7 +101,7 @@ export default function Vote() {
         const leftImage = isScreenSmallerOrEqualTo(450)
           ? document.getElementById("upImage")
           : document.getElementById("leftImage");
-        if (leftImage && !hasVoted) {
+        if (leftImage && !hasVoted.current) {
           leftImage.classList.add("!bg-[length:103%]");
           leftImage.click();
 
@@ -110,19 +120,35 @@ export default function Vote() {
   }, []);
 
   const handleClickImage = (picId?: string) => async () => {
-    if (hasVoted) return;
+    if (hasVoted.current) return;
+
+    canGoToNextRef.current = false;
 
     if (match?.id && picId) {
-      await vote(match.id, picId);
+      vote(match.id, picId).finally(() => {
+        getMatch(true).finally(() => {
+          canGoToNextRef.current = true;
+        });
+      });
     }
 
-    setHasVoted(true);
-    getMatch(true);
+    hasVoted.current = true;
+    setRerender((val) => !val);
 
-    setTimeout(() => {
-      applyUpdates();
-      setHasVoted(false);
-    }, 1000);
+    let intervalTime = 1000;
+    const checkCondition = () => {
+      if (canGoToNextRef.current && isPic1Loaded.current && isPic2Loaded.current) {
+        hasVoted.current = false;
+        applyUpdates();
+        clearInterval(interval);
+      } else if (intervalTime === 1000) {
+        intervalTime = 100;
+        clearInterval(interval);
+        interval = setInterval(checkCondition, intervalTime);
+      }
+    };
+
+    let interval = setInterval(checkCondition, intervalTime);
   };
 
   const handleSkipMatch = () => {
@@ -143,7 +169,7 @@ export default function Vote() {
               pic={pic1}
               prob={prob1}
               isLoading={isImagesFetching}
-              hasVoted={hasVoted}
+              hasVoted={hasVoted.current}
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
               }}
@@ -155,7 +181,7 @@ export default function Vote() {
               pic={pic2}
               prob={prob2}
               isLoading={isImagesFetching}
-              hasVoted={hasVoted}
+              hasVoted={hasVoted.current}
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
               }}
@@ -169,7 +195,7 @@ export default function Vote() {
               pic={pic1}
               prob={prob1}
               isLoading={isImagesFetching}
-              hasVoted={hasVoted}
+              hasVoted={hasVoted.current}
             />
             <ImageCard
               id="downImage"
@@ -178,7 +204,7 @@ export default function Vote() {
               pic={pic2}
               prob={prob2}
               isLoading={isImagesFetching}
-              hasVoted={hasVoted}
+              hasVoted={hasVoted.current}
             />
           </div>
         </>
