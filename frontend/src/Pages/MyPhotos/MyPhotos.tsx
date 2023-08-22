@@ -290,7 +290,7 @@ export default function MyPhotos() {
           setIsOpen(false);
         }}
       />
-      <div className="flow-root pb-4 md:pb-12 w-full md:w-[650px] lg:w-[900px] xl:w-[1150px] mx-auto">
+      <div className="pb-4 md:pb-12 w-full md:w-[650px] lg:w-[900px] xl:w-[1150px] mx-auto">
         {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
         {loggedUser && !isLoading && (pics.length > 0 || areTherePictures) && (
           <>
@@ -314,7 +314,6 @@ export default function MyPhotos() {
               </div>
               <Filters
                 isAdmin={isAdmin(loggedUser.role)}
-                isFetchingFilter={isFetchingFilter}
                 filterSelectedOption={filterSelectedOption}
                 handleFilterSelect={handleFilterSelect}
                 sortValue={sortValue}
@@ -324,7 +323,19 @@ export default function MyPhotos() {
                 updateAgeRange={debouncedUpdateAgeRange}
               />
             </div>
-            <div className="-mx-3 mt-1">
+            <div className="-mx-3 mt-1 flow-root relative">
+              <div
+                className={`bg-white absolute w-full h-full z-10 ${
+                  isFetchingFilter ? "opacity-70" : "opacity-0"
+                }`}
+              />
+              <div
+                className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 ${
+                  isFetchingFilter ? "block" : "hidden"
+                }`}
+              >
+                <Spinner />
+              </div>
               {pics.map((pic, index) => (
                 <PhotoCard
                   key={pic}
