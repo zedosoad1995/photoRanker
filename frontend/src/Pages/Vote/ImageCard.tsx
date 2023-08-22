@@ -11,7 +11,6 @@ export const ImageCard = ({
   hasVoted,
   style,
   isLoading,
-  rerender,
 }: {
   className: string;
   pic: string | undefined;
@@ -21,7 +20,6 @@ export const ImageCard = ({
   hasVoted: boolean;
   style?: React.CSSProperties;
   isLoading: boolean;
-  rerender?: boolean;
 }) => {
   const { img } = useProgressiveImage(pic, !isLoading);
 

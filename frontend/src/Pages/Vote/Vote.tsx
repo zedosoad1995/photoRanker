@@ -32,7 +32,7 @@ export default function Vote() {
   const canGoToNextRef = useRef(true);
   const isPic1Loaded = useRef(false);
   const isPic2Loaded = useRef(false);
-  const [rerender, setRerender] = useState(false);
+  const [_, setRerender] = useState(0);
   const [isLoadingMatch, setIsLoadingMatch] = useState(true);
   const [isLoadingPic1, setIsLoadingPic1] = useState(false);
   const [isLoadingPic2, setIsLoadingPic2] = useState(false);
@@ -54,23 +54,25 @@ export default function Vote() {
         setState("pic1", url, mustWaitDefer);
         loadImage(url).finally(() => {
           isPic1Loaded.current = true;
-          setRerender((val) => !val);
+          setRerender((val) => val + 1);
         });
       })
       .catch(() => {
         isPic1Loaded.current = true;
+        setRerender((val) => val + 1);
       });
+
     getImage(match.pictures[1].filepath)
       .then(({ url }) => {
         setState("pic2", url, mustWaitDefer);
         loadImage(url).finally(() => {
           isPic2Loaded.current = true;
-          setRerender((val) => !val);
+          setRerender((val) => val + 1);
         });
       })
       .catch(() => {
         isPic2Loaded.current = true;
-        setRerender((val) => !val);
+        setRerender((val) => val + 1);
       });
 
     const prob1 = match.winProbability * 100;
@@ -140,7 +142,7 @@ export default function Vote() {
     }
 
     hasVoted.current = true;
-    setRerender((val) => !val);
+    setRerender((val) => val + 1);
 
     let intervalTime = 1000;
     const checkCondition = () => {
@@ -148,7 +150,7 @@ export default function Vote() {
         hasVoted.current = false;
         applyUpdates();
         clearInterval(interval);
-        setRerender((val) => !val);
+        setRerender((val) => val + 1);
       } else if (intervalTime === 1000) {
         intervalTime = 100;
         clearInterval(interval);
@@ -181,7 +183,6 @@ export default function Vote() {
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
               }}
-              rerender={rerender}
             />
             <ImageCard
               id="rightImage"
@@ -194,7 +195,6 @@ export default function Vote() {
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
               }}
-              rerender={rerender}
             />
           </div>
           <div className="flex xs:hidden flex-col gap-[1vw] items-center justify-start">
@@ -206,7 +206,6 @@ export default function Vote() {
               prob={prob1}
               isLoading={isImagesFetching}
               hasVoted={hasVoted.current}
-              rerender={rerender}
             />
             <ImageCard
               id="downImage"
@@ -216,7 +215,6 @@ export default function Vote() {
               prob={prob2}
               isLoading={isImagesFetching}
               hasVoted={hasVoted.current}
-              rerender={rerender}
             />
           </div>
         </>
