@@ -179,6 +179,13 @@ const getMatchWithClosestEloStrategy = async (
             },
           },
         },
+        {
+          reports: {
+            none: {
+              userReportingId: loggedUser.id,
+            },
+          },
+        },
       ],
     },
     orderBy: {
@@ -200,6 +207,7 @@ const getMatchWithClosestEloStrategy = async (
     userPreferences,
     picture1.user.gender
   );
+
   if (pictures.length === 0) {
     throw new BadRequestError("Not enought pictures for the match");
   }
@@ -273,7 +281,12 @@ function getPicturesWithClosestElos(
       INNER JOIN "Preference" AS preference ON usr.id = preference."userId"
       WHERE pic."userId" != '${loggedUser.id}' AND pic.id != '${
     opponentPicture.id
-  }' AND usr."isBanned" = FALSE ${where}
+  }' AND usr."isBanned" = FALSE ${where} AND
+        NOT EXISTS (
+          SELECT 1
+          FROM "Report" AS report
+          WHERE report."userReportingId" = '${loggedUser.id}' AND pic.id = report."pictureId"
+        )
       ORDER BY abs_diff ASC
       LIMIT ${limit};`);
 }
