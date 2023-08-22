@@ -325,13 +325,13 @@ export default function MyPhotos() {
             </div>
             <div className="-mx-3 mt-1 flow-root relative">
               <div
-                className={`bg-white absolute w-full h-full z-10 ${
+                className={`bg-white absolute w-full h-full z-10 transition-opacity delay-200 ${
                   isFetchingFilter ? "opacity-70" : "opacity-0"
                 }`}
               />
               <div
-                className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 ${
-                  isFetchingFilter ? "block" : "hidden"
+                className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 transition-opacity duration-0 delay-200 ${
+                  isFetchingFilter ? "opacity-100 visible" : "opacity-0 invisible"
                 }`}
               >
                 <Spinner />

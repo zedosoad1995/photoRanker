@@ -59,7 +59,7 @@ export default function Select({ options, title, label, value, onChange: handleC
           {isOpen && (
             <Listbox.Options
               static
-              className={`absolute mt-1 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm z-10 ${
+              className={`absolute mt-1 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm z-20 ${
                 options.length === 0 || !isOpen ? "hidden" : ""
               }`}
             >
