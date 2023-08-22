@@ -7,6 +7,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import CreateProfile from "./CreateProfile";
 import UnverifiedEmail from "./UnverifiedEmail";
 import Banned from "./Banned";
+import { Spinner } from "../Loading/Spinner";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -38,7 +39,11 @@ export default function Layout() {
   }, [isLoading, user]);
 
   if (isLoading || !user) {
-    return <></>;
+    return (
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner />
+      </div>
+    );
   } else if (!user.isProfileCompleted) {
     return (
       <>
