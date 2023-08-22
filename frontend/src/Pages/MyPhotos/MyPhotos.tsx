@@ -296,7 +296,7 @@ export default function MyPhotos() {
           <>
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg, image/png"
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
