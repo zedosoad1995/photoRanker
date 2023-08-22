@@ -16,7 +16,6 @@ import { Spinner } from "@/Components/Loading/Spinner";
 import { PhotoCard } from "./ImageCard";
 import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
-import { GENDER } from "@shared/constants/user";
 import Filters from "./Filters/Filters";
 import { debounce } from "underscore";
 
@@ -58,7 +57,7 @@ export default function MyPhotos() {
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
-  const [genderOption, setGenderOption] = useState<string>(GENDER.Female);
+  const [genderOption, setGenderOption] = useState<string>();
   const [minAge, setMinAge] = useState<number>();
   const [maxAge, setMaxAge] = useState<number>();
 
@@ -219,8 +218,13 @@ export default function MyPhotos() {
 
   const handleGenderSelect = (selectedOption: string) => {
     setIsFetchingFilter(true);
+    setGenderOption((val) => {
+      if (val === selectedOption) {
+        return "";
+      }
 
-    setGenderOption(selectedOption);
+      return selectedOption;
+    });
   };
 
   const debouncedUpdateAgeRange = useCallback(
