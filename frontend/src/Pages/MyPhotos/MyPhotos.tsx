@@ -333,7 +333,7 @@ export default function MyPhotos() {
             <div className="-mx-3 mt-1 flow-root relative">
               <div
                 className={`bg-white absolute w-full h-full z-10 transition-opacity delay-200 ${
-                  isFetchingFilter ? "opacity-70" : "opacity-0"
+                  isFetchingFilter ? "block opacity-70" : "hidden opacity-0"
                 }`}
               />
               <div
