@@ -75,27 +75,28 @@ export default function Vote() {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
         // Click the right button
-        const rightImage = isScreenSmallerOrEqualTo("sm")
+        const rightImage = isScreenSmallerOrEqualTo(450)
           ? document.getElementById("downImage")
           : document.getElementById("rightImage");
+
         if (rightImage && !hasVoted) {
-          rightImage.classList.add("!bg-[length:102%]");
+          rightImage.classList.add("!bg-[length:103%]");
+          rightImage.click();
 
           setTimeout(() => {
-            rightImage.classList.remove("!bg-[length:102%]");
-            rightImage.click();
+            rightImage.classList.remove("!bg-[length:103%]");
           }, 100);
         }
       } else if (event.key === "ArrowLeft") {
-        const leftImage = isScreenSmallerOrEqualTo("sm")
+        const leftImage = isScreenSmallerOrEqualTo(450)
           ? document.getElementById("upImage")
           : document.getElementById("leftImage");
         if (leftImage && !hasVoted) {
-          leftImage.classList.add("!bg-[length:102%]");
+          leftImage.classList.add("!bg-[length:103%]");
           leftImage.click();
 
           setTimeout(() => {
-            leftImage.classList.remove("!bg-[length:102%]");
+            leftImage.classList.remove("!bg-[length:103%]");
           }, 100);
         }
       }
