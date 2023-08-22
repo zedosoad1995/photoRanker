@@ -305,7 +305,12 @@ export default function MyPhotos() {
               }`}
             >
               <div className="w-full sm:w-fit">
-                <Button disabled={hasReachedPicsLimit} onClick={handleFileSelect} isFull={true}>
+                <Button
+                  disabled={hasReachedPicsLimit}
+                  onClick={handleFileSelect}
+                  isFull={true}
+                  isHeightFull={true}
+                >
                   <span className="mr-3 text-xl !leading-5">+</span>
                   <span>Add Photo</span>
                 </Button>
