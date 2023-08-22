@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import usersRoute from "./users.route";
 import authRoute from "./auth.route";
 import picturesRoute from "./pictures.route";
@@ -14,6 +14,9 @@ const api = Router()
   .use("/matches", matchesRoute)
   .use("/votes", votesRoute)
   .use("/reports", reportsRoute)
-  .use("/preferences", preferencesRoute);
+  .use("/preferences", preferencesRoute)
+  .use("/healthCheck", (req: Request, res: Response) => {
+    res.status(200).json({ healthy: true });
+  });
 
 export default Router().use("/api", api);

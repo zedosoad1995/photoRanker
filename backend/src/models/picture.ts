@@ -174,9 +174,16 @@ const getMatchWithClosestEloStrategy = async (
         },
         {
           user: {
-            preference: {
-              AND: preferencesVoterQuery,
-            },
+            OR: [
+              {
+                preference: {
+                  AND: preferencesVoterQuery,
+                },
+              },
+              {
+                preference: null,
+              },
+            ],
           },
         },
         {
@@ -267,7 +274,7 @@ function getPicturesWithClosestElos(
     );
 
     whereQuery.push(
-      `(preference."exposureMinAge" <= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
+      `(preference."exposureMinAge" <= ${loggedUserAge} OR preference."exposureMinAge" IS NULL)`
     );
   }
 
@@ -278,7 +285,7 @@ function getPicturesWithClosestElos(
         ABS(${opponentPicture.rating.toFixed(2)}::numeric  - pic.rating) as abs_diff
       FROM "Picture" AS pic
       INNER JOIN "User" AS usr ON pic."userId" = usr.id
-      INNER JOIN "Preference" AS preference ON usr.id = preference."userId"
+      LEFT JOIN "Preference" AS preference ON usr.id = preference."userId"
       WHERE pic."userId" != '${loggedUser.id}' AND pic.id != '${
     opponentPicture.id
   }' AND usr."isBanned" = FALSE ${where} AND

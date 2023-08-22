@@ -6,7 +6,6 @@ import { User } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { PictureSeeder } from "@/tests/seed/PictureSeeder";
 import { MatchModel } from "@/models/match";
-import { MatchSeeder } from "@/tests/seed/MatchSeeder";
 import { rimrafSync } from "rimraf";
 import { TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
 import { UserModel } from "@/models/user";

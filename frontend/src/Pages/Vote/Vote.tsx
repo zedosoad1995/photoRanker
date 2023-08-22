@@ -52,7 +52,10 @@ export default function Vote() {
     getImage(match.pictures[0].filepath)
       .then(({ url }) => {
         setState("pic1", url, mustWaitDefer);
-        loadImage(url).finally(() => (isPic1Loaded.current = true));
+        loadImage(url).finally(() => {
+          isPic1Loaded.current = true;
+          setRerender((val) => !val);
+        });
       })
       .catch(() => {
         isPic1Loaded.current = true;
@@ -60,10 +63,14 @@ export default function Vote() {
     getImage(match.pictures[1].filepath)
       .then(({ url }) => {
         setState("pic2", url, mustWaitDefer);
-        loadImage(url).finally(() => (isPic2Loaded.current = true));
+        loadImage(url).finally(() => {
+          isPic2Loaded.current = true;
+          setRerender((val) => !val);
+        });
       })
       .catch(() => {
         isPic2Loaded.current = true;
+        setRerender((val) => !val);
       });
 
     const prob1 = match.winProbability * 100;
@@ -154,6 +161,8 @@ export default function Vote() {
   const handleSkipMatch = () => {
     getMatch();
   };
+
+  useEffect(() => {}, [isImagesFetching]);
 
   return (
     <>
