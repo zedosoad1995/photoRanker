@@ -16,12 +16,12 @@ const Sorting = ({ isAdmin, option, onChange }: ISorting) => {
           { id: "score asc", label: "Score Lowest to Highest" },
           { id: "numVotes desc", label: "Votes Highest to Lowest" },
           { id: "numVotes asc", label: "Votes Lowest to Highest" },
-          { id: "createdAt desc", label: "Creation Date Highest to Lowest" },
-          { id: "createdAt asc", label: "Creation Date Lowest to Highest" },
+          { id: "createdAt desc", label: "Creation Date Oldest to Newest" },
+          { id: "createdAt asc", label: "Creation Date Newest to Oldest" },
           ...(isAdmin
             ? [
-                { id: "reportedDate desc", label: "Reported Date Highest to Lowest" },
-                { id: "reportedDate asc", label: "Reported Date Lowest to Highest" },
+                { id: "reportedDate desc", label: "Reported Date Oldest to Newest" },
+                { id: "reportedDate asc", label: "Reported Date Newest to Oldest" },
               ]
             : []),
         ]}
