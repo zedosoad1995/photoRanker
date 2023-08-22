@@ -16,6 +16,7 @@ import {
   INVALID_LOGIN_METHOD_FACEBOOK,
   INVALID_LOGIN_METHOD_GOOGLE,
 } from "@shared/constants/errorCodes";
+import FullPageLoading from "@/Components/Loading/FullPageLoading";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -80,7 +81,7 @@ export default function SignIn() {
   }, [user]);
 
   if (Boolean(user)) {
-    return <></>;
+    return <FullPageLoading />;
   }
 
   return (
