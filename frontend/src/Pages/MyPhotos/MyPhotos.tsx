@@ -71,8 +71,6 @@ export default function MyPhotos() {
       const orderByKey = sortValue.split(" ")[0];
       const orderByDir = sortValue.split(" ")[1];
 
-      console.log(minAge, maxAge, 100);
-
       const res = await getManyPictures({
         ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
         ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
