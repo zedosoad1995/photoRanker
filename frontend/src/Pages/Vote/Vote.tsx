@@ -32,7 +32,7 @@ export default function Vote() {
   const canGoToNextRef = useRef(true);
   const isPic1Loaded = useRef(false);
   const isPic2Loaded = useRef(false);
-  const [_, setRerender] = useState(false);
+  const [rerender, setRerender] = useState(false);
   const [isLoadingMatch, setIsLoadingMatch] = useState(true);
   const [isLoadingPic1, setIsLoadingPic1] = useState(false);
   const [isLoadingPic2, setIsLoadingPic2] = useState(false);
@@ -148,6 +148,7 @@ export default function Vote() {
         hasVoted.current = false;
         applyUpdates();
         clearInterval(interval);
+        setRerender((val) => !val);
       } else if (intervalTime === 1000) {
         intervalTime = 100;
         clearInterval(interval);
@@ -161,8 +162,6 @@ export default function Vote() {
   const handleSkipMatch = () => {
     getMatch();
   };
-
-  useEffect(() => {}, [isImagesFetching]);
 
   return (
     <>
@@ -182,6 +181,7 @@ export default function Vote() {
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
               }}
+              rerender={rerender}
             />
             <ImageCard
               id="rightImage"
@@ -194,6 +194,7 @@ export default function Vote() {
               style={{
                 width: `min(40vw,${IMG_WIDTH}px)`,
               }}
+              rerender={rerender}
             />
           </div>
           <div className="flex xs:hidden flex-col gap-[1vw] items-center justify-start">
@@ -205,6 +206,7 @@ export default function Vote() {
               prob={prob1}
               isLoading={isImagesFetching}
               hasVoted={hasVoted.current}
+              rerender={rerender}
             />
             <ImageCard
               id="downImage"
@@ -214,6 +216,7 @@ export default function Vote() {
               prob={prob2}
               isLoading={isImagesFetching}
               hasVoted={hasVoted.current}
+              rerender={rerender}
             />
           </div>
         </>
