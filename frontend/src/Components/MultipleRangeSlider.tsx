@@ -31,7 +31,7 @@ const MultipleRangeSlider = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   const moveHandle = (
-    e: React.MouseEvent | MouseEvent,
+    e: React.MouseEvent | MouseEvent | React.TouchEvent | TouchEvent,
     handleRef: React.RefObject<HTMLDivElement>
   ) => {
     if (
@@ -44,7 +44,10 @@ const MultipleRangeSlider = ({
       return;
 
     const containerBounds = sliderContainerRef.current.getBoundingClientRect();
-    let newX = e.clientX - containerBounds.left - handleRef.current.offsetWidth / 2;
+    let newX =
+      ("touches" in e ? e.touches[0].clientX : e.clientX) -
+      containerBounds.left -
+      handleRef.current.offsetWidth / 2;
 
     if (handleRef === sliderLeftHandleRef && sliderRightHandleRef.current) {
       const rightHandleRightPosition =
@@ -99,7 +102,20 @@ const MultipleRangeSlider = ({
     document.addEventListener("mouseup", handleMouseUp);
   };
 
+  const handleTouchStart = (handleRef: React.RefObject<HTMLDivElement>) => () => {
+    isDraggingRef.current = true;
+    activeHandler.current = handleRef;
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleMouseUp, { passive: false });
+  };
+
   const handleMouseMove = (e: MouseEvent) => {
+    if (!isDraggingRef.current || !activeHandler.current) return;
+
+    moveHandle(e, activeHandler.current);
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
     if (!isDraggingRef.current || !activeHandler.current) return;
 
     moveHandle(e, activeHandler.current);
@@ -129,14 +145,18 @@ const MultipleRangeSlider = ({
   const handleMouseUp = () => {
     isDraggingRef.current = false;
     document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("touchmove", handleTouchMove);
     document.removeEventListener("mouseup", handleMouseUp);
+    document.removeEventListener("touchend", handleMouseUp);
     activeHandler.current = null;
   };
 
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchend", handleMouseUp);
     };
   }, []);
 
@@ -223,12 +243,14 @@ const MultipleRangeSlider = ({
         }`}
         style={{ left: initialLeft }}
         onMouseDown={handleMouseDown(sliderLeftHandleRef)}
+        onTouchStart={handleTouchStart(sliderLeftHandleRef)}
       ></div>
       <div
         ref={sliderRightHandleRef}
         className="w-4 h-4 bg-white border border-normal-contour hover:border-primary rounded-full absolute top-1/2 -translate-y-1/2 cursor-pointer"
         style={{ left: initialRight }}
         onMouseDown={handleMouseDown(sliderRightHandleRef)}
+        onTouchStart={handleTouchStart(sliderRightHandleRef)}
       ></div>
     </div>
   );
