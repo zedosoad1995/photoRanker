@@ -8,7 +8,7 @@ export const getManyPictures = async (
     hasReport?: boolean;
     belongsToMe?: boolean;
     isBanned?: boolean;
-    gender: string | null;
+    gender?: string | null;
     minAge?: number;
     maxAge?: number;
     orderBy?: string;

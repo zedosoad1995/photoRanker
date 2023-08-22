@@ -11,7 +11,7 @@ interface IFilters {
   handleFilterSelect: (value: string) => void;
   sortValue: string;
   handleSortSelect: (value: string) => void;
-  genderOption: string;
+  genderOption?: string;
   handleGenderSelect: (value: string) => void;
   updateAgeRange: (minAge: number, maxAge: number) => void;
 }

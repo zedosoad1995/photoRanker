@@ -3,11 +3,11 @@ import { GENDER } from "@shared/constants/user";
 
 interface IGenderFilter {
   isAdmin: boolean;
-  option: string;
+  option?: string;
   onChange: (value: any) => void;
 }
 
-const GenderFilter = ({ isAdmin, option, onChange }: IGenderFilter) => {
+const GenderFilter = ({ isAdmin, option = "", onChange }: IGenderFilter) => {
   return (
     <>
       {isAdmin && (
