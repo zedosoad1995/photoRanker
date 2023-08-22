@@ -24,6 +24,7 @@ router.get(
   checkBanned,
   checkProfileCompleted,
   checkEmailVerified,
+  // @ts-ignore
   validateQuery(getManyPicturesSchema),
   getMany
 );

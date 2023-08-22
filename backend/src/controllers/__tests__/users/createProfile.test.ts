@@ -19,8 +19,8 @@ let userId: string;
 let adminCookie: string;
 let regularCookie: string;
 
-beforeAll(async () => {
-  const user = await UserSeeder.seedOne({
+beforeEach(async () => {
+  const user = await UserSeeder.createOne({
     gender: null,
     countryOfOrigin: null,
     dateOfBirth: null,
@@ -46,7 +46,7 @@ describe("Admin Logged User", () => {
     adminCookie = res.cookie;
   });
 
-  it("edits user, updated isProdileCompleted to true, 'password' is not returned", async () => {
+  it("edits user, updated isProfileCompleted to true, 'password' is not returned", async () => {
     const response = await request(app)
       .patch(`/api/users/profile/${userId}`)
       .set("Cookie", adminCookie)

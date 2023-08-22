@@ -65,7 +65,7 @@ export default function UploadPhotoModal({
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white mx-2 p-6 w-[500px] rounded-xl z-10 max-h-[90vh] overflow-y-auto">
+      <Dialog.Panel className="bg-white mx-2 p-6 w-[380px] rounded-xl z-10 max-h-[100vh] overflow-y-auto">
         <div className="font-bold text-center text-lg">Adjust Photo</div>
         <div className="w-[80%] mx-auto">
           <div className="relative w-full aspect-square mx-auto mt-8">
@@ -84,7 +84,6 @@ export default function UploadPhotoModal({
           </div>
           <div className="mb-4 mt-1">
             <input
-              id="default-range"
               type="range"
               min="1"
               max="3"
@@ -93,14 +92,14 @@ export default function UploadPhotoModal({
               onChange={(event) => {
                 setZoom(Number(event.currentTarget.value));
               }}
-              className="bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 w-full h-1"
+              className="bg-gray-200 rounded-lg appearance-none cursor-pointer  w-full h-1"
             />
           </div>
           <div className="mb-6">
             <Select label="Age" options={AGE_OPTIONS} value={age} onChange={setAge} />
           </div>
           <div className="mb-2">
-            <Button onClick={handleUpload}>Create</Button>
+            <Button onClick={handleUpload}>Upload</Button>
           </div>
           <Button onClick={handleClose} style="none">
             Cancel

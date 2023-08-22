@@ -22,6 +22,7 @@ export default function ReportModal({
 
   const handleClickReportButton = () => {
     handleReport([isPic1Selected, isPic2Selected]);
+    alteredHandleClose();
   };
 
   const alteredHandleClose = () => {

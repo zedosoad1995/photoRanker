@@ -10,7 +10,13 @@ import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import { INVALID_CREDENTIALS } from "@shared/constants/errorCodes";
+import {
+  BANNED_ACCOUNT,
+  INVALID_CREDENTIALS,
+  INVALID_LOGIN_METHOD_FACEBOOK,
+  INVALID_LOGIN_METHOD_GOOGLE,
+} from "@shared/constants/errorCodes";
+import FullPageLoading from "@/Components/Loading/FullPageLoading";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -40,7 +46,24 @@ export default function SignIn() {
             toast.error("Invalid Credentials", {
               id: "invalid-credentials",
             });
+          } else if (error.response?.data?.error === INVALID_LOGIN_METHOD_GOOGLE) {
+            toast.error("You already have an account with google. Please log in with that method", {
+              id: "must-login-google",
+            });
+          } else if (error.response?.data?.error === INVALID_LOGIN_METHOD_FACEBOOK) {
+            toast.error(
+              "You already have an account with facebook. Please log in with that method",
+              {
+                id: "must-login-facebook",
+              }
+            );
+          } else if (error.response?.data?.error === BANNED_ACCOUNT) {
+            toast.error("Account has been banned", {
+              id: "banned-account",
+            });
           }
+        } else {
+          toast.error("Something went wrong", { id: "error-google-email" });
         }
       });
   };
@@ -58,7 +81,7 @@ export default function SignIn() {
   }, [user]);
 
   if (Boolean(user)) {
-    return <></>;
+    return <FullPageLoading />;
   }
 
   return (
