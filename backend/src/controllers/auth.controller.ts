@@ -18,6 +18,7 @@ import {
   INVALID_LOGIN_METHOD_FACEBOOK,
   INVALID_LOGIN_METHOD_GOOGLE,
   NON_EXISTENT_EMAIL,
+  PASSWORD_RESET_NOT_NEEDED,
 } from "@shared/constants/errorCodes";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { cookieOptions } from "@/constants/cookies";
@@ -406,7 +407,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
   // Is using Google or Facebook authentication
   if (!user.password) {
-    throw new ForbiddenError("This account does not need a password reset");
+    throw new ForbiddenError(
+      "This account does not need a password reset",
+      PASSWORD_RESET_NOT_NEEDED
+    );
   }
 
   const token = uuidv4();
