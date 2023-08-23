@@ -18,11 +18,27 @@ interface ISelect {
 
 export default function Select({ options, title, label, value, onChange: handleChange }: ISelect) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isRightAlign, setIsRightAlign] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
   const hasMultiple = Array.isArray(value);
 
-  const closeOpenMenus = (event: MouseEvent) => {
+  const handleOpenMenu = () => {
+    setIsOpen((val) => {
+      if (!selectRef.current) {
+        return val;
+      }
+
+      if (!val) {
+        const rect = selectRef.current.getBoundingClientRect();
+        setIsRightAlign(window.innerWidth - rect.right < selectRef.current.offsetWidth);
+      }
+
+      return !val;
+    });
+  };
+
+  const closeOpenMenu = (event: MouseEvent | TouchEvent) => {
     if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
       setIsOpen(false);
     }
@@ -35,10 +51,12 @@ export default function Select({ options, title, label, value, onChange: handleC
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", closeOpenMenus);
+    document.addEventListener("mousedown", closeOpenMenu);
+    document.addEventListener("touchstart", closeOpenMenu);
 
     return () => {
-      document.removeEventListener("mousedown", closeOpenMenus);
+      document.removeEventListener("mousedown", closeOpenMenu);
+      document.removeEventListener("touchstart", closeOpenMenu);
     };
   }, []);
 
@@ -48,8 +66,8 @@ export default function Select({ options, title, label, value, onChange: handleC
       <div ref={selectRef} className={`${label ? "mt-2" : ""} relative`}>
         <Listbox value={value} onChange={handleChange}>
           <Listbox.Button
-            onClick={() => setIsOpen((val) => !val)}
-            className="relative w-full rounded-md pl-1.5 shadow-sm ring-1 ring-inset ring-normal-contour  sm:text-sm sm:leading-6 h-10"
+            onClick={handleOpenMenu}
+            className="relative w-full rounded-md pl-1.5 shadow-sm ring-1 ring-inset ring-normal-contour text-sm max-[296px]:text-xs sm:leading-6 h-10"
           >
             <div className="truncate flex">{title}</div>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -59,9 +77,9 @@ export default function Select({ options, title, label, value, onChange: handleC
           {isOpen && (
             <Listbox.Options
               static
-              className={`absolute mt-1 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm z-20 ${
+              className={`absolute mt-1 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 text-sm max-[296px]:text-xs z-20 ${
                 options.length === 0 || !isOpen ? "hidden" : ""
-              }`}
+              } ${isRightAlign ? "right-0" : ""}`}
             >
               {options.map((option) => {
                 if (hasMultiple) {
