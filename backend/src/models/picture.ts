@@ -88,7 +88,7 @@ const getMatchWithClosestEloStrategy = async (
   userPreferences: Preference | null
 ) => {
   const MAX_RETRIEVED_PICS = 100;
-  let isMale = Math.random() > 0.5 ? Gender.Male : Gender.Female;
+  let isMale = Math.random() > 0.5;
 
   const preferencesQuery: Prisma.UserWhereInput[] = [];
 
