@@ -88,6 +88,7 @@ const getMatchWithClosestEloStrategy = async (
   userPreferences: Preference | null
 ) => {
   const MAX_RETRIEVED_PICS = 100;
+  let isMale = Math.random() > 0.5 ? Gender.Male : Gender.Female;
 
   const preferencesQuery: Prisma.UserWhereInput[] = [];
 
@@ -154,55 +155,69 @@ const getMatchWithClosestEloStrategy = async (
   }
 
   // Get picture with the least amount of votes. And in the preferences
-  const picture1 = await prisma.picture.findFirst({
-    where: {
-      AND: [
-        {
-          userId: {
-            not: loggedUser.id,
-          },
-        },
-        {
-          user: {
-            isBanned: false,
-          },
-        },
-        {
-          user: {
-            AND: preferencesQuery,
-          },
-        },
-        {
-          user: {
-            OR: [
-              {
-                preference: {
-                  AND: preferencesVoterQuery,
-                },
-              },
-              {
-                preference: null,
-              },
-            ],
-          },
-        },
-        {
-          reports: {
-            none: {
-              userReportingId: loggedUser.id,
+  const genderArr = isMale ? [Gender.Male, Gender.Female] : [Gender.Female, Gender.Male];
+
+  for (const genderVal of genderArr) {
+    var picture1 = await prisma.picture.findFirst({
+      where: {
+        AND: [
+          {
+            user: {
+              gender: genderVal,
             },
           },
-        },
-      ],
-    },
-    orderBy: {
-      numVotes: "asc",
-    },
-    include: {
-      user: true,
-    },
-  });
+          {
+            userId: {
+              not: loggedUser.id,
+            },
+          },
+          {
+            user: {
+              isBanned: false,
+            },
+          },
+          {
+            user: {
+              AND: preferencesQuery,
+            },
+          },
+          {
+            user: {
+              OR: [
+                {
+                  preference: {
+                    AND: preferencesVoterQuery,
+                  },
+                },
+                {
+                  preference: null,
+                },
+              ],
+            },
+          },
+          {
+            reports: {
+              none: {
+                userReportingId: loggedUser.id,
+              },
+            },
+          },
+        ],
+      },
+      orderBy: {
+        numVotes: "asc",
+      },
+      include: {
+        user: true,
+      },
+    });
 
+    if (picture1) {
+      break;
+    }
+  }
+
+  // @ts-ignore
   if (!picture1) {
     throw new BadRequestError("Not enought pictures for the match");
   }
