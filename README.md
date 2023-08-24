@@ -1,6 +1,6 @@
 # Photo Ranker
 
-Photo Ranker is a web application designed to offer an unbiased and fun way to rank photos. By presenting two random pictures side-by-side for a binary vote, it removes the gray area often found in traditional 1-10 rating systems.
+Photo Ranker is a web application designed to offer both an engaging and unbiased way to rank photos. Through a unique side-by-side binary voting system, users can obtain an honest and accurate rating for their photos. This approach not only makes voting more fun but also ensures clarity and determinism, removing the gray areas often found in traditional 1-10 rating systems.
 
 <div style="text-align: center;">
   <img src="assets/voting.gif" width="400" />
