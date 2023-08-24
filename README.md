@@ -2,7 +2,9 @@
 
 Photo Ranker is a web application designed to offer an unbiased and fun way to rank photos. By presenting two random pictures side-by-side for a binary vote, it removes the gray area often found in traditional 1-10 rating systems.
 
-![Video of Voting](assets/voting.gif)
+<div style="text-align: center;">
+  <img src="assets/voting.gif" width="400" />
+</div>
 
 ### [Live Demo](https://photo-ranker-app.netlify.app/)
 
@@ -26,8 +28,22 @@ The goal of Photo Ranker is to address a common problem: receiving honest feedba
 
 ## Visual Demonstrations
 
-- **Report Feature:** ![Image of Reporting](assets/report.png)
+- **Report Feature:**
+<div style="margin-left: 40px; margin-top: -10px">
+  <img src="assets/report.png" width="500" />
+</div>
+
 - **Picture Uploading:**
-  <img src="assets/upload_pics.png" width="200" align="left" />
-- **Score Sorting:** ![User's Pictures Sorted](assets/my_photos.png)
-- **Settings Page:** ![Settings Image](assets/settings.png)
+<div style="margin-left: 40px; margin-top: -10px">
+  <img src="assets/upload_pics.png" width="200" />
+</div>
+
+- **Score Sorting:**
+<div style="margin-left: 40px; margin-top: -10px">
+  <img src="assets/my_photos.png" width="500" />
+</div>
+
+- **Settings Page:**
+<div style="margin-left: 40px; margin-top: -10px">
+  <img src="assets/settings.png" width="500" />
+</div>
