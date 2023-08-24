@@ -24,7 +24,7 @@ The goal of Photo Ranker is to address a common problem: receiving honest feedba
 
 ## Visual Demonstrations
 
-- **Voting Process:** [Video of Voting](assets/voting_video.mp4)
+- **Voting Process:** [Video of Voting](assets/voting.gif)
 - **Report Feature:** ![Image of Reporting](assets/report.png)
 - **Picture Uploading:** ![Uploading Image](assets/upload_pics.png)
 - **Score Sorting:** ![User's Pictures Sorted](assets/my_photos.png)
