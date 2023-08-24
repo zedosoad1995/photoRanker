@@ -22,6 +22,9 @@ export const getMany = async (req: Request, res: Response) => {
   const hasReport = parseBoolean(req.query.hasReport as string | undefined);
   const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
   const isBanned = parseBoolean(req.query.isBanned as string | undefined);
+  const gender = req.query.gender as string | undefined;
+  const minAge = parseNumber(req.query.minAge as string | undefined);
+  const maxAge = parseNumber(req.query.maxAge as string | undefined);
   const limit = parseNumber(req.query.limit as string | undefined);
   const cursor = req.query.cursor as string | undefined;
   const orderBy = req.query.orderBy as string | undefined;
@@ -42,11 +45,13 @@ export const getMany = async (req: Request, res: Response) => {
 
   const { pictures, nextCursor } = await PictureModel.getPicturesWithPercentile(
     userId,
-    loggedUser.id,
-    loggedUser.role,
+    loggedUser,
     hasReport,
     belongsToMe,
     isBanned,
+    gender,
+    minAge,
+    maxAge,
     limit,
     cursor,
     orderByQuery

@@ -23,7 +23,7 @@ export const getMany = async (req: Request, res: Response) => {
     orderBy: orderByQuery,
   });
 
-  res.status(204).send({ reports });
+  res.status(200).send({ reports });
 };
 
 export const createOne = async (req: Request, res: Response) => {

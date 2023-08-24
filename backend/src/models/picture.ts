@@ -1,12 +1,14 @@
 import _ from "underscore";
 import { prisma } from ".";
-import { Picture, Prisma } from "@prisma/client";
+import { Gender, Picture, Preference, Prisma, User } from "@prisma/client";
 import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
+import { adjustDate, calculateAge, formatDate } from "@/helpers/date";
 
+// TODO: random gender
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
     where: {
@@ -44,6 +46,7 @@ const getRandomMatch = async (loggedUserId: string) => {
   return [picture1, picture2];
 };
 
+// TODO: Preferences logic
 function getRandomPicture(numPictures: number, loggedUserId: string, opponentPicId?: string) {
   const extraValue = opponentPicId === undefined ? 0 : 1;
   const randomNumPic = _.random(numPictures - 1 - extraValue);
@@ -80,56 +83,153 @@ function getRandomPicture(numPictures: number, loggedUserId: string, opponentPic
   });
 }
 
-const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
+const getMatchWithClosestEloStrategy = async (
+  loggedUser: User,
+  userPreferences: Preference | null
+) => {
   const MAX_RETRIEVED_PICS = 100;
+  let isMale = Math.random() > 0.5;
 
-  const numPictures = await prisma.picture.count({
-    where: {
-      AND: [
-        {
-          userId: {
-            not: loggedUserId,
-          },
-        },
-        {
-          user: {
-            isBanned: false,
-          },
-        },
-      ],
-    },
-  });
+  const preferencesQuery: Prisma.UserWhereInput[] = [];
 
-  if (numPictures < 2) {
-    throw new BadRequestError("Not enought pictures for the match");
+  if (userPreferences) {
+    if (userPreferences.contentGender) {
+      preferencesQuery.push({
+        gender: userPreferences.contentGender,
+      });
+    }
+
+    if (userPreferences.contentMaxAge) {
+      preferencesQuery.push({
+        dateOfBirth: {
+          gt: formatDate(adjustDate(new Date(), { years: -userPreferences.contentMaxAge - 1 })),
+        },
+      });
+    }
+
+    preferencesQuery.push({
+      dateOfBirth: {
+        lt: formatDate(adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })),
+      },
+    });
   }
 
-  // Get picture with the least amount of votes
-  const picture1 = await prisma.picture.findFirst({
-    where: {
-      AND: [
+  const preferencesVoterQuery: Prisma.PreferenceWhereInput[] = [];
+
+  preferencesVoterQuery.push({
+    OR: [
+      {
+        exposureGender: loggedUser.gender,
+      },
+      {
+        exposureGender: null,
+      },
+    ],
+  });
+
+  if (loggedUser.dateOfBirth) {
+    const loggedUserAge = calculateAge(loggedUser.dateOfBirth);
+
+    preferencesVoterQuery.push({
+      OR: [
         {
-          userId: {
-            not: loggedUserId,
+          exposureMaxAge: {
+            gte: loggedUserAge,
           },
         },
         {
-          user: {
-            isBanned: false,
+          exposureMaxAge: null,
+        },
+      ],
+    });
+
+    preferencesVoterQuery.push({
+      OR: [
+        {
+          exposureMinAge: {
+            lte: loggedUserAge,
           },
         },
       ],
-    },
-    orderBy: {
-      numVotes: "asc",
-    },
-  });
+    });
+  }
 
+  // Get picture with the least amount of votes. And in the preferences
+  const genderArr = isMale ? [Gender.Male, Gender.Female] : [Gender.Female, Gender.Male];
+
+  for (const genderVal of genderArr) {
+    var picture1 = await prisma.picture.findFirst({
+      where: {
+        AND: [
+          {
+            user: {
+              gender: genderVal,
+            },
+          },
+          {
+            userId: {
+              not: loggedUser.id,
+            },
+          },
+          {
+            user: {
+              isBanned: false,
+            },
+          },
+          {
+            user: {
+              AND: preferencesQuery,
+            },
+          },
+          {
+            user: {
+              OR: [
+                {
+                  preference: {
+                    AND: preferencesVoterQuery,
+                  },
+                },
+                {
+                  preference: null,
+                },
+              ],
+            },
+          },
+          {
+            reports: {
+              none: {
+                userReportingId: loggedUser.id,
+              },
+            },
+          },
+        ],
+      },
+      orderBy: {
+        numVotes: "asc",
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (picture1) {
+      break;
+    }
+  }
+
+  // @ts-ignore
   if (!picture1) {
     throw new BadRequestError("Not enought pictures for the match");
   }
 
-  let pictures = await getPicturesWithClosestElos(picture1, loggedUserId, MAX_RETRIEVED_PICS);
+  let pictures = await getPicturesWithClosestElos(
+    picture1,
+    loggedUser,
+    MAX_RETRIEVED_PICS,
+    userPreferences,
+    picture1.user.gender
+  );
+
   if (pictures.length === 0) {
     throw new BadRequestError("Not enought pictures for the match");
   }
@@ -146,35 +246,90 @@ const getMatchWithClosestEloStrategy = async (loggedUserId: string) => {
 
 function getPicturesWithClosestElos(
   opponentPicture: Picture,
-  loggedUserId: string,
-  limit: number
+  loggedUser: User,
+  limit: number,
+  userPreferences: Preference | null,
+  gender: string | null
 ): Promise<(Picture & { abs_diff: number })[]> {
-  return prisma.$queryRaw(
-    Prisma.sql`
+  const whereQuery: string[] = [];
+
+  if (userPreferences) {
+    if (userPreferences.contentGender) {
+      whereQuery.push(`usr.gender = '${userPreferences.contentGender}'`);
+    }
+
+    if (userPreferences.contentMaxAge) {
+      whereQuery.push(
+        `usr."dateOfBirth" > '${formatDate(
+          adjustDate(new Date(), { years: -userPreferences.contentMaxAge - 1 })
+        )}'`
+      );
+    }
+
+    whereQuery.push(
+      `usr."dateOfBirth" < '${formatDate(
+        adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })
+      )}'`
+    );
+  }
+
+  if (!userPreferences?.contentGender && gender) {
+    whereQuery.push(`usr.gender = '${gender}'`);
+  }
+
+  whereQuery.push(
+    `(preference."exposureGender" = '${loggedUser.gender}' OR preference."exposureGender" IS NULL)`
+  );
+
+  if (loggedUser.dateOfBirth) {
+    const loggedUserAge = calculateAge(loggedUser.dateOfBirth);
+
+    whereQuery.push(
+      `(preference."exposureMaxAge" >= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
+    );
+
+    whereQuery.push(
+      `(preference."exposureMinAge" <= ${loggedUserAge} OR preference."exposureMinAge" IS NULL)`
+    );
+  }
+
+  const where = whereQuery.length ? "AND " + whereQuery.join(" AND ") : "";
+
+  return prisma.$queryRawUnsafe(`
       SELECT pic.*,
         ABS(${opponentPicture.rating.toFixed(2)}::numeric  - pic.rating) as abs_diff
       FROM "Picture" AS pic
       INNER JOIN "User" AS usr ON pic."userId" = usr.id
-      WHERE pic."userId" != ${loggedUserId} AND pic.id != ${
-      opponentPicture.id
-    } AND usr."isBanned" = FALSE
+      LEFT JOIN "Preference" AS preference ON usr.id = preference."userId"
+      WHERE pic."userId" != '${loggedUser.id}' AND pic.id != '${
+    opponentPicture.id
+  }' AND usr."isBanned" = FALSE ${where} AND
+        NOT EXISTS (
+          SELECT 1
+          FROM "Report" AS report
+          WHERE report."userReportingId" = '${loggedUser.id}' AND pic.id = report."pictureId"
+        )
       ORDER BY abs_diff ASC
-      LIMIT ${limit};`
-  );
+      LIMIT ${limit};`);
 }
 
 // TODO: Improve this function code
 async function getPicturesWithPercentile(
   userId: string | undefined,
-  loggedUserId: string,
-  role: string,
+  loggedUser: User,
   hasReport: boolean | undefined,
   belongsToMe: boolean | undefined,
   isBanned: boolean | undefined,
+  gender: string | undefined,
+  minAge: number | undefined,
+  maxAge: number | undefined,
   limit: number | undefined,
   cursor: string | undefined,
   orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
 ): Promise<{ pictures: (Picture & { percentile: number })[]; nextCursor: string | undefined }> {
+  const loggedUserId = loggedUser.id;
+  const role = loggedUser.role;
+
   const whereQuery: (boolean | string)[] = [true];
   const havingQuery: string[] = [];
   const joinQuery: string[] = [];
@@ -207,6 +362,12 @@ async function getPicturesWithPercentile(
   const NO_BANNED_USERS_WHERE = `usr."isBanned" is FALSE`;
   let joinInnerQuery: string[] = [USER_JOIN];
   let whereInnerQuery: string[] = [`pic."numVotes" > 0`, NO_BANNED_USERS_WHERE];
+
+  if (isRegular(role) || belongsToMe) {
+    whereInnerQuery.push(`usr.gender = '${loggedUser.gender}'`);
+  } else if (gender) {
+    whereInnerQuery.push(`usr.gender = '${gender}'`);
+  }
 
   // Filtering
   if (userId) {
@@ -246,6 +407,22 @@ async function getPicturesWithPercentile(
 
     if (belongsToMe !== undefined) {
       whereQuery.push(`pic."userId" ${belongsToMe ? "=" : "!="} '${loggedUserId}'`);
+    }
+
+    if (gender) {
+      whereQuery.push(`usr.gender = '${gender}'`);
+    }
+
+    if (minAge) {
+      whereQuery.push(
+        `usr."dateOfBirth" < '${formatDate(adjustDate(new Date(), { years: -minAge, days: 1 }))}'`
+      );
+    }
+
+    if (maxAge) {
+      whereQuery.push(
+        `usr."dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`
+      );
     }
 
     // Sorting

@@ -43,26 +43,28 @@ export default function Textfield({
   return (
     <div>
       {label && <Label name={label} />}
-      <div className="mt-2 relative">
-        {type === "password" && (
-          <div
-            onClick={toggleShowPassword}
-            className="absolute right-4 w-6 h-6 top-1/2 -translate-y-1/2 cursor-pointer text-placeholder-text"
-          >
-            {isShowPassword && <EyeSlashIcon />}
-            {!isShowPassword && <EyeIcon />}
-          </div>
-        )}
-        <input
-          type={transformedType}
-          autoComplete={autocomplete}
-          required={required}
-          className={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          {...register}
-        />
+      <div className="mt-2">
+        <div className="relative">
+          {type === "password" && (
+            <div
+              onClick={toggleShowPassword}
+              className="absolute right-4 w-6 h-6 top-1/2 -translate-y-1/2 cursor-pointer text-placeholder-text"
+            >
+              {isShowPassword && <EyeSlashIcon />}
+              {!isShowPassword && <EyeIcon />}
+            </div>
+          )}
+          <input
+            type={transformedType}
+            autoComplete={autocomplete}
+            required={required}
+            className={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            {...register}
+          />
+        </div>
         {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
       </div>
     </div>

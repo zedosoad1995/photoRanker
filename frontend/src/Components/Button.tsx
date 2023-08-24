@@ -4,6 +4,7 @@ interface IButton {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   size?: "medium" | "large";
   isFull?: boolean;
+  isHeightFull?: boolean;
   style?: "primary" | "danger" | "none";
   variant?: "solid" | "outline";
   disabled?: boolean;
@@ -18,6 +19,7 @@ export default function Button({
   style = "primary",
   variant = "solid",
   disabled = false,
+  isHeightFull = false,
 }: IButton) {
   let className = "";
 
@@ -57,7 +59,9 @@ export default function Button({
     <button
       disabled={disabled}
       type={type}
-      className={`flex justify-center items-center rounded-md font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+      className={`flex ${
+        isHeightFull ? "h-full" : ""
+      } justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         size === "medium" ? "px-3 py-1.5 text-sm" : "px-5 py-2.5 text-base"
       } ${isFull ? "w-full" : ""} ${className}`}
       onClick={onClick}

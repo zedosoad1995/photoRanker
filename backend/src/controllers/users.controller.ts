@@ -82,6 +82,9 @@ export const createOne = async (req: Request, res: Response) => {
   const user = await UserModel.create({
     data: {
       ...req.body,
+      preference: {
+        create: {},
+      },
       password: hashedPassword,
       isProfileCompleted: true,
       verificationTokenExpiration: expires,
@@ -142,7 +145,13 @@ export const createProfile = async (req: Request, res: Response) => {
   }
 
   const updatedUser = await UserModel.update({
-    data: { ...body, isProfileCompleted: true },
+    data: {
+      ...body,
+      preference: {
+        create: {},
+      },
+      isProfileCompleted: true,
+    },
     where: {
       id: userId,
     },
