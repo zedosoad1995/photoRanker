@@ -20,6 +20,7 @@ WORKDIR /app
 COPY --from=builder /backend/build/ .
 COPY --from=builder /backend/prisma/ ./prisma
 COPY --from=builder /backend/package*.json .
+COPY --from=builder /backend/.env .env
 
 RUN npx prisma generate
 RUN npm ci --production
