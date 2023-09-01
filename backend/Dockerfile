@@ -8,6 +8,8 @@ RUN npm ci
 COPY ./shared ../shared
 COPY ./backend .
 
+RUN npx prisma generate
+
 RUN npm run build
 
 
