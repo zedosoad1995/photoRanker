@@ -20,5 +20,5 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t vcarp/photoscorer:latest .
+          docker build -t vcarp/photoscorer:latest -f backend/Dockerfile . 
           docker push vcarp/photoscorer:latest
