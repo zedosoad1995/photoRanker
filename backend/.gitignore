@@ -3,6 +3,7 @@ build
 .env
 .env.dev
 .env.stg
+.env.prod
 storage/images
 storage/testImages
 scripts/data
