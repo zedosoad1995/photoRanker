@@ -5,16 +5,9 @@ import { UserModel } from "@/models/user";
 import { randomizeUser } from "@/tests/helpers/user";
 import { UserRole } from "@prisma/client";
 import { UserSeeder } from "@/tests/seed/UserSeeder";
-import nodemailer, { Transporter, SentMessageInfo } from "nodemailer";
 import { adjustDate, formatDate } from "@/helpers/date";
 import { MIN_AGE } from "@shared/constants/user";
-
-jest.mock("nodemailer");
-const mockedNodeMailer = nodemailer as jest.Mocked<typeof nodemailer>;
-
-mockedNodeMailer.createTransport.mockReturnValue({
-  sendMail: jest.fn().mockResolvedValue({} as SentMessageInfo),
-} as unknown as Transporter);
+import { mailingService } from "@/container";
 
 const createUserBody = randomizeUser();
 
@@ -39,8 +32,8 @@ it("Sends mail to email of newly created user", async () => {
   const response = await request(app).post("/api/users").send(createUserBody);
 
   expect(response.status).toEqual(201);
-  expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledTimes(1);
-  expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledWith(
+  expect(mailingService.sendEmail).toHaveBeenCalledTimes(1);
+  expect(mailingService.sendEmail).toHaveBeenCalledWith(
     expect.objectContaining({
       to: createUserBody.email,
     })
@@ -62,7 +55,7 @@ describe("User Creation fail", () => {
 
     await request(app).post("/api/users").send(createUserBody);
 
-    expect(mockedNodeMailer.createTransport().sendMail).not.toHaveBeenCalled();
+    expect(mailingService.sendEmail).not.toHaveBeenCalled();
   });
 });
 

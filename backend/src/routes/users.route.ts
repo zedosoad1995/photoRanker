@@ -23,7 +23,7 @@ import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { checkRegular } from "@/middlewares/checkRegular";
 import { checkBanned } from "@/middlewares/checkBanned";
-import { mainStorageInteractor } from "@/container";
+import { mailingService, mainStorageInteractor } from "@/container";
 
 const router = Router();
 
@@ -39,7 +39,7 @@ router.get(
 router.get("/me", checkAuth, getMe);
 router.get("/:userId", checkAuth, checkProfileCompleted, checkEmailVerified, getOne);
 
-router.post("/", validateForm(createUserSchema), createOne);
+router.post("/", validateForm(createUserSchema), createOne(mailingService));
 router.patch("/profile/:userId", checkAuth, validateForm(createProfileSchema), createProfile);
 router.patch(
   "/:userId",

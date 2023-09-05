@@ -8,7 +8,7 @@ import { isAdmin } from "@/helpers/role";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { v4 as uuidv4 } from "uuid";
-import { getEmailHtml, sendEmail } from "@/helpers/mail";
+import { getEmailHtml } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
 import jwt from "jsonwebtoken";
 import { cookieOptions } from "@/constants/cookies";
@@ -17,6 +17,8 @@ import { BannedUserModel } from "@/models/bannerUser";
 import { BANNED_ACCOUNT } from "@shared/constants/errorCodes";
 import { StorageInteractor } from "@/types/storageInteractor";
 import { PictureModel } from "@/models/picture";
+import { SENDGRID_EMAIL_NAME } from "@/constants/email";
+import { MailRepo } from "@/types/mailRepo";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -52,7 +54,7 @@ export const getMe = async (req: Request, res: Response) => {
   res.status(200).json({ user: userNoPassword });
 };
 
-export const createOne = async (req: Request, res: Response) => {
+export const createOne = (mailingService: MailRepo) => async (req: Request, res: Response) => {
   const hashedPassword = await hashPassword(req.body.password);
 
   const bannedUser = await BannedUserModel.findUnique({
@@ -99,11 +101,12 @@ export const createOne = async (req: Request, res: Response) => {
     verificationUrl: `${process.env.FRONTEND_URL}/checking-validation/${verificationToken}`,
   });
 
-  sendEmail({
-    from: process.env.SENDER_EMAIL,
+  mailingService.sendEmail({
+    from: { email: process.env.SENDGRID_EMAIL!, name: SENDGRID_EMAIL_NAME },
     to: req.body.email,
     subject: "Email Verification",
     html,
+    text: "Photo Scorer",
   });
 
   const userJwt = jwt.sign(

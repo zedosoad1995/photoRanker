@@ -5,6 +5,8 @@ import { Glicko2 } from "./repositories/rating/glicko2";
 import { Elo } from "./repositories/rating/elo";
 import { createClient } from "@supabase/supabase-js";
 import { SupabaseInteractor } from "./repositories/storage/supabase";
+import { SendGridRepo } from "./repositories/email/sendGrid";
+import { GmailRepo } from "./repositories/email/gmail";
 
 const s3 = new S3Client({
   region: process.env.S3_REGION,
@@ -31,3 +33,6 @@ export const mainStorageInteractor = s3Interactor;
 
 export const elo = new Elo();
 export const glicko2 = new Glicko2();
+
+export const mailingService =
+  process.env.NODE_ENV === "PROD" ? new SendGridRepo() : new GmailRepo();

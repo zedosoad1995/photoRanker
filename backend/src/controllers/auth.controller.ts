@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { AUTH } from "@/constants/messages";
 import { FACEBOOK_CALLBACK_URI } from "@/constants/uri";
 import { BadRequestError } from "@/errors/BadRequestError";
-import { getEmailHtml, sendEmail } from "@/helpers/mail";
+import { getEmailHtml } from "@/helpers/mail";
 import { getDateInXHours } from "@/helpers/date";
 import {
   BANNED_ACCOUNT,
@@ -23,6 +23,8 @@ import {
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { cookieOptions } from "@/constants/cookies";
 import { BannedUserModel } from "@/models/bannerUser";
+import { SENDGRID_EMAIL_NAME } from "@/constants/email";
+import { MailRepo } from "@/types/mailRepo";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 
@@ -355,7 +357,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   return res.status(204).send();
 };
 
-export const resendEmail = async (req: Request, res: Response) => {
+export const resendEmail = (mailingService: MailRepo) => async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
   if (loggedUser.isEmailVerified) {
@@ -382,17 +384,18 @@ export const resendEmail = async (req: Request, res: Response) => {
     verificationUrl: `${process.env.FRONTEND_URL}/checking-validation/${verificationToken}`,
   });
 
-  sendEmail({
-    from: process.env.SENDER_EMAIL,
+  mailingService.sendEmail({
+    from: { email: process.env.SENDGRID_EMAIL!, name: SENDGRID_EMAIL_NAME },
     to: loggedUser.email,
     subject: "Email Verification",
     html,
+    text: "Photo Scorer",
   });
 
   return res.status(204).send();
 };
 
-export const forgotPassword = async (req: Request, res: Response) => {
+export const forgotPassword = (mailingService: MailRepo) => async (req: Request, res: Response) => {
   const email = req.body.email as string;
 
   const user = await UserModel.findUnique({
@@ -433,11 +436,12 @@ export const forgotPassword = async (req: Request, res: Response) => {
     verificationUrl: `${process.env.FRONTEND_URL}/reset-password/${token}`,
   });
 
-  sendEmail({
-    from: process.env.SENDER_EMAIL,
+  mailingService.sendEmail({
+    from: { email: process.env.SENDGRID_EMAIL!, name: SENDGRID_EMAIL_NAME },
     to: user.email,
     subject: "Reset Password",
     html,
+    text: "Photo Scorer",
   });
 
   return res.status(204).send();
