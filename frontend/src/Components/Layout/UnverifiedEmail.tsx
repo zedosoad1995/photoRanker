@@ -21,7 +21,7 @@ export default function UnverifiedEmail() {
         </p>
         {seconds > 0 && (
           <p>
-            If you do receive the email in the next <b>{seconds}</b> seconds, click the button
+            If you do not receive the email in the next <b>{seconds}</b> seconds, click the button
             below.
           </p>
         )}
