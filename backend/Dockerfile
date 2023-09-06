@@ -32,6 +32,7 @@ COPY ./infra/https/nginx.crt /etc/nginx/ssl/nginx.crt
 COPY ./infra/https/nginx.key /etc/nginx/ssl/nginx.key
 
 COPY ./infra/api.photoscorer.com /etc/nginx/sites-available/api.photoscorer.com
+RUN mkdir -p /etc/nginx/sites-enabled/
 RUN ln -s /etc/nginx/sites-available/api.photoscorer.com /etc/nginx/sites-enabled/
 
 
