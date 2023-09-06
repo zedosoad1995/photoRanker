@@ -9,3 +9,7 @@ export const mainStorageInteractor = {
 
 export const elo = new Elo();
 export const glicko2 = new Glicko2();
+
+export const mailingService = {
+  sendEmail: jest.fn(),
+};

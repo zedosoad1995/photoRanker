@@ -1,18 +1,9 @@
 import request from "supertest";
 import { app } from "@/app";
-import { getDateInXHours } from "@/helpers/date";
-import { UserSeeder } from "@/tests/seed/UserSeeder";
 import { UserModel } from "@/models/user";
 import { loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
-import nodemailer, { Transporter, SentMessageInfo } from "nodemailer";
-
-jest.mock("nodemailer");
-const mockedNodeMailer = nodemailer as jest.Mocked<typeof nodemailer>;
-
-mockedNodeMailer.createTransport.mockReturnValue({
-  sendMail: jest.fn().mockResolvedValue({} as SentMessageInfo),
-} as unknown as Transporter);
+import { mailingService } from "@/container";
 
 describe("Unauthorized", () => {
   it("returns 401, when no user is authenticated", async () => {
@@ -57,10 +48,8 @@ describe("Regular Logged User", () => {
       .send();
 
     expect(response.status).toEqual(204);
-    expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledTimes(
-      1
-    );
-    expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledWith(
+    expect(mailingService.sendEmail).toHaveBeenCalledTimes(1);
+    expect(mailingService.sendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         to: regularUser.email,
       })
@@ -94,10 +83,8 @@ describe("Admin Logged User", () => {
       .send();
 
     expect(response.status).toEqual(204);
-    expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledTimes(
-      1
-    );
-    expect(mockedNodeMailer.createTransport().sendMail).toHaveBeenCalledWith(
+    expect(mailingService.sendEmail).toHaveBeenCalledTimes(1);
+    expect(mailingService.sendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         to: adminUser.email,
       })
