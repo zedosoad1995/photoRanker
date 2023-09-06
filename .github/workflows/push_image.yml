@@ -15,6 +15,11 @@ jobs:
       - name: Set up environment
         run: echo "${{ secrets.ENV_FILE }}" > backend/.env
 
+      - name: Set up SSL certs
+        run: |
+          echo "${{ secrets.NGINX_CRT }}" > ./infra/https/nginx.crt
+          echo "${{ secrets.NGINX_KEY }}" > ./infra/https/nginx.key
+
       - name: Login to the Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
