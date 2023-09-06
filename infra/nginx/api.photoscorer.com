@@ -7,6 +7,6 @@ server {
     ssl_certificate_key /etc/nginx/ssl/nginx.key;
 
     location / {
-        proxy_pass http://localhost:8000;
+        proxy_pass http://app:8000;
     }
 }

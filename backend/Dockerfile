@@ -25,21 +25,7 @@ COPY --from=builder /backend/.env .env
 RUN npx prisma generate
 RUN npm ci --production
 
-
-RUN apk add nginx
-
-COPY ./infra/https/nginx.crt /etc/nginx/ssl/nginx.crt
-COPY ./infra/https/nginx.key /etc/nginx/ssl/nginx.key
-
-COPY ./infra/api.photoscorer.com /etc/nginx/sites-available/api.photoscorer.com
-RUN mkdir -p /etc/nginx/sites-enabled/
-RUN ln -s /etc/nginx/sites-available/api.photoscorer.com /etc/nginx/sites-enabled/
-
-RUN npm install -g pm2
-
 EXPOSE 8000
 
-COPY ./scripts/docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
-
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+RUN npm install -g pm2
+CMD ["pm2-runtime", "start", "backend/src/index.js"]
