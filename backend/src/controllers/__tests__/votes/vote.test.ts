@@ -374,3 +374,5 @@ describe("Admin Logged User", () => {
     expect(response.status).toEqual(201);
   });
 });
+
+it.todo("What happens when winnerPictureId is undefined?");
