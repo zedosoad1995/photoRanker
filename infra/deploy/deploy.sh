@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Migrates DB
+cd app
+git pull origin master
+
+cd backend
+
+export NVM_DIR="/home/ubuntu/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+npx prisma migrate deploy
+
+cd ~
+
 # Login to Docker Hub
 echo "$DOCKER_HUB_PASSWORD" | docker login --username "$DOCKER_HUB_USERNAME" --password-stdin
 

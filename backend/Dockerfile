@@ -10,7 +10,7 @@ COPY ./backend .
 
 RUN npx prisma generate
 
-RUN npm run build:stg
+RUN npm run build
 
 
 FROM node:18.17-alpine3.17
