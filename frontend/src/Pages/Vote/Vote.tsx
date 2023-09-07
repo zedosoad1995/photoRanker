@@ -161,8 +161,14 @@ export default function Vote() {
     let interval = setInterval(checkCondition, intervalTime);
   };
 
-  const handleSkipMatch = () => {
-    getMatch();
+  const handleSkipMatch = async () => {
+    try {
+      if (match) {
+        await vote(match.id);
+      }
+    } finally {
+      getMatch();
+    }
   };
 
   return (
