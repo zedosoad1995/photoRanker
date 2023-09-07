@@ -14,6 +14,9 @@ if npx prisma migrate deploy; then
     # Login to Docker Hub
     echo "$DOCKER_HUB_PASSWORD" | docker login --username "$DOCKER_HUB_USERNAME" --password-stdin
 
+    docker container prune -f
+    docker image prune -f
+
     # Pull the latest images
     docker pull vcarp/photoscorer:latest
     docker pull vcarp/photoscorer-nginx:latest
