@@ -93,7 +93,7 @@ model Match {
   activeUser   User?     @relation(name: "activeMatch", fields: [activeUserId], references: [id], onDelete: Cascade)
   activeUserId String?   @unique
   pictures     Picture[]
-  votes        Vote?
+  vote         Vote?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }

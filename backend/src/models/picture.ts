@@ -196,6 +196,15 @@ const getMatchWithClosestEloStrategy = async (
             },
           },
           {
+            matches: {
+              none: {
+                vote: {
+                  voterId: loggedUser.id,
+                },
+              },
+            },
+          },
+          {
             reports: {
               none: {
                 userReportingId: loggedUser.id,
@@ -308,6 +317,12 @@ function getPicturesWithClosestElos(
           SELECT 1
           FROM "Report" AS report
           WHERE report."userReportingId" = '${loggedUser.id}' AND pic.id = report."pictureId"
+        ) AND 
+        NOT EXISTS (
+          SELECT 1 FROM "_MatchToPicture" as ab
+          INNER JOIN "Match" as match ON ab."A" = match.id
+          INNER JOIN "Vote" as vote ON match.id = vote."matchId"
+          WHERE ab."B" = pic.id AND vote."voterId" = '${loggedUser.id}'
         )
       ORDER BY abs_diff ASC
       LIMIT ${limit};`);
