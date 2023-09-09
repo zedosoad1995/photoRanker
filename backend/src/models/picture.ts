@@ -6,7 +6,8 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
-import { adjustDate, calculateAge, formatDate } from "@/helpers/date";
+import { adjustDate, formatDate } from "@/helpers/date";
+import { calculateAge } from "@shared/helpers/date";
 
 // TODO: random gender
 const getRandomMatch = async (loggedUserId: string) => {

@@ -1,6 +1,5 @@
 import { COUNTRIES, ETHNICITY, GENDER } from "@shared/constants/user";
 import Select from "@/Components/AutoCompleteSelect";
-import DateField from "@/Components/DateField";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,6 +8,7 @@ import {
 } from "@/Schemas/User/CreateUserPersonalInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { ICreateUser } from "@/Types/user";
+import DateField from "@/Components/DateField";
 
 type IData = Pick<ICreateUser, "countryOfOrigin" | "ethnicity" | "dateOfBirth" | "gender">;
 
@@ -80,11 +80,9 @@ const PersonalInfoForm = forwardRef(
           onKeyDown={handleKeyDown}
         />
         <DateField
-          label="Date of Birth"
-          value={dateOfBirth}
+          date={dateOfBirth}
           onChange={handleChangeDate}
           error={errors.dateOfBirth?.message}
-          onKeyDown={handleKeyDown}
         />
       </>
     );

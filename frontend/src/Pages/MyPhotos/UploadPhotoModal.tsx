@@ -4,12 +4,12 @@ import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
 import Select from "@/Components/AutoCompleteSelect";
 import { AGE_OPTIONS } from "@/Constants/user";
-import { calculateAge } from "@/Utils/date";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
 import { MIN_AGE } from "@shared/constants/user";
 import { useAuth } from "@/Contexts/auth";
+import { calculateAge } from "@shared/helpers/date";
 
 interface IUploadPhotoModal {
   image: { image: string; width: number; height: number } | null;
