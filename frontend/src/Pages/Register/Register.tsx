@@ -6,7 +6,6 @@ import { useRef, useState } from "react";
 import { register } from "@/Services/auth";
 import { HOME, LOGIN } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
-import { GENDER } from "@shared/constants/user";
 import _ from "underscore";
 import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";
@@ -24,9 +23,9 @@ const INITIAL_DATA: ICreateUser = {
   email: "",
   name: "",
   password: "",
-  ethnicity: "White",
-  countryOfOrigin: "Portugal",
-  gender: GENDER.Male,
+  ethnicity: "",
+  countryOfOrigin: "",
+  gender: "",
   dateOfBirth: "",
 };
 

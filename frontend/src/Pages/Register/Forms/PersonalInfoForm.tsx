@@ -37,8 +37,13 @@ const PersonalInfoForm = forwardRef(
       resolver: zodResolver(CreateUserPersonalInfoSchema),
       defaultValues: {
         dateOfBirth,
+        gender,
+        ethnicity,
+        countryOfOrigin,
       },
     });
+
+    console.log(errors);
 
     useImperativeHandle(ref, () => ({
       checkValid() {
@@ -48,6 +53,7 @@ const PersonalInfoForm = forwardRef(
     }));
 
     const handleChange = (label: keyof IData) => (value: string) => {
+      setValue(label, value, { shouldValidate: true });
       updateData({ [label]: value });
     };
 
@@ -58,27 +64,44 @@ const PersonalInfoForm = forwardRef(
 
     return (
       <>
-        <Select
-          label="Country of Origin"
-          options={COUNTRIES}
-          value={countryOfOrigin}
-          onChange={handleChange("countryOfOrigin")}
-          onKeyDown={handleKeyDown}
-        />
-        <Select
-          label="Ethnicity"
-          options={ETHNICITY}
-          value={ethnicity}
-          onChange={handleChange("ethnicity")}
-          onKeyDown={handleKeyDown}
-        />
-        <Select
-          label="Gender"
-          options={Object.values(GENDER)}
-          value={gender}
-          onChange={handleChange("gender")}
-          onKeyDown={handleKeyDown}
-        />
+        <div>
+          <Select
+            label="Country of Origin"
+            options={COUNTRIES}
+            value={countryOfOrigin}
+            onChange={handleChange("countryOfOrigin")}
+            onKeyDown={handleKeyDown}
+          />
+          {errors.countryOfOrigin?.message && (
+            <div className="text-error-text mt-1 text-danger">
+              {errors.countryOfOrigin?.message}
+            </div>
+          )}
+        </div>
+        <div>
+          <Select
+            label="Ethnicity"
+            options={ETHNICITY}
+            value={ethnicity}
+            onChange={handleChange("ethnicity")}
+            onKeyDown={handleKeyDown}
+          />
+          {errors.ethnicity?.message && (
+            <div className="text-error-text mt-1 text-danger">{errors.ethnicity?.message}</div>
+          )}
+        </div>
+        <div>
+          <Select
+            label="Gender"
+            options={Object.values(GENDER)}
+            value={gender}
+            onChange={handleChange("gender")}
+            onKeyDown={handleKeyDown}
+          />
+          {errors.gender?.message && (
+            <div className="text-error-text mt-1 text-danger">{errors.gender?.message}</div>
+          )}
+        </div>
         <DateField
           date={dateOfBirth}
           onChange={handleChangeDate}

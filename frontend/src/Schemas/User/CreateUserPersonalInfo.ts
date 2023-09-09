@@ -4,6 +4,9 @@ import { MIN_AGE } from "@shared/constants/user";
 
 export const CreateUserPersonalInfoSchema = z
   .object({
+    ethnicity: z.string().min(1, "Ethnicity is required"),
+    gender: z.string().min(1, "Gender is required"),
+    countryOfOrigin: z.string().min(1, "Country of Origin is required"),
     dateOfBirth: z
       .string()
       .min(1, "Date of Birth is required")
