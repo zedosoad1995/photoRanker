@@ -9,7 +9,6 @@ import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, formatDate } from "@/helpers/date";
 import { calculateAge } from "@shared/helpers/date";
 
-// TODO: random gender
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
     where: {
@@ -47,7 +46,6 @@ const getRandomMatch = async (loggedUserId: string) => {
   return [picture1, picture2];
 };
 
-// TODO: Preferences logic
 function getRandomPicture(numPictures: number, loggedUserId: string, opponentPicId?: string) {
   const extraValue = opponentPicId === undefined ? 0 : 1;
   const randomNumPic = _.random(numPictures - 1 - extraValue);
