@@ -63,7 +63,11 @@ export const PhotoCard = ({
                 alt={`picture-${index}`}
               />
             )}
-            {!img && <ImageSkeleton divClass="aspect-square" />}
+            {!img && (
+              <div className="relative -z-10">
+                <ImageSkeleton divClass="aspect-square" />
+              </div>
+            )}
           </div>
         </div>
         <div className="p-3 font-semibold text-sm">

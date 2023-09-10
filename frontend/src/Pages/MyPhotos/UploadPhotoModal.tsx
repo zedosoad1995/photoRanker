@@ -65,7 +65,7 @@ export default function UploadPhotoModal({
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white mx-2 p-6 w-[380px] rounded-xl z-10 max-h-[100vh] overflow-y-auto">
+      <Dialog.Panel className="bg-white mx-2 p-6 w-[380px] rounded-xl z-30 max-h-[100vh] overflow-y-auto">
         <div className="font-bold text-center text-lg">Adjust Photo</div>
         <div className="w-[80%] mx-auto">
           <div className="relative w-full aspect-square mx-auto mt-8">

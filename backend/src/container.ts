@@ -29,7 +29,8 @@ const supabase = createClient(
 export const localStorageInteractor = new LocalStorageInteractor();
 export const s3Interactor = new S3Interactor(s3);
 export const supabaseInteractor = new SupabaseInteractor(supabase);
-export const mainStorageInteractor = s3Interactor;
+export const mainStorageInteractor =
+  process.env.NODE_ENV === "PROD" ? s3Interactor : localStorageInteractor;
 
 export const elo = new Elo();
 export const glicko2 = new Glicko2();

@@ -48,7 +48,7 @@ export default function BanUserModal({
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white p-6 w-[500px] rounded-xl z-10">
+      <Dialog.Panel className="bg-white p-6 w-[500px] rounded-xl z-30">
         <div className="font-bold text-lg">Ban User</div>
         <div className="mt-4">
           Are you sure you want to ban user <b>{email}</b>?

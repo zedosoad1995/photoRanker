@@ -78,7 +78,7 @@ export default function MyPhotos() {
         minAge,
         maxAge,
         orderByDir,
-        limit: 5,
+        limit: 30,
         cursor,
       }).then(async (res) => {
         setNextCursor(res.nextCursor);
