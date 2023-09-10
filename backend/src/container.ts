@@ -7,6 +7,8 @@ import { createClient } from "@supabase/supabase-js";
 import { SupabaseInteractor } from "./repositories/storage/supabase";
 import { SendGridRepo } from "./repositories/email/sendGrid";
 import { GmailRepo } from "./repositories/email/gmail";
+import { CloudWatchLogger } from "./repositories/logger/cloudwatch";
+import { ConsoleLogger } from "./repositories/logger/console";
 
 const s3 = new S3Client({
   region: process.env.S3_REGION,
@@ -37,3 +39,6 @@ export const glicko2 = new Glicko2();
 
 export const mailingService =
   process.env.NODE_ENV === "PROD" ? new SendGridRepo() : new GmailRepo();
+
+export const logger =
+  process.env.NODE_ENV === "PROD" ? new CloudWatchLogger() : new ConsoleLogger();

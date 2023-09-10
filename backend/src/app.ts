@@ -7,6 +7,8 @@ import { errorHandler } from "@/middlewares/errorHandler";
 import routes from "@/routes";
 import cors from "cors";
 import { IMAGES_FOLDER_PATH } from "./constants/picture";
+import { cloudWatchLogger } from "./container";
+import { PutLogEventsCommand } from "@aws-sdk/client-cloudwatch-logs";
 
 const app = express();
 app.use(json());
@@ -25,5 +27,20 @@ app.all("*", async (req, res) => {
 });
 
 app.use(errorHandler);
+
+setTimeout(() => {
+  cloudWatchLogger.send(
+    new PutLogEventsCommand({
+      logGroupName: "photo_scorer",
+      logEvents: [
+        {
+          message: "Starting app",
+          timestamp: Date.now(),
+        },
+      ],
+      logStreamName: "1",
+    })
+  );
+}, 5000);
 
 export { app };
