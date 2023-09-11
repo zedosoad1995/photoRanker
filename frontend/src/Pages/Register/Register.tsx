@@ -101,6 +101,13 @@ export default function Register() {
               <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
 
+            {formStage === 0 && (
+              <div className="flex items-center">
+                <div className="h-[1px] flex-grow bg-light-contour"></div>
+                <div className="px-3 text-light-text">OR</div>
+                <div className="h-[1px] flex-grow bg-light-contour"></div>
+              </div>
+            )}
             {formStage === 0 && <GoogleButton text="Sign up with Google" />}
             {formStage === 0 && <FacebookButton text="Sign up with Facebook" />}
           </div>
