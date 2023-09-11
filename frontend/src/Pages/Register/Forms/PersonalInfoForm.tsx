@@ -8,7 +8,7 @@ import {
 } from "@/Schemas/User/CreateUserPersonalInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { ICreateUser } from "@/Types/user";
-import DateField from "@/Components/DateField";
+import DatePickerField from "@/Components/DatePickerField";
 
 type IData = Pick<ICreateUser, "countryOfOrigin" | "ethnicity" | "dateOfBirth" | "gender">;
 
@@ -102,8 +102,15 @@ const PersonalInfoForm = forwardRef(
             <div className="text-error-text mt-1 text-danger">{errors.gender?.message}</div>
           )}
         </div>
-        <DateField
+        {/* <DateField
           date={dateOfBirth}
+          onChange={handleChangeDate}
+          error={errors.dateOfBirth?.message}
+        /> */}
+        <DatePickerField
+          label="Date of Birth"
+          value={dateOfBirth}
+          onKeyDown={handleKeyDown}
           onChange={handleChangeDate}
           error={errors.dateOfBirth?.message}
         />

@@ -1,4 +1,4 @@
-/* import Datepicker from "react-tailwindcss-datepicker";
+import Datepicker from "react-tailwindcss-datepicker";
 import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
 import { inputField } from "@/globalClasses";
 import { CalendarIcon, XMarkIcon } from "@heroicons/react/20/solid";
@@ -54,4 +54,4 @@ export default function DatePickerField({
       </div>
     </div>
   );
-} */
+}
