@@ -99,11 +99,16 @@ export default function MyPhotos() {
             ? [...new Set([...val, ...resPics.map(({ url }) => url)])]
             : resPics.map(({ url }) => url)
         );
-        setPicsInfo((val) =>
-          cursor
-            ? [...new Set([...val, ...resPics.map(({ pic }) => pic)])]
-            : resPics.map(({ pic }) => pic)
-        );
+        setPicsInfo((val) => {
+          return cursor
+            ? [
+                ...new Set([
+                  ...val.map((row) => JSON.stringify(row)),
+                  ...resPics.map(({ pic }) => JSON.stringify(pic)),
+                ]),
+              ].map((row) => JSON.parse(row))
+            : resPics.map(({ pic }) => pic);
+        });
 
         if (!areTherePictures) setAreThePictures(pics.length > 0);
       });

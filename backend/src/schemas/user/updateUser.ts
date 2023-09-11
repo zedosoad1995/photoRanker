@@ -1,5 +1,5 @@
 import { COUNTRIES, ETHNICITY, MIN_AGE } from "@shared/constants/user";
-import { isAboveAge, isValidDateFormat } from "@/helpers/date";
+import { isAboveAge, isValidDateFormat } from "@shared/helpers/date";
 import { Gender } from "@prisma/client";
 import { z } from "zod";
 
@@ -13,7 +13,7 @@ export const updateUserSchema = z
     dateOfBirth: z
       .string()
       .refine(isValidDateFormat, "Must be a valid date in format yyyy-MM-dd")
-      .refine(isAboveAge(MIN_AGE)),
+      .refine(isAboveAge(MIN_AGE), `Must be at least ${MIN_AGE} years old`),
   })
   .strict()
   .partial();

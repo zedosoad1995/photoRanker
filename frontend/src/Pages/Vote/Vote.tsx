@@ -135,9 +135,19 @@ export default function Vote() {
 
     if (match?.id && picId) {
       vote(match.id, picId).finally(() => {
-        getMatch(true).finally(() => {
-          canGoToNextRef.current = true;
-        });
+        getMatch(true)
+          .catch(() => {
+            setTimeout(() => {
+              hasVoted.current = false;
+              applyUpdates();
+              clearInterval(interval);
+              setRerender((val) => val + 1);
+              setState("match", undefined);
+            }, 1000);
+          })
+          .finally(() => {
+            canGoToNextRef.current = true;
+          });
       });
     }
 
@@ -161,8 +171,22 @@ export default function Vote() {
     let interval = setInterval(checkCondition, intervalTime);
   };
 
-  const handleSkipMatch = () => {
-    getMatch();
+  const handleSkipMatch = async () => {
+    try {
+      if (match) {
+        await vote(match.id);
+      }
+    } finally {
+      getMatch().catch(() => {
+        setState("match", undefined);
+      });
+    }
+  };
+
+  const handleReport = () => {
+    getMatch().catch(() => {
+      setState("match", undefined);
+    });
   };
 
   return (
@@ -225,7 +249,7 @@ export default function Vote() {
             <Button style="primary" variant="outline" onClick={handleSkipMatch}>
               Skip
             </Button>
-            <FlagButton pic1={pic1} pic2={pic2} match={match} getMatch={getMatch} />
+            <FlagButton pic1={pic1} pic2={pic2} match={match} onReport={handleReport} />
           </div>
         </>
       )}

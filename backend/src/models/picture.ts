@@ -6,9 +6,9 @@ import { BadRequestError } from "@/errors/BadRequestError";
 import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
-import { adjustDate, calculateAge, formatDate } from "@/helpers/date";
+import { adjustDate, formatDate } from "@/helpers/date";
+import { calculateAge } from "@shared/helpers/date";
 
-// TODO: random gender
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
     where: {
@@ -46,7 +46,6 @@ const getRandomMatch = async (loggedUserId: string) => {
   return [picture1, picture2];
 };
 
-// TODO: Preferences logic
 function getRandomPicture(numPictures: number, loggedUserId: string, opponentPicId?: string) {
   const extraValue = opponentPicId === undefined ? 0 : 1;
   const randomNumPic = _.random(numPictures - 1 - extraValue);
@@ -196,6 +195,15 @@ const getMatchWithClosestEloStrategy = async (
             },
           },
           {
+            matches: {
+              none: {
+                vote: {
+                  voterId: loggedUser.id,
+                },
+              },
+            },
+          },
+          {
             reports: {
               none: {
                 userReportingId: loggedUser.id,
@@ -308,6 +316,12 @@ function getPicturesWithClosestElos(
           SELECT 1
           FROM "Report" AS report
           WHERE report."userReportingId" = '${loggedUser.id}' AND pic.id = report."pictureId"
+        ) AND 
+        NOT EXISTS (
+          SELECT 1 FROM "_MatchToPicture" as ab
+          INNER JOIN "Match" as match ON ab."A" = match.id
+          INNER JOIN "Vote" as vote ON match.id = vote."matchId"
+          WHERE ab."B" = pic.id AND vote."voterId" = '${loggedUser.id}'
         )
       ORDER BY abs_diff ASC
       LIMIT ${limit};`);

@@ -2,21 +2,16 @@ import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
-import Select from "@/Components/AutoCompleteSelect";
-import { AGE_OPTIONS } from "@/Constants/user";
-import { calculateAge } from "@/Utils/date";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
-import { MIN_AGE } from "@shared/constants/user";
-import { useAuth } from "@/Contexts/auth";
 
 interface IUploadPhotoModal {
   image: { image: string; width: number; height: number } | null;
   filename: string | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpload: () => void;
+  onUpload: () => Promise<void>;
 }
 
 export default function UploadPhotoModal({
@@ -26,16 +21,16 @@ export default function UploadPhotoModal({
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
-  const { user: loggedUser } = useAuth();
+  /* const { user: loggedUser } = useAuth(); */
 
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [age, setAge] = useState(() => {
+  /* const [age, setAge] = useState(() => {
     if (!loggedUser?.dateOfBirth) return String(MIN_AGE);
 
     return calculateAge(loggedUser.dateOfBirth).toString();
-  });
+  }); */
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
@@ -46,7 +41,7 @@ export default function UploadPhotoModal({
       }
 
       await uploadImage(croppedImage, filename);
-      handleUploadParent();
+      await handleUploadParent();
       handleClose();
       setZoom(1);
       setCrop({ x: 0, y: 0 });
@@ -65,7 +60,7 @@ export default function UploadPhotoModal({
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white mx-2 p-6 w-[380px] rounded-xl z-10 max-h-[100vh] overflow-y-auto">
+      <Dialog.Panel className="bg-white mx-2 p-6 w-[380px] rounded-xl z-30 max-h-[100vh] overflow-y-auto">
         <div className="font-bold text-center text-lg">Adjust Photo</div>
         <div className="w-[80%] mx-auto">
           <div className="relative w-full aspect-square mx-auto mt-8">
@@ -95,9 +90,9 @@ export default function UploadPhotoModal({
               className="bg-gray-200 rounded-lg appearance-none cursor-pointer  w-full h-1"
             />
           </div>
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <Select label="Age" options={AGE_OPTIONS} value={age} onChange={setAge} />
-          </div>
+          </div> */}
           <div className="mb-2">
             <Button onClick={handleUpload}>Upload</Button>
           </div>

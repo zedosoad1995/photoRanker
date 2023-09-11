@@ -19,6 +19,7 @@ import {
   INVALID_LOGIN_METHOD_GOOGLE,
   NON_EXISTENT_EMAIL,
   PASSWORD_RESET_NOT_NEEDED,
+  UNAUTHORIZED,
 } from "@shared/constants/errorCodes";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { cookieOptions } from "@/constants/cookies";
@@ -93,7 +94,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
   const { tokens } = await oAuth2Client.getToken(req.body.code);
 
   if (!tokens.access_token) {
-    throw new UnauthorizedError(NO_ACCESS_TOKEN);
+    throw new UnauthorizedError(NO_ACCESS_TOKEN, UNAUTHORIZED);
   }
 
   const {
@@ -105,7 +106,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
   });
 
   if (!email_verified) {
-    throw new UnauthorizedError(UNVERIFIED_EMAIL);
+    throw new UnauthorizedError(UNVERIFIED_EMAIL, UNAUTHORIZED);
   }
 
   const user = await UserModel.findFirst({
@@ -172,7 +173,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
   }
 
   if (user.googleId !== googleId) {
-    throw new UnauthorizedError();
+    throw new UnauthorizedError("Invalid googleId", UNAUTHORIZED);
   }
 
   const userJwt = jwt.sign(
@@ -208,7 +209,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
   });
 
   if (!response.data?.access_token) {
-    throw new UnauthorizedError(NO_ACCESS_TOKEN_FACEBOOK);
+    throw new UnauthorizedError(NO_ACCESS_TOKEN_FACEBOOK, UNAUTHORIZED);
   }
 
   const {
@@ -284,7 +285,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
   }
 
   if (user.facebookId !== id) {
-    throw new UnauthorizedError();
+    throw new UnauthorizedError("Invalid facebookId", UNAUTHORIZED);
   }
 
   const userJwt = jwt.sign(

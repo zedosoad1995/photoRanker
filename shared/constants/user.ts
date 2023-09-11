@@ -1,13 +1,32 @@
 export const MIN_AGE = 18;
+
 export const GENDER = {
   Male: "Male",
   Female: "Female",
 } as const;
+
+export const MONTH = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
+
 export const ROLE = {
   ADMIN: "ADMIN",
   REGULAR: "REGULAR",
 } as const;
+
 export const ETHNICITY = ["White", "Black", "Asian", "Latino", "Other"] as const;
+
 export const COUNTRIES = [
   "Afghanistan",
   "Albania",

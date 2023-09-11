@@ -1,57 +1,83 @@
-import Datepicker from "react-tailwindcss-datepicker";
-import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
-import { inputField } from "@/globalClasses";
-import { CalendarIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import Label from "./Label";
-import { subtractYears } from "@/Utils/date";
+import { MONTH } from "@shared/constants/user";
+import Textfield from "./TextField";
+import Select from "@/Components/Select";
+import { extractDayMonthYearFromDate } from "@/Utils/date";
 
-interface IDateField {
-  label?: string;
-  value: string;
-  onChange: (value: string) => void;
-  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
-  maxDate?: Date;
+interface DateField {
+  date: string;
   error?: string;
+  onChange: (date: string) => void;
 }
 
-export default function DateField({
-  label,
-  value,
-  maxDate = subtractYears(new Date(), 18),
-  onChange: handleChange,
-  onKeyDown: handleKeyDown,
-  error,
-}: IDateField) {
-  const transformedValue = {
-    startDate: value,
-    endDate: value,
+const checkCorrectDateFormat = (date: string) => {
+  return /\d+-\d+-\d+/.test(date);
+};
+
+export default function DateField({ date, error, onChange }: DateField) {
+  const { day, month, year } = extractDayMonthYearFromDate(
+    checkCorrectDateFormat(date) ? date : "0000-00-00"
+  );
+
+  const monthStr = month ? MONTH[month - 1] : "";
+
+  const handleDayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.currentTarget.value.length > 2 || /\D/.test(event.currentTarget.value)) return;
+    const changedDate = checkCorrectDateFormat(date) ? date : "0000-00-00";
+
+    const newDate = changedDate.slice(0, 8) + event.currentTarget.value.padStart(2, "0");
+    onChange(newDate);
   };
 
-  const correctTypeHandleChange = (value: DateValueType) => {
-    const callValue = Boolean(value?.startDate) ? value?.startDate : "";
+  const handleMonthChange = (value: string) => {
+    const changedDate = checkCorrectDateFormat(date) ? date : "0000-00-00";
 
-    handleChange(callValue as string);
+    const newDate =
+      changedDate.slice(0, 5) +
+      String(MONTH.findIndex((month) => month === value) + 1).padStart(2, "0") +
+      changedDate.slice(-3);
+    onChange(newDate);
+  };
+
+  const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.currentTarget.value.length > 4 || /\D/.test(event.currentTarget.value)) return;
+    const changedDate = checkCorrectDateFormat(date) ? date : "0000-00-00";
+
+    const newDate = event.currentTarget.value.padStart(4, "0") + changedDate.slice(4);
+    onChange(newDate);
   };
 
   return (
-    <div onKeyDown={handleKeyDown}>
-      {label && <Label name={label} />}
-      <div className="mt-2 relative">
-        <Datepicker
-          inputClassName={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
-          value={transformedValue}
-          onChange={correctTypeHandleChange}
-          asSingle={true}
-          useRange={false}
-          startFrom={maxDate}
-          maxDate={maxDate}
-          toggleClassName="absolute right-0 h-full px-2 text-light-text focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
-          toggleIcon={(open) => {
-            return open ? <CalendarIcon className="h-5 w-5" /> : <XMarkIcon className="h-5 w-5" />;
-          }}
-        />
-        {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
+    <div>
+      <div className="flex gap-2">
+        <div className="w-0 flex-1">
+          <Textfield
+            label="Day"
+            type="text"
+            autocomplete="bday-day"
+            value={day || ""}
+            onChange={handleDayChange}
+          />
+        </div>
+        <div className="w-0 flex-1">
+          <Select
+            label="Month"
+            options={MONTH.map((month) => ({ id: month, label: month }))}
+            title={monthStr}
+            value={monthStr}
+            onChange={handleMonthChange}
+          />
+        </div>
+        <div className="w-0 flex-1">
+          <Textfield
+            label="Year"
+            type="text"
+            autocomplete="bday-year"
+            value={year || ""}
+            onChange={handleYearChange}
+          />
+        </div>
       </div>
+      {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
     </div>
   );
 }

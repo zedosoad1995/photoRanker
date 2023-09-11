@@ -48,7 +48,7 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
             leaveFrom="transform translate-x-0"
             leaveTo="transform -translate-x-full"
           >
-            <div className="text-2xl font-bold">Photo Ranker</div>
+            <div className="text-2xl font-bold">Photo Scorer</div>
             <div className="mt-7">
               {navbarOptions.map(({ label, url, Icon }) => {
                 return (

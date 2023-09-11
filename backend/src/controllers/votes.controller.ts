@@ -30,9 +30,11 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     throw new ForbiddenError("User cannot access this match");
   }
 
-  const winnerPicture = match.pictures.find((picture) => picture.id === winnerPictureId);
-  if (!winnerPicture) {
-    throw new NotFoundError("Voted picture does not exist, or does not belong to this match");
+  if (winnerPictureId) {
+    var winnerPicture = match.pictures.find((picture) => picture.id === winnerPictureId);
+    if (!winnerPicture) {
+      throw new NotFoundError("Voted picture does not exist, or does not belong to this match");
+    }
   }
 
   const createNewVote = VoteModel.create({
@@ -47,11 +49,13 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
           id: loggedUser.id,
         },
       },
-      winnerPicture: {
-        connect: {
-          id: winnerPictureId,
-        },
-      },
+      winnerPicture: winnerPictureId
+        ? {
+            connect: {
+              id: winnerPictureId,
+            },
+          }
+        : undefined,
     },
   });
 
@@ -66,34 +70,38 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     },
   });
 
-  const loserPicture = match.pictures.find((picture) => picture.id !== winnerPictureId)!;
+  if (winnerPicture) {
+    const loserPicture = match.pictures.find((picture) => picture.id !== winnerPictureId)!;
 
-  const updateWinnerPictureScore = PictureModel.update({
-    where: {
-      id: winnerPictureId,
-    },
-    data: {
-      numVotes: winnerPicture.numVotes + 1,
-      ...ratingRepo.calculateNewRating(winnerPicture, loserPicture, true),
-    },
-  });
+    const updateWinnerPictureScore = PictureModel.update({
+      where: {
+        id: winnerPictureId,
+      },
+      data: {
+        numVotes: winnerPicture.numVotes + 1,
+        ...ratingRepo.calculateNewRating(winnerPicture, loserPicture, true),
+      },
+    });
 
-  const updateLoserPictureScore = PictureModel.update({
-    where: {
-      id: loserPicture.id,
-    },
-    data: {
-      numVotes: loserPicture.numVotes + 1,
-      ...ratingRepo.calculateNewRating(loserPicture, winnerPicture, false),
-    },
-  });
+    const updateLoserPictureScore = PictureModel.update({
+      where: {
+        id: loserPicture.id,
+      },
+      data: {
+        numVotes: loserPicture.numVotes + 1,
+        ...ratingRepo.calculateNewRating(loserPicture, winnerPicture, false),
+      },
+    });
 
-  const [vote, _] = await prisma.$transaction([
-    createNewVote,
-    makeMatchInactive,
-    updateWinnerPictureScore,
-    updateLoserPictureScore,
-  ]);
+    var [vote, _] = await prisma.$transaction([
+      createNewVote,
+      makeMatchInactive,
+      updateWinnerPictureScore,
+      updateLoserPictureScore,
+    ]);
+  } else {
+    var [vote, _] = await prisma.$transaction([createNewVote, makeMatchInactive]);
+  }
 
   res.status(201).send({ vote });
 };

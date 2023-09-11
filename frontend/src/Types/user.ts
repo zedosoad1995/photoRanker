@@ -33,10 +33,10 @@ export interface ICreateUser {
   name: string;
   email: string;
   password: string;
-  ethnicity: (typeof ETHNICITY)[number];
-  countryOfOrigin: (typeof COUNTRIES)[number];
+  ethnicity: (typeof ETHNICITY)[number] | "";
+  countryOfOrigin: (typeof COUNTRIES)[number] | "";
   dateOfBirth: string;
-  gender: (typeof GENDER)[keyof typeof GENDER];
+  gender: (typeof GENDER)[keyof typeof GENDER] | "";
 }
 
 export type ICreateProfile = Pick<

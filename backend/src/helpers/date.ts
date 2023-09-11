@@ -1,6 +1,5 @@
 import {
   parse,
-  isValid,
   format,
   differenceInYears,
   addYears,
@@ -11,13 +10,6 @@ import {
   addSeconds,
 } from "date-fns";
 
-export const isValidDateFormat = (dateString: string) => {
-  const parsedDate = parse(dateString, "yyyy-MM-dd", new Date());
-  const isValidDate = isValid(parsedDate);
-
-  return isValidDate;
-};
-
 export const formatDate = (date: Date, dateformat: string = "yyyy-MM-dd") => {
   return format(date, dateformat);
 };
@@ -27,20 +19,6 @@ export const getDateInXHours = (hours: number) => {
   date.setHours(date.getHours() + hours);
 
   return date;
-};
-
-export const calculateAge = (dateString: string) => {
-  const parsedDate = parse(dateString, "yyyy-MM-dd", new Date());
-
-  const age = differenceInYears(new Date(), parsedDate);
-
-  return age;
-};
-
-export const isAboveAge = (minAgeAllowed: number) => (dateString: string) => {
-  const age = calculateAge(dateString);
-
-  return age >= minAgeAllowed;
 };
 
 interface TimeAdjustments {

@@ -6,7 +6,6 @@ import { useRef, useState } from "react";
 import { register } from "@/Services/auth";
 import { HOME, LOGIN } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
-import { GENDER } from "@shared/constants/user";
 import _ from "underscore";
 import GoogleButton from "@/Components/GoogleButton";
 import FacebookButton from "@/Components/FacebookButton";
@@ -24,9 +23,9 @@ const INITIAL_DATA: ICreateUser = {
   email: "",
   name: "",
   password: "",
-  ethnicity: "White",
-  countryOfOrigin: "Portugal",
-  gender: GENDER.Male,
+  ethnicity: "",
+  countryOfOrigin: "",
+  gender: "",
   dateOfBirth: "",
 };
 
@@ -102,6 +101,13 @@ export default function Register() {
               <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
 
+            {formStage === 0 && (
+              <div className="flex items-center">
+                <div className="h-[1px] flex-grow bg-light-contour"></div>
+                <div className="px-3 text-light-text">OR</div>
+                <div className="h-[1px] flex-grow bg-light-contour"></div>
+              </div>
+            )}
             {formStage === 0 && <GoogleButton text="Sign up with Google" />}
             {formStage === 0 && <FacebookButton text="Sign up with Facebook" />}
           </div>

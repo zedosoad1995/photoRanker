@@ -20,8 +20,30 @@ export default function Select({ options, title, label, value, onChange: handleC
   const [isOpen, setIsOpen] = useState(false);
   const [isRightAlign, setIsRightAlign] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLElement>(null);
 
   const hasMultiple = Array.isArray(value);
+
+  useEffect(() => {
+    const setDropdownHeight = () => {
+      if (!dropdownRef.current) return;
+
+      const rect = dropdownRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const maxHeight = viewportHeight - rect.top;
+
+      dropdownRef.current.style.maxHeight = `${maxHeight - 4}px`;
+    };
+
+    setDropdownHeight();
+
+    // Optional: Update if window resizes
+    window.addEventListener("resize", setDropdownHeight);
+
+    return () => {
+      window.removeEventListener("resize", setDropdownHeight);
+    };
+  }, [dropdownRef.current, isOpen]);
 
   const handleOpenMenu = () => {
     setIsOpen((val) => {
@@ -77,7 +99,8 @@ export default function Select({ options, title, label, value, onChange: handleC
           {isOpen && (
             <Listbox.Options
               static
-              className={`absolute mt-1 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 text-sm max-[296px]:text-xs z-20 ${
+              ref={dropdownRef}
+              className={`absolute mt-1 overflow-y-auto max-h-0 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 text-sm max-[296px]:text-xs z-20 ${
                 options.length === 0 || !isOpen ? "hidden" : ""
               } ${isRightAlign ? "right-0" : ""}`}
             >

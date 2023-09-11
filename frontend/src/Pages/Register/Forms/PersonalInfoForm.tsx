@@ -1,6 +1,5 @@
 import { COUNTRIES, ETHNICITY, GENDER } from "@shared/constants/user";
 import Select from "@/Components/AutoCompleteSelect";
-import DateField from "@/Components/DateField";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,6 +8,7 @@ import {
 } from "@/Schemas/User/CreateUserPersonalInfo";
 import { forwardRef, useImperativeHandle } from "react";
 import { ICreateUser } from "@/Types/user";
+import DatePickerField from "@/Components/DatePickerField";
 
 type IData = Pick<ICreateUser, "countryOfOrigin" | "ethnicity" | "dateOfBirth" | "gender">;
 
@@ -37,8 +37,13 @@ const PersonalInfoForm = forwardRef(
       resolver: zodResolver(CreateUserPersonalInfoSchema),
       defaultValues: {
         dateOfBirth,
+        gender,
+        ethnicity,
+        countryOfOrigin,
       },
     });
+
+    console.log(errors);
 
     useImperativeHandle(ref, () => ({
       checkValid() {
@@ -48,6 +53,7 @@ const PersonalInfoForm = forwardRef(
     }));
 
     const handleChange = (label: keyof IData) => (value: string) => {
+      setValue(label, value, { shouldValidate: true });
       updateData({ [label]: value });
     };
 
@@ -58,33 +64,55 @@ const PersonalInfoForm = forwardRef(
 
     return (
       <>
-        <Select
-          label="Country of Origin"
-          options={COUNTRIES}
-          value={countryOfOrigin}
-          onChange={handleChange("countryOfOrigin")}
-          onKeyDown={handleKeyDown}
-        />
-        <Select
-          label="Ethnicity"
-          options={ETHNICITY}
-          value={ethnicity}
-          onChange={handleChange("ethnicity")}
-          onKeyDown={handleKeyDown}
-        />
-        <Select
-          label="Gender"
-          options={Object.values(GENDER)}
-          value={gender}
-          onChange={handleChange("gender")}
-          onKeyDown={handleKeyDown}
-        />
-        <DateField
-          label="Date of Birth"
-          value={dateOfBirth}
+        <div>
+          <Select
+            label="Country of Origin"
+            options={COUNTRIES}
+            value={countryOfOrigin}
+            onChange={handleChange("countryOfOrigin")}
+            onKeyDown={handleKeyDown}
+          />
+          {errors.countryOfOrigin?.message && (
+            <div className="text-error-text mt-1 text-danger">
+              {errors.countryOfOrigin?.message}
+            </div>
+          )}
+        </div>
+        <div>
+          <Select
+            label="Ethnicity"
+            options={ETHNICITY}
+            value={ethnicity}
+            onChange={handleChange("ethnicity")}
+            onKeyDown={handleKeyDown}
+          />
+          {errors.ethnicity?.message && (
+            <div className="text-error-text mt-1 text-danger">{errors.ethnicity?.message}</div>
+          )}
+        </div>
+        <div>
+          <Select
+            label="Gender"
+            options={Object.values(GENDER)}
+            value={gender}
+            onChange={handleChange("gender")}
+            onKeyDown={handleKeyDown}
+          />
+          {errors.gender?.message && (
+            <div className="text-error-text mt-1 text-danger">{errors.gender?.message}</div>
+          )}
+        </div>
+        {/* <DateField
+          date={dateOfBirth}
           onChange={handleChangeDate}
           error={errors.dateOfBirth?.message}
+        /> */}
+        <DatePickerField
+          label="Date of Birth"
+          value={dateOfBirth}
           onKeyDown={handleKeyDown}
+          onChange={handleChangeDate}
+          error={errors.dateOfBirth?.message}
         />
       </>
     );

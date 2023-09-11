@@ -7,6 +7,7 @@ import { errorHandler } from "@/middlewares/errorHandler";
 import routes from "@/routes";
 import cors from "cors";
 import { IMAGES_FOLDER_PATH } from "./constants/picture";
+import { PutLogEventsCommand } from "@aws-sdk/client-cloudwatch-logs";
 
 const app = express();
 app.use(json());

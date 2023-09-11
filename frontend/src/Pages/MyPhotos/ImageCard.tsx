@@ -15,6 +15,16 @@ interface IPhotoCard {
   picInfo: IPictureWithPercentile;
 }
 
+const getHumanReadablePerc = (perc: number) => {
+  if (perc < 50) {
+    if (perc < 0.1) return `Bottom <0.1%`;
+    return `Bottom ${perc.toFixed(1)}%`;
+  } else {
+    if (perc > 99.9) return `Top <0.1%`;
+    return `Top ${(100 - perc).toFixed(1)}%`;
+  }
+};
+
 export const PhotoCard = ({
   pic,
   loggedUser,
@@ -63,12 +73,21 @@ export const PhotoCard = ({
                 alt={`picture-${index}`}
               />
             )}
-            {!img && <ImageSkeleton divClass="aspect-square" />}
+            {!img && (
+              <div className="relative -z-10">
+                <ImageSkeleton divClass="aspect-square" />
+              </div>
+            )}
           </div>
         </div>
         <div className="p-3 font-semibold text-sm">
-          <div>score: {picInfo.numVotes > 0 ? (picInfo.percentile / 10).toFixed(1) : "-"}</div>
-          <div>votes: {picInfo.numVotes}</div>
+          <div className="flex justify-between">
+            <span>Score:</span>{" "}
+            <span>{picInfo.numVotes > 0 ? getHumanReadablePerc(picInfo.percentile) : "-"}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Votes:</span> <span>{picInfo.numVotes}</span>
+          </div>
         </div>
       </div>
     </div>

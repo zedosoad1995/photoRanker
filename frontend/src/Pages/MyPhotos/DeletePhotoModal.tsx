@@ -45,7 +45,7 @@ export default function DeletePhotoModal({
       onClose={handleClose}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
-      <Dialog.Panel className="bg-white p-6 w-[500px] rounded-xl z-10">
+      <Dialog.Panel className="bg-white p-6 w-[500px] rounded-xl z-30">
         <div className="font-bold text-lg">Delete Photo</div>
         <div className="mt-4">Are you sure you want to delete this photo?</div>
         <div className="flex justify-end gap-2 mt-8">

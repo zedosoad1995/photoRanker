@@ -10,10 +10,10 @@ interface IFlagButton {
   pic1: string;
   pic2: string;
   match: IMatch;
-  getMatch: (mustWaitDefer?: boolean) => Promise<any>;
+  onReport: () => void;
 }
 
-export const FlagButton = ({ pic1, pic2, match, getMatch }: IFlagButton) => {
+export const FlagButton = ({ pic1, pic2, match, onReport: handleReportParent }: IFlagButton) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleClickReport = () => {
@@ -35,7 +35,7 @@ export const FlagButton = ({ pic1, pic2, match, getMatch }: IFlagButton) => {
       }
 
       setIsModalOpen(false);
-      getMatch();
+      handleReportParent();
 
       toast.success("Report successful. We will take a look");
     } catch (error) {
