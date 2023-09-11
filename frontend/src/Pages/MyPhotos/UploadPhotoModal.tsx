@@ -11,7 +11,7 @@ interface IUploadPhotoModal {
   filename: string | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpload: () => void;
+  onUpload: () => Promise<void>;
 }
 
 export default function UploadPhotoModal({
@@ -41,7 +41,7 @@ export default function UploadPhotoModal({
       }
 
       await uploadImage(croppedImage, filename);
-      handleUploadParent();
+      await handleUploadParent();
       handleClose();
       setZoom(1);
       setCrop({ x: 0, y: 0 });
