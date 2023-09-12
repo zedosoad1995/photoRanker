@@ -1,11 +1,5 @@
 import { Router } from "express";
-import {
-  deleteOne,
-  getMany,
-  getOne,
-  getImageFile,
-  uploadOne,
-} from "@/controllers/pictures.controller";
+import { deleteOne, getMany, getOne, uploadOne } from "@/controllers/pictures.controller";
 import { checkAuth } from "@/middlewares/checkAuth";
 import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
 import { validateImage } from "@/middlewares/validateImage";
@@ -26,23 +20,16 @@ router.get(
   checkEmailVerified,
   // @ts-ignore
   validateQuery(getManyPicturesSchema),
-  getMany
+  getMany(mainStorageInteractor)
 );
-router.get(
-  "/image/:imagePath",
-  checkAuth,
-  checkBanned,
-  checkProfileCompleted,
-  checkEmailVerified,
-  getImageFile(mainStorageInteractor)
-);
+
 router.get(
   "/:pictureId",
   checkAuth,
   checkBanned,
   checkProfileCompleted,
   checkEmailVerified,
-  getOne
+  getOne(mainStorageInteractor)
 );
 router.post(
   "/",
@@ -52,7 +39,7 @@ router.post(
   checkEmailVerified,
   convertFormDataToBuffer,
   validateImage(mainStorageInteractor),
-  uploadOne
+  uploadOne(mainStorageInteractor)
 );
 router.delete(
   "/:pictureId",

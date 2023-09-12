@@ -8,6 +8,7 @@ import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, formatDate } from "@/helpers/date";
 import { calculateAge } from "@shared/helpers/date";
+import { StorageInteractor } from "@/types/storageInteractor";
 
 const getRandomMatch = async (loggedUserId: string) => {
   const numPictures = await prisma.picture.count({
@@ -561,10 +562,21 @@ function omitRatingParams(pic: Partial<Picture> & Record<string, any>) {
   return _.omit(pic, "rating", "ratingDeviation", "volatility");
 }
 
+function getReturnPic(
+  pic: Partial<Picture> & Record<string, any>,
+  storageInteractor: StorageInteractor
+) {
+  const { filepath, ...ommitedPic } = omitRatingParams(pic);
+  const imgUrl = storageInteractor.getImageUrl(filepath);
+
+  return { ...ommitedPic, url: imgUrl };
+}
+
 export const PictureModel = {
   ...prisma.picture,
   getRandomMatch,
   getMatchWithClosestEloStrategy,
   getPicturesWithPercentile,
   omitRatingParams,
+  getReturnPic,
 };

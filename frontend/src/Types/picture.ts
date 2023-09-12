@@ -1,15 +1,6 @@
-export interface IPicture {
-  id: string;
-  filepath: string;
-  numVotes: number;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface IPictureWithPercentile {
   id: string;
-  filepath: string;
+  url: string;
   percentile: number;
   numVotes: number;
   userId: string;
@@ -18,7 +9,7 @@ export interface IPictureWithPercentile {
 }
 
 export interface PictureRes {
-  picture: IPicture;
+  picture: IPictureWithPercentile;
 }
 
 export interface IGetManyPictures {

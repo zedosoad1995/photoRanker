@@ -1,5 +1,4 @@
 import { getNewMatch } from "@/Services/match";
-import { getImage } from "@/Services/picture";
 import { vote } from "@/Services/vote";
 import { useState, useEffect, useRef } from "react";
 import Button from "@/Components/Button";
@@ -49,7 +48,7 @@ export default function Vote() {
 
     setState("match", match, mustWaitDefer);
 
-    getImage(match.pictures[0].filepath)
+    /* getImage(match.pictures[0].filepath)
       .then(({ url }) => {
         setState("pic1", url, mustWaitDefer);
         loadImage(url).finally(() => {
@@ -73,7 +72,7 @@ export default function Vote() {
       .catch(() => {
         isPic2Loaded.current = true;
         setRerender((val) => val + 1);
-      });
+      }); */
 
     const prob1 = match.winProbability * 100;
     const prob2 = 100 - prob1;

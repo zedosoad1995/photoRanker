@@ -33,7 +33,6 @@ export const s3Interactor = new S3Interactor(s3);
 export const supabaseInteractor = new SupabaseInteractor(supabase);
 export const mainStorageInteractor =
   process.env.NODE_ENV === "PROD" ? s3Interactor : localStorageInteractor;
-console.log(process.env.NODE_ENV);
 
 export const elo = new Elo();
 export const glicko2 = new Glicko2();

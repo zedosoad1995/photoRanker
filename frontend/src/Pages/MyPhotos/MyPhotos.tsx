@@ -1,5 +1,5 @@
 import Button from "@/Components/Button";
-import { getImage, getManyPictures } from "@/Services/picture";
+import { getManyPictures } from "@/Services/picture";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
@@ -11,7 +11,6 @@ import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin } from "@/Utils/role";
 import BanUserModal from "./BanUserModal";
 import { useAuth } from "@/Contexts/auth";
-import { useQueryClient } from "react-query";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { PhotoCard } from "./ImageCard";
 import usePrevious from "@/Hooks/usePrevious";
@@ -23,8 +22,6 @@ const DEFAULT_SORT = "score desc";
 
 export default function MyPhotos() {
   const { user: loggedUser } = useAuth();
-
-  const queryClient = useQueryClient();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -83,31 +80,20 @@ export default function MyPhotos() {
       }).then(async (res) => {
         setNextCursor(res.nextCursor);
 
-        const resPics = await Promise.all(
-          res.pictures.map(async (pic) => {
-            const { url } = await queryClient.fetchQuery(["getImage", pic.filepath], {
-              queryFn: () => getImage(pic.filepath),
-              staleTime: Infinity,
-            });
-
-            return { url, pic };
-          })
-        );
-
         setPics((val) =>
           cursor
-            ? [...new Set([...val, ...resPics.map(({ url }) => url)])]
-            : resPics.map(({ url }) => url)
+            ? [...new Set([...val, ...res.pictures.map(({ url }) => url)])]
+            : res.pictures.map(({ url }) => url)
         );
         setPicsInfo((val) => {
           return cursor
             ? [
                 ...new Set([
                   ...val.map((row) => JSON.stringify(row)),
-                  ...resPics.map(({ pic }) => JSON.stringify(pic)),
+                  ...res.pictures.map((pic) => JSON.stringify(pic)),
                 ]),
               ].map((row) => JSON.parse(row))
-            : resPics.map(({ pic }) => pic);
+            : res.pictures.map((pic) => pic);
         });
 
         if (!areTherePictures) setAreThePictures(pics.length > 0);
