@@ -10,79 +10,6 @@ import { adjustDate, formatDate } from "@/helpers/date";
 import { calculateAge } from "@shared/helpers/date";
 import { StorageInteractor } from "@/types/storageInteractor";
 
-const getRandomMatch = async (loggedUserId: string) => {
-  const numPictures = await prisma.picture.count({
-    where: {
-      AND: [
-        {
-          userId: {
-            not: loggedUserId,
-          },
-        },
-        {
-          user: {
-            isBanned: false,
-          },
-        },
-      ],
-    },
-  });
-
-  if (numPictures < 2) {
-    throw new BadRequestError("Not enought pictures for the match");
-  }
-
-  const picture1 = await getRandomPicture(numPictures, loggedUserId);
-
-  if (!picture1) {
-    throw new BadRequestError("Not enought pictures for the match");
-  }
-
-  const picture2 = await getRandomPicture(numPictures, loggedUserId, picture1.id);
-
-  if (!picture2) {
-    throw new BadRequestError("Not enought pictures for the match");
-  }
-
-  return [picture1, picture2];
-};
-
-function getRandomPicture(numPictures: number, loggedUserId: string, opponentPicId?: string) {
-  const extraValue = opponentPicId === undefined ? 0 : 1;
-  const randomNumPic = _.random(numPictures - 1 - extraValue);
-
-  const whereQuery: any = {
-    AND: [
-      {
-        userId: {
-          not: loggedUserId,
-        },
-      },
-      {
-        user: {
-          isBanned: false,
-        },
-      },
-    ],
-  };
-
-  if (opponentPicId) {
-    whereQuery.AND.push({
-      id: {
-        not: opponentPicId,
-      },
-    });
-  }
-
-  return prisma.picture.findFirst({
-    where: whereQuery,
-    skip: randomNumPic,
-    orderBy: {
-      id: "asc",
-    },
-  });
-}
-
 const getMatchWithClosestEloStrategy = async (
   loggedUser: User,
   userPreferences: Preference | null
@@ -196,21 +123,25 @@ const getMatchWithClosestEloStrategy = async (
             },
           },
           {
-            matches: {
-              none: {
-                vote: {
-                  voterId: loggedUser.id,
-                },
-              },
-            },
-          },
-          {
             reports: {
               none: {
                 userReportingId: loggedUser.id,
               },
             },
           },
+          ...(isAdmin(loggedUser.role)
+            ? []
+            : [
+                {
+                  matches: {
+                    none: {
+                      vote: {
+                        voterId: loggedUser.id,
+                      },
+                    },
+                  },
+                },
+              ]),
         ],
       },
       orderBy: {
@@ -302,6 +233,15 @@ function getPicturesWithClosestElos(
     );
   }
 
+  if (!isAdmin(loggedUser.role)) {
+    whereQuery.push(`NOT EXISTS (
+      SELECT 1 FROM "_MatchToPicture" as ab
+      INNER JOIN "Match" as match ON ab."A" = match.id
+      INNER JOIN "Vote" as vote ON match.id = vote."matchId"
+      WHERE ab."B" = pic.id AND vote."voterId" = '${loggedUser.id}'
+    )`);
+  }
+
   const where = whereQuery.length ? "AND " + whereQuery.join(" AND ") : "";
 
   return prisma.$queryRawUnsafe(`
@@ -317,12 +257,6 @@ function getPicturesWithClosestElos(
           SELECT 1
           FROM "Report" AS report
           WHERE report."userReportingId" = '${loggedUser.id}' AND pic.id = report."pictureId"
-        ) AND 
-        NOT EXISTS (
-          SELECT 1 FROM "_MatchToPicture" as ab
-          INNER JOIN "Match" as match ON ab."A" = match.id
-          INNER JOIN "Vote" as vote ON match.id = vote."matchId"
-          WHERE ab."B" = pic.id AND vote."voterId" = '${loggedUser.id}'
         )
       ORDER BY abs_diff ASC
       LIMIT ${limit};`);
@@ -574,7 +508,6 @@ function getReturnPic(
 
 export const PictureModel = {
   ...prisma.picture,
-  getRandomMatch,
   getMatchWithClosestEloStrategy,
   getPicturesWithPercentile,
   omitRatingParams,
