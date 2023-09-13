@@ -39,7 +39,7 @@ export class S3Interactor implements StorageInteractor {
   public getImageUrl(imagePath: string) {
     return `https://${process.env.IMAGES_BUCKET}.s3.${
       process.env.S3_REGION
-    }.amazonaws.com/${imagePath.replace(/\\/g, "/")}`;
+    }.amazonaws.com/${decodeURI(imagePath).replace(/\\/g, "/")}`;
   }
 
   public async deleteImage(encodedImagePage: string) {
