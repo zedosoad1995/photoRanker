@@ -29,11 +29,16 @@ export default function Navbar({
   isProfileCreated = true,
 }: INavbar) {
   return (
-    <nav className="top-0 bg-white border-b border-light-contour px-8 lg:px-12 h-16 flex">
+    <nav className="top-0 bg-white border-b border-light-contour px-4 sm:px-8 lg:px-12 h-16 flex">
       {isProfileCreated && (
         <>
-          <div className="flex md:hidden items-center gap-8 justify-end w-full">
-            <Bars3Icon onClick={handleClickMenu} className="h-6 w-6 cursor-pointer" />
+          <div className="flex w-full md:hidden justify-between items-center">
+            <div className="text-center text-2xl min-[300px]:text-3xl font-oswald font-semibold cursor-pointer">
+              PHOTO SCORER
+            </div>
+            <div className="flex items-center gap-8 justify-end">
+              <Bars3Icon onClick={handleClickMenu} className="h-6 w-6 cursor-pointer" />
+            </div>
           </div>
           <div className="hidden md:flex items-center justify-between gap-8 w-full">
             {navbarOptions.map(({ label, url }) => (
