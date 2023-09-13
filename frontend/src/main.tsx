@@ -31,6 +31,11 @@ import ResetPassword from "./Pages/ResetPassword.tsx";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "react-query";
 
+if (import.meta.env.VITE_ENV === "PROD") {
+  console.log = () => {};
+  console.error = () => {};
+}
+
 const router = createBrowserRouter([
   {
     element: <ProtectedLayout />,
