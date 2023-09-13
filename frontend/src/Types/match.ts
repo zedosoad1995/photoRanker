@@ -2,7 +2,7 @@ export interface IMatch {
   id: string;
   pictures: {
     id: string;
-    filepath: string;
+    url: string;
   }[];
   winProbability: number;
   createdAt: Date;

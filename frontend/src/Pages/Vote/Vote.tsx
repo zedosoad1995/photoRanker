@@ -48,31 +48,17 @@ export default function Vote() {
 
     setState("match", match, mustWaitDefer);
 
-    /* getImage(match.pictures[0].filepath)
-      .then(({ url }) => {
-        setState("pic1", url, mustWaitDefer);
-        loadImage(url).finally(() => {
-          isPic1Loaded.current = true;
-          setRerender((val) => val + 1);
-        });
-      })
-      .catch(() => {
-        isPic1Loaded.current = true;
-        setRerender((val) => val + 1);
-      });
+    setState("pic1", match.pictures[0].url, mustWaitDefer);
+    loadImage(match.pictures[0].url).finally(() => {
+      isPic1Loaded.current = true;
+      setRerender((val) => val + 1);
+    });
 
-    getImage(match.pictures[1].filepath)
-      .then(({ url }) => {
-        setState("pic2", url, mustWaitDefer);
-        loadImage(url).finally(() => {
-          isPic2Loaded.current = true;
-          setRerender((val) => val + 1);
-        });
-      })
-      .catch(() => {
-        isPic2Loaded.current = true;
-        setRerender((val) => val + 1);
-      }); */
+    setState("pic2", match.pictures[1].url, mustWaitDefer);
+    loadImage(match.pictures[1].url).finally(() => {
+      isPic2Loaded.current = true;
+      setRerender((val) => val + 1);
+    });
 
     const prob1 = match.winProbability * 100;
     const prob2 = 100 - prob1;
