@@ -86,10 +86,7 @@ export default function SignIn() {
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
-      <div className="text-center text-3xl font-oswald font-semibold">PHOTO SCORER</div>
-      {/* <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
-        Sign in to your account
-      </h2> */}
+      <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">Login</h2>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <div className="space-y-6">
           <Textfield

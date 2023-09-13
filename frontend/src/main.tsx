@@ -30,6 +30,7 @@ import ForgotPassword from "./Pages/ForgotPassword.tsx";
 import ResetPassword from "./Pages/ResetPassword.tsx";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "react-query";
+import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -59,32 +60,37 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: LOGIN,
-    element: <SignIn />,
-  },
-  {
-    path: FACEBOOK_CALLBACK,
-    element: <FacebookCallback />,
-  },
-  {
-    path: REGISTER,
-    element: <Register />,
-  },
-  {
-    path: EXPIRED_VALIDATION,
-    element: <ExpiredValidation />,
-  },
-  {
-    path: `${CHECKING_VALIDATION}/:token`,
-    element: <CheckingValidation />,
-  },
-  {
-    path: FORGOT_PASSWORD,
-    element: <ForgotPassword />,
-  },
-  {
-    path: `${RESET_PASSWORD}/:token`,
-    element: <ResetPassword />,
+    element: <UnprotectedLayout />,
+    children: [
+      {
+        path: LOGIN,
+        element: <SignIn />,
+      },
+      {
+        path: FACEBOOK_CALLBACK,
+        element: <FacebookCallback />,
+      },
+      {
+        path: REGISTER,
+        element: <Register />,
+      },
+      {
+        path: EXPIRED_VALIDATION,
+        element: <ExpiredValidation />,
+      },
+      {
+        path: `${CHECKING_VALIDATION}/:token`,
+        element: <CheckingValidation />,
+      },
+      {
+        path: FORGOT_PASSWORD,
+        element: <ForgotPassword />,
+      },
+      {
+        path: `${RESET_PASSWORD}/:token`,
+        element: <ResetPassword />,
+      },
+    ],
   },
 ]);
 

@@ -1,6 +1,7 @@
 import { Bars3Icon } from "@heroicons/react/20/solid";
 import Button from "../Button";
 import { NavLink } from "react-router-dom";
+import Logo from "../Logo";
 
 interface INavbar {
   onClickMenu?: () => void;
@@ -33,9 +34,7 @@ export default function Navbar({
       {isProfileCreated && (
         <>
           <div className="flex w-full md:hidden justify-between items-center">
-            <div className="text-center text-2xl min-[300px]:text-3xl font-oswald font-semibold cursor-pointer">
-              PHOTO SCORER
-            </div>
+            <Logo />
             <div className="flex items-center gap-8 justify-end">
               <Bars3Icon onClick={handleClickMenu} className="h-6 w-6 cursor-pointer" />
             </div>

@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 import { NavLink } from "react-router-dom";
+import Logo from "../Logo";
 
 interface ISidebar {
   open: boolean;
@@ -40,7 +41,7 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
       <Dialog onClose={handleClose} className="fixed inset-0 z-40">
         <Dialog.Panel as={Fragment}>
           <Transition.Child
-            className="z-10 relative bg-white h-full w-72 border-r border-light-contour px-8 py-8"
+            className="z-10 relative bg-white h-full w-60 min-[320px]:w-72 border-r border-light-contour px-8 py-8"
             enter="trasition ease-in-out duration-200"
             enterFrom="transform -translate-x-full"
             enterTo="transform translate-x-0"
@@ -48,7 +49,7 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
             leaveFrom="transform translate-x-0"
             leaveTo="transform -translate-x-full"
           >
-            <div className="text-2xl font-bold">Photo Scorer</div>
+            <Logo />
             <div className="mt-7">
               {navbarOptions.map(({ label, url, Icon }) => {
                 return (
