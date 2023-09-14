@@ -55,6 +55,7 @@ const MainForm = forwardRef(
           label="Name"
           type="text"
           autocomplete="name"
+          value={name}
           register={register("name", {
             onChange: handleChange("name"),
           })}
@@ -65,6 +66,7 @@ const MainForm = forwardRef(
           label="Email address"
           type="email"
           autocomplete="email"
+          value={email}
           register={register("email", {
             onChange: handleChange("email"),
           })}
@@ -75,6 +77,7 @@ const MainForm = forwardRef(
           label="Password"
           type="password"
           autocomplete="new-password"
+          value={password}
           register={register("password", {
             onChange: handleChange("password"),
           })}

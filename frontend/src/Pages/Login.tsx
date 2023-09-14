@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import Label from "@/Components/Label";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
 import Button from "@/Components/Button";
@@ -85,10 +84,10 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
-      <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">Login</h2>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="space-y-6">
+    <div className="flex flex-1 flex-col justify-center px-6 py-8">
+      <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">Sign in</h2>
+      <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex gap-4 flex-col">
           <Textfield
             value={email}
             onChange={handleEmailChange}
@@ -99,20 +98,20 @@ export default function SignIn() {
           />
 
           <div>
-            <div className="flex items-center justify-between">
-              <Label name="Password" />
-              <Link url={FORGOT_PASSWORD}>Forgot password?</Link>
-            </div>
             <Textfield
               value={password}
               onChange={handlePasswordChange}
+              label="Password"
               type="password"
               autocomplete="current-password"
               onKeyDown={handleKeyDown}
             />
+            <div className="flex items-center justify-end mt-1">
+              <Link url={FORGOT_PASSWORD}>Forgot password?</Link>
+            </div>
           </div>
 
-          <div ref={loginbtnRef}>
+          <div ref={loginbtnRef} className="mt-1">
             <Button type="submit" onClick={handleSignIn}>
               Sign in
             </Button>
@@ -128,7 +127,7 @@ export default function SignIn() {
           <FacebookButton />
         </div>
 
-        <p className="mt-10 text-center text-sm text-light-text">
+        <p className="mt-6 text-center text-sm text-light-text">
           Not a member? <Link url={REGISTER}>Sign Up</Link>
         </p>
       </div>

@@ -88,15 +88,13 @@ export default function Register() {
 
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
-        <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
-          Sign up your account
-        </h2>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <div className="space-y-6">
+      <div className="flex flex-1 flex-col justify-center px-6 py-8">
+        <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">Register</h2>
+        <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
+          <div className="flex gap-4 flex-col">
             <Form ref={formRef} updateData={updateData} onKeyDown={handleKeyDown} {...data} />
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-1">
               {formStage > 0 && <Button onClick={handleBack}>Back</Button>}
               <Button onClick={handleNext}>{nextButtonLabel}</Button>
             </div>
@@ -112,7 +110,7 @@ export default function Register() {
             {formStage === 0 && <FacebookButton text="Sign up with Facebook" />}
           </div>
 
-          <p className="mt-10 text-center text-sm text-light-text">
+          <p className="mt-6 text-center text-sm text-light-text">
             Already have an account? <Link url={LOGIN}>Sign In</Link>
           </p>
         </div>

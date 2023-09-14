@@ -1,6 +1,5 @@
 import { HTMLInputTypeAttribute, useState, useMemo } from "react";
 import { AutocompleteOption } from "@/Types/web";
-import Label from "./Label";
 import { inputField } from "@/globalClasses";
 import { UseFormRegisterReturn } from "react-hook-form";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
@@ -29,6 +28,7 @@ export default function Textfield({
   onKeyDown: handleKeyDown,
 }: ITextField) {
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const toggleShowPassword = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -40,33 +40,38 @@ export default function Textfield({
     [type, isShowPassword]
   );
 
+  const labelStyle = `absolute z-10 left-2 px-1 origin-top-left text-gray-600 bg-white transition-all duration-200 ease-in-out transform pointer-events-none ${
+    isFocused || value
+      ? "scale-75 -translate-y-[37.5%] top-0"
+      : "top-1/2 scale-100 -translate-y-1/2"
+  } focus-within:text-gray-400`;
+
   return (
-    <div>
-      {label && <Label name={label} />}
-      <div className="mt-2">
-        <div className="relative">
-          {type === "password" && (
-            <div
-              onClick={toggleShowPassword}
-              className="absolute right-4 w-6 h-6 top-1/2 -translate-y-1/2 cursor-pointer text-placeholder-text"
-            >
-              {isShowPassword && <EyeSlashIcon />}
-              {!isShowPassword && <EyeIcon />}
-            </div>
-          )}
-          <input
-            type={transformedType}
-            autoComplete={autocomplete}
-            required={required}
-            className={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
-            value={value}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            {...register}
-          />
-        </div>
-        {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
+    <div className="relative" onBlur={() => setIsFocused(false)}>
+      <div className="relative">
+        <label className={labelStyle}>{label}</label>
+        {type === "password" && (
+          <div
+            onClick={toggleShowPassword}
+            className="absolute right-4 w-6 h-6 top-1/2 -translate-y-1/2 cursor-pointer text-placeholder-text"
+          >
+            {isShowPassword && <EyeSlashIcon />}
+            {!isShowPassword && <EyeIcon />}
+          </div>
+        )}
+        <input
+          type={transformedType}
+          autoComplete={autocomplete}
+          required={required}
+          className={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          {...register}
+        />
       </div>
+      {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
     </div>
   );
 }

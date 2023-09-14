@@ -62,7 +62,7 @@ export default function GoogleButton({ text = "Sign in with Google" }: IGoogleBu
     <GoogleLoginButton
       onClick={handleGoogleLoginClick}
       text={text}
-      className="!h-10 !rounded-md !w-full !my-6 !mx-0 !text-sm !font-semibold !shadow-none"
+      className="!h-10 !rounded-md !w-full !my-0 !mx-0 !text-sm !font-semibold !shadow-none"
       style={{ border: "1px solid rgb(209,213,219)" }}
     />
   );
