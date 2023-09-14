@@ -80,11 +80,12 @@ export const PhotoCard = ({
             )}
           </div>
         </div>
-        <div className="p-3 font-semibold text-sm">
+        <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-base">
           <div className="flex justify-between">
             <span>Score:</span>{" "}
             <span>{picInfo.numVotes > 0 ? getHumanReadablePerc(picInfo.percentile) : "-"}</span>
           </div>
+          <hr className="my-2" />
           <div className="flex justify-between">
             <span>Votes:</span> <span>{picInfo.numVotes}</span>
           </div>
