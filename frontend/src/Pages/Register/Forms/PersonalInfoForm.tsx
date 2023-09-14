@@ -43,8 +43,6 @@ const PersonalInfoForm = forwardRef(
       },
     });
 
-    console.log(errors);
-
     useImperativeHandle(ref, () => ({
       checkValid() {
         handleSubmit(() => {})();
@@ -102,11 +100,6 @@ const PersonalInfoForm = forwardRef(
             <div className="text-error-text mt-1 text-danger">{errors.gender?.message}</div>
           )}
         </div>
-        {/* <DateField
-          date={dateOfBirth}
-          onChange={handleChangeDate}
-          error={errors.dateOfBirth?.message}
-        /> */}
         <DatePickerField
           label="Date of Birth"
           value={dateOfBirth}

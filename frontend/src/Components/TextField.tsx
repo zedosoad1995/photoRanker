@@ -47,7 +47,7 @@ export default function Textfield({
   } focus-within:text-gray-400`;
 
   return (
-    <div className="relative" onBlur={() => setIsFocused(false)}>
+    <div onBlur={() => setIsFocused(false)}>
       <div className="relative">
         <label className={labelStyle}>{label}</label>
         {type === "password" && (
