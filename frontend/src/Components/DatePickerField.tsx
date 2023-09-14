@@ -55,6 +55,7 @@ export default function DatePickerField({
             useRange={false}
             startFrom={maxDate}
             maxDate={maxDate}
+            popoverDirection="down"
             toggleClassName="absolute right-0 h-full px-2 text-light-text focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
             toggleIcon={(open) => {
               return open ? (
@@ -63,6 +64,7 @@ export default function DatePickerField({
                 <XMarkIcon className="h-5 w-5" />
               );
             }}
+            containerClassName="h-10"
           />
         </div>
       </div>
