@@ -137,7 +137,9 @@ export default function Settings() {
       {isLoading && <Spinner />}
       {isLoading === false && (
         <>
-          <div className="text-3xl font-semibold text-center mb-5">Settings</div>
+          <div className="text-xl min-[300px]:text-2xl font-semibold text-center mb-5">
+            Settings
+          </div>
           <hr className="my-4" />
           <div className="font-bold">Show me</div>
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-0 mt-3 mb-1">

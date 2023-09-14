@@ -24,11 +24,11 @@ export default function DatePickerField({
 }: IDatePickerField) {
   const [isFocused, setIsFocused] = useState(false);
 
-  const labelStyle = `absolute z-10 left-2 px-1 origin-top-left text-gray-600 bg-white transition-all duration-200 ease-in-out transform pointer-events-none ${
+  const labelStyle = `absolute z-10 left-2 px-1 origin-top-left text-light-text bg-white transition-all duration-200 ease-in-out transform pointer-events-none ${
     isFocused || value
       ? "scale-75 -translate-y-[37.5%] top-0"
       : "top-1/2 scale-100 -translate-y-1/2"
-  } focus-within:text-gray-400`;
+  }`;
 
   const transformedValue = {
     startDate: value,
@@ -48,6 +48,7 @@ export default function DatePickerField({
         <div onFocus={() => setIsFocused(true)}>
           <Datepicker
             inputClassName={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
+            placeholder={isFocused ? "" : "."}
             value={transformedValue}
             onChange={correctTypeHandleChange}
             asSingle={true}
