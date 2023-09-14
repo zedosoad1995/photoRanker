@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
 import { inputField } from "@/globalClasses";
@@ -22,12 +21,8 @@ export default function DatePickerField({
   onKeyDown: handleKeyDown,
   error,
 }: IDatePickerField) {
-  const [isFocused, setIsFocused] = useState(false);
-
   const labelStyle = `absolute z-10 left-2 px-1 origin-top-left text-light-text bg-white transition-all duration-200 ease-in-out transform pointer-events-none ${
-    isFocused || value
-      ? "scale-75 -translate-y-[37.5%] top-0"
-      : "top-1/2 scale-100 -translate-y-1/2"
+    value ? "scale-75 -translate-y-[37.5%] top-0" : "top-1/2 scale-100 -translate-y-1/2"
   }`;
 
   const transformedValue = {
@@ -42,31 +37,25 @@ export default function DatePickerField({
   };
 
   return (
-    <div onKeyDown={handleKeyDown} onBlur={() => setIsFocused(false)}>
+    <div onKeyDown={handleKeyDown}>
       <div className="mt-2 relative">
         <label className={labelStyle}>{label}</label>
-        <div onFocus={() => setIsFocused(true)}>
-          <Datepicker
-            inputClassName={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
-            placeholder={isFocused ? "" : "."}
-            value={transformedValue}
-            onChange={correctTypeHandleChange}
-            asSingle={true}
-            useRange={false}
-            startFrom={maxDate}
-            maxDate={maxDate}
-            popoverDirection="down"
-            toggleClassName="absolute right-0 h-full px-2 text-light-text focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
-            toggleIcon={(open) => {
-              return open ? (
-                <CalendarIcon className="h-5 w-5" />
-              ) : (
-                <XMarkIcon className="h-5 w-5" />
-              );
-            }}
-            containerClassName="h-10"
-          />
-        </div>
+        <Datepicker
+          inputClassName={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
+          placeholder={value ? "" : "."}
+          value={transformedValue}
+          onChange={correctTypeHandleChange}
+          asSingle={true}
+          useRange={false}
+          startFrom={maxDate}
+          maxDate={maxDate}
+          popoverDirection="down"
+          toggleClassName="absolute right-0 h-full px-2 text-light-text focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+          toggleIcon={(open) => {
+            return open ? <CalendarIcon className="h-5 w-5" /> : <XMarkIcon className="h-5 w-5" />;
+          }}
+          containerClassName="h-10"
+        />
       </div>
       {error && <div className="text-error-text mt-1 text-danger">{error}</div>}
     </div>
