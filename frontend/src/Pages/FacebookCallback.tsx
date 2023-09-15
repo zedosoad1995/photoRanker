@@ -9,6 +9,7 @@ import {
   INVALID_LOGIN_METHOD_EMAIL,
   INVALID_LOGIN_METHOD_GOOGLE,
 } from "@shared/constants/errorCodes";
+import FullPageLoading from "@/Components/Loading/FullPageLoading";
 
 export default function FacebookCallback() {
   const { loginFacebook } = useAuth();
@@ -54,5 +55,5 @@ export default function FacebookCallback() {
     func();
   }, [code]);
 
-  return <div>Redirecting back to the app...</div>;
+  return <FullPageLoading />;
 }
