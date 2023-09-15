@@ -2,7 +2,7 @@ import Button from "@/Components/Button";
 import Textfield from "@/Components/TextField";
 import { HOME } from "@/Constants/routes";
 import { forgotPassword } from "@/Services/auth";
-import { PASSWORD_RESET_NOT_NEEDED } from "@shared/constants/errorCodes";
+import { NON_EXISTENT_EMAIL, PASSWORD_RESET_NOT_NEEDED } from "@shared/constants/errorCodes";
 import axios from "axios";
 import { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -26,8 +26,11 @@ export default function ForgotPassword() {
       if (axios.isAxiosError(error)) {
         if (error.response?.data?.error === PASSWORD_RESET_NOT_NEEDED) {
           toast.error(
-            "This account is using a login method, that does not require password (e.g Google or Facebook)"
+            "This account is using a login method, that does not require password (e.g Google or Facebook)",
+            { id: "not-needed" }
           );
+        } else if (error.response?.data?.error === NON_EXISTENT_EMAIL) {
+          toast.error("Email does not exist", { id: "email-non-existent" });
         }
       }
     }
@@ -40,10 +43,10 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12">
+    <div className="flex flex-1 flex-col justify-center px-6 py-8">
       <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">Forgot Password</h2>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="space-y-6">
+      <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex gap-4 flex-col">
           <Textfield
             value={email}
             onChange={handleEmailChange}

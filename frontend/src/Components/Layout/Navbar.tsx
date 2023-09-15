@@ -34,7 +34,7 @@ export default function Navbar({
       {isProfileCreated && (
         <>
           <div className="flex w-full md:hidden justify-between items-center">
-            <Logo />
+            <Logo navigatePath="/vote" />
             <div className="flex items-center gap-8 justify-end">
               <Bars3Icon onClick={handleClickMenu} className="h-6 w-6 cursor-pointer" />
             </div>
@@ -63,7 +63,7 @@ export default function Navbar({
       )}
       {!isProfileCreated && (
         <div className="flex w-full justify-between items-center">
-          <Logo />
+          <Logo navigatePath="/" />
           <Button onClick={handleLogout} size="large" isFull={false}>
             Logout
           </Button>

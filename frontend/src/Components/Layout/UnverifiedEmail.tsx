@@ -5,7 +5,7 @@ import { useTimer } from "@/Hooks/useTimer";
 
 export default function UnverifiedEmail() {
   const { user } = useAuth();
-  const { seconds, resetTimer } = useTimer(60);
+  const { seconds, resetTimer } = useTimer(120);
 
   const handleEmailResend = () => {
     resetTimer();
