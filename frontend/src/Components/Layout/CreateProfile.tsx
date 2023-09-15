@@ -1,7 +1,6 @@
 import Button from "@/Components/Button";
 import { useRef, useState } from "react";
 import { createProfile } from "@/Services/auth";
-import { GENDER } from "@shared/constants/user";
 import _ from "underscore";
 import PersonalInfoForm from "@/Pages/Register/Forms/PersonalInfoForm";
 import { useAuth } from "@/Contexts/auth";
@@ -12,9 +11,9 @@ interface IFormRef {
 }
 
 const INITIAL_DATA: ICreateProfile = {
-  ethnicity: "White",
-  countryOfOrigin: "Portugal",
-  gender: GENDER.Male,
+  ethnicity: "",
+  countryOfOrigin: "",
+  gender: "",
   dateOfBirth: "",
 };
 
@@ -67,11 +66,11 @@ export default function CreateProfile() {
   return (
     <>
       <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">Create Profile</h2>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="space-y-6">
+      <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex gap-4 flex-col">
           <Form ref={formRef} updateData={updateData} onKeyDown={handleKeyDown} {...data} />
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-1">
             {formStage > 0 && <Button onClick={handleBack}>Back</Button>}
             <Button onClick={handleNext}>{nextButtonLabel}</Button>
           </div>

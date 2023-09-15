@@ -44,7 +44,7 @@ export default function Layout() {
     return (
       <>
         <Navbar onLogout={handleLogout} isProfileCreated={false} />
-        <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-center p-4 md:p-12">
+        <div className="flex flex-col justify-center px-6 py-8">
           <CreateProfile />
         </div>
       </>

@@ -62,7 +62,8 @@ export default function Navbar({
         </>
       )}
       {!isProfileCreated && (
-        <div className="flex w-full items-center justify-end">
+        <div className="flex w-full justify-between items-center">
+          <Logo />
           <Button onClick={handleLogout} size="large" isFull={false}>
             Logout
           </Button>
