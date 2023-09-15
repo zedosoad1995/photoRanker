@@ -11,6 +11,7 @@ import useDeferredState from "@/Hooks/useDeferredState";
 import { loadImage } from "@/Utils/image";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { NoVotesPlaceholder } from "./NoVotesPlaceholder";
+import { TIME_VOTE_TRANSITION } from "@/Constants/vote";
 
 export default function Vote() {
   const [{ pic1, pic2, match, prob1, prob2 }, setState, applyUpdates] = useDeferredState<{
@@ -128,7 +129,7 @@ export default function Vote() {
               clearInterval(interval);
               setRerender((val) => val + 1);
               setState("match", undefined);
-            }, 1000);
+            }, TIME_VOTE_TRANSITION);
           })
           .finally(() => {
             canGoToNextRef.current = true;
@@ -139,14 +140,14 @@ export default function Vote() {
     hasVoted.current = true;
     setRerender((val) => val + 1);
 
-    let intervalTime = 1000;
+    let intervalTime = TIME_VOTE_TRANSITION;
     const checkCondition = () => {
       if (canGoToNextRef.current && isPic1Loaded.current && isPic2Loaded.current) {
         hasVoted.current = false;
         applyUpdates();
         clearInterval(interval);
         setRerender((val) => val + 1);
-      } else if (intervalTime === 1000) {
+      } else if (intervalTime === TIME_VOTE_TRANSITION) {
         intervalTime = 100;
         clearInterval(interval);
         interval = setInterval(checkCondition, intervalTime);

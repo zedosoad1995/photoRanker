@@ -1,0 +1,1 @@
+export const TIME_VOTE_TRANSITION = 1000;
