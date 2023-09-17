@@ -108,20 +108,24 @@ const getMatchWithClosestEloStrategy = async (
               AND: preferencesQuery,
             },
           },
-          {
-            user: {
-              OR: [
+          ...(loggedUser.canBypassPreferences
+            ? []
+            : [
                 {
-                  preference: {
-                    AND: preferencesVoterQuery,
+                  user: {
+                    OR: [
+                      {
+                        preference: {
+                          AND: preferencesVoterQuery,
+                        },
+                      },
+                      {
+                        preference: null,
+                      },
+                    ],
                   },
                 },
-                {
-                  preference: null,
-                },
-              ],
-            },
-          },
+              ]),
           {
             reports: {
               none: {
@@ -217,9 +221,11 @@ function getPicturesWithClosestElos(
     whereQuery.push(`usr.gender = '${gender}'`);
   }
 
-  whereQuery.push(
-    `(preference."exposureGender" = '${loggedUser.gender}' OR preference."exposureGender" IS NULL)`
-  );
+  if (loggedUser.canBypassPreferences) {
+    whereQuery.push(
+      `(preference."exposureGender" = '${loggedUser.gender}' OR preference."exposureGender" IS NULL)`
+    );
+  }
 
   if (loggedUser.dateOfBirth) {
     const loggedUserAge = calculateAge(loggedUser.dateOfBirth);
