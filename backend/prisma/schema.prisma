@@ -23,6 +23,7 @@ model User {
   isProfileCompleted          Boolean     @default(false)
   isEmailVerified             Boolean     @default(false)
   isBanned                    Boolean     @default(false)
+  canBypassPreferences        Boolean     @default(false)
   verificationToken           String?
   verificationTokenExpiration DateTime?
   resetPasswordToken          String?
