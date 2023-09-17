@@ -8,7 +8,6 @@ function dump(user: Partial<User> & Record<string, any>) {
     "password",
     "googleId",
     "facebookId",
-    "role",
     "canBypassPreferences",
     "verificationToken",
     "verificationTokenExpiration",

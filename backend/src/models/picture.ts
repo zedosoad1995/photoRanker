@@ -221,7 +221,7 @@ function getPicturesWithClosestElos(
     whereQuery.push(`usr.gender = '${gender}'`);
   }
 
-  if (loggedUser.canBypassPreferences) {
+  if (!loggedUser.canBypassPreferences) {
     whereQuery.push(
       `(preference."exposureGender" = '${loggedUser.gender}' OR preference."exposureGender" IS NULL)`
     );
