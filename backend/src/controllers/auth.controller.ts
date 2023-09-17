@@ -73,9 +73,7 @@ export const signIn = async (req: Request, res: Response) => {
     cookieOptions
   );
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
-
-  res.status(200).json({ user: userNoPassword });
+  res.status(200).json({ user: UserModel.dump(user) });
 };
 
 export const signOut = (req: Request, res: Response) => {
@@ -153,9 +151,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
       cookieOptions
     );
 
-    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
-
-    return res.status(201).json({ user: userNoPassword });
+    return res.status(201).json({ user: UserModel.dump(newUser) });
   }
 
   if (user.googleId === null) {
@@ -191,9 +187,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
     cookieOptions
   );
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
-
-  res.status(200).json({ user: userNoPassword });
+  res.status(200).json({ user: UserModel.dump(user) });
 };
 
 export const signInFacebook = async (req: Request, res: Response) => {
@@ -265,9 +259,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
       cookieOptions
     );
 
-    const userNoPassword = UserModel.exclude(newUser, ["password", "googleId", "facebookId"]);
-
-    return res.status(201).json({ user: userNoPassword });
+    return res.status(201).json({ user: UserModel.dump(newUser) });
   }
 
   if (user.facebookId === null) {
@@ -303,9 +295,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
     cookieOptions
   );
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
-
-  res.status(200).send({ user: userNoPassword });
+  res.status(200).send({ user: UserModel.dump(user) });
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {

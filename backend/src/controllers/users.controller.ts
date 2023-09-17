@@ -22,9 +22,8 @@ import { MailRepo } from "@/types/mailRepo";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
-  const usersNoPassword = UserModel.excludeFromArray(users, ["password"]);
 
-  res.status(200).json({ users: usersNoPassword });
+  res.status(200).json({ users: UserModel.dumpMany(users) });
 };
 
 export const getOne = async (req: Request, res: Response) => {
@@ -41,17 +40,13 @@ export const getOne = async (req: Request, res: Response) => {
     throw new NotFoundError("User not found");
   }
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
-
-  res.status(200).json({ user: userNoPassword });
+  res.status(200).json({ user: UserModel.dump(user) });
 };
 
 export const getMe = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 
-  const userNoPassword = UserModel.exclude(loggedUser, ["password", "googleId", "facebookId"]);
-
-  res.status(200).json({ user: userNoPassword });
+  res.status(200).json({ user: UserModel.dump(loggedUser) });
 };
 
 export const createOne = (mailingService: MailRepo) => async (req: Request, res: Response) => {
@@ -124,9 +119,7 @@ export const createOne = (mailingService: MailRepo) => async (req: Request, res:
     cookieOptions
   );
 
-  const userNoPassword = UserModel.exclude(user, ["password", "googleId", "facebookId"]);
-
-  res.status(201).json({ user: userNoPassword });
+  res.status(201).json({ user: UserModel.dump(user) });
 };
 
 export const createProfile = async (req: Request, res: Response) => {
@@ -160,9 +153,7 @@ export const createProfile = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId", "facebookId"]);
-
-  res.status(200).json({ user: userNoPassword });
+  res.status(200).json({ user: UserModel.dump(updatedUser) });
 };
 
 export const updateOne = async (req: Request, res: Response) => {
@@ -186,9 +177,7 @@ export const updateOne = async (req: Request, res: Response) => {
     },
   });
 
-  const userNoPassword = UserModel.exclude(updatedUser, ["password", "googleId", "facebookId"]);
-
-  res.status(200).json({ user: userNoPassword });
+  res.status(200).json({ user: UserModel.dump(updatedUser) });
 };
 
 export const checkEmailExists = async (req: Request, res: Response) => {
