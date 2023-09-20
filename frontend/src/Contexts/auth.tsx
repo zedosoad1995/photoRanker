@@ -30,6 +30,8 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 
   const { isLoading, refetch } = useQuery("logged-user", getMe, {
     staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    retry: false,
     onSuccess: ({ user }) => {
       setUser(user);
     },
