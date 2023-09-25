@@ -38,7 +38,7 @@ export class SupabaseInteractor implements StorageInteractor {
   }
 
   public getImageUrl(imagePath: string) {
-    return `${process.env.SUPABASE_STORAGE_URL}/${imagePath.replace(/\\/g, "/")}`;
+    return `${process.env.SUPABASE_STORAGE_URL}/${decodeURI(imagePath).replace(/\\/g, "/")}`;
   }
 
   public async deleteImage(encodedImagePage: string) {
