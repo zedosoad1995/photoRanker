@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
   HOME,
   LOGIN,
@@ -31,6 +31,7 @@ import ResetPassword from "./Pages/ResetPassword.tsx";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
+import App from "./App.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -39,12 +40,12 @@ if (import.meta.env.VITE_ENV === "PROD") {
 
 const router = createBrowserRouter([
   {
+    path: HOME,
+    element: <App />,
+  },
+  {
     element: <ProtectedLayout />,
     children: [
-      {
-        path: HOME,
-        element: <Navigate to={VOTE} />,
-      },
       {
         path: VOTE,
         element: <Vote />,

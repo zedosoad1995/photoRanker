@@ -9,6 +9,7 @@ export default {
     extend: {
       fontFamily: {
         oswald: ["Oswald", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
       },
       screens: {
         xs: "450px",

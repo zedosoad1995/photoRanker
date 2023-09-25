@@ -12,6 +12,7 @@ export const SETTINGS = "/settings";
 export const FACEBOOK_CALLBACK = "/auth/facebook";
 
 export const NON_AUTH_ROUTES = [
+  HOME,
   LOGIN,
   REGISTER,
   EXPIRED_VALIDATION,
