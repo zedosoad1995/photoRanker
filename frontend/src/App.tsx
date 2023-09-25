@@ -27,13 +27,22 @@ function App() {
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           THE PRODUCT
         </div>
-        <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5">
+        <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
           Get honest feedback from strangers to find out your best photo. Our fun side-by-side
           voting system allows for a high number of votes and precision.
         </div>
-        <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
+        <div className="w-[82px] h-[6px] bg-[#eee] mx-auto mb-[50px]" />
         <div className="pt-[35px]">
           <img className="mx-auto" alt="hero-img" src="/public/apple-watch-2.png" />
+        </div>
+      </section>
+      <section className="pt-[104px] pb-[95px] px-[70px] bg-[#F8FBFD]">
+        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
+          HOW IT WORKS
+        </div>
+        <div className="text-[#4E575F] text-xl text-center leading-8 font-thin mb-[70px] mx-[130px]">
+          Get honest feedback from strangers to find out your best photo. Our fun side-by-side
+          voting system allows for a high number of votes and precision.
         </div>
       </section>
     </div>
