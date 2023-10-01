@@ -4,22 +4,22 @@ function App() {
   return (
     <div className="font-poppins">
       <section
-        className="bg-[url('/header_bg_alt.jpg')] h-[100vh] bg-cover bg-center bg-no-repeat"
+        className="h-[100vh] min-h-[680px] bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
-            "linear-gradient(to bottom,rgba(0,0,0,0.6), rgba(0,0,0,0.6)),url('/header_bg_alt.jpg')",
+            "linear-gradient(to bottom,rgba(0,0,0,0.6), rgba(0,0,0,0.6)),url('/bg20.jpg')",
         }}
       >
         <div className="flex mx-[70px] my-auto h-full">
           <div className="w-[100%] my-auto">
-            <div className="font-semibold text-white text-[68px] mb-[20px] text-center">
-              Find your best look
+            <div className="font-semibold text-white text-[68px] leading-[68px] mb-2 text-center">
+              Find your best photo
             </div>
             <div className="text-white/70 text-[24px] mb-[40px] text-center">
               Let strangers rate your pictures, in a fun side-by-side comparison
             </div>
             <div className="flex justify-center gap-5 mb-[40px]">
-              <div className="cursor-pointer rounded-t-md shadow-md w-60">
+              <div className="cursor-pointer rounded-t-md shadow-md w-56">
                 <div className="relative">
                   <div className="rounded-t-md overflow-hidden">
                     <img className="mx-auto w-full" src="/dude.jpg" alt="hero-pic" />
@@ -35,7 +35,7 @@ function App() {
                   </div>
                 </div>
               </div>
-              <div className="cursor-pointer rounded-t-md shadow-md w-60">
+              <div className="cursor-pointer rounded-t-md shadow-md w-56">
                 <div className="relative">
                   <div className="rounded-t-md overflow-hidden">
                     <img className="mx-auto w-full" src="/dude2.jpg" alt="hero-pic" />
@@ -52,12 +52,59 @@ function App() {
                 </div>
               </div>
             </div>
-            <div>
-              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-[22px] leading-[65px] font-medium text-white rounded-[60px] px-[45px] mx-auto">
+            <div className="text-center">
+              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-[22px] leading-[65px] font-medium text-white rounded-[60px] px-[45px]">
                 Test your photo now
               </button>
             </div>
           </div>
+          {/* <div className="hidden xl:flex h-full items-center gap-6">
+            <div className="w-[60%]">
+              <div className="font-semibold text-white text-[68px] mb-[20px]">
+                Find your best look
+              </div>
+              <div className="text-white/70 text-[24px] mb-[40px]">
+                Let strangers rate your pictures, in a fun side-by-side comparison
+              </div>
+              <button className="bg-[#a52a2a] hover:bg-[#7c2020] transition-colors ease-linear duration-300 text-[22px] leading-[65px] font-medium text-white rounded-[60px] px-[45px]">
+                Test your photo now
+              </button>
+            </div>
+            <div className="flex justify-center gap-5">
+              <div className="cursor-pointer rounded-t-md shadow-md w-56">
+                <div className="relative">
+                  <div className="rounded-t-md overflow-hidden">
+                    <img className="mx-auto w-full" src="/dude.jpg" alt="hero-pic" />
+                  </div>
+                </div>
+                <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
+                  <div className="flex justify-between">
+                    <span>Score:</span> <span>Top 17%</span>
+                  </div>
+                  <hr className="my-2" />
+                  <div className="flex justify-between">
+                    <span>Votes:</span> <span>35</span>
+                  </div>
+                </div>
+              </div>
+              <div className="cursor-pointer rounded-t-md shadow-md w-56">
+                <div className="relative">
+                  <div className="rounded-t-md overflow-hidden">
+                    <img className="mx-auto w-full" src="/dude2.jpg" alt="hero-pic" />
+                  </div>
+                </div>
+                <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
+                  <div className="flex justify-between">
+                    <span>Score:</span> <span>Top 22%</span>
+                  </div>
+                  <hr className="my-2" />
+                  <div className="flex justify-between">
+                    <span>Votes:</span> <span>29</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> */}
         </div>
       </section>
       <section className="pt-[110px] pb-[160px] mx-[70px]">
