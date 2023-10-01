@@ -1,3 +1,5 @@
+import SpeedometerIcon from "./Components/Svgs/SpeedometerIcon";
+
 function App() {
   return (
     <div className="font-poppins">
@@ -95,18 +97,171 @@ function App() {
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           THE BENEFITS
         </div>
-        <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
-          List out your product’s benefit here. A small description about what it is and how it
-          helps the user. You can also add some icons.
+        <div className="mb-[25px]">
+          <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
+            List out your product’s benefit here. A small description about what it is and how it
+            helps the user. You can also add some icons.
+          </div>
+          <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
         </div>
-        <div className="w-[82px] h-[6px] bg-[#eee] mx-auto mb-[50px]" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          <div>hey</div>
-          <div>hey</div>
-          <div>hey</div>
-          <div>hey</div>
-          <div>hey</div>
-          <div>hey</div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="flex">
+              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                <SpeedometerIcon size={36} />
+              </div>
+              <div>
+                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                  High Votes
+                </div>
+                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="flex">
+              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                <SpeedometerIcon size={36} />
+              </div>
+              <div>
+                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                  High Votes
+                </div>
+                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="flex">
+              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                <SpeedometerIcon size={36} />
+              </div>
+              <div>
+                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                  High Votes
+                </div>
+                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="flex">
+              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                <SpeedometerIcon size={36} />
+              </div>
+              <div>
+                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                  High Votes
+                </div>
+                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="flex">
+              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                <SpeedometerIcon size={36} />
+              </div>
+              <div>
+                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                  High Votes
+                </div>
+                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="flex">
+              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                <SpeedometerIcon size={36} />
+              </div>
+              <div>
+                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                  High Votes
+                </div>
+                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="pt-[98px] pb-[78px] px-[70px] bg-[#F8FBFD]">
+        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
+          FAQ
+        </div>
+        <div className="mb-[25px]">
+          <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
+            Got questions? We’ve got answers. If you have some other questions, feel free to send us
+            an email to{" "}
+            <a href="#" className="text-[#0084ff]">
+              hello@product.com
+            </a>
+          </div>
+          <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          <div className="mt-[60px] px-[15px]">
+            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
+              Mommy, how do babies work?
+            </div>
+            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
+              Watch took center stage at this year's Product Show with a preview of watch OS 2. The
+              next generation of Watch software is packed with features that just might turn the
+              device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
+              have to live with the old software until fall. You’ll love it at the first use.
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
+              Mommy, how do babies work?
+            </div>
+            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
+              Watch took center stage at this year's Product Show with a preview of watch OS 2. The
+              next generation of Watch software is packed with features that just might turn the
+              device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
+              have to live with the old software until fall. You’ll love it at the first use.
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
+              Mommy, how do babies work?
+            </div>
+            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
+              Watch took center stage at this year's Product Show with a preview of watch OS 2. The
+              next generation of Watch software is packed with features that just might turn the
+              device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
+              have to live with the old software until fall. You’ll love it at the first use.
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
+              Mommy, how do babies work?
+            </div>
+            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
+              Watch took center stage at this year's Product Show with a preview of watch OS 2. The
+              next generation of Watch software is packed with features that just might turn the
+              device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
+              have to live with the old software until fall. You’ll love it at the first use.
+            </div>
+          </div>
         </div>
       </section>
     </div>
