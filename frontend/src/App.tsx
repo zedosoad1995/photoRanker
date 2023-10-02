@@ -110,53 +110,39 @@ function App() {
         </div>
       </section>
       <section className="pt-[104px] pb-[95px] px-[70px]">
-        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
+        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[75px]">
           HOW IT WORKS
         </div>
-        <div className="text-[#4E575F] text-xl text-center leading-8 font-thin mb-[70px] mx-[130px]">
-          Get honest feedback from strangers to find out your best photo. Our fun side-by-side
-          voting system allows for a high number of votes and precision.
-        </div>
-        <div className="flex w-full">
-          <div className="flex flex-grow justify-center">
-            <img alt="step 1" src="/desktop.png" />
+        <div className="flex gap-5">
+          <div className="w-1/2 bg-[#B2F7D5] rounded-3xl px-8 pt-8">
+            <img src="/Marketing-Agency-Platforms-Image.webp" alt="step1" />
           </div>
-          <div className="flex-grow-0 flex items-center">
-            <img alt="next arrow" src="/right-angle.png" />
-          </div>
-          <div className="flex flex-grow justify-center">
-            <img alt="step 2" src="/toggles.png" />
-          </div>
-          <div className="flex-grow-0 flex items-center">
-            <img alt="next arrow" src="/right-angle.png" />
-          </div>
-          <div className="flex flex-grow justify-center">
-            <img alt="step 3" src="/trophy.png" />
-          </div>
-        </div>
-        <div className="grid grid-cols-3 w-full mt-[60px]">
-          <div className="px-[15px]">
-            <div className="text-[#374048] font-semibold text-[26px] leading-[26px] text-center mb-[8px]">
-              Upload Photo
-            </div>
-            <div className="text-[#737C85] font-light text-center">
+          <div className="w-1/2 pl-20 mt-10">
+            <div className="text-[#374048] text-4xl font-semibold mb-5">1. Upload Photo</div>
+            <div className="text-[#82898f] text-lg font-light">
               Upload a picture you want to get rated. You can upload multiple if you wish.
             </div>
           </div>
-          <div className="px-[15px]">
-            <div className="text-[#374048] font-semibold text-[26px] leading-[26px] text-center mb-[8px]">
-              Get votes
-            </div>
-            <div className="text-[#737C85] font-light text-center">
+        </div>
+        <div className="flex gap-5 mt-[150px]">
+          <div className="w-1/2 pr-20 mt-10">
+            <div className="text-[#374048] text-4xl font-semibold mb-5">2. Get Votes</div>
+            <div className="text-[#82898f] text-lg font-light">
               Get rated by strangers based on attractiveness. Our unique side-by-side voting system
               allows for more votes and avoids gray areas typical in 1-10 rating.
             </div>
           </div>
-          <div className="px-[15px]">
-            <div className="text-[#374048] font-semibold text-[26px] leading-[26px] text-center mb-[8px]">
-              Receive Score
-            </div>
-            <div className="text-[#737C85] font-light text-center">
+          <div className="w-1/2 bg-[#82E6F7] rounded-3xl px-8 pt-8">
+            <img src="/Marketing-Agency-Platforms-Image.webp" alt="step2" />
+          </div>
+        </div>
+        <div className="flex gap-5 mt-[150px]">
+          <div className="w-1/2 bg-[#FFFFB2] rounded-3xl px-8 pt-8">
+            <img src="/Marketing-Agency-Platforms-Image.webp" alt="step3" />
+          </div>
+          <div className="w-1/2 pl-20 mt-10">
+            <div className="text-[#374048] text-4xl font-semibold mb-5">3. Receive Score</div>
+            <div className="text-[#82898f] text-lg font-light">
               Discover how does you photo compares to the general population (e.g top 10%).
             </div>
           </div>
@@ -196,7 +182,7 @@ function App() {
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Speed Up the Votes
+                  Quick and Plentiful Votes
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
                   Our side-by-side voting is quick and enjoyable, ensuring more votes and greater
@@ -231,7 +217,7 @@ function App() {
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Accuracy, Fewer Votes
+                  High Accuracy
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
                   Our algorithm is designed for speed and precision, delivering reliable photo
@@ -274,19 +260,6 @@ function App() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-      <section className="pt-[110px] pb-[160px] px-[70px]">
-        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
-          THE PRODUCT
-        </div>
-        <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
-          Get honest feedback from strangers to find out your best photo. Our fun side-by-side
-          voting system allows for a high number of votes and precision.
-        </div>
-        <div className="w-[82px] h-[6px] bg-[#eee] mx-auto mb-[50px]" />
-        <div className="pt-[35px]">
-          <img className="mx-auto" alt="hero-img" src="/apple-watch-2.png" />
         </div>
       </section>
       <section className="pt-[98px] pb-[78px] px-[70px] bg-[#F8FBFD]">
