@@ -1,21 +1,23 @@
-import SpeedometerIcon from "./Components/Svgs/SpeedometerIcon";
+import {
+  MdOutlinePhotoLibrary,
+  MdPercent,
+  MdSpeed,
+  MdOutlineManageAccounts,
+  MdTune,
+  MdBalance,
+} from "react-icons/md";
+import { IconContext } from "react-icons";
 
 function App() {
   return (
     <div className="font-poppins">
-      <section
-        className="h-[100vh] min-h-[680px] bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage:
-            "linear-gradient(to bottom,rgba(0,0,0,0.6), rgba(0,0,0,0.6)),url('/bg20.jpg')",
-        }}
-      >
+      <section className="h-[100vh] min-h-[680px] bg-[#F8FBFD]">
         <div className="flex mx-[70px] my-auto h-full">
           <div className="w-[100%] my-auto">
-            <div className="font-semibold text-white text-[68px] leading-[68px] mb-2 text-center">
+            <div className="font-semibold text-[#374048] text-[68px] leading-[68px] mb-2 text-center">
               Find your best photo
             </div>
-            <div className="text-white/70 text-[24px] mb-[40px] text-center">
+            <div className="text-[#8a9095] text-[24px] mb-[40px] text-center">
               Let strangers rate your pictures, in a fun side-by-side comparison
             </div>
             <div className="flex justify-center gap-5 mb-[40px]">
@@ -107,20 +109,7 @@ function App() {
           </div> */}
         </div>
       </section>
-      <section className="pt-[110px] pb-[160px] mx-[70px]">
-        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
-          THE PRODUCT
-        </div>
-        <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
-          Get honest feedback from strangers to find out your best photo. Our fun side-by-side
-          voting system allows for a high number of votes and precision.
-        </div>
-        <div className="w-[82px] h-[6px] bg-[#eee] mx-auto mb-[50px]" />
-        <div className="pt-[35px]">
-          <img className="mx-auto" alt="hero-img" src="/apple-watch-2.png" />
-        </div>
-      </section>
-      <section className="pt-[104px] pb-[95px] px-[70px] bg-[#F8FBFD]">
+      <section className="pt-[104px] pb-[95px] px-[70px]">
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           HOW IT WORKS
         </div>
@@ -145,60 +134,55 @@ function App() {
             <img alt="step 3" src="/trophy.png" />
           </div>
         </div>
-        <div className="flex justify-around w-full mt-[60px]">
+        <div className="grid grid-cols-3 w-full mt-[60px]">
           <div className="px-[15px]">
             <div className="text-[#374048] font-semibold text-[26px] leading-[26px] text-center mb-[8px]">
-              Step 1
+              Upload Photo
             </div>
             <div className="text-[#737C85] font-light text-center">
-              Lorem ipsum dolor sit amet, consectetur de elit, sed do tempor incididunt ut labore
-              eta rehenderit in voluptate velit.
+              Upload a picture you want to get rated. You can upload multiple if you wish.
             </div>
           </div>
           <div className="px-[15px]">
             <div className="text-[#374048] font-semibold text-[26px] leading-[26px] text-center mb-[8px]">
-              Step 2
+              Get votes
             </div>
             <div className="text-[#737C85] font-light text-center">
-              Lorem ipsum dolor sit amet, consectetur de elit, sed do tempor incididunt ut labore
-              eta rehenderit in voluptate velit.
+              Get rated by strangers based on attractiveness. Our unique side-by-side voting system
+              allows for more votes and avoids gray areas typical in 1-10 rating.
             </div>
           </div>
           <div className="px-[15px]">
             <div className="text-[#374048] font-semibold text-[26px] leading-[26px] text-center mb-[8px]">
-              Step 3
+              Receive Score
             </div>
             <div className="text-[#737C85] font-light text-center">
-              Lorem ipsum dolor sit amet, consectetur de elit, sed do tempor incididunt ut labore
-              eta rehenderit in voluptate velit.
+              Discover how does you photo compares to the general population (e.g top 10%).
             </div>
           </div>
         </div>
       </section>
-      <section className="py-[117px] mx-[70px]">
+      <section className="py-[111px] px-[70px] bg-[#F8FBFD]">
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
-          THE BENEFITS
+          FEATURES
         </div>
         <div className="mb-[25px]">
-          <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
-            List out your product’s benefit here. A small description about what it is and how it
-            helps the user. You can also add some icons.
-          </div>
           <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <div className="mt-[60px] px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <SpeedometerIcon size={36} />
+                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <MdPercent />
+                </IconContext.Provider>
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Votes
+                  Where Do You Rank?
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore
+                  Find out your photo's numerical rank against others.
                 </div>
               </div>
             </div>
@@ -206,15 +190,17 @@ function App() {
           <div className="mt-[60px] px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <SpeedometerIcon size={36} />
+                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <MdOutlinePhotoLibrary />
+                </IconContext.Provider>
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Votes
+                  Speed Up the Votes
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore
+                  Our side-by-side voting is quick and enjoyable, ensuring more votes and greater
+                  accuracy.
                 </div>
               </div>
             </div>
@@ -222,15 +208,16 @@ function App() {
           <div className="mt-[60px] px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <SpeedometerIcon size={36} />
+                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <MdOutlineManageAccounts />
+                </IconContext.Provider>
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Votes
+                  Choose Your Judges
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore
+                  Select the age and gender of your voters for targeted feedback.
                 </div>
               </div>
             </div>
@@ -238,15 +225,17 @@ function App() {
           <div className="mt-[60px] px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <SpeedometerIcon size={36} />
+                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <MdSpeed />
+                </IconContext.Provider>
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Votes
+                  High Accuracy, Fewer Votes
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore
+                  Our algorithm is designed for speed and precision, delivering reliable photo
+                  rankings quickly.
                 </div>
               </div>
             </div>
@@ -254,15 +243,16 @@ function App() {
           <div className="mt-[60px] px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <SpeedometerIcon size={36} />
+                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <MdTune />
+                </IconContext.Provider>
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Votes
+                  Vote Your Way
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore
+                  Pick photos based on age and gender preferences.
                 </div>
               </div>
             </div>
@@ -270,19 +260,33 @@ function App() {
           <div className="mt-[60px] px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <SpeedometerIcon size={36} />
+                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <MdBalance />
+                </IconContext.Provider>
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Votes
+                  Bias-Free Voting
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                  incididunt ut labore et dolore
+                  Binary decisions remove ambiguity, making each vote more meaningful and reliable.
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+      <section className="pt-[110px] pb-[160px] px-[70px]">
+        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
+          THE PRODUCT
+        </div>
+        <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
+          Get honest feedback from strangers to find out your best photo. Our fun side-by-side
+          voting system allows for a high number of votes and precision.
+        </div>
+        <div className="w-[82px] h-[6px] bg-[#eee] mx-auto mb-[50px]" />
+        <div className="pt-[35px]">
+          <img className="mx-auto" alt="hero-img" src="/apple-watch-2.png" />
         </div>
       </section>
       <section className="pt-[98px] pb-[78px] px-[70px] bg-[#F8FBFD]">
@@ -291,7 +295,7 @@ function App() {
         </div>
         <div className="mb-[25px]">
           <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
-            Got questions? We’ve got answers. If you have some other questions, feel free to send us
+            Got questions? We've got answers. If you have some other questions, feel free to send us
             an email to{" "}
             <a href="#" className="text-[#0084ff]">
               hello@product.com
@@ -308,7 +312,7 @@ function App() {
               Watch took center stage at this year's Product Show with a preview of watch OS 2. The
               next generation of Watch software is packed with features that just might turn the
               device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
-              have to live with the old software until fall. You’ll love it at the first use.
+              have to live with the old software until fall. You'll love it at the first use.
             </div>
           </div>
           <div className="mt-[60px] px-[15px]">
@@ -319,7 +323,7 @@ function App() {
               Watch took center stage at this year's Product Show with a preview of watch OS 2. The
               next generation of Watch software is packed with features that just might turn the
               device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
-              have to live with the old software until fall. You’ll love it at the first use.
+              have to live with the old software until fall. You'll love it at the first use.
             </div>
           </div>
           <div className="mt-[60px] px-[15px]">
@@ -330,7 +334,7 @@ function App() {
               Watch took center stage at this year's Product Show with a preview of watch OS 2. The
               next generation of Watch software is packed with features that just might turn the
               device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
-              have to live with the old software until fall. You’ll love it at the first use.
+              have to live with the old software until fall. You'll love it at the first use.
             </div>
           </div>
           <div className="mt-[60px] px-[15px]">
@@ -341,7 +345,7 @@ function App() {
               Watch took center stage at this year's Product Show with a preview of watch OS 2. The
               next generation of Watch software is packed with features that just might turn the
               device from a nice-to-have into a must-have. If you already own an Apple Watch, you'll
-              have to live with the old software until fall. You’ll love it at the first use.
+              have to live with the old software until fall. You'll love it at the first use.
             </div>
           </div>
         </div>
