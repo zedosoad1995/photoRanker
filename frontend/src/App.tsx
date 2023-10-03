@@ -114,8 +114,10 @@ function App() {
           HOW IT WORKS
         </div>
         <div className="flex gap-5">
-          <div className="w-1/2 bg-[#B2F7D5] rounded-3xl px-8 pt-8">
-            <img src="/Marketing-Agency-Platforms-Image.webp" alt="step1" />
+          <div className="w-1/2 bg-[#B2F7D5] rounded-3xl p-8">
+            <div className="rounded-lg overflow-hidden">
+              <img src="/upload.png" alt="step1" />
+            </div>
           </div>
           <div className="w-1/2 pl-20 mt-10">
             <div className="text-[#374048] text-4xl font-semibold mb-5">1. Upload Photo</div>
@@ -124,24 +126,28 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="flex gap-5 mt-[150px]">
+        <div className="flex gap-5 mt-[100px]">
           <div className="w-1/2 pr-20 mt-10">
-            <div className="text-[#374048] text-4xl font-semibold mb-5">2. Get Votes</div>
+            <div className="text-[#374048] text-4xl font-semibold mb-5">2. Receive Votes</div>
             <div className="text-[#82898f] text-lg font-light">
               Get rated by strangers based on attractiveness. Our unique side-by-side voting system
               allows for more votes and avoids gray areas typical in 1-10 rating.
             </div>
           </div>
-          <div className="w-1/2 bg-[#82E6F7] rounded-3xl px-8 pt-8">
-            <img src="/Marketing-Agency-Platforms-Image.webp" alt="step2" />
+          <div className="w-1/2 bg-[#82E6F7] rounded-3xl p-8">
+            <div className="rounded-t-lg overflow-hidden">
+              <img src="/side-by-side-click.png" alt="step2" />
+            </div>
           </div>
         </div>
-        <div className="flex gap-5 mt-[150px]">
+        <div className="flex gap-5 mt-[100px]">
           <div className="w-1/2 bg-[#FFFFB2] rounded-3xl px-8 pt-8">
-            <img src="/Marketing-Agency-Platforms-Image.webp" alt="step3" />
+            <div className="rounded-t-lg overflow-hidden">
+              <img src="/score.png" alt="step3" />
+            </div>
           </div>
           <div className="w-1/2 pl-20 mt-10">
-            <div className="text-[#374048] text-4xl font-semibold mb-5">3. Receive Score</div>
+            <div className="text-[#374048] text-4xl font-semibold mb-5">3. Get Score</div>
             <div className="text-[#82898f] text-lg font-light">
               Discover how does you photo compares to the general population (e.g top 10%).
             </div>
@@ -262,7 +268,7 @@ function App() {
           </div>
         </div>
       </section>
-      <section className="pt-[98px] pb-[78px] px-[70px] bg-[#F8FBFD]">
+      <section className="pt-[98px] pb-[78px] px-[70px]">
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           FAQ
         </div>
