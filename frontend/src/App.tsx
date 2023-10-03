@@ -114,25 +114,31 @@ function App() {
           HOW IT WORKS
         </div>
         <div className="flex gap-5">
-          <div className="w-1/2 bg-[#B2F7D5] rounded-3xl p-8">
+          <div className="w-1/2 bg-[#B2F7D5] rounded-3xl py-8 px-[15%]">
             <div className="rounded-lg overflow-hidden">
               <img src="/upload.png" alt="step1" />
             </div>
           </div>
-          <div className="w-1/2 pl-20 mt-10">
+          <div className="w-1/2 pl-20 my-auto">
             <div className="text-[#374048] text-4xl font-semibold mb-5">1. Upload Photo</div>
-            <div className="text-[#82898f] text-lg font-light">
+            <div className="text-[#82898f] text-lg font-light mb-5">
               Upload a picture you want to get rated. You can upload multiple if you wish.
             </div>
+            <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-[22px] leading-[65px] font-medium text-white rounded-[60px] px-[45px]">
+              Upload photo
+            </button>
           </div>
         </div>
         <div className="flex gap-5 mt-[100px]">
-          <div className="w-1/2 pr-20 mt-10">
+          <div className="w-1/2 pr-20 my-auto">
             <div className="text-[#374048] text-4xl font-semibold mb-5">2. Receive Votes</div>
-            <div className="text-[#82898f] text-lg font-light">
+            <div className="text-[#82898f] text-lg font-light mb-5">
               Get rated by strangers based on attractiveness. Our unique side-by-side voting system
               allows for more votes and avoids gray areas typical in 1-10 rating.
             </div>
+            <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-[22px] leading-[65px] font-medium text-white rounded-[60px] px-[45px]">
+              Start Voting Now
+            </button>
           </div>
           <div className="w-1/2 bg-[#82E6F7] rounded-3xl p-8">
             <div className="rounded-t-lg overflow-hidden">
@@ -141,16 +147,19 @@ function App() {
           </div>
         </div>
         <div className="flex gap-5 mt-[100px]">
-          <div className="w-1/2 bg-[#FFFFB2] rounded-3xl px-8 pt-8">
+          <div className="w-1/2 bg-[#FFFFB2] rounded-3xl px-[9%] pt-8">
             <div className="rounded-t-lg overflow-hidden">
               <img src="/score.png" alt="step3" />
             </div>
           </div>
-          <div className="w-1/2 pl-20 mt-10">
+          <div className="w-1/2 pl-20 my-auto">
             <div className="text-[#374048] text-4xl font-semibold mb-5">3. Get Score</div>
-            <div className="text-[#82898f] text-lg font-light">
+            <div className="text-[#82898f] text-lg font-light mb-5">
               Discover how does you photo compare to the general population.
             </div>
+            <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-[22px] leading-[65px] font-medium text-white rounded-[60px] px-[45px]">
+              Find your rating
+            </button>
           </div>
         </div>
       </section>
@@ -227,7 +236,7 @@ function App() {
                   Vote Your Way
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Pick photos based on age and gender preferences.
+                  Pick the photos you want to vote based on age and gender preferences.
                 </div>
               </div>
             </div>
