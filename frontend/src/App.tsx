@@ -149,7 +149,7 @@ function App() {
           <div className="w-1/2 pl-20 mt-10">
             <div className="text-[#374048] text-4xl font-semibold mb-5">3. Get Score</div>
             <div className="text-[#82898f] text-lg font-light">
-              Discover how does you photo compares to the general population (e.g top 10%).
+              Discover how does you photo compare to the general population.
             </div>
           </div>
         </div>
@@ -166,32 +166,15 @@ function App() {
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
                 <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
-                  <MdPercent />
-                </IconContext.Provider>
-              </div>
-              <div>
-                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Where Do You Rank?
-                </div>
-                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Find out your photo's numerical rank against others.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-[60px] px-[15px]">
-            <div className="flex">
-              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
                   <MdOutlinePhotoLibrary />
                 </IconContext.Provider>
               </div>
               <div>
                 <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Quick and Plentiful Votes
+                  Many Votes Quickly
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Our side-by-side voting is quick and enjoyable, ensuring more votes and greater
+                  Our side-by-side makes voting easy and fun, leading to more votes and greater
                   accuracy.
                 </div>
               </div>
@@ -262,6 +245,23 @@ function App() {
                 </div>
                 <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
                   Binary decisions remove ambiguity, making each vote more meaningful and reliable.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-[60px] px-[15px]">
+            <div className="flex">
+              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <MdPercent />
+                </IconContext.Provider>
+              </div>
+              <div>
+                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                  Where Do You Rank?
+                </div>
+                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                  Find out your photo's numerical rank against others.
                 </div>
               </div>
             </div>
