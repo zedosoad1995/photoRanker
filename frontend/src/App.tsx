@@ -7,10 +7,178 @@ import {
   MdBalance,
   MdCheckCircleOutline,
   MdOutlineCancel,
+  MdExpandMore,
+  MdExpandLess,
 } from "react-icons/md";
 import { IconContext } from "react-icons";
+import { useState } from "react";
 
 function App() {
+  const FAQ = [
+    {
+      question: "Is Photo Scorer free?",
+      answer:
+        "Photo Scorer is 100% free. Additional paid features may be added in the future, but we want to keep the core high quality and free.",
+      height: 50,
+    },
+    {
+      question: "Why not use a 1-10 scale?",
+      answer: (
+        <>
+          1-10 rating system has many problems:
+          <ul className="list-inside mt-1">
+            <li>
+              <span className="inline-block mr-2 align-middle">
+                <IconContext.Provider value={{ color: "#EF4444" }}>
+                  <MdOutlineCancel />
+                </IconContext.Provider>
+              </span>
+              <b className="font-semibold">Highly subjective</b>: people have different voting
+              styles.
+            </li>
+            <li>
+              <span className="inline-block mr-2 align-middle">
+                <IconContext.Provider value={{ color: "#EF4444" }}>
+                  <MdOutlineCancel />
+                </IconContext.Provider>
+              </span>
+              <b className="font-semibold">Inconsistent</b>: The same person changes their voting
+              style regularly.
+            </li>
+            <li>
+              <span className="inline-block mr-2 align-middle">
+                <IconContext.Provider value={{ color: "#EF4444" }}>
+                  <MdOutlineCancel />
+                </IconContext.Provider>
+              </span>
+              <b className="font-semibold">Tedious and slow</b>: Having 10 highly subjective options
+              is slow and tiring.
+            </li>
+          </ul>
+          <br />
+          With a side-by-side voting system we aim for:
+          <ul className="list-inside mt-1">
+            <li>
+              <span className="inline-block mr-2 align-middle">
+                <IconContext.Provider value={{ color: "#0E9F6E" }}>
+                  <MdCheckCircleOutline />
+                </IconContext.Provider>
+              </span>
+              <b className="font-semibold">Fast and fun voting</b>: choosing the prefered picture is
+              much simpler and quick.
+            </li>
+            <li>
+              <span className="inline-block mr-2 align-middle">
+                <IconContext.Provider value={{ color: "#0E9F6E" }}>
+                  <MdCheckCircleOutline />
+                </IconContext.Provider>
+              </span>
+              <b className="font-semibold">Consistency</b>: having a binary choice makes voting
+              consistent.
+            </li>
+            <li>
+              <span className="inline-block mr-2 align-middle">
+                <IconContext.Provider value={{ color: "#0E9F6E" }}>
+                  <MdCheckCircleOutline />
+                </IconContext.Provider>
+              </span>
+              <b className="font-semibold">More votes and accuracy</b>: our method allows users to
+              give 4 to 20 times more votes. Leading to higher accuracy and a quicker feedback. For
+              each click, 2 votes happen: the winner and the loser.
+            </li>
+          </ul>
+        </>
+      ),
+      height: 258,
+    },
+    {
+      question: "How to interpret my picture's score?",
+      answer: (
+        <>
+          <div>
+            The score tells you how well you compare to others in terms of attractiveness, by giving
+            you a percentile.
+          </div>
+          <br />
+          <div>
+            For example: Top 10% means that you are in the best 10%, better than 90% of the
+            population. Or "Bottom 10%" means you are worse than 90% of the population.
+          </div>
+          <br />
+          <div>
+            Try not to take it personally, as many factors like photo quality, facial expression,
+            etc. have a high effect. Instead, test multiple pictures to find out which ones people
+            prefer.
+          </div>
+        </>
+      ),
+      height: 199,
+    },
+    {
+      question: "How are the scores obtained?",
+      answer: (
+        <>
+          <div>
+            Our algorithm works similarly to the one used in chess or online gaming to calculate the
+            "elo" of each image, but it is optimized for our case. For each match, depending on how
+            strong the adversary is, the score is updated. The pictures are then sorted by elo and
+            their % score can be inferred.
+          </div>
+          <br />
+          <div>
+            We also make sure to match 2 pictures with similar elos. This improves the accuracy,
+            allows for a quicker convergence, and avoids big jumps in the score.
+          </div>
+        </>
+      ),
+      height: 174,
+    },
+  ];
+
+  const Accordion = () => {
+    const [openItem, setOpenItem] = useState(0);
+
+    const handleClick = (index: number) => () => {
+      if (openItem === index) {
+        setOpenItem(-1);
+      } else {
+        setOpenItem(index);
+      }
+    };
+
+    return (
+      <div>
+        {FAQ.map(({ question, answer, height }, index) => (
+          <div key={question} className="border rounded-md p-6 mb-2">
+            <div
+              onClick={handleClick(index)}
+              className="flex justify-between items-center cursor-pointer"
+            >
+              <div className="text-[20px] leading-[20px] font-medium text-[#374048]">
+                {question}
+              </div>
+              <IconContext.Provider value={{ color: "#374048", size: "30" }}>
+                {openItem === index ? <MdExpandLess /> : <MdExpandMore />}
+              </IconContext.Provider>
+            </div>
+            <div className="overflow-hidden">
+              <div
+                className={`text-[15px] leading-[25px] font-light text-[#82898f] transition-all ease-in-out duration-500 ${
+                  openItem === index ? `mt-6` : "mt-0"
+                }`}
+                style={{
+                  maxHeight: openItem === index ? height : 0,
+                }}
+              >
+                {answer}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="font-poppins">
       <section className="h-[100vh] min-h-[680px] bg-[#F8FBFD]">
@@ -292,13 +460,15 @@ function App() {
           </div>
           <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <Accordion />
+        {/* <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="mt-[60px] px-[15px]">
             <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
-              Is it free?
+              Is Photo Scorer free?
             </div>
             <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
-              For now it is 100% free. But this may change in the future.
+              Photo Scorer is 100% free. Additional paid features may be added in the future, but we
+              want to keep the core high quality and free.
             </div>
           </div>
           <div className="mt-[60px] px-[15px]">
@@ -410,7 +580,7 @@ function App() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </section>
     </div>
   );
