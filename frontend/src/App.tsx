@@ -11,7 +11,7 @@ import {
   MdExpandLess,
 } from "react-icons/md";
 import { IconContext } from "react-icons";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function App() {
   const FAQ = [
@@ -19,7 +19,6 @@ function App() {
       question: "Is Photo Scorer free?",
       answer:
         "Photo Scorer is 100% free. Additional paid features may be added in the future, but we want to keep the core high quality and free.",
-      height: 50,
     },
     {
       question: "Why not use a 1-10 scale?",
@@ -89,7 +88,6 @@ function App() {
           </ul>
         </>
       ),
-      height: 258,
     },
     {
       question: "How to interpret my picture's score?",
@@ -112,7 +110,6 @@ function App() {
           </div>
         </>
       ),
-      height: 199,
     },
     {
       question: "How are the scores obtained?",
@@ -131,12 +128,31 @@ function App() {
           </div>
         </>
       ),
-      height: 174,
     },
   ];
 
   const Accordion = () => {
     const [openItem, setOpenItem] = useState(0);
+    const [divHeights, setDivHeights] = useState<number[]>([]);
+    const divRefs = useRef<HTMLDivElement[]>([]);
+
+    const addDivRef = (el: HTMLDivElement | null) => {
+      if (el && !divRefs.current.includes(el)) {
+        divRefs.current.push(el);
+      }
+    };
+
+    const updateDivHeights = () => {
+      setDivHeights(divRefs.current.map((div) => div.offsetHeight));
+    };
+
+    useEffect(() => {
+      updateDivHeights();
+      window.addEventListener("resize", updateDivHeights);
+      return () => {
+        window.removeEventListener("resize", updateDivHeights);
+      };
+    }, []);
 
     const handleClick = (index: number) => () => {
       if (openItem === index) {
@@ -148,7 +164,7 @@ function App() {
 
     return (
       <div>
-        {FAQ.map(({ question, answer, height }, index) => (
+        {FAQ.map(({ question, answer }, index) => (
           <div key={question} className="border rounded-md p-6 mb-2">
             <div
               onClick={handleClick(index)}
@@ -161,14 +177,17 @@ function App() {
                 {openItem === index ? <MdExpandLess /> : <MdExpandMore />}
               </IconContext.Provider>
             </div>
-            <div className="overflow-hidden">
+            <div
+              className={`overflow-hidden transition-all ease-in-out duration-500 ${
+                openItem === index ? `mt-6` : "mt-0"
+              }`}
+              style={{
+                maxHeight: openItem === index ? divHeights[index] : 0,
+              }}
+            >
               <div
-                className={`text-[15px] leading-[25px] font-light text-[#82898f] transition-all ease-in-out duration-500 ${
-                  openItem === index ? `mt-6` : "mt-0"
-                }`}
-                style={{
-                  maxHeight: openItem === index ? height : 0,
-                }}
+                className={`text-[15px] leading-[25px] font-light text-[#82898f]`}
+                ref={addDivRef}
               >
                 {answer}
               </div>
@@ -458,12 +477,12 @@ function App() {
           </div>
         </div>
       </section>
-      {/* <section className="pt-[98px] pb-[78px] px-[70px]">
-        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
+      <section className="pt-20 md:pt-[98px] pb-[78px] px-5 sm:px-[70px]">
+        <div className="text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           FAQ
         </div>
-        <div className="mb-[25px]">
-          <div className="text-[#969da3] text-xl text-center leading-8 font-thin mb-5 mx-[130px]">
+        <div className="mb-[75px]">
+          <div className="text-[#969da3] text-lg md:text-xl text-center leading-8 font-thin mb-5">
             Got more questions? Feel free to send us an email to{" "}
             <a href="#" className="text-[#0084ff]">
               hello@product.com
@@ -472,7 +491,7 @@ function App() {
           <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
         </div>
         <Accordion />
-      </section> */}
+      </section>
     </div>
   );
 }
