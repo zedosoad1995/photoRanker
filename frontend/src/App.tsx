@@ -182,15 +182,15 @@ function App() {
   return (
     <div className="font-poppins">
       <section className="h-[100vh] min-h-[680px] bg-[#F8FBFD]">
-        <div className="flex mx-[70px] my-auto h-full">
+        <div className="flex mx-5 sm:mx-[70px] my-auto h-full">
           <div className="w-[100%] my-auto">
-            <div className="font-semibold text-[#374048] text-[68px] leading-[68px] mb-2 text-center">
+            <div className="font-semibold text-[#374048 max-[350px]:text-2xl max-[500px]:text-[30px] max-[900px]:text-[35px] max-[900px]:leading-[35px] text-[68px] leading-[68px] mb-2 text-center">
               Find your best photo
             </div>
-            <div className="text-[#8a9095] text-[24px] mb-[40px] text-center">
+            <div className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
               Let strangers rate your pictures, in a fun side-by-side comparison
             </div>
-            <div className="flex justify-center gap-5 mb-[40px]">
+            <div className="flex justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
               <div className="cursor-pointer rounded-t-md shadow-md w-56">
                 <div className="relative">
                   <div className="rounded-t-md overflow-hidden">
@@ -225,8 +225,8 @@ function App() {
               </div>
             </div>
             <div className="text-center">
-              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-[22px] leading-[65px] font-medium text-white rounded-[60px] px-[45px]">
-                Test your photo now
+              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-2xl py-5 font-medium text-white rounded-[60px] px-11">
+                Test your photo
               </button>
             </div>
           </div>
@@ -279,7 +279,7 @@ function App() {
           </div> */}
         </div>
       </section>
-      <section className="pt-[104px] pb-[95px] px-[70px]">
+      {/* <section className="pt-[104px] pb-[95px] px-[70px]">
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[75px]">
           HOW IT WORKS
         </div>
@@ -446,8 +446,8 @@ function App() {
             </div>
           </div>
         </div>
-      </section>
-      <section className="pt-[98px] pb-[78px] px-[70px]">
+      </section> */}
+      {/* <section className="pt-[98px] pb-[78px] px-[70px]">
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           FAQ
         </div>
@@ -461,127 +461,7 @@ function App() {
           <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
         </div>
         <Accordion />
-        {/* <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="mt-[60px] px-[15px]">
-            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
-              Is Photo Scorer free?
-            </div>
-            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
-              Photo Scorer is 100% free. Additional paid features may be added in the future, but we
-              want to keep the core high quality and free.
-            </div>
-          </div>
-          <div className="mt-[60px] px-[15px]">
-            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
-              Why not use a 1-10 scale?
-            </div>
-            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
-              1-10 rating system has many problems:
-              <ul className="list-inside mt-1">
-                <li>
-                  <span className="inline-block mr-2 align-middle">
-                    <IconContext.Provider value={{ color: "#EF4444" }}>
-                      <MdOutlineCancel />
-                    </IconContext.Provider>
-                  </span>
-                  <b className="font-semibold">Highly subjective</b>: people have different voting
-                  styles.
-                </li>
-                <li>
-                  <span className="inline-block mr-2 align-middle">
-                    <IconContext.Provider value={{ color: "#EF4444" }}>
-                      <MdOutlineCancel />
-                    </IconContext.Provider>
-                  </span>
-                  <b className="font-semibold">Inconsistent</b>: The same person changes their
-                  voting style regularly.
-                </li>
-                <li>
-                  <span className="inline-block mr-2 align-middle">
-                    <IconContext.Provider value={{ color: "#EF4444" }}>
-                      <MdOutlineCancel />
-                    </IconContext.Provider>
-                  </span>
-                  <b className="font-semibold">Tedious and slow</b>: Having 10 highly subjective
-                  options is slow and tiring.
-                </li>
-              </ul>
-              <br />
-              With a side-by-side voting system we aim for:
-              <ul className="list-inside mt-1">
-                <li>
-                  <span className="inline-block mr-2 align-middle">
-                    <IconContext.Provider value={{ color: "#0E9F6E" }}>
-                      <MdCheckCircleOutline />
-                    </IconContext.Provider>
-                  </span>
-                  <b className="font-semibold">Fast and fun voting</b>: choosing the prefered
-                  picture is much simpler and quick.
-                </li>
-                <li>
-                  <span className="inline-block mr-2 align-middle">
-                    <IconContext.Provider value={{ color: "#0E9F6E" }}>
-                      <MdCheckCircleOutline />
-                    </IconContext.Provider>
-                  </span>
-                  <b className="font-semibold">Consistency</b>: having a binary choice makes voting
-                  consistent.
-                </li>
-                <li>
-                  <span className="inline-block mr-2 align-middle">
-                    <IconContext.Provider value={{ color: "#0E9F6E" }}>
-                      <MdCheckCircleOutline />
-                    </IconContext.Provider>
-                  </span>
-                  <b className="font-semibold">More votes and accuracy</b>: our method allows users
-                  to give 4 to 20 times more votes. Leading to higher accuracy and a quicker
-                  feedback. For each click, 2 votes happen: the winner and the loser.
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-[60px] px-[15px]">
-            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
-              How to interpret my picture's score?
-            </div>
-            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
-              <div>
-                The score tells you how well you compare to others in terms of attractiveness, by
-                giving you a percentile.
-              </div>
-              <br />
-              <div>
-                For example: Top 10% means that you are in the best 10%, better than 90% of the
-                population. Or "Bottom 10%" means you are worse than 90% of the population.
-              </div>
-              <br />
-              <div>
-                Try not to take it personally, as many factors like photo quality, facial
-                expression, etc. have a high effect. Instead, test multiple pictures to find out
-                which ones people prefer.
-              </div>
-            </div>
-          </div>
-          <div className="mt-[60px] px-[15px]">
-            <div className="text-[20px] leading-[20px] font-medium text-[#374048] mb-[8px]">
-              How are the scores obtained?
-            </div>
-            <div className="text-[15px] leading-[25px] font-light text-[#82898f]">
-              <div>
-                Our algorithm works similarly to the one used in chess or online gaming to calculate
-                the "elo" of each image, but it is optimized for our case. For each match, depending
-                on how strong the adversary is, the score is updated. The pictures are then sorted
-                by elo and their % score can be inferred.
-              </div>
-              <br />
-              <div>
-                We also make sure to match 2 pictures with similar elos. This improves the accuracy,
-                allows for a quicker convergence, and avoids big jumps in the score.
-              </div>
-            </div>
-          </div>
-        </div> */}
-      </section>
+      </section> */}
     </div>
   );
 }
