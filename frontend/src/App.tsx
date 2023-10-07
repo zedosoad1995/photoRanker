@@ -344,15 +344,15 @@ function App() {
           </div>
         </div>
       </section>
-      {/* <section className="py-[111px] px-[70px] bg-[#F8FBFD]">
-        <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
+      <section className="py-20 md:py-[111px] px-5 sm:px-[70px] bg-[#F8FBFD]">
+        <div className="text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           FEATURES
         </div>
         <div className="mb-[25px]">
           <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          <div className="mt-[60px] px-[15px]">
+          <div className="mt-[60px] md:px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
                 <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
@@ -370,7 +370,7 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="mt-[60px] px-[15px]">
+          <div className="mt-[60px] md:px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
                 <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
@@ -387,7 +387,7 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="mt-[60px] px-[15px]">
+          <div className="mt-[60px] md:px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
                 <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
@@ -405,7 +405,7 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="mt-[60px] px-[15px]">
+          <div className="mt-[60px] md:px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
                 <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
@@ -422,7 +422,7 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="mt-[60px] px-[15px]">
+          <div className="mt-[60px] md:px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
                 <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
@@ -439,7 +439,7 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="mt-[60px] px-[15px]">
+          <div className="mt-[60px] md:px-[15px]">
             <div className="flex">
               <div className="w-[70px] min-w-[70px] flex justify-center items-start">
                 <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
@@ -457,7 +457,7 @@ function App() {
             </div>
           </div>
         </div>
-      </section> */}
+      </section>
       {/* <section className="pt-[98px] pb-[78px] px-[70px]">
         <div className="text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]">
           FAQ
