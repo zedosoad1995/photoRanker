@@ -31,7 +31,7 @@ import ResetPassword from "./Pages/ResetPassword.tsx";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
-import App from "./App.tsx";
+import App from "./Pages/App/index.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
