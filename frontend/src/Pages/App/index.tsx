@@ -9,12 +9,17 @@ import {
   MdOutlineCancel,
   MdExpandMore,
   MdExpandLess,
+  MdMenu,
+  MdClose,
 } from "react-icons/md";
 import { IconContext } from "react-icons";
 import { useState, useRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import Logo from "@/Components/Logo";
 
 function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const { ref: refHero, inView: inViewHero } = useInView({
     threshold: 0.5,
     triggerOnce: true,
@@ -241,7 +246,7 @@ function App() {
             key={question}
             ref={index === 0 ? refEl : null}
             className={`border rounded-md p-6 mb-2 ${
-              inViewEl ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              inViewEl ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             } transition-all duration-500 ease-in delay-[${index * 300}ms]`}
           >
             <div
@@ -280,416 +285,456 @@ function App() {
     <div className="font-poppins">
       <section
         ref={refHero}
-        className={`h-[100vh] min-h-[680px] bg-[#F8FBFD] ${
+        className={`min-h-[680px] bg-[#F8FBFD] pb-20 ${
           inViewHero ? "opacity-100" : "opacity-0"
         } transition-opacity duration-500 ease-in`}
       >
-        <div className="flex mx-5 sm:mx-[70px] my-auto h-full">
-          <div className="w-[100%] my-auto">
-            <div className="font-semibold text-[#374048 max-[350px]:text-2xl max-[500px]:text-[30px] max-[900px]:text-[35px] max-[900px]:leading-[35px] text-[68px] leading-[68px] mb-2 text-center">
-              Find your best photo
-            </div>
-            <div className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
-              Let strangers rate your pictures, in a fun side-by-side comparison
-            </div>
-            <div className="flex justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
-              <div className="cursor-pointer rounded-t-md shadow-md w-56">
-                <div className="relative">
-                  <div className="rounded-t-md overflow-hidden">
-                    <img className="mx-auto w-full" src="/dude.jpg" alt="hero-pic" />
-                  </div>
-                </div>
-                <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
-                  <div className="flex justify-between">
-                    <span>Score:</span> <span>Top 17%</span>
-                  </div>
-                  <hr className="my-2" />
-                  <div className="flex justify-between">
-                    <span>Votes:</span> <span>35</span>
-                  </div>
-                </div>
-              </div>
-              <div className="cursor-pointer rounded-t-md shadow-md w-56">
-                <div className="relative">
-                  <div className="rounded-t-md overflow-hidden">
-                    <img className="mx-auto w-full" src="/dude2.jpg" alt="hero-pic" />
-                  </div>
-                </div>
-                <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
-                  <div className="flex justify-between">
-                    <span>Score:</span> <span>Top 22%</span>
-                  </div>
-                  <hr className="my-2" />
-                  <div className="flex justify-between">
-                    <span>Votes:</span> <span>29</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="text-center">
-              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-2xl py-5 font-medium text-white rounded-[60px] px-11">
-                Test your photo
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center w-full px-5 py-6">
+            <Logo />
+            <div className="hidden md:flex gap-3">
+              <button className="border border-[#111827] hover:bg-[#111827] hover:text-white transition-colors ease-in-out duration-200 text-base py-3 font-medium rounded-[60px] px-7">
+                Login
               </button>
+              <button className="bg-[#111827] text-base py-3 font-medium text-white rounded-[60px] px-7">
+                Sign up
+              </button>
+            </div>
+            <div
+              onClick={() => setIsMenuOpen((val) => !val)}
+              className="block md:hidden cursor-pointer"
+            >
+              <IconContext.Provider value={{ color: "#111827", className: "text-[32px]" }}>
+                {isMenuOpen ? <MdClose /> : <MdMenu />}
+              </IconContext.Provider>
+            </div>
+          </div>
+          <div
+            className={`block md:hidden overflow-hidden px-4 absolute bg-[#F8FBFD] w-full transition-all ease-in-out duration-500 ${
+              isMenuOpen ? "max-h-36 py-4" : "max-h-0 py-0"
+            }`}
+          >
+            <div className="max-w-md flex flex-col gap-3 mx-auto">
+              <button className="w-full border border-[#111827] hover:bg-[#111827] hover:text-white transition-colors ease-in-out duration-200 text-base py-3 font-medium rounded-[60px] px-7">
+                Login
+              </button>
+              <button className="w-full bg-[#111827] text-base py-3 font-medium text-white rounded-[60px] px-7">
+                Sign up
+              </button>
+            </div>
+          </div>
+          <div className="flex mx-5 sm:mx-[70px] mt-10">
+            <div className="w-[100%] my-auto">
+              <div className="font-semibold text-[#374048 max-[350px]:text-2xl max-[500px]:text-[30px] max-[900px]:text-[35px] max-[900px]:leading-[35px] text-[68px] leading-[68px] mb-2 text-center">
+                Find your best photo
+              </div>
+              <div className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
+                Let strangers rate your pictures, in a fun side-by-side comparison
+              </div>
+              <div className="flex justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
+                <div className="cursor-pointer rounded-t-md shadow-md w-56">
+                  <div className="relative">
+                    <div className="rounded-t-md overflow-hidden">
+                      <img className="mx-auto w-full" src="/dude.jpg" alt="hero-pic" />
+                    </div>
+                  </div>
+                  <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
+                    <div className="flex justify-between">
+                      <span>Score:</span> <span>Top 17%</span>
+                    </div>
+                    <hr className="my-2" />
+                    <div className="flex justify-between">
+                      <span>Votes:</span> <span>35</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="cursor-pointer rounded-t-md shadow-md w-56">
+                  <div className="relative">
+                    <div className="rounded-t-md overflow-hidden">
+                      <img className="mx-auto w-full" src="/dude2.jpg" alt="hero-pic" />
+                    </div>
+                  </div>
+                  <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
+                    <div className="flex justify-between">
+                      <span>Score:</span> <span>Top 22%</span>
+                    </div>
+                    <hr className="my-2" />
+                    <div className="flex justify-between">
+                      <span>Votes:</span> <span>29</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="text-center">
+                <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-2xl py-5 font-medium text-white rounded-[60px] px-11">
+                  Test your photo
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
       <section className="pt-20 md:pt-[104px] pb-[95px] px-5 sm:px-[70px]">
-        <div
-          ref={refHowItWorks}
-          className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[75px] ${
-            inViewHowItWorks ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          } transition-all duration-500 ease-in`}
-        >
-          HOW IT WORKS
-        </div>
-        <div className="flex md:hidden gap-5 flex-col">
+        <div className="max-w-6xl mx-auto">
           <div
-            ref={refStep1ImgMobile}
-            className={`bg-[#B2F7D5] rounded-3xl py-8 px-[15%] m-auto ${
-              inViewStep1ImgMobile ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
+            ref={refHowItWorks}
+            className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[75px] ${
+              inViewHowItWorks ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            } transition-all duration-500 ease-in`}
           >
-            <div className="rounded-lg overflow-hidden">
-              <img src="/upload.png" alt="step1" />
-            </div>
+            HOW IT WORKS
           </div>
-          <div
-            ref={refStep1TextMobile}
-            className={`pl-3 lg:pl-20 my-auto ${
-              inViewStep1TextMobile ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="text-[#374048] text-2xl font-semibold mb-5">1. Upload Photo</div>
-            <div className="text-[#82898f] text-base font-light mb-5">
-              Upload a picture you want to get rated. You can upload multiple if you wish.
-            </div>
-            <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
-              Upload Photo
-            </button>
-          </div>
-        </div>
-        <div className="hidden md:flex gap-5 ">
-          <div
-            ref={refStep1Img}
-            className={`w-1/2 bg-[#B2F7D5] rounded-3xl py-8 px-[15%] m-auto ${
-              inViewStep1Img ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="rounded-lg overflow-hidden">
-              <img src="/upload.png" alt="step1" />
-            </div>
-          </div>
-          <div className="w-1/2 pl-3 lg:pl-20 my-auto">
+          <div className="flex md:hidden gap-5 flex-col">
             <div
-              className={`text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 ${
+              ref={refStep1ImgMobile}
+              className={`bg-[#B2F7D5] rounded-3xl py-8 px-[15%] m-auto ${
+                inViewStep1ImgMobile ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in`}
+            >
+              <div className="rounded-lg overflow-hidden">
+                <img src="/upload.png" alt="step1" />
+              </div>
+            </div>
+            <div
+              ref={refStep1TextMobile}
+              className={`pl-3 lg:pl-20 my-auto ${
+                inViewStep1TextMobile ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in`}
+            >
+              <div className="text-[#374048] text-2xl font-semibold mb-5">1. Upload Photo</div>
+              <div className="text-[#82898f] text-base font-light mb-5">
+                Upload a picture you want to get rated. You can upload multiple if you wish.
+              </div>
+              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
+                Upload Photo
+              </button>
+            </div>
+          </div>
+          <div className="hidden md:flex gap-5 ">
+            <div
+              ref={refStep1Img}
+              className={`w-1/2 bg-[#B2F7D5] rounded-3xl py-8 px-[15%] m-auto ${
                 inViewStep1Img ? "opacity-100" : "opacity-0"
               } transition-opacity duration-500 ease-in`}
             >
-              1. Upload Photo
+              <div className="rounded-lg overflow-hidden">
+                <img src="/upload.png" alt="step1" />
+              </div>
             </div>
+            <div className="w-1/2 pl-3 lg:pl-20 my-auto">
+              <div
+                className={`text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 ${
+                  inViewStep1Img ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-500 ease-in`}
+              >
+                1. Upload Photo
+              </div>
+              <div
+                className={`text-[#82898f] text-lg font-light mb-5 ${
+                  inViewStep1Img ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-500 ease-in`}
+              >
+                Upload a picture you want to get rated. You can upload multiple if you wish.
+              </div>
+              <button
+                className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
+                  inViewStep1Img ? "opacity-100" : "opacity-0"
+                }`}
+                style={{
+                  transitionProperty: "background-color, opacity",
+                  transitionDuration: "0.3s, 0.5s",
+                  transitionTimingFunction: "ease-in-out, ease-in",
+                }}
+              >
+                Upload Photo
+              </button>
+            </div>
+          </div>
+
+          <div className="flex md:hidden gap-5 flex-col mt-20">
             <div
-              className={`text-[#82898f] text-lg font-light mb-5 ${
-                inViewStep1Img ? "opacity-100" : "opacity-0"
+              ref={refStep2ImgMobile}
+              className={`bg-[#B2E6F7] rounded-3xl py-8 px-[15%] m-auto ${
+                inViewStep2ImgMobile ? "opacity-100" : "opacity-0"
               } transition-opacity duration-500 ease-in`}
             >
-              Upload a picture you want to get rated. You can upload multiple if you wish.
+              <div className="rounded-lg overflow-hidden">
+                <img src="/side-by-side-click.png" alt="step2" />
+              </div>
             </div>
-            <button
-              className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
-                inViewStep1Img ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                transitionProperty: "background-color, opacity",
-                transitionDuration: "0.3s, 0.5s",
-                transitionTimingFunction: "ease-in-out, ease-in",
-              }}
-            >
-              Upload Photo
-            </button>
-          </div>
-        </div>
-
-        <div className="flex md:hidden gap-5 flex-col mt-20">
-          <div
-            ref={refStep2ImgMobile}
-            className={`bg-[#B2E6F7] rounded-3xl py-8 px-[15%] m-auto ${
-              inViewStep2ImgMobile ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="rounded-lg overflow-hidden">
-              <img src="/side-by-side-click.png" alt="step2" />
-            </div>
-          </div>
-          <div
-            ref={refStep2TextMobile}
-            className={`pl-3 lg:pl-20 my-auto ${
-              inViewStep2TextMobile ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="text-[#374048] text-2xl font-semibold mb-5">2. Receive Votes</div>
-            <div className="text-[#82898f] text-base font-light mb-5">
-              Get rated by strangers based on attractiveness. Our unique side-by-side voting system
-              allows for more votes and avoids gray areas typical in 1-10 rating.
-            </div>
-            <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
-              Start Voting Now
-            </button>
-          </div>
-        </div>
-
-        <div className="hidden md:flex gap-5 mt-[100px]">
-          <div className="w-1/2 pr-3 lg:pr-20 my-auto">
             <div
-              className={`text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 ${
+              ref={refStep2TextMobile}
+              className={`pl-3 lg:pl-20 my-auto ${
+                inViewStep2TextMobile ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in`}
+            >
+              <div className="text-[#374048] text-2xl font-semibold mb-5">2. Receive Votes</div>
+              <div className="text-[#82898f] text-base font-light mb-5">
+                Get rated by strangers based on attractiveness. Our unique side-by-side voting
+                system allows for more votes and avoids gray areas typical in 1-10 rating.
+              </div>
+              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
+                Start Voting Now
+              </button>
+            </div>
+          </div>
+
+          <div className="hidden md:flex gap-5 mt-[100px]">
+            <div className="w-1/2 pr-3 lg:pr-20 my-auto">
+              <div
+                className={`text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 ${
+                  inViewStep2Img ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-500 ease-in`}
+              >
+                2. Receive Votes
+              </div>
+              <div
+                className={`text-[#82898f] text-lg font-light mb-5 ${
+                  inViewStep2Img ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-500 ease-in`}
+              >
+                Get rated by strangers based on attractiveness. Our unique side-by-side voting
+                system allows for more votes and avoids gray areas typical in 1-10 rating.
+              </div>
+              <button
+                className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
+                  inViewStep2Img ? "opacity-100" : "opacity-0"
+                }`}
+                style={{
+                  transitionProperty: "background-color, opacity",
+                  transitionDuration: "0.3s, 0.5s",
+                  transitionTimingFunction: "ease-in-out, ease-in",
+                }}
+              >
+                Start Voting Now
+              </button>
+            </div>
+            <div
+              ref={refStep2Img}
+              className={`w-1/2 bg-[#B2E6F7] rounded-3xl p-8 m-auto ${
                 inViewStep2Img ? "opacity-100" : "opacity-0"
               } transition-opacity duration-500 ease-in`}
             >
-              2. Receive Votes
-            </div>
-            <div
-              className={`text-[#82898f] text-lg font-light mb-5 ${
-                inViewStep2Img ? "opacity-100" : "opacity-0"
-              } transition-opacity duration-500 ease-in`}
-            >
-              Get rated by strangers based on attractiveness. Our unique side-by-side voting system
-              allows for more votes and avoids gray areas typical in 1-10 rating.
-            </div>
-            <button
-              className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
-                inViewStep2Img ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                transitionProperty: "background-color, opacity",
-                transitionDuration: "0.3s, 0.5s",
-                transitionTimingFunction: "ease-in-out, ease-in",
-              }}
-            >
-              Start Voting Now
-            </button>
-          </div>
-          <div
-            ref={refStep2Img}
-            className={`w-1/2 bg-[#B2E6F7] rounded-3xl p-8 m-auto ${
-              inViewStep2Img ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="rounded-lg overflow-hidden">
-              <img src="/side-by-side-click.png" alt="step2" />
+              <div className="rounded-lg overflow-hidden">
+                <img src="/side-by-side-click.png" alt="step2" />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex md:hidden gap-5 flex-col mt-20">
-          <div
-            ref={refStep3ImgMobile}
-            className={`bg-[#FFFFB2] rounded-3xl py-8 px-[15%] m-auto ${
-              inViewStep3ImgMobile ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="rounded-lg overflow-hidden">
-              <img src="/score.png" alt="step3" />
+          <div className="flex md:hidden gap-5 flex-col mt-20">
+            <div
+              ref={refStep3ImgMobile}
+              className={`bg-[#FFFFB2] rounded-3xl py-8 px-[15%] m-auto ${
+                inViewStep3ImgMobile ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in`}
+            >
+              <div className="rounded-lg overflow-hidden">
+                <img src="/score.png" alt="step3" />
+              </div>
+            </div>
+            <div
+              ref={refStep3TextMobile}
+              className={`pl-3 lg:pl-20 my-auto ${
+                inViewStep3TextMobile ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in`}
+            >
+              <div className="text-[#374048] text-2xl font-semibold mb-5">3. Get Score</div>
+              <div className="text-[#82898f] text-base font-light mb-5">
+                Discover how does you photo compare to the general population.
+              </div>
+              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
+                Find your rating
+              </button>
             </div>
           </div>
-          <div
-            ref={refStep3TextMobile}
-            className={`pl-3 lg:pl-20 my-auto ${
-              inViewStep3TextMobile ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="text-[#374048] text-2xl font-semibold mb-5">3. Get Score</div>
-            <div className="text-[#82898f] text-base font-light mb-5">
-              Discover how does you photo compare to the general population.
-            </div>
-            <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-linear duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
-              Find your rating
-            </button>
-          </div>
-        </div>
 
-        <div className="hidden md:flex gap-5 mt-[100px]">
-          <div
-            ref={refStep3Img}
-            className={`w-1/2 bg-[#FFFFB2] rounded-3xl px-[9%] pt-8 m-auto ${
-              inViewStep3Img ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
-          >
-            <div className="rounded-t-lg overflow-hidden">
-              <img src="/score.png" alt="step3" />
-            </div>
-          </div>
-          <div className="w-1/2 pl-3 lg:pl-20 my-auto">
+          <div className="hidden md:flex gap-5 mt-[100px]">
             <div
-              className={`text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 ${
+              ref={refStep3Img}
+              className={`w-1/2 bg-[#FFFFB2] rounded-3xl px-[9%] pt-8 m-auto ${
                 inViewStep3Img ? "opacity-100" : "opacity-0"
               } transition-opacity duration-500 ease-in`}
             >
-              3. Get Score
+              <div className="rounded-t-lg overflow-hidden">
+                <img src="/score.png" alt="step3" />
+              </div>
             </div>
-            <div
-              className={`text-[#82898f] text-lg font-light mb-5 ${
-                inViewStep3Img ? "opacity-100" : "opacity-0"
-              } transition-opacity duration-500 ease-in`}
-            >
-              Discover how does you photo compare to the general population.
+            <div className="w-1/2 pl-3 lg:pl-20 my-auto">
+              <div
+                className={`text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 ${
+                  inViewStep3Img ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-500 ease-in`}
+              >
+                3. Get Score
+              </div>
+              <div
+                className={`text-[#82898f] text-lg font-light mb-5 ${
+                  inViewStep3Img ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-500 ease-in`}
+              >
+                Discover how does you photo compare to the general population.
+              </div>
+              <button
+                className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
+                  inViewStep3Img ? "opacity-100" : "opacity-0"
+                }`}
+                style={{
+                  transitionProperty: "background-color, opacity",
+                  transitionDuration: "0.3s, 0.5s",
+                  transitionTimingFunction: "ease-in-out, ease-in",
+                }}
+              >
+                Find your rating
+              </button>
             </div>
-            <button
-              className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
-                inViewStep3Img ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                transitionProperty: "background-color, opacity",
-                transitionDuration: "0.3s, 0.5s",
-                transitionTimingFunction: "ease-in-out, ease-in",
-              }}
-            >
-              Find your rating
-            </button>
           </div>
         </div>
       </section>
       <section className="py-20 md:py-[111px] px-5 sm:px-[70px] bg-[#F8FBFD]">
-        <div
-          ref={refFeatures}
-          className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px] ${
-            inViewFeatures ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          } transition-all duration-500 ease-in`}
-        >
-          FEATURES
-        </div>
-        <div
-          className={`mb-[25px] ${
-            inViewFeatures ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          } transition-all duration-500 ease-in`}
-        >
-          <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="max-w-6xl mx-auto">
           <div
-            ref={refFeatureEl}
-            className={`mt-[60px] md:px-[15px] ${
-              inViewFeatureEl ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in`}
+            ref={refFeatures}
+            className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px] ${
+              inViewFeatures ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            } transition-all duration-500 ease-in`}
           >
-            <div className="flex">
-              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
-                  <MdOutlinePhotoLibrary />
-                </IconContext.Provider>
-              </div>
-              <div>
-                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Many Votes Quickly
+            FEATURES
+          </div>
+          <div
+            className={`mb-[25px] ${
+              inViewFeatures ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            } transition-all duration-500 ease-in`}
+          >
+            <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div
+              ref={refFeatureEl}
+              className={`mt-[60px] md:px-[15px] ${
+                inViewFeatureEl ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in`}
+            >
+              <div className="flex">
+                <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                    <MdOutlinePhotoLibrary />
+                  </IconContext.Provider>
                 </div>
-                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Our side-by-side makes voting easy and fun, leading to more votes and greater
-                  accuracy.
+                <div>
+                  <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                    Many Votes Quickly
+                  </div>
+                  <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                    Our side-by-side makes voting easy and fun, leading to more votes and greater
+                    accuracy.
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            className={`mt-[60px] md:px-[15px] ${
-              inViewFeatureEl ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in delay-[300ms]`}
-          >
-            <div className="flex">
-              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
-                  <MdOutlineManageAccounts />
-                </IconContext.Provider>
-              </div>
-              <div>
-                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Choose Your Judges
+            <div
+              className={`mt-[60px] md:px-[15px] ${
+                inViewFeatureEl ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in delay-[300ms]`}
+            >
+              <div className="flex">
+                <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                    <MdOutlineManageAccounts />
+                  </IconContext.Provider>
                 </div>
-                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Select the age and gender of your voters for targeted feedback.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className={`mt-[60px] md:px-[15px] ${
-              inViewFeatureEl ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in delay-[600ms]`}
-          >
-            <div className="flex">
-              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
-                  <MdSpeed />
-                </IconContext.Provider>
-              </div>
-              <div>
-                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  High Accuracy
-                </div>
-                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Our algorithm is designed for speed and precision, delivering reliable photo
-                  rankings quickly.
+                <div>
+                  <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                    Choose Your Judges
+                  </div>
+                  <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                    Select the age and gender of your voters for targeted feedback.
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            className={`mt-[60px] md:px-[15px] ${
-              inViewFeatureEl ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in delay-[900ms]`}
-          >
-            <div className="flex">
-              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
-                  <MdTune />
-                </IconContext.Provider>
-              </div>
-              <div>
-                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Vote Your Way
+            <div
+              className={`mt-[60px] md:px-[15px] ${
+                inViewFeatureEl ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in delay-[600ms]`}
+            >
+              <div className="flex">
+                <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                    <MdSpeed />
+                  </IconContext.Provider>
                 </div>
-                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Pick the photos you want to vote based on age and gender preferences.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className={`mt-[60px] md:px-[15px] ${
-              inViewFeatureEl ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in delay-[1200ms]`}
-          >
-            <div className="flex">
-              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
-                  <MdBalance />
-                </IconContext.Provider>
-              </div>
-              <div>
-                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Bias-Free Voting
-                </div>
-                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Binary decisions remove ambiguity, making each vote more meaningful and reliable.
+                <div>
+                  <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                    High Accuracy
+                  </div>
+                  <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                    Our algorithm is designed for speed and precision, delivering reliable photo
+                    rankings quickly.
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            className={`mt-[60px] md:px-[15px] ${
-              inViewFeatureEl ? "opacity-100" : "opacity-0"
-            } transition-opacity duration-500 ease-in delay-[1500ms]`}
-          >
-            <div className="flex">
-              <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
-                  <MdPercent />
-                </IconContext.Provider>
-              </div>
-              <div>
-                <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
-                  Where Do You Rank?
+            <div
+              className={`mt-[60px] md:px-[15px] ${
+                inViewFeatureEl ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in delay-[900ms]`}
+            >
+              <div className="flex">
+                <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                    <MdTune />
+                  </IconContext.Provider>
                 </div>
-                <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                  Find out your photo's numerical rank against others.
+                <div>
+                  <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                    Vote Your Way
+                  </div>
+                  <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                    Pick the photos you want to vote based on age and gender preferences.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`mt-[60px] md:px-[15px] ${
+                inViewFeatureEl ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in delay-[1200ms]`}
+            >
+              <div className="flex">
+                <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                    <MdBalance />
+                  </IconContext.Provider>
+                </div>
+                <div>
+                  <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                    Bias-Free Voting
+                  </div>
+                  <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                    Binary decisions remove ambiguity, making each vote more meaningful and
+                    reliable.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`mt-[60px] md:px-[15px] ${
+                inViewFeatureEl ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 ease-in delay-[1500ms]`}
+            >
+              <div className="flex">
+                <div className="w-[70px] min-w-[70px] flex justify-center items-start">
+                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                    <MdPercent />
+                  </IconContext.Provider>
+                </div>
+                <div>
+                  <div className="text-[#374048] text-[20px] leading-[20px] font-semibold mb-[6px]">
+                    Where Do You Rank?
+                  </div>
+                  <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
+                    Find out your photo's numerical rank against others.
+                  </div>
                 </div>
               </div>
             </div>
@@ -697,28 +742,30 @@ function App() {
         </div>
       </section>
       <section className="pt-20 md:pt-[98px] pb-[78px] px-5 sm:px-[70px]">
-        <div
-          ref={refFAQ}
-          className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px] ${
-            inViewFAQ ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          } transition-all duration-500 ease-in`}
-        >
-          FAQ
-        </div>
-        <div
-          className={`mb-[75px] ${
-            inViewFAQ ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          } transition-all duration-500 ease-in`}
-        >
-          <div className="text-[#969da3] text-lg md:text-xl text-center leading-8 font-thin mb-5">
-            Got more questions? Feel free to send us an email to{" "}
-            <a href="#" className="text-[#0084ff]">
-              hello@product.com
-            </a>
+        <div className="max-w-6xl mx-auto">
+          <div
+            ref={refFAQ}
+            className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px] ${
+              inViewFAQ ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            } transition-all duration-500 ease-in`}
+          >
+            FAQ
           </div>
-          <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
+          <div
+            className={`mb-[75px] ${
+              inViewFAQ ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            } transition-all duration-500 ease-in`}
+          >
+            <div className="text-[#969da3] text-lg md:text-xl text-center leading-8 font-thin mb-5">
+              Got more questions? Feel free to send us an email to{" "}
+              <a href="#" className="text-[#0084ff]">
+                hello@product.com
+              </a>
+            </div>
+            <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
+          </div>
+          <Accordion />
         </div>
-        <Accordion />
       </section>
     </div>
   );
