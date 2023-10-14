@@ -16,9 +16,15 @@ import { IconContext } from "react-icons";
 import { useState, useRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import Logo from "@/Components/Logo";
+import { useNavigate } from "react-router-dom";
+import { LOGIN, REGISTER } from "@/Constants/routes";
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleGoToSignUp = () => navigate(REGISTER);
+  const handleGoToLogin = () => navigate(LOGIN);
 
   const { ref: refHero, inView: inViewHero } = useInView({
     threshold: 0.5,
@@ -293,10 +299,16 @@ function App() {
           <div className="flex justify-between items-center w-full px-5 py-6">
             <Logo />
             <div className="hidden md:flex gap-3">
-              <button className="border border-[#111827] hover:bg-[#111827] hover:text-white transition-colors ease-in-out duration-200 text-base py-3 font-medium rounded-[60px] px-7">
+              <button
+                onClick={handleGoToLogin}
+                className="border border-[#111827] hover:bg-[#111827] hover:text-white transition-colors ease-in-out duration-200 text-base py-3 font-medium rounded-[60px] px-7"
+              >
                 Login
               </button>
-              <button className="bg-[#111827] text-base py-3 font-medium text-white rounded-[60px] px-7">
+              <button
+                onClick={handleGoToSignUp}
+                className="bg-[#111827] text-base py-3 font-medium text-white rounded-[60px] px-7"
+              >
                 Sign up
               </button>
             </div>
@@ -315,10 +327,16 @@ function App() {
             }`}
           >
             <div className="max-w-md flex flex-col gap-3 mx-auto">
-              <button className="w-full border border-[#111827] hover:bg-[#111827] hover:text-white transition-colors ease-in-out duration-200 text-base py-3 font-medium rounded-[60px] px-7">
+              <button
+                onClick={handleGoToLogin}
+                className="w-full border border-[#111827] hover:bg-[#111827] hover:text-white transition-colors ease-in-out duration-200 text-base py-3 font-medium rounded-[60px] px-7"
+              >
                 Login
               </button>
-              <button className="w-full bg-[#111827] text-base py-3 font-medium text-white rounded-[60px] px-7">
+              <button
+                onClick={handleGoToSignUp}
+                className="w-full bg-[#111827] text-base py-3 font-medium text-white rounded-[60px] px-7"
+              >
                 Sign up
               </button>
             </div>
@@ -366,7 +384,10 @@ function App() {
                 </div>
               </div>
               <div className="text-center">
-                <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-2xl py-5 font-medium text-white rounded-[60px] px-11">
+                <button
+                  onClick={handleGoToSignUp}
+                  className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-2xl py-5 font-medium text-white rounded-[60px] px-11"
+                >
                   Test your photo
                 </button>
               </div>
@@ -405,7 +426,10 @@ function App() {
               <div className="text-[#82898f] text-base font-light mb-5">
                 Upload a picture you want to get rated. You can upload multiple if you wish.
               </div>
-              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
+              <button
+                onClick={handleGoToSignUp}
+                className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]"
+              >
                 Upload Photo
               </button>
             </div>
@@ -437,6 +461,7 @@ function App() {
                 Upload a picture you want to get rated. You can upload multiple if you wish.
               </div>
               <button
+                onClick={handleGoToSignUp}
                 className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
                   inViewStep1Img ? "opacity-100" : "opacity-0"
                 }`}
@@ -473,7 +498,10 @@ function App() {
                 Get rated by strangers based on attractiveness. Our unique side-by-side voting
                 system allows for more votes and avoids gray areas typical in 1-10 rating.
               </div>
-              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
+              <button
+                onClick={handleGoToSignUp}
+                className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]"
+              >
                 Start Voting Now
               </button>
             </div>
@@ -497,6 +525,7 @@ function App() {
                 system allows for more votes and avoids gray areas typical in 1-10 rating.
               </div>
               <button
+                onClick={handleGoToSignUp}
                 className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
                   inViewStep2Img ? "opacity-100" : "opacity-0"
                 }`}
@@ -542,7 +571,10 @@ function App() {
               <div className="text-[#82898f] text-base font-light mb-5">
                 Discover how does you photo compare to the general population.
               </div>
-              <button className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]">
+              <button
+                onClick={handleGoToSignUp}
+                className="bg-[#0084FF] hover:bg-[#006ACC] transition-colors ease-in-out duration-300 text-base py-4 px-8 font-medium text-white rounded-[60px]"
+              >
                 Find your rating
               </button>
             </div>
@@ -575,6 +607,7 @@ function App() {
                 Discover how does you photo compare to the general population.
               </div>
               <button
+                onClick={handleGoToSignUp}
                 className={`bg-[#0084FF] hover:bg-[#006ACC] max-[500px]:text-lg max-[500px]:py-4 max-[500px]:px-10 text-lg py-[18px] px-[34px] font-medium text-white rounded-[60px] ${
                   inViewStep3Img ? "opacity-100" : "opacity-0"
                 }`}
