@@ -250,15 +250,13 @@ function App() {
         {FAQ.map(({ question, answer }, index) => (
           <div
             key={question}
+            onClick={handleClick(index)}
             ref={index === 0 ? refEl : null}
-            className={`border rounded-md p-6 mb-2 ${
+            className={`cursor-pointer border rounded-md p-6 mb-2 ${
               inViewEl ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             } transition-all duration-500 ease-in delay-[${index * 300}ms]`}
           >
-            <div
-              onClick={handleClick(index)}
-              className="flex justify-between items-center cursor-pointer"
-            >
+            <div className="flex justify-between items-center">
               <div className="text-[20px] leading-[20px] font-medium text-[#374048]">
                 {question}
               </div>
@@ -267,7 +265,10 @@ function App() {
               </IconContext.Provider>
             </div>
             <div
-              className={`overflow-hidden transition-all ease-in-out duration-500 ${
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              className={`cursor-auto overflow-hidden transition-all ease-in-out duration-500 ${
                 openItem === index ? `mt-6` : "mt-0"
               }`}
               style={{
