@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { LOGIN, REGISTER } from "@/Constants/routes";
 
 function App() {
+  const [showFloatBtn, setShowFloatBtn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -288,8 +289,39 @@ function App() {
     );
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY >= 200) {
+        if (!showFloatBtn) setShowFloatBtn(true);
+      } else {
+        if (showFloatBtn) setShowFloatBtn(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [showFloatBtn]);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <div className="font-poppins">
+      <button
+        onClick={scrollToTop}
+        className={`z-50 fixed rounded-full right-4 bottom-4 bg-[#111827] text-white hover:bg-[#0084FF] transition-all ease-in-out duration-[400ms] w-10 h-10 pb-1 ${
+          showFloatBtn ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        ↑
+      </button>
       <section
         ref={refHero}
         className={`min-h-[680px] bg-[#F8FBFD] pb-20 ${
