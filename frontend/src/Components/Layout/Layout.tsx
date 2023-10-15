@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useAuth } from "@/Contexts/auth";
-import { HOME, LOGIN } from "@/Constants/routes";
+import { LOGIN, VOTE } from "@/Constants/routes";
 import { Outlet, useNavigate } from "react-router-dom";
 import CreateProfile from "./CreateProfile";
 import UnverifiedEmail from "./UnverifiedEmail";
@@ -33,7 +33,7 @@ export default function Layout() {
       if (!user) {
         navigate(LOGIN);
       } else if (!user.isProfileCompleted || !user.isEmailVerified) {
-        navigate(HOME);
+        navigate(VOTE);
       }
     }
   }, [isLoading, user]);

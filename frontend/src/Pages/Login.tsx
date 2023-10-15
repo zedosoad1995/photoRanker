@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
 import Button from "@/Components/Button";
-import { FORGOT_PASSWORD, HOME, REGISTER } from "@/Constants/routes";
+import { FORGOT_PASSWORD, REGISTER, VOTE } from "@/Constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
 import GoogleButton from "@/Components/GoogleButton";
@@ -37,7 +37,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     await login(email, password)
       .then(() => {
-        navigate(HOME);
+        navigate(VOTE);
       })
       .catch((error) => {
         if (axios.isAxiosError(error)) {
@@ -75,7 +75,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (Boolean(user)) {
-      navigate(HOME);
+      navigate(VOTE);
     }
   }, [user]);
 

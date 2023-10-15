@@ -1,6 +1,6 @@
 import Button from "@/Components/Button";
 import Textfield from "@/Components/TextField";
-import { HOME } from "@/Constants/routes";
+import { LOGIN } from "@/Constants/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IResetPassword, ResetPasswordSchema } from "@/Schemas/User/ResetPassword";
@@ -32,7 +32,7 @@ export default function ResetPassword() {
   const handleSendResetCode = async ({ password }: IResetPassword) => {
     if (token) {
       await resetPassword(token, password);
-      navigate(HOME);
+      navigate(LOGIN);
     }
   };
 

@@ -1,4 +1,4 @@
-import { HOME, LOGIN } from "@/Constants/routes";
+import { LOGIN, VOTE } from "@/Constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import axios from "axios";
 import { useEffect } from "react";
@@ -22,7 +22,7 @@ export default function FacebookCallback() {
       if (code) {
         loginFacebook(code)
           .then(() => {
-            navigate(HOME);
+            navigate(VOTE);
           })
           .catch((error) => {
             if (axios.isAxiosError(error)) {

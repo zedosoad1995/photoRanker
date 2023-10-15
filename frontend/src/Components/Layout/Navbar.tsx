@@ -2,6 +2,7 @@ import { Bars3Icon } from "@heroicons/react/20/solid";
 import Button from "../Button";
 import { NavLink } from "react-router-dom";
 import Logo from "../Logo";
+import { VOTE } from "@/Constants/routes";
 
 interface INavbar {
   onClickMenu?: () => void;
@@ -34,7 +35,7 @@ export default function Navbar({
       {isProfileCreated && (
         <>
           <div className="flex w-full md:hidden justify-between items-center">
-            <Logo navigatePath="/vote" />
+            <Logo navigatePath={VOTE} />
             <div className="flex items-center gap-8 justify-end">
               <Bars3Icon onClick={handleClickMenu} className="h-6 w-6 cursor-pointer" />
             </div>
@@ -63,7 +64,7 @@ export default function Navbar({
       )}
       {!isProfileCreated && (
         <div className="flex w-full justify-between items-center">
-          <Logo navigatePath="/" />
+          <Logo navigatePath={VOTE} />
           <Button onClick={handleLogout} size="large" isFull={false}>
             Logout
           </Button>

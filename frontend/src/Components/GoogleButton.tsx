@@ -1,5 +1,5 @@
 import { useAuth } from "@/Contexts/auth";
-import { HOME } from "@/Constants/routes";
+import { VOTE } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
 import { GoogleLoginButton } from "react-social-login-buttons";
 import { toast } from "react-hot-toast";
@@ -25,7 +25,7 @@ export default function GoogleButton({ text = "Sign in with Google" }: IGoogleBu
       callback: async (response) => {
         try {
           await loginGoogle(response.code);
-          navigate(HOME);
+          navigate(VOTE);
         } catch (error) {
           if (axios.isAxiosError(error)) {
             if (error.response?.data?.error === INVALID_LOGIN_METHOD_EMAIL) {

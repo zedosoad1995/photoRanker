@@ -4,7 +4,7 @@ import PersonalInfoForm from "./Forms/PersonalInfoForm";
 import Button from "@/Components/Button";
 import { useRef, useState } from "react";
 import { register } from "@/Services/auth";
-import { HOME, LOGIN } from "@/Constants/routes";
+import { LOGIN, VOTE } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
 import _ from "underscore";
 import GoogleButton from "@/Components/GoogleButton";
@@ -61,7 +61,7 @@ export default function Register() {
         await register(data);
         await updateUser();
 
-        navigate(HOME);
+        navigate(VOTE);
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response?.data?.error === BANNED_ACCOUNT) {
