@@ -376,17 +376,17 @@ function App() {
           </div>
           <div className="flex mx-5 sm:mx-[70px] mt-10">
             <div className="w-[100%] my-auto">
-              <div className="font-semibold text-[#374048 max-[350px]:text-2xl max-[500px]:text-[30px] max-[900px]:text-[35px] max-[900px]:leading-[35px] text-[68px] leading-[68px] mb-2 text-center">
+              <h1 className="font-semibold text-[#374048 max-[350px]:text-2xl max-[500px]:text-[30px] max-[900px]:text-[35px] max-[900px]:leading-[35px] text-[68px] leading-[68px] mb-2 text-center">
                 Find your best photo
-              </div>
-              <div className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
+              </h1>
+              <h2 className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
                 Let strangers rate your pictures, in a fun side-by-side comparison
-              </div>
+              </h2>
               <div className="flex justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
                   <div className="relative">
                     <div className="rounded-t-md overflow-hidden">
-                      <img className="mx-auto w-full" src="/dude.jpg" alt="hero-pic" />
+                      <img className="mx-auto w-full" src="/dude.jpg" alt="male rated 1-10" />
                     </div>
                   </div>
                   <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
@@ -402,7 +402,11 @@ function App() {
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
                   <div className="relative">
                     <div className="rounded-t-md overflow-hidden">
-                      <img className="mx-auto w-full" src="/dude2.jpg" alt="hero-pic" />
+                      <img
+                        className="mx-auto w-full"
+                        src="/dude2.jpg"
+                        alt="another male rated 1-10"
+                      />
                     </div>
                   </div>
                   <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
@@ -446,7 +450,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/upload.png" alt="step1" />
+                <img src="/upload.png" alt="upload photo" />
               </div>
             </div>
             <div
@@ -475,7 +479,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/upload.png" alt="step1" />
+                <img src="/upload.png" alt="upload photo" />
               </div>
             </div>
             <div className="w-1/2 pl-3 lg:pl-20 my-auto">
@@ -517,7 +521,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/side-by-side-click.png" alt="step2" />
+                <img src="/side-by-side-click.png" alt="vote images side by side" />
               </div>
             </div>
             <div
@@ -578,7 +582,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/side-by-side-click.png" alt="step2" />
+                <img src="/side-by-side-click.png" alt="vote images side by side" />
               </div>
             </div>
           </div>
@@ -591,7 +595,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/score.png" alt="step3" />
+                <img src="/score.png" alt="get rated by attractiveness" />
               </div>
             </div>
             <div
@@ -621,7 +625,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-t-lg overflow-hidden">
-                <img src="/score.png" alt="step3" />
+                <img src="/score.png" alt="get rated by attractiveness" />
               </div>
             </div>
             <div className="w-1/2 pl-3 lg:pl-20 my-auto">
