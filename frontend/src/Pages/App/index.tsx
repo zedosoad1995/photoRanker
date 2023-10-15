@@ -828,9 +828,7 @@ function App() {
           >
             <div className="text-[#969da3] text-lg md:text-xl text-center leading-8 font-thin mb-5">
               Got more questions? Feel free to send us an email to{" "}
-              <a href="#" className="text-[#0084ff]">
-                hello@product.com
-              </a>
+              <a className="text-[#0084ff]">help@photoscorer.com</a>
             </div>
             <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
           </div>

@@ -1,4 +1,4 @@
-import { EXPIRED_VALIDATION, HOME } from "@/Constants/routes";
+import { EXPIRED_VALIDATION, VOTE } from "@/Constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { verifyEmail } from "@/Services/auth";
 import { useEffect } from "react";
@@ -14,7 +14,7 @@ export default function CheckingValidation() {
       verifyEmail(token)
         .then(async () => {
           await updateUser();
-          navigate(HOME);
+          navigate(VOTE);
         })
         .catch(() => {
           navigate(EXPIRED_VALIDATION);

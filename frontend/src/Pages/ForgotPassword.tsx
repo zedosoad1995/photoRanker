@@ -1,6 +1,6 @@
 import Button from "@/Components/Button";
 import Textfield from "@/Components/TextField";
-import { HOME } from "@/Constants/routes";
+import { LOGIN } from "@/Constants/routes";
 import { forgotPassword } from "@/Services/auth";
 import { NON_EXISTENT_EMAIL, PASSWORD_RESET_NOT_NEEDED } from "@shared/constants/errorCodes";
 import axios from "axios";
@@ -21,7 +21,10 @@ export default function ForgotPassword() {
   const handleSendResetCode = async () => {
     try {
       await forgotPassword(email);
-      navigate(HOME);
+      toast.success("We sent you an email to update your password", {
+        id: "success-sent-change-password-email",
+      });
+      navigate(LOGIN);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.data?.error === PASSWORD_RESET_NOT_NEEDED) {
