@@ -68,6 +68,7 @@ model Picture {
   ratingDeviation Float    @default(0)
   volatility      Float    @default(0)
   numVotes        Int      @default(0)
+  isGlobal        Boolean  @default(true)
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String
   matches         Match[]

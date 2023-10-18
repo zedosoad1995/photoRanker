@@ -131,6 +131,7 @@ export const uploadOne =
 
     const picture = await PictureModel.create({
       data: {
+        isGlobal: req.body.isGlobal ?? true,
         filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
         rating: RATING_INI,
         ratingDeviation: RD_INI,
