@@ -23,6 +23,7 @@ export const getMany =
     const hasReport = parseBoolean(req.query.hasReport as string | undefined);
     const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
     const isBanned = parseBoolean(req.query.isBanned as string | undefined);
+    const isGlobal = parseBoolean(req.query.isGlobal as string | undefined) ?? true;
     const gender = req.query.gender as string | undefined;
     const minAge = parseNumber(req.query.minAge as string | undefined);
     const maxAge = parseNumber(req.query.maxAge as string | undefined);
@@ -50,6 +51,7 @@ export const getMany =
       hasReport,
       belongsToMe,
       isBanned,
+      isGlobal,
       gender,
       minAge,
       maxAge,

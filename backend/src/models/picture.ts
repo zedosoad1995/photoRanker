@@ -275,6 +275,7 @@ async function getPicturesWithPercentile(
   hasReport: boolean | undefined,
   belongsToMe: boolean | undefined,
   isBanned: boolean | undefined,
+  isGlobal: boolean | undefined,
   gender: string | undefined,
   minAge: number | undefined,
   maxAge: number | undefined,
@@ -330,6 +331,8 @@ async function getPicturesWithPercentile(
   } else if (isRegular(role)) {
     whereQuery.push(`pic."userId" = '${loggedUserId}'`);
   }
+
+  whereQuery.push(`"isGlobal" IS ${isGlobal ? "TRUE" : "FALSE"}`);
 
   // Sorting
   if (["score", "numVotes", "createdAt"].includes(orderKey)) {

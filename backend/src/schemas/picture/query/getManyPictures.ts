@@ -18,6 +18,7 @@ export const getManyPicturesSchema = z
       .refine((maxAge) => !isNaN(parseInt(maxAge)), "Expected number")
       .refine((maxAge) => parseInt(maxAge) >= MIN_AGE, `Must be greater of equal to ${MIN_AGE}`),
     gender: z.union([z.enum(Object.values(Gender) as unknown as [string, ...string[]]), z.null()]),
+    isGlobal: z.boolean().optional(),
     limit: z
       .string()
       .refine((limit) => !isNaN(parseInt(limit)), "Expected number")
