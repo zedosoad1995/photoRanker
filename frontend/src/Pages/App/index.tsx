@@ -386,7 +386,7 @@ function App() {
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
                   <div className="relative">
                     <div className="rounded-t-md overflow-hidden">
-                      <img className="mx-auto w-full" src="/dude.jpg" alt="male rated 1-10" />
+                      <img className="mx-auto w-full" src="/dude.webp" alt="male rated 1-10" />
                     </div>
                   </div>
                   <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
@@ -404,7 +404,7 @@ function App() {
                     <div className="rounded-t-md overflow-hidden">
                       <img
                         className="mx-auto w-full"
-                        src="/dude2.jpg"
+                        src="/dude2.webp"
                         alt="another male rated 1-10"
                       />
                     </div>
@@ -450,7 +450,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/upload.png" alt="upload photo" />
+                <img src="/upload.webp" alt="upload photo" />
               </div>
             </div>
             <div
@@ -479,7 +479,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/upload.png" alt="upload photo" />
+                <img src="/upload.webp" alt="upload photo" />
               </div>
             </div>
             <div className="w-1/2 pl-3 lg:pl-20 my-auto">
@@ -521,7 +521,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/side-by-side-click.png" alt="vote images side by side" />
+                <img src="/side-by-side-click.webp" alt="vote images side by side" />
               </div>
             </div>
             <div
@@ -582,7 +582,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/side-by-side-click.png" alt="vote images side by side" />
+                <img src="/side-by-side-click.webp" alt="vote images side by side" />
               </div>
             </div>
           </div>
@@ -595,7 +595,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/score.png" alt="get rated by attractiveness" />
+                <img src="/score.webp" alt="get rated by attractiveness" />
               </div>
             </div>
             <div
@@ -625,7 +625,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-t-lg overflow-hidden">
-                <img src="/score.png" alt="get rated by attractiveness" />
+                <img src="/score.webp" alt="get rated by attractiveness" />
               </div>
             </div>
             <div className="w-1/2 pl-3 lg:pl-20 my-auto">
