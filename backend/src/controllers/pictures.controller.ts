@@ -114,6 +114,7 @@ export const getOne =
 export const uploadOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const loggedUser = req.loggedUser!;
+    const isGlobal = req.body.isGlobal;
 
     if (!req.file) {
       throw new BadRequestError(PICTURE.NO_FILE);
@@ -133,7 +134,7 @@ export const uploadOne =
 
     const picture = await PictureModel.create({
       data: {
-        isGlobal: req.body.isGlobal ?? true,
+        isGlobal: isGlobal ?? true,
         filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
         rating: RATING_INI,
         ratingDeviation: RD_INI,

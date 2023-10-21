@@ -16,10 +16,7 @@ export const createOne =
       },
     });
 
-    var [picture1, picture2] = await PictureModel.getMatchWithClosestEloStrategy(
-      loggedUser,
-      userPreferences
-    );
+    var [picture1, picture2] = await PictureModel.getMatchPictures(loggedUser, userPreferences);
 
     const match = await MatchModel.upsert({
       update: {
