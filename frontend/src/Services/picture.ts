@@ -15,7 +15,8 @@ export const getManyPictures = async (
     orderByDir?: string;
     limit?: number;
     cursor?: string;
-  } = { gender: GENDER.Female }
+    isGlobal?: boolean;
+  } = { gender: GENDER.Female, isGlobal: true }
 ): Promise<IGetManyPictures> => {
   return api.get(
     `/pictures?${Object.entries(queryParams)

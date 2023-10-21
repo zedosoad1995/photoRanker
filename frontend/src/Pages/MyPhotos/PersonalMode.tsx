@@ -77,6 +77,7 @@ export default function PersonalMode() {
         orderByDir,
         limit: 30,
         cursor,
+        isGlobal: false,
       }).then(async (res) => {
         setNextCursor(res.nextCursor);
 
