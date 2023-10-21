@@ -11,6 +11,7 @@ import { checkBanned } from "@/middlewares/checkBanned";
 import { getManyPicturesSchema } from "@/schemas/picture/query/getManyPictures";
 import { validateForm } from "@/middlewares/validateForm";
 import { createPictureSchema } from "@/schemas/picture/createPicture";
+import { validateFormDataJson } from "@/middlewares/validateFormDataJson";
 
 const router = Router();
 
@@ -40,7 +41,7 @@ router.post(
   checkProfileCompleted,
   checkEmailVerified,
   convertFormDataToBuffer,
-  validateForm(createPictureSchema),
+  validateFormDataJson(createPictureSchema, "info"),
   validateImage(mainStorageInteractor),
   uploadOne(mainStorageInteractor)
 );

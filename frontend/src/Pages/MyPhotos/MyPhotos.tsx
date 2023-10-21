@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { ModeSelect } from "./ModeSelect";
 import GlobalMode from "./GlobalMode";
-import { Mode } from "@/Constants/mode";
+import { IMode, Mode } from "@/Constants/mode";
 import PersonalMode from "./PersonalMode";
 
 export default function MyPhotos() {
-  const [mode, setMode] = useState<(typeof Mode)[keyof typeof Mode]>(Mode.Global);
+  const [mode, setMode] = useState<IMode>(Mode.Global);
 
-  const handleUpdateMode = (mode: (typeof Mode)[keyof typeof Mode]) => {
+  const handleUpdateMode = (mode: IMode) => {
     setMode(mode);
   };
 

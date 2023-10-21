@@ -5,11 +5,13 @@ import Button from "@/Components/Button";
 import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
+import { IMode, Mode } from "@/Constants/mode";
 
 interface IUploadPhotoModal {
   image: { image: string; width: number; height: number } | null;
   filename: string | null;
   isOpen: boolean;
+  mode: IMode;
   onClose: () => void;
   onUpload: () => Promise<void>;
 }
@@ -18,19 +20,13 @@ export default function UploadPhotoModal({
   image,
   filename,
   isOpen,
+  mode,
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
-  /* const { user: loggedUser } = useAuth(); */
-
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  /* const [age, setAge] = useState(() => {
-    if (!loggedUser?.dateOfBirth) return String(MIN_AGE);
-
-    return calculateAge(loggedUser.dateOfBirth).toString();
-  }); */
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
@@ -40,7 +36,9 @@ export default function UploadPhotoModal({
         croppedImage = await resizeImage(croppedImage);
       }
 
-      await uploadImage(croppedImage, filename);
+      const isGlobal = mode === Mode.Global ? true : false;
+
+      await uploadImage(croppedImage, filename, isGlobal);
       await handleUploadParent();
       handleClose();
       setZoom(1);
@@ -90,9 +88,6 @@ export default function UploadPhotoModal({
               className="bg-gray-200 rounded-lg appearance-none cursor-pointer  w-full h-1"
             />
           </div>
-          {/* <div className="mb-6">
-            <Select label="Age" options={AGE_OPTIONS} value={age} onChange={setAge} />
-          </div> */}
           <div className="mb-2">
             <Button onClick={handleUpload}>Upload</Button>
           </div>

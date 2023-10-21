@@ -17,6 +17,7 @@ import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
 import Filters from "./Filters/Filters";
 import { debounce } from "underscore";
+import { Mode } from "@/Constants/mode";
 
 const DEFAULT_SORT = "score desc";
 
@@ -279,6 +280,7 @@ export default function PersonalMode() {
         image={selectedImage}
         filename={filename}
         isOpen={isOpen}
+        mode={Mode.Personal}
         onUpload={handlePictureUpload}
         onClose={() => {
           setIsOpen(false);

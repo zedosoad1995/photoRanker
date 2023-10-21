@@ -34,9 +34,18 @@ export const deleteImage = async (id: string): Promise<void> => {
   return api.delete(`/pictures/${id}`);
 };
 
-export const uploadImage = async (image: Blob, filename: string): Promise<Blob> => {
+export const uploadImage = async (
+  image: Blob,
+  filename: string,
+  isGlobal: boolean = true
+): Promise<Blob> => {
   const formData = new FormData();
   formData.append("image", image, filename);
+  formData.append("info", JSON.stringify({ isGlobal }));
 
-  return api.post("/pictures", formData);
+  return api.post("/pictures", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };

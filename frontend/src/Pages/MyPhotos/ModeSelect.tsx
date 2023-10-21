@@ -1,9 +1,9 @@
 import Select from "@/Components/Select";
-import { Mode } from "@/Constants/mode";
+import { IMode, Mode } from "@/Constants/mode";
 
 interface IModeSelect {
-  mode: (typeof Mode)[keyof typeof Mode];
-  handleUpdateMode: (mode: (typeof Mode)[keyof typeof Mode]) => void;
+  mode: IMode;
+  handleUpdateMode: (mode: IMode) => void;
 }
 
 export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
