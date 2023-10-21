@@ -13,7 +13,8 @@ const getPicturesWithClosestElos = (
   loggedUser: User,
   limit: number,
   userPreferences: Preference | null,
-  gender: string | null
+  gender: string | null,
+  isGlobal: boolean
 ): Promise<(Picture & { abs_diff: number })[]> => {
   const whereQuery: string[] = [];
 
@@ -45,17 +46,16 @@ const getPicturesWithClosestElos = (
     whereQuery.push(
       `(preference."exposureGender" = '${loggedUser.gender}' OR preference."exposureGender" IS NULL)`
     );
-  }
 
-  // TODO: Can bypass here as well
-  if (loggedUser.dateOfBirth) {
-    const loggedUserAge = calculateAge(loggedUser.dateOfBirth);
+    if (loggedUser.dateOfBirth) {
+      const loggedUserAge = calculateAge(loggedUser.dateOfBirth);
 
-    whereQuery.push(
-      `(preference."exposureMaxAge" >= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
-    );
+      whereQuery.push(
+        `(preference."exposureMaxAge" >= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
+      );
 
-    whereQuery.push(`(preference."exposureMinAge" <= ${loggedUserAge})`);
+      whereQuery.push(`(preference."exposureMinAge" <= ${loggedUserAge})`);
+    }
   }
 
   if (!isAdmin(loggedUser.role)) {
@@ -65,6 +65,12 @@ const getPicturesWithClosestElos = (
       INNER JOIN "Vote" as vote ON match.id = vote."matchId"
       WHERE ab."B" = pic.id AND vote."voterId" = '${loggedUser.id}'
     )`);
+  }
+
+  whereQuery.push(`pic."isGlobal" = ${isGlobal ? "TRUE" : "FALSE"}`);
+
+  if (!isGlobal) {
+    whereQuery.push(`pic."userId" = '${opponentPicture.userId}'`);
   }
 
   const where = whereQuery.length ? "AND " + whereQuery.join(" AND ") : "";
@@ -103,7 +109,8 @@ export const getMatchPictures = async (loggedUser: User, userPreferences: Prefer
     loggedUser,
     MAX_RETRIEVED_PICS,
     userPreferences,
-    picture1.gender
+    picture1.gender,
+    picture1.isGlobal
   );
 
   if (pictures.length === 0) {

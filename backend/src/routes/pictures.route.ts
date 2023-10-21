@@ -9,7 +9,6 @@ import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { mainStorageInteractor } from "@/container";
 import { checkBanned } from "@/middlewares/checkBanned";
 import { getManyPicturesSchema } from "@/schemas/picture/query/getManyPictures";
-import { validateForm } from "@/middlewares/validateForm";
 import { createPictureSchema } from "@/schemas/picture/createPicture";
 import { validateFormDataJson } from "@/middlewares/validateFormDataJson";
 

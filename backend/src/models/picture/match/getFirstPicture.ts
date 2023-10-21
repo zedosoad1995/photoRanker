@@ -61,7 +61,7 @@ const getVoterPreferencesQueries = (loggedUser: User) => {
     }
 
     // If the owner of the pic does not have a preference, then it will always be shown
-    whereArr.push(`${query.join(" AND ")} OR preference.id IS NULL`);
+    whereArr.push(`(${query.join(" AND ")} OR preference.id IS NULL)`);
   }
 
   return whereArr;
@@ -74,18 +74,6 @@ const photoCanOnlyBeVotedOnce = (loggedUser: User) => {
       INNER JOIN "Vote" as vote ON match.id = vote."matchId"
       WHERE ab."B" = pic.id AND vote."voterId" = '${loggedUser.id}'
     )`;
-};
-
-const hasMultiplePrivatePhotos = () => {
-  return `(
-		SELECT COUNT(*) 
-		FROM (
-			SELECT 1 
-			FROM "Picture" AS p 
-			WHERE u.id = p."userId" AND p."isGlobal" = FALSE
-			LIMIT 2
-		) AS tmp
-	) >= 2`;
 };
 
 export const getFirstPic = async (
@@ -102,10 +90,6 @@ export const getFirstPic = async (
     whereArr.push(photoCanOnlyBeVotedOnce(loggedUser));
   }
 
-  whereArr.push(
-    `((usr.has_multiple_private_photos IS TRUE AND pic."isGlobal" = FALSE) OR pic."isGlobal" = TRUE)`
-  );
-
   const where = whereArr.join(" AND ");
 
   const pictures = (await prisma.$queryRawUnsafe(`
@@ -115,7 +99,6 @@ export const getFirstPic = async (
 
 			INNER JOIN (
 					SELECT u.*,
-							${hasMultiplePrivatePhotos()} AS has_multiple_private_photos,
 							CASE 
 									WHEN u.gender = '${gender}' THEN 1
 									ELSE 2
@@ -130,15 +113,26 @@ export const getFirstPic = async (
 
 	SELECT pic.*
 	FROM pic
-	INNER JOIN (
+	LEFT JOIN (
 			SELECT u.gender AS gender, COUNT(u.gender) AS cnt
 			FROM pic AS p
 			INNER JOIN "User" AS u
-					ON p."userId" = u.id
+				ON p."userId" = u.id
 			WHERE p."isGlobal" = TRUE
 			GROUP BY u.gender
 	) AS gender_count
 			ON pic.gender = gender_count.gender AND gender_count.cnt >= 2
+  
+  LEFT JOIN (
+    SELECT p."userId" AS "userId", COUNT(p."userId") AS has_multiple_private_photos
+		FROM pic AS p 
+		WHERE p."isGlobal" = FALSE
+		GROUP BY p."userId"
+	) AS private_pics_extra_info
+		ON private_pics_extra_info."userId" = pic."userId" AND private_pics_extra_info.has_multiple_private_photos >= 2 
+
+  WHERE (pic."isGlobal" = FALSE AND private_pics_extra_info."userId" IS NOT NULL) OR (pic."isGlobal" = TRUE AND gender_count.gender IS NOT NULL)
+  LIMIT 1
   `)) as any[];
 
   return pictures.length ? pictures[0] : null;
