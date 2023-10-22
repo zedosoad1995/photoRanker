@@ -322,7 +322,7 @@ export default function GlobalMode() {
               updateAgeRange={debouncedUpdateAgeRange}
             />
           </div>
-          <div className="-mx-3 mt-1 flow-root relative">
+          <div className="-mx-2 mt-1 flow-root relative">
             <div
               className={`bg-white absolute w-full h-full z-10 transition-opacity delay-200 ${
                 isFetchingFilter ? "block opacity-70" : "hidden opacity-0"

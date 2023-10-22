@@ -36,7 +36,7 @@ export const PhotoCard = ({
   const { img } = useProgressiveImage(pic);
 
   return (
-    <div className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
+    <div className="w-full min-[350px]:w-1/2 md:w-1/3 lg:w-1/4 float-left p-2">
       <div className="cursor-pointer rounded-b-md shadow-md">
         <div className="relative">
           {loggedUser && isAdmin(loggedUser.role) && (
@@ -80,7 +80,7 @@ export const PhotoCard = ({
             )}
           </div>
         </div>
-        <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm">
+        <div className="p-3 font-semibold text-xs xs:text-sm">
           <div className="flex justify-between mb-1">
             <span>Score:</span>{" "}
             <span>{picInfo.numVotes > 0 ? getHumanReadablePerc(picInfo.percentile) : "-"}</span>
