@@ -81,9 +81,15 @@ export const PhotoCard = ({
           </div>
         </div>
         <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm">
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-1">
             <span>Score:</span>{" "}
             <span>{picInfo.numVotes > 0 ? getHumanReadablePerc(picInfo.percentile) : "-"}</span>
+          </div>
+          <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+            <div
+              className="rounded-md bg-primary h-full"
+              style={{ width: (picInfo.percentile * 99) / 100 + 1 + "%" }}
+            />
           </div>
           <hr className="my-2" />
           <div className="flex justify-between">
