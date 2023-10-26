@@ -10,6 +10,7 @@ interface IPhotoCard {
   pic: string;
   loggedUser: IUser;
   index: number;
+  isGlobal?: boolean;
   onClickDeletePic: (event: React.MouseEvent) => Promise<void>;
   onClickBanUser: (event: React.MouseEvent) => Promise<void>;
   picInfo: IPictureWithPercentile;
@@ -30,6 +31,7 @@ export const PhotoCard = ({
   loggedUser,
   picInfo,
   index,
+  isGlobal,
   onClickDeletePic: handleClickDeletePic,
   onClickBanUser: handleClickBanUser,
 }: IPhotoCard) => {
@@ -83,7 +85,13 @@ export const PhotoCard = ({
         <div className="p-3 font-semibold text-sm">
           <div className="flex justify-between mb-1">
             <span>Score:</span>{" "}
-            <span>{picInfo.numVotes > 0 ? getHumanReadablePerc(picInfo.percentile) : "-"}</span>
+            <span>
+              {picInfo.numVotes > 0
+                ? isGlobal
+                  ? getHumanReadablePerc(picInfo.percentile)
+                  : picInfo.percentile.toFixed(1)
+                : "-"}
+            </span>
           </div>
           <div className="rounded-md h-2 bg-light-contour overflow-hidden">
             <div

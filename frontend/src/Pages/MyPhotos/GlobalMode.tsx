@@ -339,6 +339,7 @@ export default function GlobalMode() {
               <PhotoCard
                 key={pic}
                 index={index}
+                isGlobal
                 loggedUser={loggedUser}
                 onClickBanUser={handleClickBanUser(index)}
                 onClickDeletePic={handleClickDeletePic(index)}

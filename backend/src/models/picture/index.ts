@@ -48,7 +48,7 @@ async function getPicturesWithPercentile(
 
   const USER_JOIN = `
     INNER JOIN "User" as usr
-    ON pic."userId" = usr.id`;
+      ON pic."userId" = usr.id`;
 
   // TODO: have inner and left join. Use inner instead of where not null (performance gain?)
   const REPORT_LEFT_JOIN = `
@@ -65,10 +65,26 @@ async function getPicturesWithPercentile(
     whereInnerQuery.push(`usr.gender = '${gender}'`);
   }
 
+  if (!isGlobal) {
+    whereInnerQuery.push(`usr.id = '${loggedUser.id}'`);
+    whereInnerQuery.push(`pic."isGlobal" IS FALSE`);
+  } else {
+    whereInnerQuery.push(`pic."isGlobal" IS TRUE`);
+  }
+
+  // Select
+  const percentileSelect = isGlobal
+    ? `100 * PERCENT_RANK() OVER (ORDER BY pic.rating)`
+    : `
+    CASE
+      WHEN MIN(pic.rating) OVER () < 0 THEN 100 * (pic.rating - MIN(pic.rating) OVER ())/(MAX(pic.rating) OVER () - MIN(pic.rating) OVER ())
+      ELSE 100 * pic.rating/MAX(pic.rating) OVER () 
+    END`;
+
   // Filtering
   if (userId) {
     whereQuery.push(`pic."userId" = '${userId}'`);
-  } else if (isRegular(role)) {
+  } else if (isRegular(role) || !isGlobal) {
     whereQuery.push(`pic."userId" = '${loggedUserId}'`);
   }
 
@@ -197,7 +213,7 @@ async function getPicturesWithPercentile(
       LEFT JOIN (
         SELECT 
           pic.id,
-          100 * PERCENT_RANK() OVER (ORDER BY pic.rating) AS percentile
+          ${percentileSelect} AS percentile
         FROM 
           "Picture" AS pic
         ${joinInnerQuery}
