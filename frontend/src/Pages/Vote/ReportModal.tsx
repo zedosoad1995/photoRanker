@@ -5,7 +5,7 @@ import { useState } from "react";
 interface IReportModal {
   isOpen: boolean;
   onClose: () => void;
-  onReport: (seletedPics: [boolean, boolean]) => void;
+  onReport: (seletedPics: [boolean, boolean]) => Promise<void>;
   pic1: string;
   pic2: string;
 }
@@ -17,12 +17,15 @@ export default function ReportModal({
   pic1,
   pic2,
 }: IReportModal) {
+  const [isReportLoading, setIsReportLoading] = useState(false);
   const [isPic1Selected, setIsPic1Selected] = useState(false);
   const [isPic2Selected, setIsPic2Selected] = useState(false);
 
-  const handleClickReportButton = () => {
-    handleReport([isPic1Selected, isPic2Selected]);
+  const handleClickReportButton = async () => {
+    setIsReportLoading(true);
+    await handleReport([isPic1Selected, isPic2Selected]);
     alteredHandleClose();
+    setIsReportLoading(false);
   };
 
   const alteredHandleClose = () => {
@@ -68,6 +71,7 @@ export default function ReportModal({
             style="danger"
             variant="solid"
             disabled={!isPic1Selected && !isPic2Selected}
+            isLoading={isReportLoading}
           >
             Report
           </Button>

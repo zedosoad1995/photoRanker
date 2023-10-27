@@ -23,13 +23,13 @@ export default function DeletePhotoModal({
   picsInfo,
   getPictures,
 }: IDeletePhotoModal) {
-  const [isUploadLoading, setIsUploadLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   const handleDelete = async () => {
     if (picToDeleteIndex === null) return;
 
     try {
-      setIsUploadLoading(true);
+      setIsDeleteLoading(true);
 
       setPicsInfo((pics) => [
         ...pics.slice(0, picToDeleteIndex),
@@ -42,7 +42,7 @@ export default function DeletePhotoModal({
 
       handleClose();
     } finally {
-      setIsUploadLoading(false);
+      setIsDeleteLoading(false);
     }
   };
 
@@ -61,7 +61,7 @@ export default function DeletePhotoModal({
           <Button onClick={handleClose} isFull={false} style="none">
             Cancel
           </Button>
-          <Button onClick={handleDelete} isFull={false} style="danger" isLoading={isUploadLoading}>
+          <Button onClick={handleDelete} isFull={false} style="danger" isLoading={isDeleteLoading}>
             Delete
           </Button>
         </div>
