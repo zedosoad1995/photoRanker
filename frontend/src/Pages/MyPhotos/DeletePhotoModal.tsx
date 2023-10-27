@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import Button from "@/Components/Button";
 import { deleteImage } from "@/Services/picture";
 import { IPictureWithPercentile } from "@/Types/picture";
+import { useState } from "react";
 
 interface IDeletePhotoModal {
   isOpen: boolean;
@@ -22,19 +23,27 @@ export default function DeletePhotoModal({
   picsInfo,
   getPictures,
 }: IDeletePhotoModal) {
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
+
   const handleDelete = async () => {
     if (picToDeleteIndex === null) return;
 
-    setPicsInfo((pics) => [
-      ...pics.slice(0, picToDeleteIndex),
-      ...pics.slice(picToDeleteIndex + 1),
-    ]);
-    setPics((pics) => [...pics.slice(0, picToDeleteIndex), ...pics.slice(picToDeleteIndex + 1)]);
+    try {
+      setIsUploadLoading(true);
 
-    handleClose();
+      setPicsInfo((pics) => [
+        ...pics.slice(0, picToDeleteIndex),
+        ...pics.slice(picToDeleteIndex + 1),
+      ]);
+      setPics((pics) => [...pics.slice(0, picToDeleteIndex), ...pics.slice(picToDeleteIndex + 1)]);
 
-    await deleteImage(picsInfo[picToDeleteIndex].id);
-    getPictures();
+      await deleteImage(picsInfo[picToDeleteIndex].id);
+      await getPictures();
+
+      handleClose();
+    } finally {
+      setIsUploadLoading(false);
+    }
   };
 
   return (
@@ -52,7 +61,7 @@ export default function DeletePhotoModal({
           <Button onClick={handleClose} isFull={false} style="none">
             Cancel
           </Button>
-          <Button onClick={handleDelete} isFull={false} style="danger">
+          <Button onClick={handleDelete} isFull={false} style="danger" isLoading={isUploadLoading}>
             Delete
           </Button>
         </div>

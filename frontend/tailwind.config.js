@@ -30,7 +30,7 @@ export default {
         "light-contour": "#e5e7eb",
         "disabled-button-text": "rgba(0, 0, 0, 0.26)",
         "disabled-button-bg": "rgba(0, 0, 0, 0.12)",
-        danger: "#D63230",
+        danger: "#b32522",
       },
       fontSize: {
         label: ["0.875rem", "1.25rem"],

@@ -24,12 +24,14 @@ export default function UploadPhotoModal({
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
+      setIsUploadLoading(true);
       let croppedImage = await getCroppedImage(image.image, croppedAreaPixels);
 
       if (croppedImage.size > IMAGE_SIZE_LIMIT) {
@@ -43,6 +45,7 @@ export default function UploadPhotoModal({
       handleClose();
       setZoom(1);
       setCrop({ x: 0, y: 0 });
+      setIsUploadLoading(false);
     }
   };
 
@@ -89,7 +92,9 @@ export default function UploadPhotoModal({
             />
           </div>
           <div className="mb-2">
-            <Button onClick={handleUpload}>Upload</Button>
+            <Button onClick={handleUpload} isLoading={isUploadLoading}>
+              Upload
+            </Button>
           </div>
           <Button onClick={handleClose} style="none">
             Cancel
