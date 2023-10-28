@@ -27,7 +27,7 @@ export default {
         "light-text": "#6b7280",
         "placeholder-text": "#9ca3af",
         "normal-contour": "#d1d5db",
-        "light-contour": "#e5e7eb",
+        "light-contour": "#ebeaf5",
         "disabled-button-text": "rgba(0, 0, 0, 0.26)",
         "disabled-button-bg": "rgba(0, 0, 0, 0.12)",
         danger: "#b32522",

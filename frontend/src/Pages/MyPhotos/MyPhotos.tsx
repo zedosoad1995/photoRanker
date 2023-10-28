@@ -14,7 +14,9 @@ export default function MyPhotos() {
   return (
     <>
       <div className="pb-4 md:pb-12 w-full md:w-[650px] lg:w-[900px] xl:w-[1150px] mx-auto">
-        <ModeSelect mode={mode} handleUpdateMode={handleUpdateMode} />
+        <div className="flex justify-center items-centers mb-3">
+          <ModeSelect mode={mode} handleUpdateMode={handleUpdateMode} />
+        </div>
         {mode === Mode.Global && <GlobalMode />}
         {mode === Mode.Personal && <PersonalMode />}
       </div>

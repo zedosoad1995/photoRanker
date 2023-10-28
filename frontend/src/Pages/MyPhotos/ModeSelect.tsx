@@ -1,4 +1,3 @@
-import Select from "@/Components/Select";
 import { IMode, Mode } from "@/Constants/mode";
 
 interface IModeSelect {
@@ -8,15 +7,27 @@ interface IModeSelect {
 
 export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
   return (
-    <div className="max-w-[180px] mb-1">
-      <Select
-        onChange={handleUpdateMode}
-        options={[
-          { id: Mode.Global, label: "Global Mode" },
-          { id: Mode.Personal, label: "Personal Mode" },
-        ]}
-        value={mode}
-      />
+    <div className="bg-light-contour rounded-lg flex gap-1 p-1 w-full sm:w-fit text-sm">
+      <button
+        onClick={() => {
+          handleUpdateMode(Mode.Global);
+        }}
+        className={`py-2 px-4 rounded-md flex-1 sm:flex-auto ${
+          mode === Mode.Global ? "bg-white font-semibold" : ""
+        }`}
+      >
+        Global Comparison
+      </button>
+      <button
+        onClick={() => {
+          handleUpdateMode(Mode.Personal);
+        }}
+        className={`py-2 px-4 rounded-md flex-1 sm:flex-auto ${
+          mode === Mode.Personal ? "bg-white font-semibold" : ""
+        }`}
+      >
+        Self-Comparison
+      </button>
     </div>
   );
 };

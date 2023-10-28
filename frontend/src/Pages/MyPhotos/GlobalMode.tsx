@@ -59,6 +59,18 @@ export default function GlobalMode() {
   const [minAge, setMinAge] = useState<number>();
   const [maxAge, setMaxAge] = useState<number>();
 
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isLoading) {
+      timer = setTimeout(() => setShowSpinner(true), 200);
+    } else {
+      setShowSpinner(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
   const getPictures = async (cursor?: string) => {
     try {
       if (!loggedUser) return;
@@ -259,7 +271,7 @@ export default function GlobalMode() {
 
   return (
     <>
-      {isLoading && <Spinner />}
+      {showSpinner && <Spinner />}
       <BanUserModal
         isOpen={isOpenBan}
         onClose={handleCloseBanModal}
