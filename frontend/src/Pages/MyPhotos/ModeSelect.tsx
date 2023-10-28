@@ -1,3 +1,4 @@
+import { HelpIcon } from "@/Components/HelpIcon";
 import { IMode, Mode } from "@/Constants/mode";
 
 interface IModeSelect {
@@ -12,21 +13,37 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
         onClick={() => {
           handleUpdateMode(Mode.Global);
         }}
-        className={`py-2 px-4 rounded-md flex-1 sm:flex-auto ${
+        className={`flex items-center justify-center gap-2 py-2 px-4 rounded-md flex-1 sm:flex-auto ${
           mode === Mode.Global ? "bg-white font-semibold" : ""
         }`}
       >
-        Global Comparison
+        <div>Global</div>
+        <HelpIcon
+          tooltipText={
+            <>
+              <div>Your pics will compete against random people.</div>
+              <div>Your score determines how attractive you are compared to others.</div>
+            </>
+          }
+        />
       </button>
       <button
         onClick={() => {
           handleUpdateMode(Mode.Personal);
         }}
-        className={`py-2 px-4 rounded-md flex-1 sm:flex-auto ${
+        className={`flex items-center justify-center gap-2 py-2 px-4 rounded-md flex-1 sm:flex-auto ${
           mode === Mode.Personal ? "bg-white font-semibold" : ""
         }`}
       >
-        Self-Comparison
+        <div>Personal</div>
+        <HelpIcon
+          tooltipText={
+            <>
+              <div>Your pics are only compared against eachother.</div>
+              <div>The higher the score, the more people preferred that photo.</div>
+            </>
+          }
+        />
       </button>
     </div>
   );
