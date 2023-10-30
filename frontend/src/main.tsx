@@ -58,6 +58,15 @@ const router = createBrowserRouter([
     ],
   },
   {
+    element: <RedirectLayout />,
+    children: [
+      {
+        path: HOME,
+        element: <App />,
+      },
+    ],
+  },
+  {
     element: <UnprotectedLayout />,
     children: [
       {

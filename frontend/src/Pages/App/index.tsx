@@ -316,8 +316,8 @@ function App() {
     <div className="font-poppins">
       <button
         onClick={scrollToTop}
-        className={`z-50 fixed rounded-full right-4 bottom-4 bg-[#111827] text-white hover:bg-[#0084FF] transition-all ease-in-out duration-[400ms] w-10 h-10 pb-1 ${
-          showFloatBtn ? "opacity-100" : "opacity-0"
+        className={`z-50 fixed text-xl rounded-full right-6 bottom-6 bg-[#111827] text-white hover:bg-[#0084FF] transition-all ease-in-out duration-[400ms] w-14 h-14 pb-1 ${
+          showFloatBtn ? "opacity-90" : "opacity-0"
         }`}
       >
         ↑
@@ -382,7 +382,7 @@ function App() {
               <h2 className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
                 Let strangers rate your pictures, in a fun side-by-side comparison
               </h2>
-              <div className="flex justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
+              <div className="flex relative justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
                   <div className="relative">
                     <div className="rounded-t-md overflow-hidden">
@@ -398,6 +398,9 @@ function App() {
                       <span>Votes:</span> <span>35</span>
                     </div>
                   </div>
+                </div>
+                <div className="w-12 h-12 min-[350px]:w-16 min-[350px]:h-16 bg-yellow-300 absolute flex items-center justify-center z-30 rounded-full font-semibold top-1/2 text-xl min-[350px]:text-3xl -translate-y-1/2 shadow-inner">
+                  vs
                 </div>
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
                   <div className="relative">
