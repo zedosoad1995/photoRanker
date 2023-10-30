@@ -17,9 +17,15 @@ export const HelpIcon = ({ size = 18, tooltipText }: IHelpIcon) => {
 
       const rect = tooltipRef.current.getBoundingClientRect();
 
-      if (rect.right > window.innerWidth) {
+      const widths = [window.innerWidth];
+      if (window.screen?.width) {
+        widths.push(window.screen?.width);
+      }
+      const windowWidth = Math.min(...widths);
+
+      if (rect.right > windowWidth) {
         tooltipRef.current.style.transform = `translateX(-${
-          rect.right - window.innerWidth + rect.width / 2
+          rect.right - windowWidth + rect.width / 2
         }px) translateY(4px)`;
         tooltipRef.current.style.left = "0px";
       } else if (rect.left < 0) {
