@@ -32,6 +32,7 @@ import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
 import App from "./Pages/App/index.tsx";
+import RedirectLayout from "./Components/RedirectLayout.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -60,20 +61,25 @@ const router = createBrowserRouter([
     element: <UnprotectedLayout />,
     children: [
       {
-        path: HOME,
-        element: <App />,
-      },
-      {
-        path: LOGIN,
-        element: <SignIn />,
+        element: <RedirectLayout />,
+        children: [
+          {
+            path: HOME,
+            element: <App />,
+          },
+          {
+            path: LOGIN,
+            element: <SignIn />,
+          },
+          {
+            path: REGISTER,
+            element: <Register />,
+          },
+        ],
       },
       {
         path: FACEBOOK_CALLBACK,
         element: <FacebookCallback />,
-      },
-      {
-        path: REGISTER,
-        element: <Register />,
       },
       {
         path: EXPIRED_VALIDATION,

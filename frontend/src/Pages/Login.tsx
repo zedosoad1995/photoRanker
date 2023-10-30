@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "@/Components/Link";
 import Textfield from "@/Components/TextField";
 import Button from "@/Components/Button";
@@ -15,13 +15,12 @@ import {
   INVALID_LOGIN_METHOD_FACEBOOK,
   INVALID_LOGIN_METHOD_GOOGLE,
 } from "@shared/constants/errorCodes";
-import FullPageLoading from "@/Components/Loading/FullPageLoading";
 
 export default function SignIn() {
   const navigate = useNavigate();
   const loginbtnRef = useRef<HTMLDivElement>(null);
 
-  const { user, login } = useAuth();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -72,16 +71,6 @@ export default function SignIn() {
       handleSignIn();
     }
   };
-
-  useEffect(() => {
-    if (Boolean(user)) {
-      navigate(VOTE);
-    }
-  }, [user]);
-
-  if (Boolean(user)) {
-    return <FullPageLoading />;
-  }
 
   return (
     <div className="flex flex-1 flex-col justify-center px-6 py-8">
