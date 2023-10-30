@@ -39,8 +39,8 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
         <HelpIcon
           tooltipText={
             <>
-              <div>Your pics are only compared against eachother.</div>
-              <div>The higher the score, the more people preferred that photo.</div>
+              <div>Your photos only compete against eachother (not with strangers).</div>
+              <div>You score (0-100) indicates which of your pics the voters prefer.</div>
             </>
           }
         />

@@ -96,7 +96,10 @@ export const PhotoCard = ({
           <div className="rounded-md h-2 bg-light-contour overflow-hidden">
             <div
               className="rounded-md bg-primary h-full"
-              style={{ width: (picInfo.percentile * 99) / 100 + 1 + "%" }}
+              style={{
+                width:
+                  picInfo.percentile === null ? "0%" : (picInfo.percentile * 99) / 100 + 1 + "%",
+              }}
             />
           </div>
           <hr className="my-2" />

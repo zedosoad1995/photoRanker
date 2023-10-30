@@ -40,10 +40,6 @@ if (import.meta.env.VITE_ENV === "PROD") {
 
 const router = createBrowserRouter([
   {
-    path: HOME,
-    element: <App />,
-  },
-  {
     element: <ProtectedLayout />,
     children: [
       {
@@ -63,6 +59,10 @@ const router = createBrowserRouter([
   {
     element: <UnprotectedLayout />,
     children: [
+      {
+        path: HOME,
+        element: <App />,
+      },
       {
         path: LOGIN,
         element: <SignIn />,

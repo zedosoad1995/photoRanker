@@ -17,7 +17,9 @@ import { useState, useRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import Logo from "@/Components/Logo";
 import { useNavigate } from "react-router-dom";
-import { LOGIN, REGISTER } from "@/Constants/routes";
+import { LOGIN, REGISTER, VOTE } from "@/Constants/routes";
+import FullPageLoading from "@/Components/Loading/FullPageLoading";
+import { useAuth } from "@/Contexts/auth";
 
 function App() {
   const [showFloatBtn, setShowFloatBtn] = useState(false);
@@ -311,6 +313,18 @@ function App() {
       behavior: "smooth",
     });
   };
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (Boolean(user)) {
+      navigate(VOTE);
+    }
+  }, [user]);
+
+  if (Boolean(user)) {
+    return <FullPageLoading />;
+  }
 
   return (
     <div className="font-poppins">
