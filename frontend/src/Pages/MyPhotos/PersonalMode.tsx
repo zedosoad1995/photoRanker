@@ -339,6 +339,11 @@ export default function PersonalMode() {
             />
           </div>
           <div className="-mx-2 mt-1 flow-root relative">
+            {pics.length === 1 && (
+              <div className="text-danger my-1 mx-2">
+                You need at least 2 photos to start getting votes in personal mode.
+              </div>
+            )}
             <div
               className={`bg-white absolute w-full h-full z-10 transition-opacity delay-200 ${
                 isFetchingFilter ? "block opacity-70" : "hidden opacity-0"
