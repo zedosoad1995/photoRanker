@@ -10,7 +10,7 @@ interface IValue {
 
 interface ISelect {
   options: readonly IValue[];
-  title: string;
+  title?: string;
   label?: string;
   value: string | string[];
   onChange: (value: any) => void;
@@ -82,6 +82,18 @@ export default function Select({ options, title, label, value, onChange: handleC
     };
   }, []);
 
+  const selectedLabel = options.find((o) => {
+    if (Array.isArray(value)) {
+      if (value.length) {
+        return o.id === value[0];
+      } else {
+        return;
+      }
+    } else {
+      return o.id === value;
+    }
+  })?.label;
+
   return (
     <div>
       {label && <Label name={label} />}
@@ -91,7 +103,7 @@ export default function Select({ options, title, label, value, onChange: handleC
             onClick={handleOpenMenu}
             className="relative w-full rounded-md pl-1.5 shadow-sm ring-1 ring-inset ring-normal-contour text-sm max-[296px]:text-xs sm:leading-6 h-10"
           >
-            <div className="truncate flex">{title}</div>
+            <div className="truncate flex">{title ?? selectedLabel}</div>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon className="h-5 w-5 text-light-text" />
             </div>

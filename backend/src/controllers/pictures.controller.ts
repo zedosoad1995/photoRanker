@@ -23,6 +23,7 @@ export const getMany =
     const hasReport = parseBoolean(req.query.hasReport as string | undefined);
     const belongsToMe = parseBoolean(req.query.belongsToMe as string | undefined);
     const isBanned = parseBoolean(req.query.isBanned as string | undefined);
+    const isGlobal = parseBoolean(req.query.isGlobal as string | undefined) ?? true;
     const gender = req.query.gender as string | undefined;
     const minAge = parseNumber(req.query.minAge as string | undefined);
     const maxAge = parseNumber(req.query.maxAge as string | undefined);
@@ -50,6 +51,7 @@ export const getMany =
       hasReport,
       belongsToMe,
       isBanned,
+      isGlobal,
       gender,
       minAge,
       maxAge,
@@ -112,6 +114,7 @@ export const getOne =
 export const uploadOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const loggedUser = req.loggedUser!;
+    const isGlobal = req.body.isGlobal;
 
     if (!req.file) {
       throw new BadRequestError(PICTURE.NO_FILE);
@@ -131,6 +134,7 @@ export const uploadOne =
 
     const picture = await PictureModel.create({
       data: {
+        isGlobal: isGlobal ?? true,
         filepath: encodeURI(removeFolders(req.file.path, IMAGES_FOLDER_PATH)),
         rating: RATING_INI,
         ratingDeviation: RD_INI,

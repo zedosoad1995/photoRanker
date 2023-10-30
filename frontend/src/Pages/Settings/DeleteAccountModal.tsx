@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import Button from "@/Components/Button";
 
 interface IDeleteAccountModal {
   isOpen: boolean;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete: () => Promise<void>;
 }
 
 export default function DeleteAccountModal({
@@ -12,6 +13,14 @@ export default function DeleteAccountModal({
   onClose: handleClose,
   onDelete: handleDelete,
 }: IDeleteAccountModal) {
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+
+  const handleDeleteCustom = async () => {
+    setIsDeleteLoading(true);
+    await handleDelete();
+    setIsDeleteLoading(false);
+  };
+
   return (
     <Dialog
       as="div"
@@ -29,7 +38,12 @@ export default function DeleteAccountModal({
           <Button onClick={handleClose} isFull={false} style="none">
             Cancel
           </Button>
-          <Button style="danger" onClick={handleDelete} isFull={false}>
+          <Button
+            style="danger"
+            onClick={handleDeleteCustom}
+            isFull={false}
+            isLoading={isDeleteLoading}
+          >
             Delete
           </Button>
         </div>

@@ -8,6 +8,7 @@ export const getManyPicturesSchema = z
     hasReport: z.enum(["false", "true", ""]),
     belongsToMe: z.enum(["false", "true", ""]),
     isBanned: z.enum(["false", "true", ""]),
+    isGlobal: z.enum(["false", "true", ""]),
     userId: z.string(),
     minAge: z
       .string()

@@ -10,6 +10,7 @@ interface IPhotoCard {
   pic: string;
   loggedUser: IUser;
   index: number;
+  isGlobal?: boolean;
   onClickDeletePic: (event: React.MouseEvent) => Promise<void>;
   onClickBanUser: (event: React.MouseEvent) => Promise<void>;
   picInfo: IPictureWithPercentile;
@@ -30,13 +31,14 @@ export const PhotoCard = ({
   loggedUser,
   picInfo,
   index,
+  isGlobal,
   onClickDeletePic: handleClickDeletePic,
   onClickBanUser: handleClickBanUser,
 }: IPhotoCard) => {
   const { img } = useProgressiveImage(pic);
 
   return (
-    <div className="w-1/2 md:w-1/3 lg:w-1/4 float-left p-3">
+    <div className="w-full min-[450px]:w-1/2 md:w-1/3 lg:w-1/4 float-left p-2">
       <div className="cursor-pointer rounded-b-md shadow-md">
         <div className="relative">
           {loggedUser && isAdmin(loggedUser.role) && (
@@ -80,10 +82,25 @@ export const PhotoCard = ({
             )}
           </div>
         </div>
-        <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm">
-          <div className="flex justify-between">
+        <div className="p-3 font-semibold text-sm">
+          <div className="flex justify-between mb-1">
             <span>Score:</span>{" "}
-            <span>{picInfo.numVotes > 0 ? getHumanReadablePerc(picInfo.percentile) : "-"}</span>
+            <span>
+              {picInfo.numVotes > 0
+                ? isGlobal
+                  ? getHumanReadablePerc(picInfo.percentile)
+                  : picInfo.percentile.toFixed(1)
+                : "-"}
+            </span>
+          </div>
+          <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+            <div
+              className="rounded-md bg-primary h-full"
+              style={{
+                width:
+                  picInfo.percentile === null ? "0%" : (picInfo.percentile * 99) / 100 + 1 + "%",
+              }}
+            />
           </div>
           <hr className="my-2" />
           <div className="flex justify-between">

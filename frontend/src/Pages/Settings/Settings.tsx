@@ -38,7 +38,7 @@ export default function Settings() {
   const debouncedUpdatePreferences = useCallback(
     debounce(
       (userId: string, body: IUpdatePreferencesBody) => updatePreferences(userId, body),
-      1000
+      250
     ),
     [updatePreferences]
   );
