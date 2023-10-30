@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { deleteOne, getMany, getOne, uploadOne } from "@/controllers/pictures.controller";
+import {
+  checkUploadPermission,
+  deleteOne,
+  getMany,
+  getOne,
+  uploadOne,
+} from "@/controllers/pictures.controller";
 import { checkAuth } from "@/middlewares/checkAuth";
 import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
 import { validateImage } from "@/middlewares/validateImage";
@@ -26,6 +32,15 @@ router.get(
 );
 
 router.get(
+  "/upload-permission",
+  checkAuth,
+  checkBanned,
+  checkProfileCompleted,
+  checkEmailVerified,
+  checkUploadPermission
+);
+
+router.get(
   "/:pictureId",
   checkAuth,
   checkBanned,
@@ -33,6 +48,7 @@ router.get(
   checkEmailVerified,
   getOne(mainStorageInteractor)
 );
+
 router.post(
   "/",
   checkAuth,
@@ -44,6 +60,7 @@ router.post(
   validateImage(mainStorageInteractor),
   uploadOne(mainStorageInteractor)
 );
+
 router.delete(
   "/:pictureId",
   checkAuth,

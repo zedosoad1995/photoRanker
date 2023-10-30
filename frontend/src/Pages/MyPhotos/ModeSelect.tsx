@@ -40,7 +40,7 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
           tooltipText={
             <>
               <div>Your photos only compete against eachother (not with strangers).</div>
-              <div>You score (0-100) indicates which of your pics the voters prefer.</div>
+              <div>Your score (0-100) indicates which of your pics the voters prefer.</div>
             </>
           }
         />

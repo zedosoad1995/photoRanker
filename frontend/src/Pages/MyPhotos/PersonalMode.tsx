@@ -1,7 +1,7 @@
 import Button from "@/Components/Button";
-import { getManyPictures } from "@/Services/picture";
+import { getManyPictures, getUploadPermission } from "@/Services/picture";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
+import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
@@ -47,11 +47,11 @@ export default function PersonalMode() {
   const [isOpenBan, setIsOpenBan] = useState(false);
   const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
+  const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(true);
+
   const isLoadingPageRef = useRef(false);
 
   const [isFetchingFilter, setIsFetchingFilter] = useState(false);
-
-  const hasReachedPicsLimit = pics.length >= LIMIT_PICTURES && loggedUser?.role == "REGULAR";
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
@@ -115,6 +115,9 @@ export default function PersonalMode() {
 
       return res;
     } finally {
+      getUploadPermission().then(({ canUploadMore }) => {
+        setHasReachedPicsLimit(!canUploadMore);
+      });
       setIsLoading(false);
       setIsFetchingFilter(false);
       isLoadingPageRef.current = false;

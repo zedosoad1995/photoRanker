@@ -16,3 +16,7 @@ export interface IGetManyPictures {
   pictures: IPictureWithPercentile[];
   nextCursor: string | undefined;
 }
+
+export interface IUploadPermission {
+  canUploadMore: boolean;
+}

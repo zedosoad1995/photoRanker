@@ -1,4 +1,4 @@
-import { IGetManyPictures, PictureRes } from "@/Types/picture";
+import { IGetManyPictures, IUploadPermission, PictureRes } from "@/Types/picture";
 import api from "./index";
 import { GENDER } from "@shared/constants/user";
 
@@ -28,6 +28,10 @@ export const getManyPictures = async (
 
 export const getPicture = async (id: string): Promise<PictureRes> => {
   return api.get(`/pictures/${id}`);
+};
+
+export const getUploadPermission = async (): Promise<IUploadPermission> => {
+  return api.get("/pictures/upload-permission");
 };
 
 export const deleteImage = async (id: string): Promise<void> => {

@@ -111,6 +111,28 @@ export const getOne =
     });
   };
 
+export const checkUploadPermission = async (req: Request, res: Response) => {
+  const loggedUser = req.loggedUser!;
+
+  let canUploadMore = true;
+
+  if (isRegular(loggedUser.role)) {
+    const numPictures = await PictureModel.count({
+      where: {
+        userId: loggedUser.id,
+      },
+    });
+
+    if (numPictures >= LIMIT_PICTURES) {
+      canUploadMore = false;
+    }
+  }
+
+  res.status(200).json({
+    canUploadMore,
+  });
+};
+
 export const uploadOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const loggedUser = req.loggedUser!;
