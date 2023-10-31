@@ -108,7 +108,7 @@ export const getFirstPic = async (
 
 			LEFT JOIN "Preference" AS preference ON usr.id = preference."userId"
 			WHERE ${where}
-			ORDER BY usr.gender_priority
+			ORDER BY usr.gender_priority, pic."numVotes"
 	)
 
 	SELECT pic.*

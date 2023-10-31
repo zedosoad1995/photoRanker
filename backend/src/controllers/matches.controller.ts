@@ -18,6 +18,7 @@ export const createOne =
 
     var [picture1, picture2] = await PictureModel.getMatchPictures(loggedUser, userPreferences);
 
+    // TODO: solve race condition with transaction
     const match = await MatchModel.upsert({
       update: {
         pictures: {

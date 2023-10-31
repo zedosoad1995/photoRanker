@@ -84,7 +84,7 @@ async function getPicturesWithPercentile(
   // Filtering
   if (userId) {
     whereQuery.push(`pic."userId" = '${userId}'`);
-  } else if (isRegular(role) || !isGlobal) {
+  } else if (isRegular(role)) {
     whereQuery.push(`pic."userId" = '${loggedUserId}'`);
   }
 
