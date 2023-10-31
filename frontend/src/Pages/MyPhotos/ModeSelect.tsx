@@ -21,8 +21,11 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
         <HelpIcon
           tooltipText={
             <>
-              <div>Your pics will compete against random people.</div>
-              <div>Your score determines how attractive you are compared to others.</div>
+              <b>Find how you rate againts others.</b>
+              <div>
+                This mode is best for you to know how attractive your pic is in relation to other
+                people's.
+              </div>
             </>
           }
         />
@@ -39,8 +42,11 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
         <HelpIcon
           tooltipText={
             <>
-              <div>Your photos only compete against eachother (not with strangers).</div>
-              <div>Your score (0-100) indicates which of your pics the voters prefer.</div>
+              <b>Find your best pic.</b>
+              <div>
+                The voters will be shown 2 of your pics, and select their favourite. Note: you will
+                not be competing with other people, only with yourself.
+              </div>
             </>
           }
         />

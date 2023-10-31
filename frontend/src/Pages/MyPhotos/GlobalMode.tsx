@@ -249,13 +249,13 @@ export default function GlobalMode() {
 
   const EmptyPlaceholder = () => {
     return (
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center pt-3">
         <ArrowUpTrayIcon className="w-28 h-28" />
         <div className="text-xl font-bold mt-4">Upload Photo</div>
         <div className="mt-2 mb-8 text-center">
-          You currently have no photos.
+          No Photos Yet.
           <br />
-          Add you first photo to start receiving votes!
+          Find how attractive you are by Uploading Your First Photo!
         </div>
         <input
           type="file"
