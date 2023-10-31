@@ -38,7 +38,7 @@ export const PhotoCard = ({
   const { img } = useProgressiveImage(pic);
 
   return (
-    <div className="w-full min-[400px]:w-1/2 md:w-1/3 lg:w-1/4 float-left p-2">
+    <div className="w-full min-[350px]:w-1/2 md:w-1/3 lg:w-1/4 float-left p-2">
       <div className="cursor-pointer rounded-b-md shadow-md">
         <div className="relative">
           {loggedUser && isAdmin(loggedUser.role) && (
@@ -82,7 +82,7 @@ export const PhotoCard = ({
             )}
           </div>
         </div>
-        <div className="p-3 font-semibold text-sm">
+        <div className="p-3 font-semibold text-sm min-[350px]:text-xs xs:text-sm">
           <div className="flex justify-between mb-1">
             <span>Score:</span>{" "}
             <span>
@@ -93,7 +93,7 @@ export const PhotoCard = ({
                 : "-"}
             </span>
           </div>
-          <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+          <div className="rounded-md h-[10px] bg-light-contour overflow-hidden">
             <div
               className="rounded-md bg-primary h-full"
               style={{

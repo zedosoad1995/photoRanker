@@ -380,7 +380,7 @@ function App() {
                 Find your best photo
               </h1>
               <h2 className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
-                Let strangers rate your pictures, in a fun side-by-side comparison
+                Let strangers rate your pictures, in a side-by-side comparison
               </h2>
               <div className="flex relative justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
@@ -399,7 +399,10 @@ function App() {
                     </div>
                   </div>
                 </div>
-                <div className="w-12 h-12 min-[350px]:w-16 min-[350px]:h-16 bg-yellow-300 absolute flex items-center justify-center z-30 rounded-full font-semibold top-1/2 text-xl min-[350px]:text-3xl -translate-y-1/2 shadow-inner">
+                <div
+                  className="w-12 h-12 min-[350px]:w-16 min-[350px]:h-16 bg-yellow-300 absolute flex items-center justify-center z-30 rounded-full font-semibold top-1/2 text-xl min-[350px]:text-2xl -translate-y-1/2 shadow-inner"
+                  style={{ fontFamily: "'Trebuchet MS', sans-serif" }}
+                >
                   vs
                 </div>
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
