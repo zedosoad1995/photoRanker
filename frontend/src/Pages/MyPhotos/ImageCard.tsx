@@ -93,7 +93,7 @@ export const PhotoCard = ({
                 : "-"}
             </span>
           </div>
-          <div className="rounded-md h-[10px] bg-light-contour overflow-hidden">
+          <div className="rounded-md h-2 bg-light-contour overflow-hidden">
             <div
               className="rounded-md bg-primary h-full"
               style={{
