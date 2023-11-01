@@ -17,7 +17,7 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
           mode === Mode.Global ? "bg-white font-semibold" : ""
         }`}
       >
-        <div>Global</div>
+        <div>You vs Others</div>
         <HelpIcon
           tooltipText={
             <>
@@ -38,15 +38,15 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
           mode === Mode.Personal ? "bg-white font-semibold" : ""
         }`}
       >
-        <div>Personal</div>
+        <div>You vs Self</div>
         <HelpIcon
           tooltipText={
             <>
               <b>Find your best pic.</b>
               <div>
-                The voters will be shown 2 of your pics, and select their favourite. Note: you will
-                not be competing with other people, only with yourself.
+                The voters will be shown 2 random pics from you, and select their favourite.
               </div>
+              <div>Note: you will not be competing with other people, only with yourself.</div>
             </>
           }
         />

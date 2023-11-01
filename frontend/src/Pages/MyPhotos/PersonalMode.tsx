@@ -18,6 +18,7 @@ import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
 import Filters from "./Filters/Filters";
 import { debounce } from "underscore";
 import { Mode } from "@/Constants/mode";
+import { PhotosLoaderCover } from "./PhotosLoaderCover";
 
 const DEFAULT_SORT = "score desc";
 
@@ -344,18 +345,7 @@ export default function PersonalMode() {
                 You need at least 2 photos to start getting votes in personal mode.
               </div>
             )}
-            <div
-              className={`bg-white absolute w-full h-full z-10 transition-opacity delay-200 ${
-                isFetchingFilter ? "block opacity-70" : "hidden opacity-0"
-              }`}
-            />
-            <div
-              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 transition-opacity duration-0 delay-200 ${
-                isFetchingFilter ? "opacity-100 visible" : "opacity-0 invisible"
-              }`}
-            >
-              <Spinner />
-            </div>
+            <PhotosLoaderCover isLoading={isFetchingFilter} />
             {pics.map((pic, index) => (
               <PhotoCard
                 key={pic}
