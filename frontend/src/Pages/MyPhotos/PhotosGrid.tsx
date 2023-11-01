@@ -17,6 +17,7 @@ interface IPhotoGrid {
   setPicUrls: React.Dispatch<React.SetStateAction<string[]>>;
   setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
   prevCursor: string | undefined;
+  isGlobal?: boolean;
 }
 
 export const PhotosGird = ({
@@ -29,6 +30,7 @@ export const PhotosGird = ({
   setPicUrls,
   setPicsInfo,
   prevCursor,
+  isGlobal,
 }: IPhotoGrid) => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenBan, setIsOpenBan] = useState(false);
@@ -87,6 +89,7 @@ export const PhotosGird = ({
                 onClickDeletePic={handleClickDeletePic(index)}
                 pic={pic}
                 picInfo={picsInfo[index]}
+                isGlobal={isGlobal}
               />
             ))}
           </div>

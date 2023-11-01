@@ -257,6 +257,7 @@ export default function GlobalMode({
             setPicUrls={setPicUrls}
             setPicsInfo={setPicsInfo}
             prevCursor={prevCursor}
+            isGlobal
           />
         </>
       )}
