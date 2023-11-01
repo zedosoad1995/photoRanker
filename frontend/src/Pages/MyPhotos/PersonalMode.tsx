@@ -5,20 +5,17 @@ import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
-import DeletePhotoModal from "./DeletePhotoModal";
 import { toast } from "react-hot-toast";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin } from "@/Utils/role";
-import BanUserModal from "./BanUserModal";
 import { useAuth } from "@/Contexts/auth";
 import { Spinner } from "@/Components/Loading/Spinner";
-import { PhotoCard } from "./ImageCard";
 import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
 import Filters from "./Filters/Filters";
 import { debounce } from "underscore";
 import { Mode } from "@/Constants/mode";
-import { PhotosLoaderCover } from "./PhotosLoaderCover";
+import { PhotosGird } from "./PhotosGrid";
 
 const DEFAULT_SORT = "score desc";
 
@@ -43,15 +40,9 @@ export default function PersonalMode() {
   const prevCursor = usePrevious(nextCursor);
 
   const [areTherePictures, setAreThePictures] = useState(false);
-  const [isOpenDelete, setIsOpenDelete] = useState(false);
-  const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
-  const [isOpenBan, setIsOpenBan] = useState(false);
-  const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
-
   const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(true);
 
   const isLoadingPageRef = useRef(false);
-
   const [isFetchingFilter, setIsFetchingFilter] = useState(false);
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
@@ -177,28 +168,6 @@ export default function PersonalMode() {
     }
   };
 
-  const handleClickDeletePic = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
-
-    setIsOpenDelete(true);
-    setPicToDeleteIndex(index);
-  };
-
-  const handleClickBanUser = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
-
-    setIsOpenBan(true);
-    setUserIdToBan(picsInfo[index].userId);
-  };
-
-  const handleCloseDeleteModal = () => {
-    setIsOpenDelete(false);
-  };
-
-  const handleCloseBanModal = () => {
-    setIsOpenBan(false);
-  };
-
   const handleFilterSelect = (selectedOption: string) => {
     setIsFetchingFilter(true);
     setFilterSelectedOption((val) => {
@@ -277,21 +246,6 @@ export default function PersonalMode() {
   return (
     <>
       {showSpinner && <Spinner />}
-      <BanUserModal
-        isOpen={isOpenBan}
-        onClose={handleCloseBanModal}
-        userIdToBan={userIdToBan}
-        getPictures={getPictures}
-      />
-      <DeletePhotoModal
-        isOpen={isOpenDelete}
-        picToDeleteIndex={picToDeleteIndex}
-        onClose={handleCloseDeleteModal}
-        getPictures={updatePicturesAfterDelete}
-        picsInfo={picsInfo}
-        setPics={setPics}
-        setPicsInfo={setPicsInfo}
-      />
       <UploadPhotoModal
         image={selectedImage}
         filename={filename}
@@ -339,28 +293,24 @@ export default function PersonalMode() {
               updateAgeRange={debouncedUpdateAgeRange}
             />
           </div>
-          <div className="-mx-2 mt-1 flow-root relative">
-            {pics.length === 1 && (
-              <div className="text-danger my-1 mx-2">
-                You need at least 2 photos to start getting votes in personal mode.
-              </div>
-            )}
-            <PhotosLoaderCover isLoading={isFetchingFilter} />
-            {pics.map((pic, index) => (
-              <PhotoCard
-                key={pic}
-                index={index}
-                loggedUser={loggedUser}
-                onClickBanUser={handleClickBanUser(index)}
-                onClickDeletePic={handleClickDeletePic(index)}
-                pic={pic}
-                picInfo={picsInfo[index]}
-              />
-            ))}
-          </div>
+          {pics.length === 1 && (
+            <div className="text-danger my-1 mx-2">
+              You need at least 2 photos to start getting votes in personal mode.
+            </div>
+          )}
+          <PhotosGird
+            getPictures={getPictures}
+            getPicturesAfterDelete={updatePicturesAfterDelete}
+            isFetchingFilter={isFetchingFilter}
+            isLoadingMorePhotos={isLoadingPage}
+            loggedUser={loggedUser}
+            picUrls={pics}
+            picsInfo={picsInfo}
+            setPicUrls={setPics}
+            setPicsInfo={setPicsInfo}
+          />
         </>
       )}
-      {isLoadingPage && <Spinner />}
     </>
   );
 }
