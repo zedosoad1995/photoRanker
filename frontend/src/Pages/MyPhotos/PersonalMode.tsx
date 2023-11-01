@@ -18,7 +18,23 @@ import { Mode } from "@/Constants/mode";
 
 const DEFAULT_SORT = "score desc";
 
-export default function PersonalMode() {
+interface IPersonalMode {
+  picUrls: string[];
+  setPicUrls: React.Dispatch<React.SetStateAction<string[]>>;
+  picsInfo: IPictureWithPercentile[];
+  setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
+  isSet: boolean;
+  setIsSet: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function PersonalMode({
+  picUrls,
+  setPicUrls,
+  picsInfo,
+  setPicsInfo,
+  isSet,
+  setIsSet,
+}: IPersonalMode) {
   const { user: loggedUser } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -29,10 +45,8 @@ export default function PersonalMode() {
     height: number;
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
-  const [pics, setPics] = useState<string[]>([]);
-  const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!isSet);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
   const [nextCursor, setNextCursor] = useState<string>();
@@ -51,6 +65,8 @@ export default function PersonalMode() {
   const [maxAge, setMaxAge] = useState<number>();
 
   const [showSpinner, setShowSpinner] = useState(false);
+
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -85,7 +101,7 @@ export default function PersonalMode() {
       }).then(async (res) => {
         setNextCursor(res.nextCursor);
 
-        setPics((val) =>
+        setPicUrls((val) =>
           cursor
             ? [...new Set([...val, ...res.pictures.map(({ url }) => url)])]
             : res.pictures.map(({ url }) => url)
@@ -101,7 +117,7 @@ export default function PersonalMode() {
             : res.pictures.map((pic) => pic);
         });
 
-        if (!areTherePictures) setAreThePictures(pics.length > 0);
+        if (!areTherePictures) setAreThePictures(picUrls.length > 0);
       });
 
       return res;
@@ -113,6 +129,7 @@ export default function PersonalMode() {
       setIsFetchingFilter(false);
       isLoadingPageRef.current = false;
       setIsLoadingPage(false);
+      setIsSet(true);
     }
   };
 
@@ -129,7 +146,11 @@ export default function PersonalMode() {
   ]);
 
   useEffect(() => {
-    getPictures();
+    if (!isSet || !isFirstRender.current) getPictures();
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+    }
   }, [sortValue, filterSelectedOption, genderOption, minAge, maxAge]);
 
   const handleFileSelect = () => {
@@ -201,8 +222,8 @@ export default function PersonalMode() {
           setIsUploadModalOpen(false);
         }}
       />
-      {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && (pics.length > 0 || areTherePictures) && (
+      {!isLoading && picUrls.length === 0 && !areTherePictures && <EmptyPlaceholder />}
+      {loggedUser && !isLoading && (picUrls.length > 0 || areTherePictures) && (
         <>
           <Header
             getPictures={getPictures}
@@ -221,7 +242,7 @@ export default function PersonalMode() {
             handleFileChange={handleFileChange}
             selectedImage={selectedImage}
           />
-          {pics.length === 1 && (
+          {picUrls.length === 1 && (
             <div className="text-danger my-1 mx-2">
               You need at least 2 photos to start getting votes in personal mode.
             </div>
@@ -231,9 +252,9 @@ export default function PersonalMode() {
             isFetchingFilter={isFetchingFilter}
             isLoadingMorePhotos={isLoadingPage}
             loggedUser={loggedUser}
-            picUrls={pics}
+            picUrls={picUrls}
             picsInfo={picsInfo}
-            setPicUrls={setPics}
+            setPicUrls={setPicUrls}
             setPicsInfo={setPicsInfo}
             prevCursor={prevCursor}
           />
