@@ -21,6 +21,8 @@ const DEFAULT_SORT = "score desc";
 interface IPersonalMode {
   picUrls: string[];
   setPicUrls: React.Dispatch<React.SetStateAction<string[]>>;
+  nextCursor: string | undefined;
+  setNextCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
   picsInfo: IPictureWithPercentile[];
   setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
   isSet: boolean;
@@ -30,6 +32,8 @@ interface IPersonalMode {
 export default function PersonalMode({
   picUrls,
   setPicUrls,
+  nextCursor,
+  setNextCursor,
   picsInfo,
   setPicsInfo,
   isSet,
@@ -49,7 +53,6 @@ export default function PersonalMode({
   const [isLoading, setIsLoading] = useState(!isSet);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
-  const [nextCursor, setNextCursor] = useState<string>();
   const prevCursor = usePrevious(nextCursor);
 
   const [areTherePictures, setAreThePictures] = useState(false);

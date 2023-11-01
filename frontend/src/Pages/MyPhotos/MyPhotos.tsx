@@ -8,9 +8,11 @@ import { IPictureWithPercentile } from "@/Types/picture";
 export default function MyPhotos() {
   const [picUrlsGlobal, setPicUrlsGlobal] = useState<string[]>([]);
   const [picsInfoGlobal, setPicsInfoGlobal] = useState<IPictureWithPercentile[]>([]);
+  const [nextCursorGlobal, setNextCursorGlobal] = useState<string>();
   const [isSetGlobal, setIsSetGlobal] = useState(false);
   const [picUrlsPersonal, setPicUrlsPersonal] = useState<string[]>([]);
   const [picsInfoPersonal, setPicsInfoPersonal] = useState<IPictureWithPercentile[]>([]);
+  const [nextCursorPersonal, setNextCursorPersonal] = useState<string>();
   const [isSetPersonal, setIsSetPersonal] = useState(false);
   const [mode, setMode] = useState<IMode>(Mode.Global);
 
@@ -28,6 +30,8 @@ export default function MyPhotos() {
           <GlobalMode
             picUrls={picUrlsGlobal}
             picsInfo={picsInfoGlobal}
+            nextCursor={nextCursorGlobal}
+            setNextCursor={setNextCursorGlobal}
             setPicUrls={setPicUrlsGlobal}
             setPicsInfo={setPicsInfoGlobal}
             isSet={isSetGlobal}
@@ -38,6 +42,8 @@ export default function MyPhotos() {
           <PersonalMode
             picUrls={picUrlsPersonal}
             picsInfo={picsInfoPersonal}
+            nextCursor={nextCursorPersonal}
+            setNextCursor={setNextCursorPersonal}
             setPicUrls={setPicUrlsPersonal}
             setPicsInfo={setPicsInfoPersonal}
             isSet={isSetPersonal}
