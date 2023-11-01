@@ -18,23 +18,7 @@ import { Header } from "./Header";
 
 const DEFAULT_SORT = "score desc";
 
-interface IGlobalMode {
-  picUrls: string[];
-  setPicUrls: React.Dispatch<React.SetStateAction<string[]>>;
-  picsInfo: IPictureWithPercentile[];
-  setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
-  isSet: boolean;
-  setIsSet: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function GlobalMode({
-  picUrls,
-  setPicUrls,
-  picsInfo,
-  setPicsInfo,
-  isSet,
-  setIsSet,
-}: IGlobalMode) {
+export default function GlobalMode() {
   const { user: loggedUser } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -45,8 +29,10 @@ export default function GlobalMode({
     height: number;
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
+  const [pics, setPics] = useState<string[]>([]);
+  const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(!isSet);
+  const [isLoading, setIsLoading] = useState(true);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
   const [nextCursor, setNextCursor] = useState<string>();
@@ -67,8 +53,6 @@ export default function GlobalMode({
   const [maxAge, setMaxAge] = useState<number>();
 
   const [showSpinner, setShowSpinner] = useState(false);
-
-  const isFirstRender = useRef(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -102,7 +86,7 @@ export default function GlobalMode({
       }).then(async (res) => {
         setNextCursor(res.nextCursor);
 
-        setPicUrls((val) =>
+        setPics((val) =>
           cursor
             ? [...new Set([...val, ...res.pictures.map(({ url }) => url)])]
             : res.pictures.map(({ url }) => url)
@@ -118,7 +102,7 @@ export default function GlobalMode({
             : res.pictures.map((pic) => pic);
         });
 
-        if (!areTherePictures) setAreThePictures(picUrls.length > 0);
+        if (!areTherePictures) setAreThePictures(pics.length > 0);
       });
 
       return res;
@@ -130,7 +114,6 @@ export default function GlobalMode({
       setIsFetchingFilter(false);
       isLoadingPageRef.current = false;
       setIsLoadingPage(false);
-      setIsSet(true);
     }
   };
 
@@ -147,11 +130,7 @@ export default function GlobalMode({
   ]);
 
   useEffect(() => {
-    if (!isSet || !isFirstRender.current) getPictures();
-
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-    }
+    getPictures();
   }, [sortValue, filterSelectedOption, genderOption, minAge, maxAge]);
 
   const handlePictureUpload = async () => {
@@ -227,8 +206,8 @@ export default function GlobalMode({
           setIsOpen(false);
         }}
       />
-      {!isLoading && picUrls.length === 0 && !areTherePictures && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && (picUrls.length > 0 || areTherePictures) && (
+      {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
+      {loggedUser && !isLoading && (pics.length > 0 || areTherePictures) && (
         <>
           <Header
             getPictures={getPictures}
@@ -252,9 +231,9 @@ export default function GlobalMode({
             isFetchingFilter={isFetchingFilter}
             isLoadingMorePhotos={isLoadingPage}
             loggedUser={loggedUser}
-            picUrls={picUrls}
+            picUrls={pics}
             picsInfo={picsInfo}
-            setPicUrls={setPicUrls}
+            setPicUrls={setPics}
             setPicsInfo={setPicsInfo}
             prevCursor={prevCursor}
           />
