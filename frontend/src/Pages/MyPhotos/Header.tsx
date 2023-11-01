@@ -119,8 +119,10 @@ export const Header = ({
             isFull={true}
             isHeightFull={true}
           >
-            <span className="mr-3 text-xl !leading-5">+</span>
-            <span>Add Photo</span>
+            <div className="flex items-center justify-center">
+              <div className="mr-3 text-xl -translate-y-[1px]">+</div>
+              <div>Add Photo</div>
+            </div>
           </Button>
         </div>
         <Filters

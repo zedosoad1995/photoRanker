@@ -53,7 +53,7 @@ export default function PersonalMode({
   const prevCursor = usePrevious(nextCursor);
 
   const [areTherePictures, setAreThePictures] = useState(false);
-  const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(true);
+  const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(false);
 
   const isLoadingPageRef = useRef(false);
   const [isFetchingFilter, setIsFetchingFilter] = useState(false);
