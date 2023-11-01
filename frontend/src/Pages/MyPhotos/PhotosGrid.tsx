@@ -13,10 +13,10 @@ interface IPhotoGrid {
   loggedUser: IUser;
   picUrls: string[];
   picsInfo: IPictureWithPercentile[];
-  getPictures: () => Promise<void>;
-  getPicturesAfterDelete: () => Promise<void>;
+  getPictures: (cursor?: string) => Promise<void>;
   setPicUrls: React.Dispatch<React.SetStateAction<string[]>>;
   setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
+  prevCursor: string | undefined;
 }
 
 export const PhotosGird = ({
@@ -26,9 +26,9 @@ export const PhotosGird = ({
   picUrls,
   picsInfo,
   getPictures,
-  getPicturesAfterDelete,
   setPicUrls,
   setPicsInfo,
+  prevCursor,
 }: IPhotoGrid) => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenBan, setIsOpenBan] = useState(false);
@@ -69,7 +69,7 @@ export const PhotosGird = ({
         isOpen={isOpenDelete}
         picToDeleteIndex={picToDeleteIndex}
         onClose={handleCloseDeleteModal}
-        getPictures={getPicturesAfterDelete}
+        getPictures={() => getPictures(prevCursor)}
         picsInfo={picsInfo}
         setPics={setPicUrls}
         setPicsInfo={setPicsInfo}

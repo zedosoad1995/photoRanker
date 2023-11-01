@@ -1,8 +1,7 @@
 import Button from "@/Components/Button";
 import { getManyPictures, getUploadPermission } from "@/Services/picture";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
-import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
 import { toast } from "react-hot-toast";
@@ -12,10 +11,10 @@ import { useAuth } from "@/Contexts/auth";
 import { Spinner } from "@/Components/Loading/Spinner";
 import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
-import Filters from "./Filters/Filters";
-import { debounce } from "underscore";
-import { Mode } from "@/Constants/mode";
 import { PhotosGird } from "./PhotosGrid";
+import { Header } from "./Header";
+import UploadPhotoModal from "./UploadPhotoModal";
+import { Mode } from "@/Constants/mode";
 
 const DEFAULT_SORT = "score desc";
 
@@ -32,7 +31,7 @@ export default function PersonalMode() {
   const [filename, setFilename] = useState<string | null>(null);
   const [pics, setPics] = useState<string[]>([]);
   const [picsInfo, setPicsInfo] = useState<IPictureWithPercentile[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
@@ -133,10 +132,6 @@ export default function PersonalMode() {
     getPictures();
   }, [sortValue, filterSelectedOption, genderOption, minAge, maxAge]);
 
-  const handlePictureUpload = async () => {
-    await getPictures();
-  };
-
   const handleFileSelect = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -162,60 +157,10 @@ export default function PersonalMode() {
 
         setSelectedImage({ image: base64Image, height, width });
         setFilename(selectedFile.name);
-        setIsOpen(true);
+        setIsUploadModalOpen(true);
       };
       reader.readAsDataURL(selectedFile);
     }
-  };
-
-  const handleFilterSelect = (selectedOption: string) => {
-    setIsFetchingFilter(true);
-    setFilterSelectedOption((val) => {
-      if (val === selectedOption) {
-        if (val === "hasReport" && sortValue.includes("reportedDate")) {
-          setSortValue(DEFAULT_SORT);
-        }
-
-        return "";
-      }
-
-      return selectedOption;
-    });
-  };
-
-  const handleSortSelect = (selectedOption: string) => {
-    setIsFetchingFilter(true);
-    const orderByKey = selectedOption.split(" ")[0];
-
-    if (orderByKey === "reportedDate") {
-      setFilterSelectedOption("hasReport");
-    }
-
-    setSortValue(selectedOption);
-  };
-
-  const handleGenderSelect = (selectedOption: string) => {
-    setIsFetchingFilter(true);
-    setGenderOption((val) => {
-      if (val === selectedOption) {
-        return "";
-      }
-
-      return selectedOption;
-    });
-  };
-
-  const debouncedUpdateAgeRange = useCallback(
-    debounce((minAge: number, maxAge: number) => {
-      setIsFetchingFilter(true);
-      setMaxAge(maxAge);
-      setMinAge(minAge);
-    }, 400),
-    []
-  );
-
-  const updatePicturesAfterDelete = () => {
-    return getPictures(prevCursor);
   };
 
   const EmptyPlaceholder = () => {
@@ -249,50 +194,33 @@ export default function PersonalMode() {
       <UploadPhotoModal
         image={selectedImage}
         filename={filename}
-        isOpen={isOpen}
+        isOpen={isUploadModalOpen}
         mode={Mode.Personal}
-        onUpload={handlePictureUpload}
+        onUpload={() => getPictures()}
         onClose={() => {
-          setIsOpen(false);
+          setIsUploadModalOpen(false);
         }}
       />
       {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
       {loggedUser && !isLoading && (pics.length > 0 || areTherePictures) && (
         <>
-          <input
-            type="file"
-            accept="image/jpeg, image/png"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
+          <Header
+            getPictures={getPictures}
+            hasReachedPicsLimit={hasReachedPicsLimit}
+            loggedUser={loggedUser}
+            setIsFetchingFilter={setIsFetchingFilter}
+            filterSelectedOption={filterSelectedOption}
+            gender={genderOption}
+            setFilterSelectedOption={setFilterSelectedOption}
+            setGender={setGenderOption}
+            setMaxAge={setMaxAge}
+            setMinAge={setMinAge}
+            setSortValue={setSortValue}
+            sortValue={sortValue}
+            filename={filename}
+            handleFileChange={handleFileChange}
+            selectedImage={selectedImage}
           />
-          <div
-            className={`flex gap-4 flex-col ${
-              isAdmin(loggedUser.role) ? "lg:flex-row" : "min-[330px]:flex-row"
-            }`}
-          >
-            <div className="w-full sm:w-fit">
-              <Button
-                disabled={hasReachedPicsLimit}
-                onClick={handleFileSelect}
-                isFull={true}
-                isHeightFull={true}
-              >
-                <span className="mr-3 text-xl !leading-5">+</span>
-                <span>Add Photo</span>
-              </Button>
-            </div>
-            <Filters
-              isAdmin={isAdmin(loggedUser.role)}
-              filterSelectedOption={filterSelectedOption}
-              handleFilterSelect={handleFilterSelect}
-              sortValue={sortValue}
-              handleSortSelect={handleSortSelect}
-              genderOption={genderOption}
-              handleGenderSelect={handleGenderSelect}
-              updateAgeRange={debouncedUpdateAgeRange}
-            />
-          </div>
           {pics.length === 1 && (
             <div className="text-danger my-1 mx-2">
               You need at least 2 photos to start getting votes in personal mode.
@@ -300,7 +228,6 @@ export default function PersonalMode() {
           )}
           <PhotosGird
             getPictures={getPictures}
-            getPicturesAfterDelete={updatePicturesAfterDelete}
             isFetchingFilter={isFetchingFilter}
             isLoadingMorePhotos={isLoadingPage}
             loggedUser={loggedUser}
@@ -308,6 +235,7 @@ export default function PersonalMode() {
             picsInfo={picsInfo}
             setPicUrls={setPics}
             setPicsInfo={setPicsInfo}
+            prevCursor={prevCursor}
           />
         </>
       )}

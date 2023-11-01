@@ -1,24 +1,20 @@
 import Button from "@/Components/Button";
 import { getManyPictures, getUploadPermission } from "@/Services/picture";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
-import DeletePhotoModal from "./DeletePhotoModal";
 import { toast } from "react-hot-toast";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin } from "@/Utils/role";
-import BanUserModal from "./BanUserModal";
 import { useAuth } from "@/Contexts/auth";
 import { Spinner } from "@/Components/Loading/Spinner";
-import { PhotoCard } from "./ImageCard";
 import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
-import Filters from "./Filters/Filters";
-import { debounce } from "underscore";
 import { Mode } from "@/Constants/mode";
-import { PhotosLoaderCover } from "./PhotosLoaderCover";
+import { PhotosGird } from "./PhotosGrid";
+import { Header } from "./Header";
 
 const DEFAULT_SORT = "score desc";
 
@@ -43,10 +39,6 @@ export default function GlobalMode() {
   const prevCursor = usePrevious(nextCursor);
 
   const [areTherePictures, setAreThePictures] = useState(false);
-  const [isOpenDelete, setIsOpenDelete] = useState(false);
-  const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
-  const [isOpenBan, setIsOpenBan] = useState(false);
-  const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
   const isLoadingPageRef = useRef(false);
 
@@ -176,78 +168,6 @@ export default function GlobalMode() {
     }
   };
 
-  const handleClickDeletePic = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
-
-    setIsOpenDelete(true);
-    setPicToDeleteIndex(index);
-  };
-
-  const handleClickBanUser = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
-
-    setIsOpenBan(true);
-    setUserIdToBan(picsInfo[index].userId);
-  };
-
-  const handleCloseDeleteModal = () => {
-    setIsOpenDelete(false);
-  };
-
-  const handleCloseBanModal = () => {
-    setIsOpenBan(false);
-  };
-
-  const handleFilterSelect = (selectedOption: string) => {
-    setIsFetchingFilter(true);
-    setFilterSelectedOption((val) => {
-      if (val === selectedOption) {
-        if (val === "hasReport" && sortValue.includes("reportedDate")) {
-          setSortValue(DEFAULT_SORT);
-        }
-
-        return "";
-      }
-
-      return selectedOption;
-    });
-  };
-
-  const handleSortSelect = (selectedOption: string) => {
-    setIsFetchingFilter(true);
-    const orderByKey = selectedOption.split(" ")[0];
-
-    if (orderByKey === "reportedDate") {
-      setFilterSelectedOption("hasReport");
-    }
-
-    setSortValue(selectedOption);
-  };
-
-  const handleGenderSelect = (selectedOption: string) => {
-    setIsFetchingFilter(true);
-    setGenderOption((val) => {
-      if (val === selectedOption) {
-        return "";
-      }
-
-      return selectedOption;
-    });
-  };
-
-  const debouncedUpdateAgeRange = useCallback(
-    debounce((minAge: number, maxAge: number) => {
-      setIsFetchingFilter(true);
-      setMaxAge(maxAge);
-      setMinAge(minAge);
-    }, 400),
-    []
-  );
-
-  const updatePicturesAfterDelete = () => {
-    return getPictures(prevCursor);
-  };
-
   const EmptyPlaceholder = () => {
     return (
       <div className="flex flex-col items-center pt-3">
@@ -276,21 +196,6 @@ export default function GlobalMode() {
   return (
     <>
       {showSpinner && <Spinner />}
-      <BanUserModal
-        isOpen={isOpenBan}
-        onClose={handleCloseBanModal}
-        userIdToBan={userIdToBan}
-        getPictures={getPictures}
-      />
-      <DeletePhotoModal
-        isOpen={isOpenDelete}
-        picToDeleteIndex={picToDeleteIndex}
-        onClose={handleCloseDeleteModal}
-        getPictures={updatePicturesAfterDelete}
-        picsInfo={picsInfo}
-        setPics={setPics}
-        setPicsInfo={setPicsInfo}
-      />
       <UploadPhotoModal
         image={selectedImage}
         filename={filename}
@@ -304,58 +209,36 @@ export default function GlobalMode() {
       {!isLoading && pics.length === 0 && !areTherePictures && <EmptyPlaceholder />}
       {loggedUser && !isLoading && (pics.length > 0 || areTherePictures) && (
         <>
-          <input
-            type="file"
-            accept="image/jpeg, image/png"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
+          <Header
+            getPictures={getPictures}
+            hasReachedPicsLimit={hasReachedPicsLimit}
+            loggedUser={loggedUser}
+            setIsFetchingFilter={setIsFetchingFilter}
+            filterSelectedOption={filterSelectedOption}
+            gender={genderOption}
+            setFilterSelectedOption={setFilterSelectedOption}
+            setGender={setGenderOption}
+            setMaxAge={setMaxAge}
+            setMinAge={setMinAge}
+            setSortValue={setSortValue}
+            sortValue={sortValue}
+            filename={filename}
+            handleFileChange={handleFileChange}
+            selectedImage={selectedImage}
           />
-          <div
-            className={`flex gap-4 flex-col ${
-              isAdmin(loggedUser.role) ? "lg:flex-row" : "min-[330px]:flex-row"
-            }`}
-          >
-            <div className="w-full sm:w-fit">
-              <Button
-                disabled={hasReachedPicsLimit}
-                onClick={handleFileSelect}
-                isFull={true}
-                isHeightFull={true}
-              >
-                <span className="mr-3 text-xl !leading-5">+</span>
-                <span>Add Photo</span>
-              </Button>
-            </div>
-            <Filters
-              isAdmin={isAdmin(loggedUser.role)}
-              filterSelectedOption={filterSelectedOption}
-              handleFilterSelect={handleFilterSelect}
-              sortValue={sortValue}
-              handleSortSelect={handleSortSelect}
-              genderOption={genderOption}
-              handleGenderSelect={handleGenderSelect}
-              updateAgeRange={debouncedUpdateAgeRange}
-            />
-          </div>
-          <div className="-mx-2 mt-1 flow-root relative">
-            <PhotosLoaderCover isLoading={isFetchingFilter} />
-            {pics.map((pic, index) => (
-              <PhotoCard
-                key={pic}
-                index={index}
-                isGlobal
-                loggedUser={loggedUser}
-                onClickBanUser={handleClickBanUser(index)}
-                onClickDeletePic={handleClickDeletePic(index)}
-                pic={pic}
-                picInfo={picsInfo[index]}
-              />
-            ))}
-          </div>
+          <PhotosGird
+            getPictures={getPictures}
+            isFetchingFilter={isFetchingFilter}
+            isLoadingMorePhotos={isLoadingPage}
+            loggedUser={loggedUser}
+            picUrls={pics}
+            picsInfo={picsInfo}
+            setPicUrls={setPics}
+            setPicsInfo={setPicsInfo}
+            prevCursor={prevCursor}
+          />
         </>
       )}
-      {isLoadingPage && <Spinner />}
     </>
   );
 }
