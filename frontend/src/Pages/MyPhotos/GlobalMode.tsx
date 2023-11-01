@@ -58,7 +58,7 @@ export default function GlobalMode({
 
   const [isFetchingFilter, setIsFetchingFilter] = useState(false);
 
-  const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(true);
+  const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(false);
 
   const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
