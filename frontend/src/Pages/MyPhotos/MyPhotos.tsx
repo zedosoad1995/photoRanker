@@ -3,17 +3,9 @@ import { ModeSelect } from "./ModeSelect";
 import GlobalMode from "./GlobalMode";
 import { IMode, Mode } from "@/Constants/mode";
 import PersonalMode from "./PersonalMode";
-import { IPictureWithPercentile } from "@/Types/picture";
+import { MyPhotosProvider } from "./Contexts/myPhotos";
 
 export default function MyPhotos() {
-  const [picUrlsGlobal, setPicUrlsGlobal] = useState<string[]>([]);
-  const [picsInfoGlobal, setPicsInfoGlobal] = useState<IPictureWithPercentile[]>([]);
-  const [nextCursorGlobal, setNextCursorGlobal] = useState<string>();
-  const [isSetGlobal, setIsSetGlobal] = useState(false);
-  const [picUrlsPersonal, setPicUrlsPersonal] = useState<string[]>([]);
-  const [picsInfoPersonal, setPicsInfoPersonal] = useState<IPictureWithPercentile[]>([]);
-  const [nextCursorPersonal, setNextCursorPersonal] = useState<string>();
-  const [isSetPersonal, setIsSetPersonal] = useState(false);
   const [mode, setMode] = useState<IMode>(Mode.Global);
 
   const handleUpdateMode = (mode: IMode) => {
@@ -26,30 +18,8 @@ export default function MyPhotos() {
         <div className="flex justify-center items-centers mb-3">
           <ModeSelect mode={mode} handleUpdateMode={handleUpdateMode} />
         </div>
-        {mode === Mode.Global && (
-          <GlobalMode
-            picUrls={picUrlsGlobal}
-            picsInfo={picsInfoGlobal}
-            nextCursor={nextCursorGlobal}
-            setNextCursor={setNextCursorGlobal}
-            setPicUrls={setPicUrlsGlobal}
-            setPicsInfo={setPicsInfoGlobal}
-            isSet={isSetGlobal}
-            setIsSet={setIsSetGlobal}
-          />
-        )}
-        {mode === Mode.Personal && (
-          <PersonalMode
-            picUrls={picUrlsPersonal}
-            picsInfo={picsInfoPersonal}
-            nextCursor={nextCursorPersonal}
-            setNextCursor={setNextCursorPersonal}
-            setPicUrls={setPicUrlsPersonal}
-            setPicsInfo={setPicsInfoPersonal}
-            isSet={isSetPersonal}
-            setIsSet={setIsSetPersonal}
-          />
-        )}
+        <MyPhotosProvider>{mode === Mode.Global && <GlobalMode />}</MyPhotosProvider>
+        <MyPhotosProvider>{mode === Mode.Personal && <PersonalMode />}</MyPhotosProvider>
       </div>
     </>
   );

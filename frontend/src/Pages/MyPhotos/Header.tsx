@@ -4,6 +4,7 @@ import Filters from "./Filters/Filters";
 import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
+import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
 
 const DEFAULT_SORT = "score desc";
 
@@ -12,14 +13,8 @@ interface IHeader {
   setIsFetchingFilter: React.Dispatch<React.SetStateAction<boolean>>;
   loggedUser: IUser;
   hasReachedPicsLimit: boolean;
-  setFilterSelectedOption: React.Dispatch<React.SetStateAction<string>>;
-  setSortValue: React.Dispatch<React.SetStateAction<string>>;
-  setGender: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setMinAge: React.Dispatch<React.SetStateAction<number | undefined>>;
-  setMaxAge: React.Dispatch<React.SetStateAction<number | undefined>>;
-  filterSelectedOption: string;
-  sortValue: string;
-  gender: string | undefined;
+  filterState: MyPhotosState;
+  filterDispatch: React.Dispatch<MyPhotosAction>;
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   selectedImage: {
     image: string;
@@ -33,14 +28,8 @@ export const Header = ({
   setIsFetchingFilter,
   loggedUser,
   hasReachedPicsLimit,
-  setFilterSelectedOption,
-  setSortValue,
-  setGender,
-  setMinAge,
-  setMaxAge,
-  filterSelectedOption,
-  sortValue,
-  gender,
+  filterState,
+  filterDispatch,
   handleFileChange,
 }: IHeader) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -53,47 +42,57 @@ export const Header = ({
   };
 
   const handleFilterSelect = (selectedOption: string) => {
+    if (selectedOption === filterState.sortValue) return;
+
     setIsFetchingFilter(true);
-    setFilterSelectedOption((val) => {
-      if (val === selectedOption) {
-        if (val === "hasReport" && sortValue.includes("reportedDate")) {
-          setSortValue(DEFAULT_SORT);
-        }
 
-        return "";
+    let value = "";
+
+    if (filterState.filterSelect === selectedOption) {
+      if (
+        filterState.filterSelect === "hasReport" &&
+        filterState.sortValue.includes("reportedDate")
+      ) {
+        filterDispatch({ key: "sortValue", value: DEFAULT_SORT });
       }
+    } else {
+      value = filterState.filterSelect;
+    }
 
-      return selectedOption;
-    });
+    filterDispatch({ key: "filterSelect", value });
   };
 
   const handleSortSelect = (selectedOption: string) => {
+    if (selectedOption === filterState.sortValue) return;
+
     setIsFetchingFilter(true);
     const orderByKey = selectedOption.split(" ")[0];
 
     if (orderByKey === "reportedDate") {
-      setFilterSelectedOption("hasReport");
+      filterDispatch({ key: "filterSelect", value: "hasReport" });
     }
 
-    setSortValue(selectedOption);
+    filterDispatch({ key: "sortValue", value: selectedOption });
   };
 
   const handleGenderSelect = (selectedOption: string) => {
-    setIsFetchingFilter(true);
-    setGender((val) => {
-      if (val === selectedOption) {
-        return "";
-      }
+    if (selectedOption === filterState.sortValue) return;
 
-      return selectedOption;
+    setIsFetchingFilter(true);
+
+    filterDispatch({
+      key: "gender",
+      value: filterState.gender === selectedOption ? "" : selectedOption,
     });
   };
 
   const debouncedUpdateAgeRange = useCallback(
     debounce((minAge: number, maxAge: number) => {
+      if (minAge === filterState.minAge && maxAge === filterState.maxAge) return;
+
       setIsFetchingFilter(true);
-      setMaxAge(maxAge);
-      setMinAge(minAge);
+      filterDispatch({ key: "minAge", value: minAge });
+      filterDispatch({ key: "maxAge", value: maxAge });
     }, 400),
     []
   );
@@ -127,11 +126,11 @@ export const Header = ({
         </div>
         <Filters
           isAdmin={isAdmin(loggedUser.role)}
-          filterSelectedOption={filterSelectedOption}
+          filterSelectedOption={filterState.filterSelect}
           handleFilterSelect={handleFilterSelect}
-          sortValue={sortValue}
+          sortValue={filterState.sortValue}
           handleSortSelect={handleSortSelect}
-          genderOption={gender}
+          genderOption={filterState.gender}
           handleGenderSelect={handleGenderSelect}
           updateAgeRange={debouncedUpdateAgeRange}
         />

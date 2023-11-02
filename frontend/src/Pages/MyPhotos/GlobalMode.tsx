@@ -6,7 +6,6 @@ import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
 import { toast } from "react-hot-toast";
-import { IPictureWithPercentile } from "@/Types/picture";
 import { isAdmin } from "@/Utils/role";
 import { useAuth } from "@/Contexts/auth";
 import { Spinner } from "@/Components/Loading/Spinner";
@@ -15,30 +14,10 @@ import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
 import { Mode } from "@/Constants/mode";
 import { PhotosGird } from "./PhotosGrid";
 import { Header } from "./Header";
+import { useMyPhotos } from "./Contexts/myPhotos";
 
-const DEFAULT_SORT = "score desc";
-
-interface IGlobalMode {
-  picUrls: string[];
-  setPicUrls: React.Dispatch<React.SetStateAction<string[]>>;
-  nextCursor: string | undefined;
-  setNextCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
-  picsInfo: IPictureWithPercentile[];
-  setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
-  isSet: boolean;
-  setIsSet: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function GlobalMode({
-  picUrls,
-  setPicUrls,
-  nextCursor,
-  setNextCursor,
-  picsInfo,
-  setPicsInfo,
-  isSet,
-  setIsSet,
-}: IGlobalMode) {
+export default function GlobalMode() {
+  const { state, dispatch } = useMyPhotos();
   const { user: loggedUser } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -50,10 +29,10 @@ export default function GlobalMode({
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(!isSet);
+  const [isLoading, setIsLoading] = useState(!state.isSet);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
-  const prevCursor = usePrevious(nextCursor);
+  const prevCursor = usePrevious(state.nextCursor);
 
   const [areTherePictures, setAreThePictures] = useState(false);
 
@@ -62,12 +41,6 @@ export default function GlobalMode({
   const [isFetchingFilter, setIsFetchingFilter] = useState(false);
 
   const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(false);
-
-  const [filterSelectedOption, setFilterSelectedOption] = useState<string>("");
-  const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
-  const [genderOption, setGenderOption] = useState<string>();
-  const [minAge, setMinAge] = useState<number>();
-  const [maxAge, setMaxAge] = useState<number>();
 
   const [showSpinner, setShowSpinner] = useState(false);
 
@@ -89,39 +62,42 @@ export default function GlobalMode({
 
       isLoadingPageRef.current = true;
 
-      const orderByKey = sortValue.split(" ")[0];
-      const orderByDir = sortValue.split(" ")[1];
+      const orderByKey = state.sortValue.split(" ")[0];
+      const orderByDir = state.sortValue.split(" ")[1];
 
       const res = await getManyPictures({
         ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
-        ...(filterSelectedOption ? { [filterSelectedOption]: true } : {}),
-        gender: genderOption,
+        ...(state.filterSelect ? { [state.filterSelect]: true } : {}),
+        gender: state.gender,
         orderBy: orderByKey,
-        minAge,
-        maxAge,
+        minAge: state.minAge,
+        maxAge: state.maxAge,
         orderByDir,
         limit: 30,
         cursor,
       }).then(async (res) => {
-        setNextCursor(res.nextCursor);
+        dispatch({ key: "nextCursor", value: res.nextCursor });
 
-        setPicUrls((val) =>
-          cursor
-            ? [...new Set([...val, ...res.pictures.map(({ url }) => url)])]
-            : res.pictures.map(({ url }) => url)
-        );
-        setPicsInfo((val) => {
-          return cursor
+        dispatch({
+          key: "picUrls",
+          value: cursor
+            ? [...new Set([...state.picUrls, ...res.pictures.map(({ url }) => url)])]
+            : res.pictures.map(({ url }) => url),
+        });
+
+        dispatch({
+          key: "picsInfo",
+          value: cursor
             ? [
                 ...new Set([
-                  ...val.map((row) => JSON.stringify(row)),
+                  ...state.picsInfo.map((row) => JSON.stringify(row)),
                   ...res.pictures.map((pic) => JSON.stringify(pic)),
                 ]),
               ].map((row) => JSON.parse(row))
-            : res.pictures.map((pic) => pic);
+            : res.pictures.map((pic) => pic),
         });
 
-        if (!areTherePictures) setAreThePictures(picUrls.length > 0);
+        if (!areTherePictures) setAreThePictures(state.picUrls.length > 0);
       });
 
       return res;
@@ -133,29 +109,29 @@ export default function GlobalMode({
       setIsFetchingFilter(false);
       isLoadingPageRef.current = false;
       setIsLoadingPage(false);
-      setIsSet(true);
+      dispatch({ key: "isSet", value: true });
     }
   };
 
   const handleScrollUpdate = () => {
-    if (nextCursor) {
+    if (state.nextCursor) {
       isLoadingPageRef.current = true;
       setIsLoadingPage(true);
-      getPictures(nextCursor);
+      getPictures(state.nextCursor);
     }
   };
 
   useInfiniteScroll({ isLoading: isLoadingPageRef.current, onUpdate: handleScrollUpdate }, [
-    nextCursor,
+    state.nextCursor,
   ]);
 
   useEffect(() => {
-    if (!isSet || !isFirstRender.current) getPictures();
+    if (!state.isSet || !isFirstRender.current) getPictures();
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
     }
-  }, [sortValue, filterSelectedOption, genderOption, minAge, maxAge]);
+  }, [state.sortValue, state.filterSelect, state.gender, state.minAge, state.maxAge]);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -230,35 +206,29 @@ export default function GlobalMode({
           setIsOpen(false);
         }}
       />
-      {!isLoading && picUrls.length === 0 && !areTherePictures && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && (picUrls.length > 0 || areTherePictures) && (
+      {!isLoading && state.picUrls.length === 0 && !areTherePictures && <EmptyPlaceholder />}
+      {loggedUser && !isLoading && (state.picUrls.length > 0 || areTherePictures) && (
         <>
           <Header
             getPictures={getPictures}
             hasReachedPicsLimit={hasReachedPicsLimit}
             loggedUser={loggedUser}
             setIsFetchingFilter={setIsFetchingFilter}
-            filterSelectedOption={filterSelectedOption}
-            gender={genderOption}
-            setFilterSelectedOption={setFilterSelectedOption}
-            setGender={setGenderOption}
-            setMaxAge={setMaxAge}
-            setMinAge={setMinAge}
-            setSortValue={setSortValue}
-            sortValue={sortValue}
             filename={filename}
             handleFileChange={handleFileChange}
             selectedImage={selectedImage}
+            filterState={state}
+            filterDispatch={dispatch}
           />
           <PhotosGird
             getPictures={getPictures}
             isFetchingFilter={isFetchingFilter}
             isLoadingMorePhotos={isLoadingPage}
             loggedUser={loggedUser}
-            picUrls={picUrls}
-            picsInfo={picsInfo}
-            setPicUrls={setPicUrls}
-            setPicsInfo={setPicsInfo}
+            picUrls={state.picUrls}
+            picsInfo={state.picsInfo}
+            setPicUrls={(value) => dispatch({ key: "picUrls", value })}
+            setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
             prevCursor={prevCursor}
             isGlobal
           />

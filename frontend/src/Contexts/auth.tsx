@@ -9,7 +9,7 @@ import { IUser } from "@/Types/user";
 import { getMe } from "@/Services/user";
 import { useQuery } from "react-query";
 
-export interface IAuthContext {
+interface IAuthContext {
   user?: IUser;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -19,7 +19,7 @@ export interface IAuthContext {
   updateUser: () => Promise<void>;
 }
 
-export const AuthContext = createContext<IAuthContext>({} as IAuthContext);
+const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 
 interface IAuthProvider {
   children: React.ReactNode;

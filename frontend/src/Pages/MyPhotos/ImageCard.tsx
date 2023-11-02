@@ -67,14 +67,7 @@ export const PhotoCard = ({
             />
           )}
           <div className="rounded-t-md overflow-hidden">
-            {img && (
-              <img
-                className="mx-auto w-full"
-                src={img}
-                onLoad={() => {}}
-                alt={`picture-${index}`}
-              />
-            )}
+            {img && <img className="mx-auto w-full" src={img} alt={`picture-${index}`} />}
             {!img && (
               <div className="relative -z-10">
                 <ImageSkeleton divClass="aspect-square" />
