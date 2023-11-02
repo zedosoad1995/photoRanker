@@ -22,6 +22,10 @@ import { LOGIN, REGISTER } from "@/Constants/routes";
 function App() {
   const [showFloatBtn, setShowFloatBtn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const vsRef = useRef<HTMLDivElement | null>(null);
+
   const navigate = useNavigate();
 
   const handleGoToSignUp = () => navigate(REGISTER);
@@ -312,6 +316,32 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (!vsRef.current || !imgRef.current) return;
+      vsRef.current.style.top = `${imgRef.current.height / 2}px`;
+      vsRef.current.style.width = `${Math.max(imgRef.current.width * 0.3, 50)}px`;
+      vsRef.current.style.height = `${Math.max(imgRef.current.width * 0.3, 50)}px`;
+    };
+
+    const imgEl = imgRef.current;
+
+    if (imgEl) {
+      if (imgEl.complete) {
+        handleResize();
+      } else {
+        imgEl.addEventListener("load", handleResize);
+      }
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      imgEl?.removeEventListener("load", handleResize);
+    };
+  }, []);
+
   return (
     <div className="font-poppins">
       <button
@@ -386,7 +416,12 @@ function App() {
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
                   <div className="relative">
                     <div className="rounded-t-md overflow-hidden">
-                      <img className="mx-auto w-full" src="/dude.webp" alt="male rated 1-10" />
+                      <img
+                        ref={imgRef}
+                        className="mx-auto w-full"
+                        src="/dude.webp"
+                        alt="male rated 1-10"
+                      />
                     </div>
                   </div>
                   <div className="p-3 font-semibold text-[8px] min-[300px]:text-[10px] min-[350px]:text-xs xs:text-sm bg-white rounded-b-md">
@@ -400,8 +435,11 @@ function App() {
                   </div>
                 </div>
                 <div
-                  className="w-12 h-12 min-[350px]:w-16 min-[350px]:h-16 bg-yellow-300 absolute flex items-center justify-center z-30 rounded-full font-semibold top-1/2 text-xl min-[350px]:text-2xl -translate-y-1/2 shadow-inner"
-                  style={{ fontFamily: "'Trebuchet MS', sans-serif" }}
+                  className="bg-yellow-300 absolute flex items-center justify-center z-30 rounded-full font-semibold text-xl min-[430px]:text-2xl -translate-y-1/2 shadow-inner"
+                  style={{
+                    fontFamily: "'Trebuchet MS', sans-serif",
+                  }}
+                  ref={vsRef}
                 >
                   vs
                 </div>
