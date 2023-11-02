@@ -44,12 +44,10 @@ jobs:
 
       - name: Build and Push Nginx Docker image
         run: |
-          DATE_TAG=$(date +'%Y%m%d')
-          docker build -t vcarp/photoscorer-nginx:$DATE_TAG -f infra/nginx/Dockerfile . 
-          docker push vcarp/photoscorer-nginx:$DATE_TAG
+          docker build -t vcarp/photoscorer-nginx:latest -f infra/nginx/Dockerfile . 
+          docker push vcarp/photoscorer-nginx:latest
 
       - name: Build and Push Docker image
         run: |
-          DATE_TAG=$(date +'%Y%m%d')
-          docker build -t vcarp/photoscorer:$DATE_TAG -f backend/Dockerfile . 
-          docker push vcarp/photoscorer:$DATE_TAG
+          docker build -t vcarp/photoscorer:latest -f backend/Dockerfile . 
+          docker push vcarp/photoscorer:latest
