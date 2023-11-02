@@ -42,10 +42,6 @@ export const Header = ({
   };
 
   const handleFilterSelect = (selectedOption: string) => {
-    if (selectedOption === filterState.sortValue) return;
-
-    setIsFetchingFilter(true);
-
     let value = "";
 
     if (filterState.filterSelect === selectedOption) {
@@ -56,9 +52,12 @@ export const Header = ({
         filterDispatch({ key: "sortValue", value: DEFAULT_SORT });
       }
     } else {
-      value = filterState.filterSelect;
+      value = selectedOption;
     }
 
+    if (value === filterState.filterSelect) return;
+
+    setIsFetchingFilter(true);
     filterDispatch({ key: "filterSelect", value });
   };
 
@@ -133,6 +132,8 @@ export const Header = ({
           genderOption={filterState.gender}
           handleGenderSelect={handleGenderSelect}
           updateAgeRange={debouncedUpdateAgeRange}
+          minAgeInit={filterState.minAge}
+          maxAgeInit={filterState.maxAge}
         />
       </div>
     </>

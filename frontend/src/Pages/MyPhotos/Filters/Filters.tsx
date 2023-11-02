@@ -14,6 +14,8 @@ interface IFilters {
   genderOption?: string;
   handleGenderSelect: (value: string) => void;
   updateAgeRange: (minAge: number, maxAge: number) => void;
+  minAgeInit?: number;
+  maxAgeInit?: number;
 }
 
 const INI_MAX_AGE = 100;
@@ -27,6 +29,8 @@ const Filters = ({
   genderOption,
   handleGenderSelect,
   updateAgeRange,
+  minAgeInit,
+  maxAgeInit,
 }: IFilters) => {
   const [minAge, setMinAge] = useState(MIN_AGE);
   const [maxAge, setMaxAge] = useState(INI_MAX_AGE);
@@ -78,7 +82,7 @@ const Filters = ({
             </div>
           </div>
           <MultipleRangeSlider
-            initialValue={[18, 100]}
+            initialValue={[minAgeInit ?? 18, maxAgeInit ?? 100]}
             min={18}
             max={100}
             onChange={handleAgeRangeChange}
@@ -97,7 +101,7 @@ const Filters = ({
           </div>
         </div>
         <MultipleRangeSlider
-          initialValue={[18, 100]}
+          initialValue={[minAgeInit ?? 18, maxAgeInit ?? 100]}
           min={18}
           max={100}
           onChange={handleAgeRangeChange}
