@@ -54,7 +54,9 @@ const getPicturesWithClosestElos = (
         `(preference."exposureMaxAge" >= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
       );
 
-      whereQuery.push(`(preference."exposureMinAge" <= ${loggedUserAge})`);
+      whereQuery.push(
+        `(preference."exposureMinAge" <= ${loggedUserAge} OR preference."exposureMaxAge" IS NULL)`
+      );
     }
   }
 
@@ -99,6 +101,8 @@ export const getMatchPictures = async (loggedUser: User, userPreferences: Prefer
   const gender = isMale ? Gender.Male : Gender.Female;
 
   const picture1 = await getFirstPic(gender, loggedUser, userPreferences);
+
+  console.log(picture1);
 
   if (!picture1) {
     throw new BadRequestError("Not enought pictures for the match");

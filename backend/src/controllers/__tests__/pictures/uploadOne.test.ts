@@ -62,6 +62,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/noExtension");
 
     expect(response.status).toEqual(403);
@@ -80,6 +81,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/noExtension");
 
     expect(response.status).toEqual(403);
@@ -89,6 +91,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/noExtension");
 
     expect(response.status).toEqual(400);
@@ -99,6 +102,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/text.txt");
 
     expect(response.status).toEqual(400);
@@ -109,6 +113,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/image-too-big.jpg");
 
     expect(response.status).toEqual(400);
@@ -116,7 +121,10 @@ describe("Regular Logged User", () => {
   });
 
   it("throws an error, when no file is uploaded", async () => {
-    const response = await request(app).post("/api/pictures").set("Cookie", regularCookie).send();
+    const response = await request(app)
+      .post("/api/pictures")
+      .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }));
 
     expect(response.status).toEqual(400);
     expect(response.body.message).toEqual(PICTURE.NO_FILE);
@@ -126,6 +134,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/small-image-dim.jpg");
 
     expect(response.status).toEqual(400);
@@ -136,6 +145,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/corrupt-image.jpg");
 
     expect(response.status).toEqual(400);
@@ -150,6 +160,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/image.jpg");
 
     expect(response.status).toEqual(400);
@@ -164,6 +175,7 @@ describe("Regular Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", regularCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/image.jpg");
 
     expect(response.status).toEqual(201);
@@ -197,6 +209,7 @@ describe("Admin Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", adminCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/image.jpg");
 
     expect(response.status).toEqual(201);
@@ -223,6 +236,7 @@ describe("Admin Logged User", () => {
     const response = await request(app)
       .post("/api/pictures")
       .set("Cookie", adminCookie)
+      .field("info", JSON.stringify({ isGlobal: true }))
       .attach("image", "src/tests/fixtures/files/image.jpg");
 
     expect(response.status).toEqual(201);
