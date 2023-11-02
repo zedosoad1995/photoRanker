@@ -39,3 +39,27 @@ jobs:
         run: |
           docker build -t vcarp/photoscorer:latest -f backend/Dockerfile . 
           docker push vcarp/photoscorer:latest
+
+      - name: Get the previous latest tag
+        id: prevtag
+        run: |
+          PREV_TAG=$(docker image ls vcarp/photoscorer --format "{{.Tag}}" | sort | grep -v latest | tail -1)
+          echo "::set-output name=tag::$PREV_TAG"
+
+      - name: Tag previous tag
+        if: steps.prevtag.outputs.tag != ''
+        run: |
+          docker tag vcarp/photoscorer:${{ steps.prevtag.outputs.tag }} vcarp/photoscorer:previous
+          docker push vcarp/photoscorer:previous
+
+      - name: Get the previous latest tag nginx
+        id: prevtagnginx
+        run: |
+          PREV_TAG=$(docker image ls vcarp/photoscorer-nginx --format "{{.Tag}}" | sort | grep -v latest | tail -1)
+          echo "::set-output name=tag::$PREV_TAG"
+
+      - name: Tag previous nginx tag
+        if: steps.prevtagnginx.outputs.tag != ''
+        run: |
+          docker tag vcarp/photoscorer-nginx:${{ steps.prevtagnginx.outputs.tag }} vcarp/photoscorer-nginx:previous
+          docker push vcarp/photoscorer-nginx:previous
