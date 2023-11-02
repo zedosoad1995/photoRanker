@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "PREV_TAG=$(docker image ls vcarp/photoscorer --format "{{.Tag}}" | sort | grep -v latest | tail -1)" >> $GITHUB_ENV
 
-      - name: Tag previous tag
+      - name: Tag previous photoscorer tag
         if: env.PREV_TAG != ''
         run: |
           docker tag vcarp/photoscorer:$PREV_TAG vcarp/photoscorer:previous
