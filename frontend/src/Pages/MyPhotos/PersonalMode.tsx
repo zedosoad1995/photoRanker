@@ -1,23 +1,27 @@
 import Button from "@/Components/Button";
-import { getManyPictures, getUploadPermission } from "@/Services/picture";
 import { useEffect, useRef, useState } from "react";
 import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
+import UploadPhotoModal from "./UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
 import { toast } from "react-hot-toast";
-import { isAdmin } from "@/Utils/role";
 import { useAuth } from "@/Contexts/auth";
 import { Spinner } from "@/Components/Loading/Spinner";
 import usePrevious from "@/Hooks/usePrevious";
 import useInfiniteScroll from "@/Hooks/useInfiniteScroll";
+import { Mode } from "@/Constants/mode";
 import { PhotosGird } from "./PhotosGrid";
 import { Header } from "./Header";
-import UploadPhotoModal from "./UploadPhotoModal";
-import { Mode } from "@/Constants/mode";
 import { useMyPhotos } from "./Contexts/myPhotos";
 
 export default function PersonalMode() {
-  const { state, dispatch } = useMyPhotos();
+  const {
+    state,
+    dispatch,
+    getPictures: _getPictures,
+    isLoadingMoreImages,
+    updateLoadingMoreImages,
+  } = useMyPhotos();
   const { user: loggedUser } = useAuth();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -28,17 +32,9 @@ export default function PersonalMode() {
     height: number;
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(!state.isSet);
-  const [isLoadingPage, setIsLoadingPage] = useState(false);
-
   const prevCursor = usePrevious(state.nextCursor);
-
-  const [areTherePictures, setAreThePictures] = useState(false);
-  const [hasReachedPicsLimit, setHasReachedPicsLimit] = useState(false);
-
-  const isLoadingPageRef = useRef(false);
-  const [isFetchingFilter, setIsFetchingFilter] = useState(false);
 
   const [showSpinner, setShowSpinner] = useState(false);
 
@@ -55,72 +51,19 @@ export default function PersonalMode() {
   }, [isLoading]);
 
   const getPictures = async (cursor?: string) => {
-    try {
-      if (!loggedUser) return;
-
-      isLoadingPageRef.current = true;
-
-      const orderByKey = state.sortValue.split(" ")[0];
-      const orderByDir = state.sortValue.split(" ")[1];
-
-      const res = await getManyPictures({
-        ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
-        ...(state.filterSelect ? { [state.filterSelect]: true } : {}),
-        gender: state.gender,
-        orderBy: orderByKey,
-        minAge: state.minAge,
-        maxAge: state.maxAge,
-        orderByDir,
-        limit: 30,
-        cursor,
-        isGlobal: false,
-      }).then(async (res) => {
-        dispatch({ key: "nextCursor", value: res.nextCursor });
-
-        dispatch({
-          key: "picUrls",
-          value: cursor
-            ? [...new Set([...state.picUrls, ...res.pictures.map(({ url }) => url)])]
-            : res.pictures.map(({ url }) => url),
-        });
-
-        dispatch({
-          key: "picsInfo",
-          value: cursor
-            ? [
-                ...new Set([
-                  ...state.picsInfo.map((row) => JSON.stringify(row)),
-                  ...res.pictures.map((pic) => JSON.stringify(pic)),
-                ]),
-              ].map((row) => JSON.parse(row))
-            : res.pictures.map((pic) => pic),
-        });
-
-        if (!areTherePictures) setAreThePictures(state.picUrls.length > 0);
-      });
-
-      return res;
-    } finally {
-      getUploadPermission().then(({ canUploadMore }) => {
-        setHasReachedPicsLimit(!canUploadMore);
-      });
+    _getPictures(cursor).finally(() => {
       setIsLoading(false);
-      setIsFetchingFilter(false);
-      isLoadingPageRef.current = false;
-      setIsLoadingPage(false);
-      dispatch({ key: "isSet", value: true });
-    }
+    });
   };
 
   const handleScrollUpdate = () => {
     if (state.nextCursor) {
-      isLoadingPageRef.current = true;
-      setIsLoadingPage(true);
+      updateLoadingMoreImages(true);
       getPictures(state.nextCursor);
     }
   };
 
-  useInfiniteScroll({ isLoading: isLoadingPageRef.current, onUpdate: handleScrollUpdate }, [
+  useInfiniteScroll({ isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate }, [
     state.nextCursor,
   ]);
 
@@ -131,6 +74,10 @@ export default function PersonalMode() {
       isFirstRender.current = false;
     }
   }, [state.sortValue, state.filterSelect, state.gender, state.minAge, state.maxAge]);
+
+  const handlePictureUpload = async () => {
+    await getPictures();
+  };
 
   const handleFileSelect = () => {
     if (fileInputRef.current) {
@@ -157,7 +104,7 @@ export default function PersonalMode() {
 
         setSelectedImage({ image: base64Image, height, width });
         setFilename(selectedFile.name);
-        setIsUploadModalOpen(true);
+        setIsOpen(true);
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -194,21 +141,21 @@ export default function PersonalMode() {
       <UploadPhotoModal
         image={selectedImage}
         filename={filename}
-        isOpen={isUploadModalOpen}
-        mode={Mode.Personal}
-        onUpload={() => getPictures()}
+        isOpen={isOpen}
+        mode={Mode.Global}
+        onUpload={handlePictureUpload}
         onClose={() => {
-          setIsUploadModalOpen(false);
+          setIsOpen(false);
         }}
       />
-      {!isLoading && state.picUrls.length === 0 && !areTherePictures && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && (state.picUrls.length > 0 || areTherePictures) && (
+      {!isLoading && state.picUrls.length === 0 && <EmptyPlaceholder />}
+      {loggedUser && !isLoading && state.picUrls.length > 0 && (
         <>
           <Header
             getPictures={getPictures}
-            hasReachedPicsLimit={hasReachedPicsLimit}
+            hasReachedPicsLimit={state.hasReachedPicsLimit}
             loggedUser={loggedUser}
-            setIsFetchingFilter={setIsFetchingFilter}
+            setIsFetchingFilter={(value) => dispatch({ key: "isFetchingFilter", value })}
             filename={filename}
             handleFileChange={handleFileChange}
             selectedImage={selectedImage}
@@ -222,8 +169,8 @@ export default function PersonalMode() {
           )}
           <PhotosGird
             getPictures={getPictures}
-            isFetchingFilter={isFetchingFilter}
-            isLoadingMorePhotos={isLoadingPage}
+            isFetchingFilter={state.isFetchingFilter}
+            isLoadingMorePhotos={isLoadingMoreImages.state}
             loggedUser={loggedUser}
             picUrls={state.picUrls}
             picsInfo={state.picsInfo}

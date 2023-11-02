@@ -18,7 +18,7 @@ interface IFilters {
   maxAgeInit?: number;
 }
 
-const INI_MAX_AGE = 100;
+const MAX_AGE = 100;
 
 const Filters = ({
   isAdmin,
@@ -32,8 +32,8 @@ const Filters = ({
   minAgeInit,
   maxAgeInit,
 }: IFilters) => {
-  const [minAge, setMinAge] = useState(MIN_AGE);
-  const [maxAge, setMaxAge] = useState(INI_MAX_AGE);
+  const [minAge, setMinAge] = useState(minAgeInit ?? MIN_AGE);
+  const [maxAge, setMaxAge] = useState(maxAgeInit ?? MAX_AGE);
 
   const handleAgeRangeChange = (minAge: number, maxAge: number) => {
     updateAgeRange(minAge, maxAge);
@@ -78,13 +78,13 @@ const Filters = ({
           <div className="flex justify-between w-full text-sm">
             <div>Age Range</div>
             <div>
-              {minAge}-{maxAge === 100 ? "100+" : maxAge}
+              {minAge}-{maxAge === MAX_AGE ? "100+" : maxAge}
             </div>
           </div>
           <MultipleRangeSlider
-            initialValue={[minAgeInit ?? 18, maxAgeInit ?? 100]}
-            min={18}
-            max={100}
+            initialValue={[minAgeInit ?? MIN_AGE, maxAgeInit ?? MAX_AGE]}
+            min={MIN_AGE}
+            max={MAX_AGE}
             onChange={handleAgeRangeChange}
           />
         </div>
@@ -97,13 +97,13 @@ const Filters = ({
         <div className="flex justify-between w-full">
           <div>Age Range</div>
           <div>
-            {minAge}-{maxAge === 100 ? "100+" : maxAge}
+            {minAge}-{maxAge === MAX_AGE ? "100+" : maxAge}
           </div>
         </div>
         <MultipleRangeSlider
-          initialValue={[minAgeInit ?? 18, maxAgeInit ?? 100]}
-          min={18}
-          max={100}
+          initialValue={[minAgeInit ?? MIN_AGE, maxAgeInit ?? MAX_AGE]}
+          min={MIN_AGE}
+          max={MAX_AGE}
           onChange={handleAgeRangeChange}
         />
       </div>

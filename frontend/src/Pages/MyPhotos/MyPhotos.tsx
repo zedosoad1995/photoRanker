@@ -4,8 +4,11 @@ import GlobalMode from "./GlobalMode";
 import { IMode, Mode } from "@/Constants/mode";
 import PersonalMode from "./PersonalMode";
 import { MyPhotosProvider } from "./Contexts/myPhotos";
+import { useAuth } from "@/Contexts/auth";
 
 export default function MyPhotos() {
+  const { user } = useAuth();
+
   const [mode, setMode] = useState<IMode>(Mode.Global);
 
   const handleUpdateMode = (mode: IMode) => {
@@ -18,8 +21,12 @@ export default function MyPhotos() {
         <div className="flex justify-center items-centers mb-3">
           <ModeSelect mode={mode} handleUpdateMode={handleUpdateMode} />
         </div>
-        <MyPhotosProvider>{mode === Mode.Global && <GlobalMode />}</MyPhotosProvider>
-        <MyPhotosProvider>{mode === Mode.Personal && <PersonalMode />}</MyPhotosProvider>
+        <MyPhotosProvider loggedUser={user} mode={Mode.Global}>
+          {mode === Mode.Global && <GlobalMode />}
+        </MyPhotosProvider>
+        <MyPhotosProvider loggedUser={user} mode={Mode.Personal}>
+          {mode === Mode.Personal && <PersonalMode />}
+        </MyPhotosProvider>
       </div>
     </>
   );
