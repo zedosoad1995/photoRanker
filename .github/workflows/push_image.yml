@@ -33,33 +33,29 @@ jobs:
       - name: Build and Push Nginx Docker image
         run: |
           docker build -t vcarp/photoscorer-nginx:latest -f infra/nginx/Dockerfile . 
-          docker push vcarp/photoscorer-nginx:latest
+          docker push vcarp/photoscorer-nginx
 
       - name: Build and Push Docker image
         run: |
           docker build -t vcarp/photoscorer:latest -f backend/Dockerfile . 
-          docker push vcarp/photoscorer:latest
+          docker push vcarp/photoscorer
 
       - name: Get the previous latest tag
-        id: prevtag
         run: |
-          PREV_TAG=$(docker image ls vcarp/photoscorer --format "{{.Tag}}" | sort | grep -v latest | tail -1)
-          echo "::set-output name=tag::$PREV_TAG"
+          echo "PREV_TAG=$(docker image ls vcarp/photoscorer --format "{{.Tag}}" | sort | grep -v latest | tail -1)" >> $GITHUB_ENV
 
       - name: Tag previous tag
-        if: steps.prevtag.outputs.tag != ''
+        if: env.PREV_TAG != ''
         run: |
-          docker tag vcarp/photoscorer:${{ steps.prevtag.outputs.tag }} vcarp/photoscorer:previous
+          docker tag vcarp/photoscorer:$PREV_TAG vcarp/photoscorer:previous
           docker push vcarp/photoscorer:previous
 
       - name: Get the previous latest tag nginx
-        id: prevtagnginx
         run: |
-          PREV_TAG=$(docker image ls vcarp/photoscorer-nginx --format "{{.Tag}}" | sort | grep -v latest | tail -1)
-          echo "::set-output name=tag::$PREV_TAG"
+          echo "PREV_TAG_NGINX=$(docker image ls vcarp/photoscorer-nginx --format "{{.Tag}}" | sort | grep -v latest | tail -1)" >> $GITHUB_ENV
 
       - name: Tag previous nginx tag
-        if: steps.prevtagnginx.outputs.tag != ''
+        if: env.PREV_TAG_NGINX != ''
         run: |
-          docker tag vcarp/photoscorer-nginx:${{ steps.prevtagnginx.outputs.tag }} vcarp/photoscorer-nginx:previous
+          docker tag vcarp/photoscorer-nginx:$PREV_TAG_NGINX vcarp/photoscorer-nginx:previous
           docker push vcarp/photoscorer-nginx:previous
