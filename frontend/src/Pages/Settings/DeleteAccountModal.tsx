@@ -16,9 +16,12 @@ export default function DeleteAccountModal({
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   const handleDeleteCustom = async () => {
-    setIsDeleteLoading(true);
-    await handleDelete();
-    setIsDeleteLoading(false);
+    try {
+      setIsDeleteLoading(true);
+      await handleDelete();
+    } finally {
+      setIsDeleteLoading(false);
+    }
   };
 
   return (

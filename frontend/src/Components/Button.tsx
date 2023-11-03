@@ -67,16 +67,22 @@ export default function Button({
       className = disabled ? "text-disabled-button-text" : "hover:bg-light-contour";
   }
 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isLoading && onClick) {
+      onClick(event);
+    }
+  };
+
   return (
     <button
       disabled={disabled}
       type={type}
-      className={`flex ${
+      className={`flex ${isLoading ? "cursor-default" : "cursor-pointer"} ${
         isHeightFull ? "h-full" : ""
       } justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         size === "medium" ? "px-3 py-1.5 text-sm" : "px-5 py-2.5 text-base"
       } ${isFull ? "w-full" : ""} ${className}`}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {isLoading && (
         <div className="flex items-center justify-center gap-2">

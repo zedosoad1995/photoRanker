@@ -1,0 +1,11 @@
+version: "3"
+services:
+  app:
+    image: vcarp/photoscorer:previous
+    ports:
+      - "8000:8000"
+  nginx:
+    image: vcarp/photoscorer-nginx:previous
+    ports:
+      - "80:80"
+      - "443:443"
