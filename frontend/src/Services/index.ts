@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { logout } from "./auth";
-import { LOGIN, NON_AUTH_ROUTES } from "@/Constants/routes";
+import { LOGIN, AUTH_ROUTES } from "@/Constants/routes";
 import { matchPath } from "react-router-dom";
 
 const api: AxiosInstance = axios.create({
@@ -11,7 +11,7 @@ api.interceptors.response.use(
   (response: AxiosResponse) => response.data,
   async (error: AxiosError) => {
     if (error.response?.status === 401 && "error" in (error.response.data as any)) {
-      const isPathProtected = !NON_AUTH_ROUTES.some((path) =>
+      const isPathProtected = AUTH_ROUTES.some((path) =>
         matchPath({ path }, window.location.pathname)
       );
 

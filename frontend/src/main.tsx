@@ -33,6 +33,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
 import App from "./Pages/App/index.tsx";
 import RedirectLayout from "./Components/RedirectLayout.tsx";
+import { NotFoundPage } from "./Pages/404.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -40,6 +41,9 @@ if (import.meta.env.VITE_ENV === "PROD") {
 }
 
 const router = createBrowserRouter([
+  {
+    errorElement: <NotFoundPage />,
+  },
   {
     element: <ProtectedLayout />,
     children: [
