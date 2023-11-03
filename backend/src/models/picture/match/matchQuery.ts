@@ -102,8 +102,6 @@ export const getMatchPictures = async (loggedUser: User, userPreferences: Prefer
 
   const picture1 = await getFirstPic(gender, loggedUser, userPreferences);
 
-  console.log(picture1);
-
   if (!picture1) {
     throw new BadRequestError("Not enought pictures for the match");
   }
