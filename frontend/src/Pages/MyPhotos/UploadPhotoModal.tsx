@@ -31,21 +31,25 @@ export default function UploadPhotoModal({
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
-      setIsUploadLoading(true);
-      let croppedImage = await getCroppedImage(image.image, croppedAreaPixels);
+      try {
+        setIsUploadLoading(true);
+        let croppedImage = await getCroppedImage(image.image, croppedAreaPixels);
 
-      if (croppedImage.size > IMAGE_SIZE_LIMIT) {
-        croppedImage = await resizeImage(croppedImage);
+        if (croppedImage.size > IMAGE_SIZE_LIMIT) {
+          croppedImage = await resizeImage(croppedImage);
+        }
+
+        const isGlobal = mode === Mode.Global ? true : false;
+
+        await uploadImage(croppedImage, filename, isGlobal);
+        await handleUploadParent();
+
+        handleClose();
+        setZoom(1);
+        setCrop({ x: 0, y: 0 });
+      } finally {
+        setIsUploadLoading(false);
       }
-
-      const isGlobal = mode === Mode.Global ? true : false;
-
-      await uploadImage(croppedImage, filename, isGlobal);
-      await handleUploadParent();
-      handleClose();
-      setZoom(1);
-      setCrop({ x: 0, y: 0 });
-      setIsUploadLoading(false);
     }
   };
 
