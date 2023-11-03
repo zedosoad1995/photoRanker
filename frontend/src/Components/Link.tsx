@@ -7,7 +7,7 @@ interface ILink {
 
 export default function Link({ url, children }: ILink) {
   return (
-    <ReactLink to={url} className="text-sm font-semibold text-primary hover:text-primary-hover">
+    <ReactLink to={url} className="font-semibold text-primary hover:text-primary-hover">
       {children}
     </ReactLink>
   );

@@ -95,7 +95,7 @@ export default function SignIn() {
               autocomplete="current-password"
               onKeyDown={handleKeyDown}
             />
-            <div className="flex items-center justify-end mt-1">
+            <div className="flex items-center justify-end mt-1 text-sm">
               <Link url={FORGOT_PASSWORD}>Forgot password?</Link>
             </div>
           </div>

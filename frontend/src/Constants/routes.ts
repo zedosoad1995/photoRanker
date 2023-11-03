@@ -11,13 +11,4 @@ export const SETTINGS = "/settings";
 
 export const FACEBOOK_CALLBACK = "/auth/facebook";
 
-export const NON_AUTH_ROUTES = [
-  HOME,
-  LOGIN,
-  REGISTER,
-  EXPIRED_VALIDATION,
-  `${CHECKING_VALIDATION}/*`,
-  FORGOT_PASSWORD,
-  `${RESET_PASSWORD}/*`,
-  FACEBOOK_CALLBACK,
-];
+export const AUTH_ROUTES = [VOTE, PHOTOS, SETTINGS];
