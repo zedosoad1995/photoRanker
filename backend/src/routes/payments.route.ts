@@ -3,6 +3,7 @@ import { checkAuth } from "@/middlewares/checkAuth";
 import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
 import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { checkBanned } from "@/middlewares/checkBanned";
+import { createPaymentIntent } from "@/controllers/payments.controller";
 
 const router = Router();
 
@@ -11,7 +12,8 @@ router.post(
   checkAuth,
   checkBanned,
   checkProfileCompleted,
-  checkEmailVerified
+  checkEmailVerified,
+  createPaymentIntent
 );
 
 export default router;
