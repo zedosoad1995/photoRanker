@@ -9,5 +9,5 @@ export const createPaymentIntent = async (req: Request, res: Response) => {
     currency: "usd",
   });
 
-  res.status(200).send(paymentIntent.client_secret);
+  res.status(200).send({ clientSecret: paymentIntent.client_secret });
 };
