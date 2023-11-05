@@ -4,12 +4,7 @@ import multer from "multer";
 import { PICTURE } from "@/constants/messages";
 import axios from "axios";
 
-export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof CustomError) {
     return res.status(err.statusCode).send(err.serializeErrors());
   }
@@ -27,18 +22,12 @@ export const errorHandler = (
   }
 
   if (axios.isAxiosError(err)) {
-    console.error(
-      err.status,
-      err.code,
-      err.cause,
-      err.message,
-      err.response?.data
-    );
+    console.error(err.status, err.code, err.cause, err.message, err.response?.data);
   } else {
     console.error(err);
   }
 
-  return res.status(400).send({
+  return res.status(500).send({
     message: "Something went wrong",
   });
 };
