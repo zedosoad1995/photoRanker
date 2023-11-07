@@ -1,9 +1,9 @@
-import { PURCHASE_TYPE, PURCHASE_AMOUNT } from "@shared/constants/purchase";
+import { PURCHASE_TYPE, PURCHASE_AMOUNT, IPurchaseType } from "@shared/constants/purchase";
 
 interface IPurchaseMetadata {
   amount: number;
   metadata: {
-    type: (typeof PURCHASE_TYPE)[keyof typeof PURCHASE_TYPE];
+    type: IPurchaseType;
     [k: string]: any;
   };
 }

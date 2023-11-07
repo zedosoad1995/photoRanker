@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
 import { User } from "@prisma/client";
-import { getPurchaseAmountAndMetadata } from "@/models/paymeny";
+import { getPurchaseAmountAndMetadata } from "@/models/payment";
 import { BadRequestError } from "@/errors/BadRequestError";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
