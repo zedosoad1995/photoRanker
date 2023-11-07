@@ -5,6 +5,8 @@ import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
 import { checkBanned } from "@/middlewares/checkBanned";
 import { createPaymentIntent, stripeWebhook } from "@/controllers/payments.controller";
 import bodyParser from "body-parser";
+import { validateQuery } from "@/middlewares/validateQuery";
+import { createPaymentIntentSchema } from "@/schemas/purchase/createPaymentIntent";
 
 const router = Router();
 
@@ -14,6 +16,7 @@ router.post(
   checkBanned,
   checkProfileCompleted,
   checkEmailVerified,
+  validateQuery(createPaymentIntentSchema),
   createPaymentIntent
 );
 

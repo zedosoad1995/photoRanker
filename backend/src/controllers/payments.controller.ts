@@ -1,23 +1,31 @@
 import { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
 import { User } from "@prisma/client";
+import { getPurchaseAmountAndMetadata } from "@/models/paymeny";
+import { BadRequestError } from "@/errors/BadRequestError";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export const createPaymentIntent = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser as User;
 
+  const purchaseInfo = getPurchaseAmountAndMetadata(req.body.purchaseType);
+
+  if (!purchaseInfo) {
+    throw new BadRequestError("Invalid purchaseType");
+  }
+
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: req.body.amount,
+    amount: purchaseInfo.amount,
     currency: "eur",
     automatic_payment_methods: {
       enabled: true,
     },
-    metadata: { userId: loggedUser.id },
+    metadata: { userId: loggedUser.id, ...purchaseInfo.metadata },
   });
 
   if (!paymentIntent.client_secret) {
-    throw new Error("Something went wrong with strip, client_secret was null");
+    throw "Something went wrong with strip, client_secret was null";
   }
 
   res.status(200).send({ clientSecret: paymentIntent.client_secret });
