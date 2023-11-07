@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
 import { User } from "@prisma/client";
-import { getPurchaseAmountAndMetadata } from "@/models/payment";
+import { getPurchaseAmountAndMetadata, handlePurchase } from "@/models/payment";
 import { BadRequestError } from "@/errors/BadRequestError";
+import { ValidationError } from "@/errors/ValidationError";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
@@ -54,7 +55,20 @@ export const stripeWebhook = async (req: Request, res: Response, next: NextFunct
   switch (event.type) {
     case "payment_intent.succeeded":
       const paymentIntentSucceeded = event.data.object;
-      console.log(paymentIntentSucceeded.amount, paymentIntentSucceeded.metadata);
+
+      if (!paymentIntentSucceeded.metadata.userId) {
+        throw new ValidationError({
+          path: "metadata.userId",
+          message: "Required",
+        });
+      } else if (!paymentIntentSucceeded.metadata.type) {
+        throw new ValidationError({ path: "metadata.type", message: "Required" });
+      }
+
+      await handlePurchase(
+        paymentIntentSucceeded.metadata.type,
+        paymentIntentSucceeded.metadata.userId
+      );
       break;
     default:
       console.log(`Unhandled event type ${event.type}`);
