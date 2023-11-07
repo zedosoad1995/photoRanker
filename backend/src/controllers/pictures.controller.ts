@@ -1,6 +1,5 @@
 import { PICTURE } from "@/constants/messages";
 import { IMAGES_FOLDER_PATH } from "@/constants/picture";
-import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
@@ -123,7 +122,7 @@ export const checkUploadPermission = async (req: Request, res: Response) => {
       },
     });
 
-    if (numPictures >= LIMIT_PICTURES) {
+    if (numPictures >= loggedUser.numLimitPhotos) {
       canUploadMore = false;
     }
   }
@@ -135,7 +134,7 @@ export const checkUploadPermission = async (req: Request, res: Response) => {
 
 export const uploadOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
-    const loggedUser = req.loggedUser!;
+    const loggedUser = req.loggedUser as User;
     const isGlobal = req.body.isGlobal;
 
     if (!req.file) {
@@ -149,8 +148,8 @@ export const uploadOne =
         },
       });
 
-      if (numPictures >= LIMIT_PICTURES) {
-        throw new BadRequestError(PICTURE.TOO_MANY_PICTURES);
+      if (numPictures >= loggedUser.numLimitPhotos) {
+        throw new BadRequestError(PICTURE.TOO_MANY_PICTURES(loggedUser.numLimitPhotos));
       }
     }
 

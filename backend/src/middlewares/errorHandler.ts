@@ -27,7 +27,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     console.error(err);
   }
 
-  return res.status(500).send({
+  return res.status(400).send({
     message: "Something went wrong",
   });
 };

@@ -2,7 +2,6 @@ import request from "supertest";
 import { app } from "@/app";
 import { rimrafSync } from "rimraf";
 import { IMAGES_FOLDER_PATH, TEST_IMAGES_FOLDER_PATH } from "@/constants/picture";
-import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { PICTURE } from "@/constants/messages";
 import { loginAdmin, loginRegular } from "@/tests/helpers/user";
 import { User } from "@prisma/client";
@@ -154,7 +153,7 @@ describe("Regular Logged User", () => {
   it("throws an error, when number of pictures passes the limit", async () => {
     await PictureSeeder.seedMany({
       data: { userId: regularUser.id },
-      numRepeat: LIMIT_PICTURES,
+      numRepeat: regularUser.numLimitPhotos,
     });
 
     const response = await request(app)
@@ -230,7 +229,7 @@ describe("Admin Logged User", () => {
 
     await PictureSeeder.seedMany({
       data: { userId: adminUser.id },
-      numRepeat: LIMIT_PICTURES,
+      numRepeat: adminUser.numLimitPhotos,
     });
 
     const response = await request(app)
@@ -246,7 +245,7 @@ describe("Admin Logged User", () => {
         userId: adminUser.id,
       },
     });
-    expect(numPictures).toBe(LIMIT_PICTURES + 1);
+    expect(numPictures).toBe(adminUser.numLimitPhotos + 1);
 
     saveNewImageMock.mockRestore();
   });

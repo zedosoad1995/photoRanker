@@ -1,5 +1,5 @@
 import { IMAGE_SIZE_LIMIT, IMAGE_UPLOAD_KEY } from "./picture";
-import { LIMIT_PICTURES, MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
+import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import bytes from "bytes";
 
 export const PICTURE = {
@@ -8,7 +8,8 @@ export const PICTURE = {
   FILE_TOO_LARGE: `File size exceeds the limit (${bytes(IMAGE_SIZE_LIMIT)})`,
   NO_FILE: "No file uploaded",
   IMAGE_DIM_TOO_SMALL: `Image height must be at least ${MIN_HEIGHT} and width at least ${MIN_WIDTH}`,
-  TOO_MANY_PICTURES: `You have have reached the limit of ${LIMIT_PICTURES} pictures. To upload a new picture you must delete other`,
+  TOO_MANY_PICTURES: (maxPictures: number) =>
+    `You have have reached the limit of ${maxPictures} pictures. To upload a new picture you must delete other`,
 };
 
 export const AUTH = {
