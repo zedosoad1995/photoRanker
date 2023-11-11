@@ -12,3 +12,5 @@ export const PURCHASE_AMOUNT = {
 export const PHOTO_LIMIT_PURCHASE_ON = true;
 export const MAX_FREE_PHOTOS = 20;
 export const MAX_PAID_PHOTOS = 100;
+
+export const MAX_FREE_VOTES = 30;
