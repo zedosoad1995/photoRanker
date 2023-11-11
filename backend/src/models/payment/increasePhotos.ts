@@ -1,7 +1,6 @@
 import { NotFoundError } from "@/errors/NotFoundError";
 import { prisma } from "../";
-
-const MAX_NUM_PHOTOS = 100;
+import { MAX_PAID_PHOTOS } from "@shared/constants/purchase";
 
 export const increasePhotos = async (userId: string) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -15,7 +14,7 @@ export const increasePhotos = async (userId: string) => {
       id: userId,
     },
     data: {
-      numLimitPhotos: MAX_NUM_PHOTOS,
+      numLimitPhotos: MAX_PAID_PHOTOS,
     },
   });
 };

@@ -19,6 +19,7 @@ import { StorageInteractor } from "@/types/storageInteractor";
 import { PictureModel } from "@/models/picture";
 import { SENDGRID_EMAIL_NAME } from "@/constants/email";
 import { MailRepo } from "@/types/mailRepo";
+import { MAX_FREE_PHOTOS } from "@shared/constants/purchase";
 
 export const getMany = async (req: Request, res: Response) => {
   const users = await UserModel.findMany();
@@ -86,6 +87,7 @@ export const createOne = (mailingService: MailRepo) => async (req: Request, res:
       isProfileCompleted: true,
       verificationTokenExpiration: expires,
       verificationToken,
+      numLimitPhotos: MAX_FREE_PHOTOS,
     },
   });
 
@@ -147,6 +149,7 @@ export const createProfile = async (req: Request, res: Response) => {
         create: {},
       },
       isProfileCompleted: true,
+      numLimitPhotos: MAX_FREE_PHOTOS,
     },
     where: {
       id: userId,

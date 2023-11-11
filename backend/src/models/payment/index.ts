@@ -1,6 +1,10 @@
-import { PURCHASE_TYPE, PURCHASE_AMOUNT, IPurchaseType } from "@shared/constants/purchase";
+import {
+  PURCHASE_TYPE,
+  PURCHASE_AMOUNT,
+  IPurchaseType,
+  PHOTO_LIMIT_PURCHASE_ON,
+} from "@shared/constants/purchase";
 import { increasePhotos } from "./increasePhotos";
-import { BadRequestError } from "@/errors/BadRequestError";
 import { ValidationError } from "@/errors/ValidationError";
 
 interface IPurchaseMetadata {
@@ -26,14 +30,12 @@ export const getPurchaseAmountAndMetadata = (purchaseType: string): IPurchaseMet
 };
 
 export const handlePurchase = async (purchaseType: string, userId: string) => {
-  switch (purchaseType) {
-    case PURCHASE_TYPE.INCREASE_PHOTOS:
-      await increasePhotos(userId);
-      break;
-    default:
-      throw new ValidationError({
-        message: `Invalid Purchase Type. Given type: ${purchaseType}`,
-        path: "metadata.type",
-      });
+  if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS && PHOTO_LIMIT_PURCHASE_ON) {
+    await increasePhotos(userId);
+  } else {
+    throw new ValidationError({
+      message: `Invalid Purchase Type. Given type: ${purchaseType}`,
+      path: "metadata.type",
+    });
   }
 };
