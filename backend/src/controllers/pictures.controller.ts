@@ -14,6 +14,7 @@ import _ from "underscore";
 import { parseBoolean, parseNumber, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
+import { MAX_FREE_VOTES } from "@shared/constants/purchase";
 
 export const getMany =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
@@ -160,6 +161,7 @@ export const uploadOne =
         rating: RATING_INI,
         ratingDeviation: RD_INI,
         volatility: VOLATILITY_INI,
+        maxFreeVotes: MAX_FREE_VOTES,
         user: {
           connect: {
             id: req.loggedUser?.id,
