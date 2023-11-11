@@ -2,20 +2,17 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const users = await prisma.user.findMany();
+  const pics = await prisma.picture.findMany();
 
-  for (const user of users) {
-    const existingPreference = await prisma.preference.findUnique({
-      where: { userId: user.id },
-    });
-
-    if (!existingPreference) {
-      await prisma.preference.create({
-        data: {
-          userId: user.id,
-        },
-      });
-    }
+  for (const pic of pics) {
+    await prisma.picture.update({
+      data: {
+        freeRating: pic.rating
+      },
+      where: {
+        id: pic.id
+      }
+    })
   }
 }
 
