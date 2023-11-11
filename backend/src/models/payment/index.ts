@@ -6,6 +6,7 @@ import {
 } from "@shared/constants/purchase";
 import { increasePhotos } from "./increasePhotos";
 import { ValidationError } from "@/errors/ValidationError";
+import { prisma } from "..";
 
 interface IPurchaseMetadata {
   amount: number;
@@ -16,21 +17,20 @@ interface IPurchaseMetadata {
 }
 
 export const getPurchaseAmountAndMetadata = (purchaseType: string): IPurchaseMetadata | null => {
-  switch (purchaseType) {
-    case PURCHASE_TYPE.INCREASE_PHOTOS:
-      return {
-        amount: PURCHASE_AMOUNT[PURCHASE_TYPE.INCREASE_PHOTOS],
-        metadata: {
-          type: purchaseType,
-        },
-      };
-    default:
-      return null;
+  if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS && PHOTO_LIMIT_PURCHASE_ON) {
+    return {
+      amount: PURCHASE_AMOUNT[PURCHASE_TYPE.INCREASE_PHOTOS],
+      metadata: {
+        type: purchaseType,
+      },
+    };
+  } else {
+    return null;
   }
 };
 
 export const handlePurchase = async (purchaseType: string, userId: string) => {
-  if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS && PHOTO_LIMIT_PURCHASE_ON) {
+  if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS) {
     await increasePhotos(userId);
   } else {
     throw new ValidationError({
@@ -38,4 +38,14 @@ export const handlePurchase = async (purchaseType: string, userId: string) => {
       path: "metadata.type",
     });
   }
+};
+
+export const hasAlreadyBeenPurchased = async (purchaseType: string, userId: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId }, include: { purchase: true } });
+
+  if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS && user?.purchase?.hasIncreasedPhotoLimit) {
+    return true;
+  }
+
+  return false;
 };

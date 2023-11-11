@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
 import { User } from "@prisma/client";
-import { getPurchaseAmountAndMetadata, handlePurchase } from "@/models/payment";
+import {
+  getPurchaseAmountAndMetadata,
+  handlePurchase,
+  hasAlreadyBeenPurchased,
+} from "@/models/payment";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ValidationError } from "@/errors/ValidationError";
 
@@ -9,6 +13,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export const createPaymentIntent = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser as User;
+
+  const hasBeenPurchased = await hasAlreadyBeenPurchased(req.body.purchaseType, loggedUser.id);
+  if (hasBeenPurchased) {
+    throw new BadRequestError("This feature has already been purchased");
+  }
 
   const purchaseInfo = getPurchaseAmountAndMetadata(req.body.purchaseType);
 

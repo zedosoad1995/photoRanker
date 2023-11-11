@@ -15,6 +15,16 @@ export const increasePhotos = async (userId: string) => {
     },
     data: {
       numLimitPhotos: MAX_PAID_PHOTOS,
+      purchase: {
+        upsert: {
+          create: {
+            hasIncreasedPhotoLimit: true,
+          },
+          update: {
+            hasIncreasedPhotoLimit: true,
+          },
+        },
+      },
     },
   });
 };
