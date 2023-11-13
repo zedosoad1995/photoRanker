@@ -7,8 +7,8 @@ import {
 } from "@shared/constants/purchase";
 import { increasePhotos } from "./increasePhotos";
 import { ValidationError } from "@/errors/ValidationError";
-import { prisma } from "..";
 import { allowUnlimitedVotes } from "./allowUnlimitedVotes";
+import { ILoggedUserMiddleware } from "@/types/user";
 
 interface IPurchaseMetadata {
   amount: number;
@@ -51,9 +51,10 @@ export const handlePurchase = async (purchaseType: string, userId: string) => {
   }
 };
 
-export const hasAlreadyBeenPurchased = async (purchaseType: string, userId: string) => {
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { purchase: true } });
-
+export const hasAlreadyBeenPurchased = async (
+  purchaseType: string,
+  user: ILoggedUserMiddleware
+) => {
   if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS && user?.purchase?.hasIncreasedPhotoLimit) {
     return true;
   } else if (

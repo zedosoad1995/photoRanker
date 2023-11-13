@@ -8,13 +8,14 @@ import {
 } from "@/models/payment";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ValidationError } from "@/errors/ValidationError";
+import { ILoggedUserMiddleware } from "@/types/user";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export const createPaymentIntent = async (req: Request, res: Response) => {
-  const loggedUser = req.loggedUser as User;
+  const loggedUser = req.loggedUser as ILoggedUserMiddleware;
 
-  const hasBeenPurchased = await hasAlreadyBeenPurchased(req.body.purchaseType, loggedUser.id);
+  const hasBeenPurchased = await hasAlreadyBeenPurchased(req.body.purchaseType, loggedUser);
   if (hasBeenPurchased) {
     throw new BadRequestError("This feature has already been purchased");
   }
