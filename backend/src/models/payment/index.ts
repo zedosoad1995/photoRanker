@@ -45,6 +45,11 @@ export const hasAlreadyBeenPurchased = async (purchaseType: string, userId: stri
 
   if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS && user?.purchase?.hasIncreasedPhotoLimit) {
     return true;
+  } else if (
+    purchaseType === PURCHASE_TYPE.UNLIMITED_VOTES_ALL &&
+    user?.purchase?.hasIncreasedPhotoLimit
+  ) {
+    return true;
   }
 
   return false;
