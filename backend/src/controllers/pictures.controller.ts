@@ -162,7 +162,6 @@ export const uploadOne =
         ratingDeviation: RD_INI,
         volatility: VOLATILITY_INI,
         maxFreeVotes: MAX_FREE_VOTES,
-        hasPurchasedUnlimitedVotes: Boolean(loggedUser.purchase?.hasUnlimitedVotes),
         user: {
           connect: {
             id: req.loggedUser?.id,
