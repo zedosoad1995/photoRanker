@@ -21,7 +21,7 @@ export default function PaymentModal({ amount, isOpen, onClose: handleClose }: I
       return;
     }
 
-    createPaymentIntent("increase-photos").then(({ clientSecret }) => {
+    createPaymentIntent("unlimited-votes-all").then(({ clientSecret }) => {
       setClientSecret(clientSecret);
     });
   }, [isOpen]);

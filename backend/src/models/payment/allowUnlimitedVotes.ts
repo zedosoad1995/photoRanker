@@ -28,7 +28,7 @@ export const allowUnlimitedVotes = async (userId: string) => {
     }),
     prisma.picture.updateMany({
       where: {
-        id: userId,
+        userId,
       },
       data: {
         hasPurchasedUnlimitedVotes: true,
