@@ -3,10 +3,12 @@ import {
   PURCHASE_AMOUNT,
   IPurchaseType,
   PHOTO_LIMIT_PURCHASE_ON,
+  UNLIMITED_VOTE_ALL_ON,
 } from "@shared/constants/purchase";
 import { increasePhotos } from "./increasePhotos";
 import { ValidationError } from "@/errors/ValidationError";
 import { prisma } from "..";
+import { allowUnlimitedVotes } from "./allowUnlimitedVotes";
 
 interface IPurchaseMetadata {
   amount: number;
@@ -24,6 +26,13 @@ export const getPurchaseAmountAndMetadata = (purchaseType: string): IPurchaseMet
         type: purchaseType,
       },
     };
+  } else if (purchaseType === PURCHASE_TYPE.UNLIMITED_VOTES_ALL && UNLIMITED_VOTE_ALL_ON) {
+    return {
+      amount: PURCHASE_AMOUNT[PURCHASE_TYPE.UNLIMITED_VOTES_ALL],
+      metadata: {
+        type: purchaseType,
+      },
+    };
   } else {
     return null;
   }
@@ -32,6 +41,8 @@ export const getPurchaseAmountAndMetadata = (purchaseType: string): IPurchaseMet
 export const handlePurchase = async (purchaseType: string, userId: string) => {
   if (purchaseType === PURCHASE_TYPE.INCREASE_PHOTOS) {
     await increasePhotos(userId);
+  } else if (purchaseType === PURCHASE_TYPE.UNLIMITED_VOTES_ALL) {
+    await allowUnlimitedVotes(userId);
   } else {
     throw new ValidationError({
       message: `Invalid Purchase Type. Given type: ${purchaseType}`,
@@ -47,7 +58,7 @@ export const hasAlreadyBeenPurchased = async (purchaseType: string, userId: stri
     return true;
   } else if (
     purchaseType === PURCHASE_TYPE.UNLIMITED_VOTES_ALL &&
-    user?.purchase?.hasIncreasedPhotoLimit
+    user?.purchase?.hasUnlimitedVotes
   ) {
     return true;
   }
