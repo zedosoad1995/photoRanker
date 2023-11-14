@@ -7,6 +7,7 @@ import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, formatDate } from "@/helpers/date";
 import { StorageInteractor } from "@/types/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
+import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
 
 interface IReturnPicWithPervental {
   id: string;
@@ -217,7 +218,7 @@ async function getPicturesWithPercentile(
 
   // Sub-Query Pic Percentile
   const whenLimitedVotes =
-    isBanned || isAdmin(role)
+    isBanned || isAdmin(role) || !UNLIMITED_VOTE_ALL_ON
       ? `FALSE`
       : `(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND 
         pic."hasPurchasedUnlimitedVotes" = FALSE`;
