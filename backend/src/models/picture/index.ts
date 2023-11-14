@@ -221,7 +221,7 @@ async function getPicturesWithPercentile(
     isBanned || isAdmin(role) || !UNLIMITED_VOTE_ALL_ON
       ? `FALSE`
       : `(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND 
-        pic."hasPurchasedUnlimitedVotes" = FALSE`;
+        pic."hasPurchasedUnlimitedVotes" = FALSE AND pic."numVotes" > pic."maxFreeVotes"`;
 
   const subQueryPicPercentile = `
     SELECT 
