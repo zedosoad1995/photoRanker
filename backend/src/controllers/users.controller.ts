@@ -15,10 +15,10 @@ import { cookieOptions } from "@/constants/cookies";
 import { prisma } from "@/models";
 import { BannedUserModel } from "@/models/bannerUser";
 import { BANNED_ACCOUNT } from "@shared/constants/errorCodes";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { PictureModel } from "@/models/picture";
 import { SENDGRID_EMAIL_NAME } from "@/constants/email";
-import { MailRepo } from "@/types/mailRepo";
+import { MailRepo } from "@/types/repositories/mailRepo";
 import { MAX_FREE_PHOTOS } from "@shared/constants/purchase";
 
 export const getMany = async (req: Request, res: Response) => {

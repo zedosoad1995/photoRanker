@@ -1,8 +1,8 @@
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { PreferenceModel } from "@/models/preference";
-import { RatingRepo } from "@/types/ratingRepo";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { RatingRepo } from "@/types/repositories/ratingRepo";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { Request, Response } from "express";
 
 export const createOne =

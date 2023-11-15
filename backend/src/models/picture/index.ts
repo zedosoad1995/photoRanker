@@ -5,7 +5,7 @@ import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, formatDate } from "@/helpers/date";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
 import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
 

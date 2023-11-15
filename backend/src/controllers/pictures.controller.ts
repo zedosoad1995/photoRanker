@@ -8,7 +8,7 @@ import { isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { Request, Response } from "express";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import _ from "underscore";
 import { parseBoolean, parseNumber, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";

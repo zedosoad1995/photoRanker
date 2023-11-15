@@ -4,7 +4,7 @@ import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { VoteModel } from "@/models/vote";
-import { RatingRepo } from "@/types/ratingRepo";
+import { RatingRepo } from "@/types/repositories/ratingRepo";
 import { Request, Response } from "express";
 
 export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Response) => {

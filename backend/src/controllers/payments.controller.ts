@@ -1,27 +1,23 @@
 import { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
-import { User } from "@prisma/client";
-import {
-  getPurchaseAmountAndMetadata,
-  handlePurchase,
-  hasAlreadyBeenPurchased,
-} from "@/models/payment";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ValidationError } from "@/errors/ValidationError";
 import { ILoggedUserMiddleware } from "@/types/user";
+import { PurchaseRepo } from "@/types/repositories/purchase";
+import { purchaser } from "@/container";
+import { IPurchaseType } from "@shared/constants/purchase";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
-export const createPaymentIntent = async (req: Request, res: Response) => {
+const createPaymentIntentHandler = async (purchaser: PurchaseRepo, req: Request) => {
   const loggedUser = req.loggedUser as ILoggedUserMiddleware;
 
-  const hasBeenPurchased = await hasAlreadyBeenPurchased(req.body.purchaseType, loggedUser);
+  const hasBeenPurchased = await purchaser.hasAlreadyBeenPurchased(loggedUser, req.body);
   if (hasBeenPurchased) {
     throw new BadRequestError("This feature has already been purchased");
   }
 
-  const purchaseInfo = getPurchaseAmountAndMetadata(req.body.purchaseType);
-
+  const purchaseInfo = purchaser.getPurchaseAmountAndMetadata();
   if (!purchaseInfo) {
     throw new BadRequestError("Invalid purchaseType");
   }
@@ -39,7 +35,25 @@ export const createPaymentIntent = async (req: Request, res: Response) => {
     throw "Something went wrong with strip, client_secret was null";
   }
 
-  res.status(200).send({ clientSecret: paymentIntent.client_secret });
+  return paymentIntent.client_secret;
+};
+
+export const createPaymentIntentIncreasePhotos = async (req: Request, res: Response) => {
+  const clientSecret = createPaymentIntentHandler(purchaser["increase-photos"], req);
+
+  res.status(200).send({ clientSecret });
+};
+
+export const createPaymentIntentUnlimitedVotes = async (req: Request, res: Response) => {
+  const clientSecret = createPaymentIntentHandler(purchaser["unlimited-votes-all"], req);
+
+  res.status(200).send({ clientSecret });
+};
+
+export const createPaymentIntentMultipleUnlimitedVotes = async (req: Request, res: Response) => {
+  const clientSecret = createPaymentIntentHandler(purchaser["unlimited-votes-multiple"], req);
+
+  res.status(200).send({ clientSecret });
 };
 
 export const stripeWebhook = async (req: Request, res: Response, next: NextFunction) => {
@@ -75,10 +89,19 @@ export const stripeWebhook = async (req: Request, res: Response, next: NextFunct
         throw new ValidationError({ path: "metadata.type", message: "Required" });
       }
 
-      await handlePurchase(
-        paymentIntentSucceeded.metadata.type,
-        paymentIntentSucceeded.metadata.userId
-      );
+      const purchaseType = paymentIntentSucceeded.metadata.type;
+      if (purchaseType in purchaser) {
+        await purchaser[purchaseType as IPurchaseType].handlePurchase(
+          paymentIntentSucceeded.metadata.userId,
+          req.body
+        );
+      } else {
+        throw new ValidationError({
+          message: `Invalid Purchase Type. Given type: ${purchaseType}`,
+          path: "metadata.type",
+        });
+      }
+
       break;
     default:
       console.log(`Unhandled event type ${event.type}`);

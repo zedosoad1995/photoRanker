@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import sharp from "sharp";
 import crypto from "crypto";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 
 export class LocalStorageInteractor implements StorageInteractor {
   constructor() {}
