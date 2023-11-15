@@ -17,7 +17,7 @@ const createPaymentIntentHandler = async (purchaser: PurchaseRepo, req: Request)
     throw new BadRequestError("This feature has already been purchased");
   }
 
-  const purchaseInfo = purchaser.getPurchaseAmountAndMetadata();
+  const purchaseInfo = purchaser.getPurchaseAmountAndMetadata(req.body);
   if (!purchaseInfo) {
     throw new BadRequestError("Invalid purchaseType");
   }
@@ -93,7 +93,7 @@ export const stripeWebhook = async (req: Request, res: Response, next: NextFunct
       if (purchaseType in purchaser) {
         await purchaser[purchaseType as IPurchaseType].handlePurchase(
           paymentIntentSucceeded.metadata.userId,
-          req.body
+          JSON.parse(paymentIntentSucceeded.metadata.extra)
         );
       } else {
         throw new ValidationError({

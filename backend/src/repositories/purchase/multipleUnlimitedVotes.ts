@@ -48,12 +48,13 @@ export class MultipleUnlimitedVotes implements PurchaseRepo<IExtraProps> {
     return false;
   }
 
-  public getPurchaseAmountAndMetadata() {
+  public getPurchaseAmountAndMetadata(props: IExtraProps) {
     if (UNLIMITED_VOTE_MULTIPLE_ON) {
       return {
         amount: PURCHASE_AMOUNT[this.purchaseName],
         metadata: {
           type: this.purchaseName,
+          extra: props,
         },
       };
     }

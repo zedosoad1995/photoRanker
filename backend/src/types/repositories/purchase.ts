@@ -12,6 +12,6 @@ interface IPurchaseMetadata {
 export interface PurchaseRepo<T = any> {
   readonly purchaseName: IPurchaseType;
   hasAlreadyBeenPurchased: (user: ILoggedUserMiddleware, props: T) => Promise<boolean>;
-  getPurchaseAmountAndMetadata: () => IPurchaseMetadata | null;
+  getPurchaseAmountAndMetadata: (props: T) => IPurchaseMetadata | null;
   handlePurchase: (userId: string, props: T) => Promise<void>;
 }
