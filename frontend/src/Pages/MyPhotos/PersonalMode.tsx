@@ -1,7 +1,7 @@
 import Button from "@/Components/Button";
 import { useEffect, useRef, useState } from "react";
 import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
-import UploadPhotoModal from "./UploadPhotoModal";
+import UploadPhotoModal from "./Modals/UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/20/solid";
 import { toast } from "react-hot-toast";

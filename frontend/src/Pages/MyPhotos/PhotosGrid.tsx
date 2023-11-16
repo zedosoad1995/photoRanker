@@ -3,8 +3,8 @@ import { PhotoCard } from "./ImageCard";
 import { PhotosLoaderCover } from "./PhotosLoaderCover";
 import { IUser } from "@/Types/user";
 import { IPictureWithPercentile } from "@/Types/picture";
-import BanUserModal from "./BanUserModal";
-import DeletePhotoModal from "./DeletePhotoModal";
+import BanUserModal from "./Modals/BanUserModal";
+import DeletePhotoModal from "./Modals/DeletePhotoModal";
 import { useState } from "react";
 
 interface IPhotoGrid {

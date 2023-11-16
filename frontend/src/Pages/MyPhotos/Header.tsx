@@ -5,6 +5,7 @@ import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
 import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
+import BuyMorePhotosModal from "./Modals/BuyMorePhotosModal";
 
 const DEFAULT_SORT = "score desc";
 
@@ -35,10 +36,10 @@ export const Header = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileSelect = () => {
-    if (fileInputRef.current) {
+    /* if (fileInputRef.current) {
       fileInputRef.current.click();
       fileInputRef.current.value = "";
-    }
+    } */
   };
 
   const handleFilterSelect = (selectedOption: string) => {
@@ -98,6 +99,7 @@ export const Header = ({
 
   return (
     <>
+      <BuyMorePhotosModal isOpen onClose={() => {}} />
       <input
         type="file"
         accept="image/jpeg, image/png"
