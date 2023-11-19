@@ -29,7 +29,9 @@ export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBu
           <div className="mb-2">
             <Button>Upgrade for $4.99</Button>
           </div>
-          <Button style="none">Not Now</Button>
+          <Button onClick={handleClose} style="none">
+            Not Now
+          </Button>
         </div>
       </Dialog.Panel>
     </Dialog>

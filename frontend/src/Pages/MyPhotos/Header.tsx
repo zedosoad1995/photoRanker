@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState } from "react";
 import Button from "@/Components/Button";
 import Filters from "./Filters/Filters";
 import { isAdmin } from "@/Utils/role";
@@ -35,11 +35,21 @@ export const Header = ({
 }: IHeader) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileSelect = () => {
-    /* if (fileInputRef.current) {
-      fileInputRef.current.click();
-      fileInputRef.current.value = "";
-    } */
+  const [isOpenMultiPicsModal, setIsOpenMultiPicsModal] = useState(false);
+
+  const handleCloseMultiPicsModal = () => {
+    setIsOpenMultiPicsModal(false);
+  };
+
+  const handleClickUploadPhoto = () => {
+    if (hasReachedPicsLimit) {
+      setIsOpenMultiPicsModal(true);
+    } else {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   const handleFilterSelect = (selectedOption: string) => {
@@ -99,7 +109,7 @@ export const Header = ({
 
   return (
     <>
-      <BuyMorePhotosModal isOpen onClose={() => {}} />
+      <BuyMorePhotosModal isOpen={isOpenMultiPicsModal} onClose={handleCloseMultiPicsModal} />
       <input
         type="file"
         accept="image/jpeg, image/png"
@@ -114,8 +124,8 @@ export const Header = ({
       >
         <div className="w-full sm:w-fit">
           <Button
-            disabled={hasReachedPicsLimit}
-            onClick={handleFileSelect}
+            disabled={hasReachedPicsLimit && false}
+            onClick={handleClickUploadPhoto}
             isFull={true}
             isHeightFull={true}
           >
