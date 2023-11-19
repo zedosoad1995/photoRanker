@@ -2,12 +2,9 @@ import { useElements, useStripe, PaymentElement } from "@stripe/react-stripe-js"
 import { toast } from "react-hot-toast";
 import Button from "../Button";
 
-interface IPaymentCheckout {
-  amount: number;
-  onClose: () => void;
-}
+interface IPaymentCheckout {}
 
-export const PaymentCheckout = ({ amount, onClose: handleClose }: IPaymentCheckout) => {
+export const PaymentCheckout = ({}: IPaymentCheckout) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -34,8 +31,7 @@ export const PaymentCheckout = ({ amount, onClose: handleClose }: IPaymentChecko
         toast.error("Something went wrong with your payment");
       }
     } else if (paymentIntent.status === "succeeded") {
-      handleClose();
-      toast.success(`Payment complete! Thanks for the ${(amount / 100).toFixed(2)}€`);
+      toast.success(`Payment complete!`);
     }
   };
 

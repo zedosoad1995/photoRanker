@@ -1,6 +1,7 @@
 import { Dialog } from "@headlessui/react";
 import Button from "@/Components/Button";
 import { CameraRollIcon } from "@/Components/Icons/CameraRoll";
+import { usePaymentIntent } from "@/Hooks/usePaymentIntent";
 
 interface IBuyMorePhotosModal {
   isOpen: boolean;
@@ -8,6 +9,14 @@ interface IBuyMorePhotosModal {
 }
 
 export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBuyMorePhotosModal) {
+  const { clientSecret, createIntent, isLoadind } = usePaymentIntent({
+    purchaseType: "increase-photos",
+  });
+
+  const handleClickPay = () => {
+    createIntent();
+  };
+
   return (
     <Dialog
       as="div"
@@ -27,7 +36,9 @@ export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBu
             Upgrade for up to <b>100 photos</b>!
           </div>
           <div className="mb-2">
-            <Button>Upgrade for $4.99</Button>
+            <Button isLoading={isLoadind} onClick={handleClickPay}>
+              Upgrade for $4.99
+            </Button>
           </div>
           <Button onClick={handleClose} style="none">
             Not Now
