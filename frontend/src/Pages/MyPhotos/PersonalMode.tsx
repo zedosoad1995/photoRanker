@@ -142,7 +142,7 @@ export default function PersonalMode() {
         image={selectedImage}
         filename={filename}
         isOpen={isOpen}
-        mode={Mode.Global}
+        mode={Mode.Personal}
         onUpload={handlePictureUpload}
         onClose={() => {
           setIsOpen(false);
