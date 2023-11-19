@@ -1,12 +1,26 @@
+import { useEffect } from "react";
 import { useElements, useStripe, PaymentElement } from "@stripe/react-stripe-js";
 import { toast } from "react-hot-toast";
 import Button from "../Button";
 
-interface IPaymentCheckout {}
+interface IPaymentCheckout {
+  onStripeReady: () => void;
+}
 
-export const PaymentCheckout = ({}: IPaymentCheckout) => {
+export const PaymentCheckout = ({ onStripeReady }: IPaymentCheckout) => {
   const stripe = useStripe();
   const elements = useElements();
+
+  useEffect(() => {
+    if (!elements) return;
+
+    const element = elements.getElement("payment");
+    if (!element) return;
+
+    element.on("loaderstart", () => {
+      onStripeReady();
+    });
+  }, [elements, onStripeReady]);
 
   const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();

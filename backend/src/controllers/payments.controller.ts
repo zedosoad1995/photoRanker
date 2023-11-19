@@ -39,7 +39,7 @@ const createPaymentIntentHandler = async (purchaser: PurchaseRepo, req: Request)
 };
 
 export const createPaymentIntentIncreasePhotos = async (req: Request, res: Response) => {
-  const clientSecret = createPaymentIntentHandler(purchaser["increase-photos"], req);
+  const clientSecret = await createPaymentIntentHandler(purchaser["increase-photos"], req);
 
   res.status(200).send({ clientSecret });
 };

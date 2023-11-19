@@ -13,7 +13,7 @@ export const usePaymentIntent = ({
   errorMessage = "Unable to upgrade. Please try again later.",
 }: IUsePaymentIntent) => {
   const [clientSecret, setClientSecret] = useState<string>();
-  const [isLoadind, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const createIntent = async () => {
     setIsLoading(true);
@@ -29,5 +29,9 @@ export const usePaymentIntent = ({
       });
   };
 
-  return { clientSecret, createIntent, isLoadind };
+  const stopIntent = () => {
+    setClientSecret(undefined);
+  };
+
+  return { clientSecret, createIntent, isLoading, stopIntent };
 };

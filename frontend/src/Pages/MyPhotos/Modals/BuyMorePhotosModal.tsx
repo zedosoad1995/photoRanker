@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import Button from "@/Components/Button";
 import { CameraRollIcon } from "@/Components/Icons/CameraRoll";
 import { usePaymentIntent } from "@/Hooks/usePaymentIntent";
+import Payment from "@/Components/Payment";
 
 interface IBuyMorePhotosModal {
   isOpen: boolean;
@@ -9,12 +11,37 @@ interface IBuyMorePhotosModal {
 }
 
 export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBuyMorePhotosModal) {
-  const { clientSecret, createIntent, isLoadind } = usePaymentIntent({
+  const [isPaymentElementLoading, setIsPaymentElementLoading] = useState(false);
+
+  const {
+    clientSecret,
+    createIntent,
+    stopIntent,
+    isLoading: isLoadingPaymentIntent,
+  } = usePaymentIntent({
     purchaseType: "increase-photos",
   });
 
+  const isLoading = isLoadingPaymentIntent || isPaymentElementLoading;
+  const showPayment = Boolean(clientSecret) && !isLoading;
+
+  useEffect(() => {
+    if (isLoadingPaymentIntent) {
+      setIsPaymentElementLoading(true);
+    }
+  }, [isLoadingPaymentIntent]);
+
+  const handleStripeReady = () => {
+    setIsPaymentElementLoading(false);
+  };
+
   const handleClickPay = () => {
     createIntent();
+  };
+
+  const onCloseModal = () => {
+    stopIntent();
+    handleClose();
   };
 
   return (
@@ -22,28 +49,35 @@ export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBu
       as="div"
       className="fixed inset-0 flex items-center justify-center"
       open={isOpen}
-      onClose={handleClose}
+      onClose={onCloseModal}
     >
       <div className="fixed inset-0 bg-black/50 cursor-pointer" />
       <Dialog.Panel className="bg-white mx-2 p-6 w-[380px] rounded-xl z-30 max-h-[100vh] overflow-y-auto">
-        <div className="font-bold text-center text-xl">Get More Photos</div>
-        <div className="w-[90%] mx-auto text-center mt-4">
-          <div className="m-auto w-[80%] rounded-full bg-[#fa8072] p-4">
-            <CameraRollIcon />
-          </div>
-          <div className="mt-4">Limit of 20 photos reached.</div>
-          <div className="mb-8">
-            Upgrade for up to <b>100 photos</b>!
-          </div>
-          <div className="mb-2">
-            <Button isLoading={isLoadind} onClick={handleClickPay}>
-              Upgrade for $4.99
+        <div className="font-bold text-center text-xl mb-4">Get More Photos</div>
+        {!showPayment && (
+          <div className="w-[90%] mx-auto text-center">
+            <div className="m-auto w-[80%] rounded-full bg-[#fa8072] p-4">
+              <CameraRollIcon />
+            </div>
+            <div className="mt-4">Limit of 20 photos reached.</div>
+            <div className="mb-8">
+              Upgrade for up to <b>100 photos</b>!
+            </div>
+            <div className="mb-2">
+              <Button isLoading={isLoading} onClick={handleClickPay}>
+                Upgrade for $4.99
+              </Button>
+            </div>
+            <Button onClick={onCloseModal} style="none">
+              Not Now
             </Button>
           </div>
-          <Button onClick={handleClose} style="none">
-            Not Now
-          </Button>
-        </div>
+        )}
+        <Payment
+          clientSecret={clientSecret}
+          onStripeReady={handleStripeReady}
+          display={showPayment}
+        />
       </Dialog.Panel>
     </Dialog>
   );
