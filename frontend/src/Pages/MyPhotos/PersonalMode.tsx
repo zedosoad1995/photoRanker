@@ -153,6 +153,7 @@ export default function PersonalMode() {
         <>
           <Header
             getPictures={getPictures}
+            hasReachedPicsLimit={state.hasReachedPicsLimit}
             loggedUser={loggedUser}
             setIsFetchingFilter={(value) => dispatch({ key: "isFetchingFilter", value })}
             filename={filename}

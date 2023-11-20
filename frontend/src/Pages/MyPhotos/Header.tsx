@@ -4,7 +4,7 @@ import Filters from "./Filters/Filters";
 import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
-import { MyPhotosAction, MyPhotosState, useMyPhotos } from "./Contexts/myPhotos";
+import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
 import BuyMorePhotosModal from "./Modals/BuyMorePhotosModal";
 
 const DEFAULT_SORT = "score desc";
@@ -13,6 +13,7 @@ interface IHeader {
   getPictures: (cursor?: string) => Promise<void>;
   setIsFetchingFilter: React.Dispatch<React.SetStateAction<boolean>>;
   loggedUser: IUser;
+  hasReachedPicsLimit: boolean;
   filterState: MyPhotosState;
   filterDispatch: React.Dispatch<MyPhotosAction>;
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -27,24 +28,21 @@ interface IHeader {
 export const Header = ({
   setIsFetchingFilter,
   loggedUser,
+  hasReachedPicsLimit,
   filterState,
   filterDispatch,
   handleFileChange,
 }: IHeader) => {
-  const { checkCanUploadMorePics } = useMyPhotos();
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [isOpenMultiPicsModal, setIsOpenMultiPicsModal] = useState(false);
 
-  const handleCloseMultiPicsModal = async () => {
+  const handleCloseMultiPicsModal = () => {
     setIsOpenMultiPicsModal(false);
   };
 
-  const handleClickUploadPhoto = async () => {
-    const canUploadMore = await checkCanUploadMorePics();
-
-    if (!canUploadMore) {
+  const handleClickUploadPhoto = () => {
+    if (hasReachedPicsLimit) {
       setIsOpenMultiPicsModal(true);
     } else {
       if (fileInputRef.current) {
