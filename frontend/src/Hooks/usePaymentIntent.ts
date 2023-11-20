@@ -14,14 +14,18 @@ export const usePaymentIntent = ({
 }: IUsePaymentIntent) => {
   const [clientSecret, setClientSecret] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const createIntent = async () => {
     setIsLoading(true);
+    setHasError(false);
     await createPaymentIntent(purchaseType)
       .then(({ clientSecret }) => {
+        setHasError(false);
         setClientSecret(clientSecret);
       })
       .catch(() => {
+        setHasError(true);
         toast.error(errorMessage);
       })
       .finally(() => {
@@ -33,5 +37,5 @@ export const usePaymentIntent = ({
     setClientSecret(undefined);
   };
 
-  return { clientSecret, createIntent, isLoading, stopIntent };
+  return { clientSecret, createIntent, isLoading, stopIntent, hasError };
 };

@@ -18,6 +18,7 @@ export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBu
     createIntent,
     stopIntent,
     isLoading: isLoadingPaymentIntent,
+    hasError,
   } = usePaymentIntent({
     purchaseType: "increase-photos",
   });
@@ -30,6 +31,12 @@ export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBu
       setIsPaymentElementLoading(true);
     }
   }, [isLoadingPaymentIntent]);
+
+  useEffect(() => {
+    if (hasError) {
+      setIsPaymentElementLoading(false);
+    }
+  }, [hasError]);
 
   const handleStripeReady = () => {
     setIsPaymentElementLoading(false);
@@ -77,6 +84,7 @@ export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBu
           clientSecret={clientSecret}
           onStripeReady={handleStripeReady}
           display={showPayment}
+          onSuccess={onCloseModal}
         />
       </Dialog.Panel>
     </Dialog>

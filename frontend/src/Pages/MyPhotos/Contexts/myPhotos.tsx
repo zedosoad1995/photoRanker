@@ -34,6 +34,7 @@ interface IMyPhotosContext {
   };
   updateLoadingMoreImages: (val: boolean) => void;
   getPictures: (cursor?: string) => Promise<void>;
+  checkCanUploadMorePics: () => Promise<boolean>;
 }
 const MyPhotosContext = createContext<IMyPhotosContext>({} as IMyPhotosContext);
 
@@ -115,18 +116,30 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
 
       return res;
     } finally {
-      getUploadPermission().then(({ canUploadMore }) => {
-        dispatch({ key: "hasReachedPicsLimit", value: !canUploadMore });
-      });
+      checkCanUploadMorePics();
       updateLoadingMoreImages(false);
       dispatch({ key: "isFetchingFilter", value: false });
       dispatch({ key: "isSet", value: true });
     }
   };
 
+  const checkCanUploadMorePics = async () => {
+    return getUploadPermission().then(({ canUploadMore }) => {
+      dispatch({ key: "hasReachedPicsLimit", value: !canUploadMore });
+      return canUploadMore;
+    });
+  };
+
   return (
     <MyPhotosContext.Provider
-      value={{ state, dispatch, isLoadingMoreImages, updateLoadingMoreImages, getPictures }}
+      value={{
+        state,
+        dispatch,
+        isLoadingMoreImages,
+        updateLoadingMoreImages,
+        getPictures,
+        checkCanUploadMorePics,
+      }}
     >
       {children}
     </MyPhotosContext.Provider>

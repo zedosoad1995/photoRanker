@@ -4,7 +4,7 @@ import Filters from "./Filters/Filters";
 import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
-import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
+import { MyPhotosAction, MyPhotosState, useMyPhotos } from "./Contexts/myPhotos";
 import BuyMorePhotosModal from "./Modals/BuyMorePhotosModal";
 
 const DEFAULT_SORT = "score desc";
@@ -13,7 +13,6 @@ interface IHeader {
   getPictures: (cursor?: string) => Promise<void>;
   setIsFetchingFilter: React.Dispatch<React.SetStateAction<boolean>>;
   loggedUser: IUser;
-  hasReachedPicsLimit: boolean;
   filterState: MyPhotosState;
   filterDispatch: React.Dispatch<MyPhotosAction>;
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -28,21 +27,24 @@ interface IHeader {
 export const Header = ({
   setIsFetchingFilter,
   loggedUser,
-  hasReachedPicsLimit,
   filterState,
   filterDispatch,
   handleFileChange,
 }: IHeader) => {
+  const { checkCanUploadMorePics } = useMyPhotos();
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [isOpenMultiPicsModal, setIsOpenMultiPicsModal] = useState(false);
 
-  const handleCloseMultiPicsModal = () => {
+  const handleCloseMultiPicsModal = async () => {
     setIsOpenMultiPicsModal(false);
   };
 
-  const handleClickUploadPhoto = () => {
-    if (hasReachedPicsLimit) {
+  const handleClickUploadPhoto = async () => {
+    const canUploadMore = await checkCanUploadMorePics();
+
+    if (!canUploadMore) {
       setIsOpenMultiPicsModal(true);
     } else {
       if (fileInputRef.current) {
@@ -123,12 +125,7 @@ export const Header = ({
         }`}
       >
         <div className="w-full sm:w-fit">
-          <Button
-            disabled={hasReachedPicsLimit && false}
-            onClick={handleClickUploadPhoto}
-            isFull={true}
-            isHeightFull={true}
-          >
+          <Button onClick={handleClickUploadPhoto} isFull={true} isHeightFull={true}>
             <div className="flex items-center justify-center">
               <div className="mr-3 text-xl -translate-y-[1px]">+</div>
               <div>Add Photo</div>

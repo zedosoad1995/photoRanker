@@ -93,7 +93,9 @@ export const stripeWebhook = async (req: Request, res: Response, next: NextFunct
       if (purchaseType in purchaser) {
         await purchaser[purchaseType as IPurchaseType].handlePurchase(
           paymentIntentSucceeded.metadata.userId,
-          JSON.parse(paymentIntentSucceeded.metadata.extra)
+          paymentIntentSucceeded.metadata.extra
+            ? JSON.parse(paymentIntentSucceeded.metadata.extra)
+            : undefined
         );
       } else {
         throw new ValidationError({
