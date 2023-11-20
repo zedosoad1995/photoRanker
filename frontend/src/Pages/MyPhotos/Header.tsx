@@ -6,6 +6,7 @@ import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
 import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
 import BuyMorePhotosModal from "./Modals/BuyMorePhotosModal";
+import { PHOTO_LIMIT_PURCHASE_ON } from "@shared/constants/purchase";
 
 const DEFAULT_SORT = "score desc";
 
@@ -42,7 +43,7 @@ export const Header = ({
   };
 
   const handleClickUploadPhoto = () => {
-    if (hasReachedPicsLimit) {
+    if (hasReachedPicsLimit && PHOTO_LIMIT_PURCHASE_ON) {
       setIsOpenMultiPicsModal(true);
     } else {
       if (fileInputRef.current) {
@@ -123,7 +124,12 @@ export const Header = ({
         }`}
       >
         <div className="w-full sm:w-fit">
-          <Button onClick={handleClickUploadPhoto} isFull={true} isHeightFull={true}>
+          <Button
+            disabled={!PHOTO_LIMIT_PURCHASE_ON && hasReachedPicsLimit}
+            onClick={handleClickUploadPhoto}
+            isFull={true}
+            isHeightFull={true}
+          >
             <div className="flex items-center justify-center">
               <div className="mr-3 text-xl -translate-y-[1px]">+</div>
               <div>Add Photo</div>

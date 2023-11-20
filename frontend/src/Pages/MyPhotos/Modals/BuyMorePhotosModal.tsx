@@ -4,6 +4,7 @@ import Button from "@/Components/Button";
 import { CameraRollIcon } from "@/Components/Icons/CameraRoll";
 import { usePaymentIntent } from "@/Hooks/usePaymentIntent";
 import Payment from "@/Components/Payment";
+import { MAX_FREE_PHOTOS, MAX_PAID_PHOTOS } from "@shared/constants/purchase";
 
 interface IBuyMorePhotosModal {
   isOpen: boolean;
@@ -66,9 +67,9 @@ export default function BuyMorePhotosModal({ isOpen, onClose: handleClose }: IBu
             <div className="m-auto w-[80%] rounded-full bg-[#fa8072] p-4">
               <CameraRollIcon />
             </div>
-            <div className="mt-4">Limit of 20 photos reached.</div>
+            <div className="mt-4">Limit of {MAX_FREE_PHOTOS} photos reached.</div>
             <div className="mb-8">
-              Upgrade for up to <b>100 photos</b>!
+              Upgrade for up to <b>{MAX_PAID_PHOTOS} photos</b>!
             </div>
             <div className="mb-2">
               <Button isLoading={isLoading} onClick={handleClickPay}>
