@@ -1,10 +1,11 @@
+import { useRef, useState, useEffect, useMemo } from "react";
 import Menu from "@/Components/Menu";
 import { ImageSkeleton } from "@/Components/Skeletons/ImageSkeleton";
 import { useProgressiveImage } from "@/Hooks/useProgressiveImage";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
 import { isAdmin, isRegular } from "@/Utils/role";
-import { EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { EllipsisVerticalIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 interface IPhotoCard {
   pic: string;
@@ -37,8 +38,29 @@ export const PhotoCard = ({
 }: IPhotoCard) => {
   const { img } = useProgressiveImage(pic);
 
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  const [width, setWidth] = useState(0);
+  const isSmall = useMemo(() => width < 240, [width]);
+
+  useEffect(() => {
+    if (!cardRef.current) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(cardRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
   return (
-    <div className="w-full min-[350px]:w-1/2 md:w-1/3 lg:w-1/4 float-left p-2">
+    <div ref={cardRef} className="w-full min-[350px]:w-1/2 md:w-1/3 lg:w-1/4 float-left p-2">
       <div className="cursor-pointer rounded-b-md shadow-md">
         <div className="relative">
           {loggedUser && isAdmin(loggedUser.role) && (
@@ -66,7 +88,23 @@ export const PhotoCard = ({
               className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
             />
           )}
-          <div className="rounded-t-md overflow-hidden">
+          <div className="rounded-t-md overflow-hidden relative">
+            {/* <div className="mx-auto w-fit absolute left-1/2 top-0 -translate-x-1/2 text-white bg-slate-800 rounded-b-md px-2 py-[6px] text-center">
+              Votes: 30
+            </div> */}
+            <div
+              className={`mx-auto flex w-fit absolute left-1/2 bottom-0 -translate-x-1/2 ${
+                isSmall ? "text-xs" : "text-sm"
+              }`}
+            >
+              <div className="text-white bg-slate-800 rounded-ss-md py-[6px] flex-1 text-center px-2">
+                Votes
+              </div>
+              <div className="bg-white rounded-se-md py-[6px] flex-1 text-center font-bold px-2">
+                30
+              </div>
+            </div>
+
             {img && <img className="mx-auto w-full" src={img} alt={`picture-${index}`} />}
             {!img && (
               <div className="relative -z-10">
@@ -75,9 +113,9 @@ export const PhotoCard = ({
             )}
           </div>
         </div>
-        <div className="p-3 font-semibold text-sm min-[350px]:text-xs xs:text-sm">
+        <div className={`p-3 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
           <div className="flex justify-between mb-1">
-            <span>Score:</span>{" "}
+            <span>Score</span>{" "}
             <span>
               {picInfo.numVotes > 0
                 ? isGlobal
@@ -95,9 +133,30 @@ export const PhotoCard = ({
               }}
             />
           </div>
-          <hr className="my-2" />
-          <div className="flex justify-between">
-            <span>Votes:</span> <span>{picInfo.numVotes}</span>
+          <div className="flex justify-between mb-1 mt-2">
+            <span>Score (46 votes)</span>{" "}
+          </div>
+          <div className="relative group">
+            <LockClosedIcon
+              className={`${
+                isSmall ? "w-5 h-5" : "w-6 h-6"
+              } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
+            />
+            <div
+              className="bg-white absolute h-full w-full"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%)",
+              }}
+            />
+            <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+              <div
+                className="rounded-md bg-primary h-full"
+                style={{
+                  width: "100%",
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
