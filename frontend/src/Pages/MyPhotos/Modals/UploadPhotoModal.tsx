@@ -60,7 +60,7 @@ export default function UploadPhotoModal({
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center z-50"
       open={isOpen}
       onClose={handleClose}
     >

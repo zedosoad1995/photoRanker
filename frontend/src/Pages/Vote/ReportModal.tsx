@@ -37,7 +37,7 @@ export default function ReportModal({
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex items-center justify-center mx-5"
+      className="fixed inset-0 flex items-center justify-center mx-5 z-50"
       open={isOpen}
       onClose={alteredHandleClose}
     >

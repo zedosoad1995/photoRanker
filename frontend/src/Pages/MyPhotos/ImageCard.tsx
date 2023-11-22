@@ -88,10 +88,7 @@ export const PhotoCard = ({
               className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
             />
           )}
-          <div className="rounded-t-md overflow-hidden relative">
-            {/* <div className="mx-auto w-fit absolute left-1/2 top-0 -translate-x-1/2 text-white bg-slate-800 rounded-b-md px-2 py-[6px] text-center">
-              Votes: 30
-            </div> */}
+          <div className="rounded-t-md overflow-hidden">
             <div
               className={`mx-auto flex w-fit absolute left-1/2 bottom-0 -translate-x-1/2 ${
                 isSmall ? "text-xs" : "text-sm"
@@ -151,7 +148,7 @@ export const PhotoCard = ({
             />
             <div className="rounded-md h-2 bg-light-contour overflow-hidden">
               <div
-                className="rounded-md bg-primary h-full"
+                className="rounded-md bg-black h-full"
                 style={{
                   width: "100%",
                 }}
