@@ -226,6 +226,7 @@ async function getPicturesWithPercentile(
   const subQueryPicPercentile = `
     SELECT 
       pic.id,
+      pic."cannotSeeAllVotes",
       pic."numVotes",
       ${percentileSelect} AS percentile
     FROM (
@@ -240,7 +241,11 @@ async function getPicturesWithPercentile(
         CASE
           WHEN ${whenLimitedVotes} THEN pic."maxFreeVotes"
           ELSE pic."numVotes"
-        END AS "numVotes"
+        END AS "numVotes",
+        CASE
+          WHEN ${whenLimitedVotes} THEN TRUE
+          ELSE FALSE
+        END AS "cannotSeeAllVotes"
       FROM "Picture" AS pic
       ${joinInnerQuery.join("\n")}
       WHERE 
@@ -251,9 +256,16 @@ async function getPicturesWithPercentile(
   const pictures: (IReturnPicWithPervental & {
     cursor?: any;
   })[] = await prisma.$queryRawUnsafe(`
-      SELECT pic.id, pic.filepath, pic_perc."numVotes", pic_perc.percentile ${
-        extraSelectField.length > 0 ? ", " + extraSelectField.join(", ") : ""
-      }
+      SELECT pic.id, pic.filepath, pic."numVotes" AS "numPaidVotes", pic_perc.percentile,
+      CASE
+        WHEN pic_perc."numVotes" IS NULL THEN 0
+        ELSE pic_perc."numVotes"
+      END AS "numVotes",
+      CASE
+        WHEN pic_perc."cannotSeeAllVotes" IS NULL THEN FALSE
+        ELSE pic_perc."cannotSeeAllVotes"
+      END AS "cannotSeeAllVotes"
+      ${extraSelectField.length > 0 ? ", " + extraSelectField.join(", ") : ""}
       FROM "Picture" AS pic
       LEFT JOIN (${subQueryPicPercentile}) AS pic_perc
         ON pic.id = pic_perc.id

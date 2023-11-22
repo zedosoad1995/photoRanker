@@ -1,8 +1,10 @@
 export interface IPictureWithPercentile {
   id: string;
   url: string;
-  percentile: number;
+  percentile: number | null;
   numVotes: number;
+  numPaidVotes: number;
+  cannotSeeAllVotes: boolean;
   userId: string;
   createdAt: Date;
   updatedAt: Date;

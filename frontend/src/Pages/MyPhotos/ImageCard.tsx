@@ -98,7 +98,7 @@ export const PhotoCard = ({
                 Votes
               </div>
               <div className="bg-white rounded-se-md py-[6px] flex-1 text-center font-bold px-2">
-                30
+                {picInfo.numVotes}
               </div>
             </div>
 
@@ -114,7 +114,7 @@ export const PhotoCard = ({
           <div className="flex justify-between mb-1">
             <span>Score</span>{" "}
             <span>
-              {picInfo.numVotes > 0
+              {picInfo.numVotes > 0 && picInfo.percentile
                 ? isGlobal
                   ? getHumanReadablePerc(picInfo.percentile)
                   : picInfo.percentile.toFixed(1)
@@ -130,31 +130,35 @@ export const PhotoCard = ({
               }}
             />
           </div>
-          <div className="flex justify-between mb-1 mt-2">
-            <span>Score (46 votes)</span>{" "}
-          </div>
-          <div className="relative group">
-            <LockClosedIcon
-              className={`${
-                isSmall ? "w-5 h-5" : "w-6 h-6"
-              } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
-            />
-            <div
-              className="bg-white absolute h-full w-full"
-              style={{
-                background:
-                  "linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%)",
-              }}
-            />
-            <div className="rounded-md h-2 bg-light-contour overflow-hidden">
-              <div
-                className="rounded-md bg-black h-full"
-                style={{
-                  width: "100%",
-                }}
-              />
-            </div>
-          </div>
+          {picInfo.cannotSeeAllVotes && (
+            <>
+              <div className="flex justify-between mb-1 mt-2">
+                <span>Score ({picInfo.numPaidVotes} votes)</span>{" "}
+              </div>
+              <div className="relative group">
+                <LockClosedIcon
+                  className={`${
+                    isSmall ? "w-5 h-5" : "w-6 h-6"
+                  } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
+                />
+                <div
+                  className="bg-white absolute h-full w-full"
+                  style={{
+                    background:
+                      "linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%)",
+                  }}
+                />
+                <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+                  <div
+                    className="rounded-md bg-black h-full"
+                    style={{
+                      width: "100%",
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
