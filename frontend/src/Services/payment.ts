@@ -1,17 +1,25 @@
-import { IPurchaseType } from "@shared/constants/purchase";
+import { PURCHASE_TYPE } from "@shared/constants/purchase";
 import { ICreatePaymentIntent } from "@/Types/payment";
 import api from ".";
 
+type ICreatePaymentIntentInput =
+  | {
+      purchaseType: typeof PURCHASE_TYPE.INCREASE_PHOTOS | typeof PURCHASE_TYPE.UNLIMITED_VOTES_ALL;
+    }
+  | { purchaseType: typeof PURCHASE_TYPE.UNLIMITED_VOTES_MULTIPLE; pictureIds: string[] };
+
 export const createPaymentIntent = async (
-  purchaseType: IPurchaseType
+  props: ICreatePaymentIntentInput
 ): Promise<ICreatePaymentIntent> => {
-  switch (purchaseType) {
+  switch (props.purchaseType) {
     case "increase-photos":
       return api.post(`/payments/create-payment-intent/increase-photos`);
     case "unlimited-votes-all":
       return api.post(`/payments/create-payment-intent/unlimited-votes`);
     case "unlimited-votes-multiple":
-      return api.post(`/payments/create-payment-intent/multiple-unlimited-votes`);
+      return api.post(`/payments/create-payment-intent/multiple-unlimited-votes`, {
+        pictureIds: props.pictureIds,
+      });
     default:
       throw new Error("Invalid path");
   }

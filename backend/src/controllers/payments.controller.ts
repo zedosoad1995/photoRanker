@@ -45,13 +45,13 @@ export const createPaymentIntentIncreasePhotos = async (req: Request, res: Respo
 };
 
 export const createPaymentIntentUnlimitedVotes = async (req: Request, res: Response) => {
-  const clientSecret = createPaymentIntentHandler(purchaser["unlimited-votes-all"], req);
+  const clientSecret = await createPaymentIntentHandler(purchaser["unlimited-votes-all"], req);
 
   res.status(200).send({ clientSecret });
 };
 
 export const createPaymentIntentMultipleUnlimitedVotes = async (req: Request, res: Response) => {
-  const clientSecret = createPaymentIntentHandler(purchaser["unlimited-votes-multiple"], req);
+  const clientSecret = await createPaymentIntentHandler(purchaser["unlimited-votes-multiple"], req);
 
   res.status(200).send({ clientSecret });
 };

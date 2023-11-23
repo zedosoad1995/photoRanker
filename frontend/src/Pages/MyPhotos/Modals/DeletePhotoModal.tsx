@@ -23,6 +23,8 @@ export default function DeletePhotoModal({
   picsInfo,
   getPictures,
 }: IDeletePhotoModal) {
+  if (!isOpen) return null;
+
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   const handleDelete = async () => {

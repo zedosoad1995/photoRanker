@@ -24,6 +24,8 @@ export default function UploadPhotoModal({
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
+  if (!isOpen) return null;
+
   const [isUploadLoading, setIsUploadLoading] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);

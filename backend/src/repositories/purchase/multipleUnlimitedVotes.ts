@@ -12,7 +12,7 @@ import { ICreatePaymentIntentMultipleUnlimitedVotes } from "@/schemas/purchase/c
 type IExtraProps = ICreatePaymentIntentMultipleUnlimitedVotes;
 
 export class MultipleUnlimitedVotes implements PurchaseRepo<IExtraProps> {
-  purchaseName = PURCHASE_TYPE.UNLIMITED_VOTES_ALL;
+  purchaseName = PURCHASE_TYPE.UNLIMITED_VOTES_MULTIPLE;
 
   public async hasAlreadyBeenPurchased(user: ILoggedUserMiddleware, { pictureIds }: IExtraProps) {
     const picsToPurchase = await prisma.picture.findMany({
@@ -54,7 +54,7 @@ export class MultipleUnlimitedVotes implements PurchaseRepo<IExtraProps> {
         amount: PURCHASE_AMOUNT[this.purchaseName],
         metadata: {
           type: this.purchaseName,
-          extra: props,
+          extra: JSON.stringify(props),
         },
       };
     }

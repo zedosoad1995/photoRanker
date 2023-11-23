@@ -17,6 +17,8 @@ export default function BanUserModal({
   userIdToBan,
   getPictures,
 }: IBanUserModal) {
+  if (!isOpen) return null;
+
   const [email, setEmail] = useState("");
 
   useEffect(() => {

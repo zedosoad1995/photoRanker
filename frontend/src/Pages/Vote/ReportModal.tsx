@@ -17,6 +17,8 @@ export default function ReportModal({
   pic1,
   pic2,
 }: IReportModal) {
+  if (!isOpen) return null;
+
   const [isReportLoading, setIsReportLoading] = useState(false);
   const [isPic1Selected, setIsPic1Selected] = useState(false);
   const [isPic2Selected, setIsPic2Selected] = useState(false);

@@ -13,6 +13,8 @@ export default function DeleteAccountModal({
   onClose: handleClose,
   onDelete: handleDelete,
 }: IDeleteAccountModal) {
+  if (!isOpen) return null;
+
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   const handleDeleteCustom = async () => {

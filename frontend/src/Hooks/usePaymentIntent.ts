@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { createPaymentIntent } from "@/Services/payment";
-import { IPurchaseType } from "@shared/constants/purchase";
+import { PURCHASE_TYPE } from "@shared/constants/purchase";
 import { toast } from "react-hot-toast";
 
-interface IUsePaymentIntent {
-  purchaseType: IPurchaseType;
-  errorMessage?: string;
-}
+type IUsePaymentIntent =
+  | {
+      purchaseType: typeof PURCHASE_TYPE.INCREASE_PHOTOS | typeof PURCHASE_TYPE.UNLIMITED_VOTES_ALL;
+      errorMessage?: string;
+    }
+  | {
+      purchaseType: typeof PURCHASE_TYPE.UNLIMITED_VOTES_MULTIPLE;
+      pictureIds: string[];
+      errorMessage?: string;
+    };
 
 export const usePaymentIntent = ({
-  purchaseType,
   errorMessage = "Unable to upgrade. Please try again later.",
+  ...props
 }: IUsePaymentIntent) => {
   const [clientSecret, setClientSecret] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +25,7 @@ export const usePaymentIntent = ({
   const createIntent = async () => {
     setIsLoading(true);
     setHasError(false);
-    await createPaymentIntent(purchaseType)
+    await createPaymentIntent(props)
       .then(({ clientSecret }) => {
         setHasError(false);
         setClientSecret(clientSecret);
