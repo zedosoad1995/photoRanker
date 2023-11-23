@@ -13,11 +13,11 @@ export const PURCHASE_AMOUNT = {
   [PURCHASE_TYPE.UNLIMITED_VOTES_MULTIPLE]: 99,
 } as const;
 
-export const PHOTO_LIMIT_PURCHASE_ON = true;
+export const PHOTO_LIMIT_PURCHASE_ON = false;
 export const MAX_FREE_PHOTOS = 20;
 export const MAX_PAID_PHOTOS = 100;
 
-export const UNLIMITED_VOTE_ALL_ON = true;
+export const UNLIMITED_VOTE_ALL_ON = false;
 export const MAX_FREE_VOTES = 30;
 
-export const UNLIMITED_VOTE_MULTIPLE_ON = true;
+export const UNLIMITED_VOTE_MULTIPLE_ON = false;
