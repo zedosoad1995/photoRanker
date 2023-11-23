@@ -7,6 +7,7 @@ import { IUser } from "@/Types/user";
 import { isAdmin, isRegular } from "@/Utils/role";
 import { EllipsisVerticalIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
+import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
 
 interface IPhotoCard {
   pic: string;
@@ -121,7 +122,7 @@ export const PhotoCard = ({
               )}
             </div>
           </div>
-          <div className={`p-3 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
+          <div className={`p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
             <div className="flex justify-between mb-1">
               <span>Score</span>{" "}
               <span>
@@ -141,7 +142,7 @@ export const PhotoCard = ({
                 }}
               />
             </div>
-            {picInfo.cannotSeeAllVotes && (
+            {picInfo.cannotSeeAllVotes && UNLIMITED_VOTE_ALL_ON && (
               <>
                 <div className="flex justify-between mb-1 mt-2">
                   <span>Score ({picInfo.numPaidVotes} votes)</span>{" "}
@@ -164,7 +165,7 @@ export const PhotoCard = ({
                   />
                   <div className="rounded-md h-2 bg-light-contour overflow-hidden">
                     <div
-                      className="rounded-md bg-black h-full"
+                      className="rounded-md bg-amber-400 h-full"
                       style={{
                         width: "100%",
                       }}

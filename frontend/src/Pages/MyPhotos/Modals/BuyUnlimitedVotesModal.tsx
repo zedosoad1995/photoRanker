@@ -3,7 +3,11 @@ import { Dialog } from "@headlessui/react";
 import Button from "@/Components/Button";
 import { usePaymentIntent } from "@/Hooks/usePaymentIntent";
 import Payment from "@/Components/Payment";
-import { MAX_FREE_VOTES } from "@shared/constants/purchase";
+import {
+  MAX_FREE_VOTES,
+  UNLIMITED_VOTE_ALL_ON,
+  UNLIMITED_VOTE_MULTIPLE_ON,
+} from "@shared/constants/purchase";
 import { UnlockIcon } from "@/Components/Icons/Unlock";
 
 interface IBuyUnlimitedVotesModal {
@@ -19,7 +23,7 @@ export default function BuyUnlimitedVotesModal({
   isOpen,
   onClose: handleClose,
 }: IBuyUnlimitedVotesModal) {
-  if (!isOpen) return null;
+  if (!isOpen || !UNLIMITED_VOTE_ALL_ON) return null;
 
   const [isPaymentElementLoading, setIsPaymentElementLoading] = useState(false);
 
@@ -84,15 +88,15 @@ export default function BuyUnlimitedVotesModal({
               Upgrade to unlock all <b>{currNumVotes}</b> votes and receive <b>unlimited</b> voting!
             </div>
             <div className="mb-2">
-              <Button isLoading={isLoading} onClick={handleClickPay}>
-                Unlock this picture for $0.99
-              </Button>
+              <Button onClick={handleClickPay}>Upgrade for any picture</Button>
             </div>
-            <div className="mb-2">
-              <Button onClick={handleClickPay} variant="outline">
-                Upgrade for any picture
-              </Button>
-            </div>
+            {UNLIMITED_VOTE_MULTIPLE_ON && (
+              <div className="mb-2">
+                <Button isLoading={isLoading} onClick={handleClickPay} variant="outline">
+                  Unlock this picture for $0.99
+                </Button>
+              </div>
+            )}
             <Button onClick={onCloseModal} style="none">
               Not Now
             </Button>
