@@ -79,7 +79,7 @@ export const PhotosGird = ({
       {true && (
         <>
           <PhotosLoaderCover isLoading={isFetchingFilter} />
-          <div className="-mx-2 mt-1 flow-root relative">
+          <div className="-mx-2 mt-1 relative flex flex-wrap">
             {picUrls.map((pic, index) => (
               <PhotoCard
                 key={pic}

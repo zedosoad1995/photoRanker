@@ -60,8 +60,8 @@ export const PhotoCard = ({
   }, []);
 
   return (
-    <div ref={cardRef} className="w-full min-[350px]:w-1/2 md:w-1/3 lg:w-1/4 float-left p-2">
-      <div className="cursor-pointer rounded-b-md shadow-md">
+    <div ref={cardRef} className="w-full min-[350px]:w-1/2 md:w-1/3 lg:w-1/4 p-2">
+      <div className="cursor-pointer rounded-b-md shadow-md h-full">
         <div className="relative">
           {loggedUser && isAdmin(loggedUser.role) && (
             <div className="absolute right-[2%] top-[2%] origin-top-right">
