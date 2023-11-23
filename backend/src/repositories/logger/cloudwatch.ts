@@ -1,4 +1,4 @@
-import { LoggerRepo } from "@/types/logger";
+import { LoggerRepo } from "@/types/repositories/logger";
 import { CloudWatchLogsClient, PutLogEventsCommand } from "@aws-sdk/client-cloudwatch-logs";
 import { AssumeRoleCommand, STSClient } from "@aws-sdk/client-sts";
 

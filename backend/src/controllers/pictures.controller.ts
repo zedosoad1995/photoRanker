@@ -1,6 +1,5 @@
 import { PICTURE } from "@/constants/messages";
 import { IMAGES_FOLDER_PATH } from "@/constants/picture";
-import { LIMIT_PICTURES } from "@shared/constants/picture";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
@@ -8,13 +7,14 @@ import { removeFolders } from "@/helpers/file";
 import { isRegular } from "@/helpers/role";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
-import { User } from "@prisma/client";
 import { Request, Response } from "express";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import _ from "underscore";
 import { parseBoolean, parseNumber, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
+import { MAX_FREE_VOTES } from "@shared/constants/purchase";
+import { ILoggedUserMiddleware } from "@/types/user";
 
 export const getMany =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
@@ -123,7 +123,7 @@ export const checkUploadPermission = async (req: Request, res: Response) => {
       },
     });
 
-    if (numPictures >= LIMIT_PICTURES) {
+    if (numPictures >= loggedUser.numLimitPhotos) {
       canUploadMore = false;
     }
   }
@@ -135,7 +135,7 @@ export const checkUploadPermission = async (req: Request, res: Response) => {
 
 export const uploadOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
-    const loggedUser = req.loggedUser!;
+    const loggedUser = req.loggedUser as ILoggedUserMiddleware;
     const isGlobal = req.body.isGlobal;
 
     if (!req.file) {
@@ -149,8 +149,8 @@ export const uploadOne =
         },
       });
 
-      if (numPictures >= LIMIT_PICTURES) {
-        throw new BadRequestError(PICTURE.TOO_MANY_PICTURES);
+      if (numPictures >= loggedUser.numLimitPhotos) {
+        throw new BadRequestError(PICTURE.TOO_MANY_PICTURES(loggedUser.numLimitPhotos));
       }
     }
 
@@ -161,6 +161,7 @@ export const uploadOne =
         rating: RATING_INI,
         ratingDeviation: RD_INI,
         volatility: VOLATILITY_INI,
+        maxFreeVotes: MAX_FREE_VOTES,
         user: {
           connect: {
             id: req.loggedUser?.id,
@@ -177,7 +178,7 @@ export const uploadOne =
 export const deleteOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const pictureId = req.params.pictureId;
-    const loggedUser = req.loggedUser as User;
+    const loggedUser = req.loggedUser as ILoggedUserMiddleware;
 
     const existingPicture = await PictureModel.findUnique({
       where: {

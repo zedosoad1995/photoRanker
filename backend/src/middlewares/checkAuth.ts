@@ -21,6 +21,7 @@ export const checkAuth = async (req: Request, res: Response, next: NextFunction)
       },
       include: {
         activeMatch: true,
+        purchase: true,
       },
     });
 

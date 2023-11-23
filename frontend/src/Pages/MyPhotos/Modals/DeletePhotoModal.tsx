@@ -23,6 +23,8 @@ export default function DeletePhotoModal({
   picsInfo,
   getPictures,
 }: IDeletePhotoModal) {
+  if (!isOpen) return null;
+
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   const handleDelete = async () => {
@@ -49,7 +51,7 @@ export default function DeletePhotoModal({
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex items-center justify-center mx-5"
+      className="fixed inset-0 flex items-center justify-center mx-5 z-50"
       open={isOpen}
       onClose={handleClose}
     >

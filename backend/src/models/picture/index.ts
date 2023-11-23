@@ -5,8 +5,16 @@ import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, formatDate } from "@/helpers/date";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
+import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
+
+interface IReturnPicWithPervental {
+  id: string;
+  filepath: string;
+  numVotes: number;
+  percentile: number;
+}
 
 // TODO: Improve this function code
 async function getPicturesWithPercentile(
@@ -22,7 +30,7 @@ async function getPicturesWithPercentile(
   limit: number | undefined,
   cursor: string | undefined,
   orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
-): Promise<{ pictures: (Picture & { percentile: number })[]; nextCursor: string | undefined }> {
+): Promise<{ pictures: IReturnPicWithPervental[]; nextCursor: string | undefined }> {
   const loggedUserId = loggedUser.id;
   const role = loggedUser.role;
 
@@ -50,13 +58,17 @@ async function getPicturesWithPercentile(
     INNER JOIN "User" as usr
       ON pic."userId" = usr.id`;
 
+  const PURCHASE_JOIN = `
+    LEFT JOIN "Purchase" as purchase
+      ON purchase."userId" = usr.id`;
+
   // TODO: have inner and left join. Use inner instead of where not null (performance gain?)
   const REPORT_LEFT_JOIN = `
     LEFT JOIN "Report" as report
     ON pic.id = report."pictureId"`;
 
   const NO_BANNED_USERS_WHERE = `usr."isBanned" is FALSE`;
-  let joinInnerQuery: string[] = [USER_JOIN];
+  let joinInnerQuery: string[] = [USER_JOIN, PURCHASE_JOIN];
   let whereInnerQuery: string[] = [`pic."numVotes" > 0`, NO_BANNED_USERS_WHERE];
 
   if (isRegular(role) || belongsToMe) {
@@ -109,7 +121,7 @@ async function getPicturesWithPercentile(
     joinQuery.push(USER_JOIN);
 
     if (isBanned) {
-      joinInnerQuery = joinInnerQuery.filter((q) => q != USER_JOIN);
+      joinInnerQuery = joinInnerQuery.filter((q) => ![USER_JOIN, PURCHASE_JOIN].includes(q));
       whereInnerQuery = whereInnerQuery.filter((q) => q != NO_BANNED_USERS_WHERE);
     }
 
@@ -204,22 +216,58 @@ async function getPicturesWithPercentile(
 
   const having = havingQuery.length > 0 ? `HAVING ${havingQuery.join(" AND ")}` : "";
 
-  const pictures: (Picture & { percentile: number } & { cursor?: any })[] =
-    await prisma.$queryRawUnsafe(`
-      SELECT pic.*, pic_perc.percentile ${
-        extraSelectField.length > 0 ? ", " + extraSelectField.join(", ") : ""
-      }
+  // Sub-Query Pic Percentile
+  const whenLimitedVotes =
+    isBanned || isAdmin(role) || !UNLIMITED_VOTE_ALL_ON
+      ? `FALSE`
+      : `(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND 
+        pic."hasPurchasedUnlimitedVotes" = FALSE AND pic."numVotes" > pic."maxFreeVotes"`;
+
+  const subQueryPicPercentile = `
+    SELECT 
+      pic.id,
+      pic."cannotSeeAllVotes",
+      pic."numVotes",
+      ${percentileSelect} AS percentile
+    FROM (
+      SELECT 
+        pic.id,
+        pic."userId",
+        pic."isGlobal",
+        CASE
+          WHEN ${whenLimitedVotes} THEN pic."freeRating"
+          ELSE pic.rating
+        END AS rating,
+        CASE
+          WHEN ${whenLimitedVotes} THEN pic."maxFreeVotes"
+          ELSE pic."numVotes"
+        END AS "numVotes",
+        CASE
+          WHEN ${whenLimitedVotes} THEN TRUE
+          ELSE FALSE
+        END AS "cannotSeeAllVotes"
       FROM "Picture" AS pic
-      LEFT JOIN (
-        SELECT 
-          pic.id,
-          ${percentileSelect} AS percentile
-        FROM 
-          "Picture" AS pic
-        ${joinInnerQuery}
-        WHERE 
-          ${whereInnerQuery.join(" AND ")}
-      ) AS pic_perc
+      ${joinInnerQuery.join("\n")}
+      WHERE 
+        ${whereInnerQuery.join(" AND ")}
+    ) AS pic`;
+
+  // Improve performance by only returning necessary fields
+  const pictures: (IReturnPicWithPervental & {
+    cursor?: any;
+  })[] = await prisma.$queryRawUnsafe(`
+      SELECT pic.id, pic.filepath, pic."numVotes" AS "numPaidVotes", pic_perc.percentile,
+      CASE
+        WHEN pic_perc."numVotes" IS NULL THEN 0
+        ELSE pic_perc."numVotes"
+      END AS "numVotes",
+      CASE
+        WHEN pic_perc."cannotSeeAllVotes" IS NULL THEN FALSE
+        ELSE pic_perc."cannotSeeAllVotes"
+      END AS "cannotSeeAllVotes"
+      ${extraSelectField.length > 0 ? ", " + extraSelectField.join(", ") : ""}
+      FROM "Picture" AS pic
+      LEFT JOIN (${subQueryPicPercentile}) AS pic_perc
         ON pic.id = pic_perc.id
       ${[...new Set(joinQuery)].join("\n")} 
       WHERE 

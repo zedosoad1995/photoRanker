@@ -4,7 +4,7 @@ import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { VoteModel } from "@/models/vote";
-import { RatingRepo } from "@/types/ratingRepo";
+import { RatingRepo } from "@/types/repositories/ratingRepo";
 import { Request, Response } from "express";
 
 export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Response) => {
@@ -70,8 +70,16 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     },
   });
 
+  // When there was no vote skip
   if (winnerPicture) {
     const loserPicture = match.pictures.find((picture) => picture.id !== winnerPictureId)!;
+
+    // Winner update
+    const winnerRatingParams = ratingRepo.calculateNewRating(winnerPicture, loserPicture, true);
+
+    if (winnerPicture.numVotes < winnerPicture.maxFreeVotes) {
+      winnerRatingParams.freeRating = winnerRatingParams.rating;
+    }
 
     const updateWinnerPictureScore = PictureModel.update({
       where: {
@@ -79,9 +87,16 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
       },
       data: {
         numVotes: winnerPicture.numVotes + 1,
-        ...ratingRepo.calculateNewRating(winnerPicture, loserPicture, true),
+        ...winnerRatingParams,
       },
     });
+
+    // Loser update
+    const loserRatingParams = ratingRepo.calculateNewRating(loserPicture, winnerPicture, false);
+
+    if (loserPicture.numVotes < loserPicture.maxFreeVotes) {
+      loserRatingParams.freeRating = loserRatingParams.rating;
+    }
 
     const updateLoserPictureScore = PictureModel.update({
       where: {
@@ -89,7 +104,7 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
       },
       data: {
         numVotes: loserPicture.numVotes + 1,
-        ...ratingRepo.calculateNewRating(loserPicture, winnerPicture, false),
+        ...loserRatingParams,
       },
     });
 

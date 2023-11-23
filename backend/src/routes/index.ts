@@ -5,6 +5,7 @@ import picturesRoute from "./pictures.route";
 import matchesRoute from "./matches.route";
 import votesRoute from "./votes.route";
 import reportsRoute from "./reports.route";
+import paymentsRoute from "./payments.route";
 import preferencesRoute from "./preferences.route";
 
 const api = Router()
@@ -15,6 +16,7 @@ const api = Router()
   .use("/votes", votesRoute)
   .use("/reports", reportsRoute)
   .use("/preferences", preferencesRoute)
+  .use("/payments", paymentsRoute)
   .use("/healthCheck", (req: Request, res: Response) => {
     res.status(200).json({ healthy: true });
   });

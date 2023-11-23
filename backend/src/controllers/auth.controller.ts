@@ -25,7 +25,7 @@ import { ForbiddenError } from "@/errors/ForbiddenError";
 import { cookieOptions } from "@/constants/cookies";
 import { BannedUserModel } from "@/models/bannerUser";
 import { SENDGRID_EMAIL_NAME } from "@/constants/email";
-import { MailRepo } from "@/types/mailRepo";
+import { MailRepo } from "@/types/repositories/mailRepo";
 const { NO_ACCESS_TOKEN, UNVERIFIED_EMAIL } = AUTH.GOOGLE;
 const { NO_ACCESS_TOKEN: NO_ACCESS_TOKEN_FACEBOOK } = AUTH.FACEBOOK;
 

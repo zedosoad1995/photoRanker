@@ -1,6 +1,6 @@
 import { EXTENSION_TO_MIME_TYPE } from "@/constants/picture";
 import crypto from "crypto";
-import { StorageInteractor } from "@/types/storageInteractor";
+import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { BadRequestError } from "@/errors/BadRequestError";
 import { PutObjectCommand, S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 

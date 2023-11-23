@@ -17,6 +17,8 @@ export default function BanUserModal({
   userIdToBan,
   getPictures,
 }: IBanUserModal) {
+  if (!isOpen) return null;
+
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function BanUserModal({
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex items-center justify-center mx-5"
+      className="fixed inset-0 flex items-center justify-center mx-5 z-50"
       open={isOpen}
       onClose={handleClose}
     >

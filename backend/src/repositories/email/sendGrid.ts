@@ -1,4 +1,4 @@
-import { MailRepo } from "@/types/mailRepo";
+import { MailRepo } from "@/types/repositories/mailRepo";
 import sgMail from "@sendgrid/mail";
 
 export class SendGridRepo implements MailRepo {

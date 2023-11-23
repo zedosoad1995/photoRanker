@@ -3,8 +3,8 @@ import { PhotoCard } from "./ImageCard";
 import { PhotosLoaderCover } from "./PhotosLoaderCover";
 import { IUser } from "@/Types/user";
 import { IPictureWithPercentile } from "@/Types/picture";
-import BanUserModal from "./BanUserModal";
-import DeletePhotoModal from "./DeletePhotoModal";
+import BanUserModal from "./Modals/BanUserModal";
+import DeletePhotoModal from "./Modals/DeletePhotoModal";
 import { useState } from "react";
 
 interface IPhotoGrid {
@@ -79,7 +79,7 @@ export const PhotosGird = ({
       {true && (
         <>
           <PhotosLoaderCover isLoading={isFetchingFilter} />
-          <div className="-mx-2 mt-1 flow-root relative">
+          <div className="-mx-2 mt-1 relative flex flex-wrap">
             {picUrls.map((pic, index) => (
               <PhotoCard
                 key={pic}

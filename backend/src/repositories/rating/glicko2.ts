@@ -1,5 +1,5 @@
 import { GLICKO_SCALE, RATING_INI, TAU } from "@/constants/rating";
-import { RatingRepo } from "@/types/ratingRepo";
+import { RatingRepo } from "@/types/repositories/ratingRepo";
 
 interface IPlayer {
   rating: number;

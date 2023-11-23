@@ -1,4 +1,4 @@
-import { MailRepo } from "@/types/mailRepo";
+import { MailRepo } from "@/types/repositories/mailRepo";
 import nodemailer from "nodemailer";
 import Mail from "nodemailer/lib/mailer";
 

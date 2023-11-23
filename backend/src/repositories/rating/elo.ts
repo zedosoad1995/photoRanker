@@ -1,5 +1,5 @@
 import { ELO_UPDATE_FACTOR, SENSITIVITY } from "@/constants/rating";
-import { RatingRepo } from "@/types/ratingRepo";
+import { RatingRepo } from "@/types/repositories/ratingRepo";
 
 interface IPlayer {
   rating: number;

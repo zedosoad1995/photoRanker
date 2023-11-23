@@ -24,6 +24,8 @@ export default function UploadPhotoModal({
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
+  if (!isOpen) return null;
+
   const [isUploadLoading, setIsUploadLoading] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -60,7 +62,7 @@ export default function UploadPhotoModal({
   return (
     <Dialog
       as="div"
-      className="fixed inset-0 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center z-50"
       open={isOpen}
       onClose={handleClose}
     >

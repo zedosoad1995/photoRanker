@@ -1,10 +1,12 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState } from "react";
 import Button from "@/Components/Button";
 import Filters from "./Filters/Filters";
 import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
 import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
+import BuyMorePhotosModal from "./Modals/BuyMorePhotosModal";
+import { PHOTO_LIMIT_PURCHASE_ON } from "@shared/constants/purchase";
 
 const DEFAULT_SORT = "score desc";
 
@@ -34,10 +36,20 @@ export const Header = ({
 }: IHeader) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileSelect = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-      fileInputRef.current.value = "";
+  const [isOpenMultiPicsModal, setIsOpenMultiPicsModal] = useState(false);
+
+  const handleCloseMultiPicsModal = () => {
+    setIsOpenMultiPicsModal(false);
+  };
+
+  const handleClickUploadPhoto = () => {
+    if (hasReachedPicsLimit && PHOTO_LIMIT_PURCHASE_ON) {
+      setIsOpenMultiPicsModal(true);
+    } else {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -98,6 +110,7 @@ export const Header = ({
 
   return (
     <>
+      <BuyMorePhotosModal isOpen={isOpenMultiPicsModal} onClose={handleCloseMultiPicsModal} />
       <input
         type="file"
         accept="image/jpeg, image/png"
@@ -112,8 +125,8 @@ export const Header = ({
       >
         <div className="w-full sm:w-fit">
           <Button
-            disabled={hasReachedPicsLimit}
-            onClick={handleFileSelect}
+            disabled={!PHOTO_LIMIT_PURCHASE_ON && hasReachedPicsLimit}
+            onClick={handleClickUploadPhoto}
             isFull={true}
             isHeightFull={true}
           >
