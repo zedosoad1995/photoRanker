@@ -7,7 +7,7 @@ import { IUser } from "@/Types/user";
 import { isAdmin, isRegular } from "@/Utils/role";
 import { EllipsisVerticalIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
-import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
+import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
 
 interface IPhotoCard {
   pic: string;
@@ -142,7 +142,7 @@ export const PhotoCard = ({
                 }}
               />
             </div>
-            {picInfo.cannotSeeAllVotes && UNLIMITED_VOTE_ALL_ON && (
+            {picInfo.cannotSeeAllVotes && (UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON) && (
               <>
                 <div className="flex justify-between mb-1 mt-2">
                   <span>Score ({picInfo.numPaidVotes} votes)</span>{" "}

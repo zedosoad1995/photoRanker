@@ -23,7 +23,7 @@ export default function BuyUnlimitedVotesModal({
   isOpen,
   onClose: handleClose,
 }: IBuyUnlimitedVotesModal) {
-  if (!isOpen || !UNLIMITED_VOTE_ALL_ON) return null;
+  if (!isOpen || !(UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON)) return null;
 
   const [isPaymentElementLoading, setIsPaymentElementLoading] = useState(false);
 
@@ -87,12 +87,18 @@ export default function BuyUnlimitedVotesModal({
             <div className="mb-6">
               Upgrade to unlock all <b>{currNumVotes}</b> votes and receive <b>unlimited</b> voting!
             </div>
-            <div className="mb-2">
-              <Button onClick={handleClickPay}>Upgrade for any picture</Button>
-            </div>
+            {UNLIMITED_VOTE_ALL_ON && (
+              <div className="mb-2">
+                <Button>Upgrade for any picture</Button>
+              </div>
+            )}
             {UNLIMITED_VOTE_MULTIPLE_ON && (
               <div className="mb-2">
-                <Button isLoading={isLoading} onClick={handleClickPay} variant="outline">
+                <Button
+                  isLoading={isLoading}
+                  onClick={handleClickPay}
+                  variant={UNLIMITED_VOTE_ALL_ON ? "outline" : "solid"}
+                >
                   Unlock this picture for $0.99
                 </Button>
               </div>
