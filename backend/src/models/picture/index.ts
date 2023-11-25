@@ -8,6 +8,42 @@ import { adjustDate, formatDate } from "@/helpers/date";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
+import { calculateAge } from "@shared/helpers/date";
+
+const getAgeQuery = (minAge: number, maxAge?: number) => {
+  const query = `"dateOfBirth" < '${formatDate(
+    adjustDate(new Date(), { years: -minAge, days: 1 })
+  )}'`;
+
+  if (maxAge === undefined) {
+    return query;
+  }
+
+  return `${query} AND 
+    "dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`;
+};
+
+const AGE_GROUPS = [
+  {
+    min: 18,
+    max: 23,
+    query: getAgeQuery(18, 23),
+  },
+  {
+    min: 24,
+    max: 29,
+    query: getAgeQuery(24, 29),
+  },
+  {
+    min: 30,
+    max: 39,
+    query: getAgeQuery(30, 39),
+  },
+  {
+    min: 40,
+    query: getAgeQuery(40),
+  },
+];
 
 interface IReturnPicWithPervental {
   id: string;
@@ -30,7 +66,11 @@ async function getPicturesWithPercentile(
   limit: number | undefined,
   cursor: string | undefined,
   orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
-): Promise<{ pictures: IReturnPicWithPervental[]; nextCursor: string | undefined }> {
+): Promise<{
+  pictures: IReturnPicWithPervental[];
+  nextCursor: string | undefined;
+  ageGroup: { min: number; max?: number } | undefined;
+}> {
   const loggedUserId = loggedUser.id;
   const role = loggedUser.role;
 
@@ -83,15 +123,6 @@ async function getPicturesWithPercentile(
   } else {
     whereInnerQuery.push(`pic."isGlobal" IS TRUE`);
   }
-
-  // Select
-  const percentileSelect = isGlobal
-    ? `100 * PERCENT_RANK() OVER (ORDER BY pic.rating)`
-    : `
-    CASE
-      WHEN MIN(pic.rating) OVER () < 0 THEN 100 * (pic.rating - MIN(pic.rating) OVER ())/(MAX(pic.rating) OVER () - MIN(pic.rating) OVER ())
-      ELSE 100 * pic.rating/MAX(pic.rating) OVER () 
-    END`;
 
   // Filtering
   if (userId) {
@@ -217,6 +248,50 @@ async function getPicturesWithPercentile(
   const having = havingQuery.length > 0 ? `HAVING ${havingQuery.join(" AND ")}` : "";
 
   // Sub-Query Pic Percentile
+  const subQueryPicPercentileSelect = [];
+
+  const percentileSelect = `${
+    isGlobal
+      ? `100 * PERCENT_RANK() OVER (ORDER BY pic.rating)`
+      : `
+    CASE
+      WHEN MIN(pic.rating) OVER () < 0 THEN 100 * (pic.rating - MIN(pic.rating) OVER ())/(MAX(pic.rating) OVER () - MIN(pic.rating) OVER ())
+      ELSE 100 * pic.rating/MAX(pic.rating) OVER () 
+    END`
+  } AS percentile`;
+
+  subQueryPicPercentileSelect.push(percentileSelect);
+
+  let ageGroup;
+
+  if (isGlobal) {
+    extraSelectField.push(`pic_perc."ageGroupPercentile"`);
+
+    if (!loggedUser.dateOfBirth) {
+      throw new Error("User does not have dateOfBirth");
+    }
+
+    const userAge = calculateAge(loggedUser.dateOfBirth);
+    const _ageGroup = AGE_GROUPS.find(
+      (row) => userAge >= row.min && (row.max === undefined || userAge <= row.max)
+    );
+
+    const ageGroupQuery = _ageGroup?.query;
+
+    if (_ageGroup === undefined || ageGroupQuery === undefined) {
+      throw new Error("No age group found");
+    }
+
+    ageGroup = { min: _ageGroup.min, max: _ageGroup.max };
+
+    const percentileAgeGroupSelect = `100 * PERCENT_RANK() OVER (
+        PARTITION BY CASE WHEN ${ageGroupQuery} THEN 1 ELSE 0 END 
+        ORDER BY pic.rating
+        ) AS "ageGroupPercentile"`;
+
+    subQueryPicPercentileSelect.push(percentileAgeGroupSelect);
+  }
+
   const whenLimitedVotes =
     isBanned || isAdmin(role) || !(UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON)
       ? `FALSE`
@@ -233,7 +308,7 @@ async function getPicturesWithPercentile(
       pic.id,
       pic."cannotSeeAllVotes",
       pic."numVotes",
-      ${percentileSelect} AS percentile
+      ${subQueryPicPercentileSelect.join(",\n")}
     FROM (
       SELECT 
         pic.id,
@@ -250,7 +325,8 @@ async function getPicturesWithPercentile(
         CASE
           WHEN ${whenLimitedVotes} THEN TRUE
           ELSE FALSE
-        END AS "cannotSeeAllVotes"
+        END AS "cannotSeeAllVotes",
+        usr."dateOfBirth"
       FROM "Picture" AS pic
       ${joinInnerQuery.join("\n")}
       WHERE 
@@ -300,6 +376,7 @@ async function getPicturesWithPercentile(
   return {
     pictures: picturesWithoutCursor,
     nextCursor: nextCursor ? toBase64(nextCursor) : undefined,
+    ageGroup,
   };
 }
 
