@@ -1,3 +1,5 @@
+import { IAgeGroup } from "@shared/types/picture";
+
 export interface IPictureWithPercentile {
   id: string;
   url: string;
@@ -5,6 +7,7 @@ export interface IPictureWithPercentile {
   numVotes: number;
   numPaidVotes: number;
   cannotSeeAllVotes: boolean;
+  ageGroupPercentile?: number;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -16,7 +19,8 @@ export interface PictureRes {
 
 export interface IGetManyPictures {
   pictures: IPictureWithPercentile[];
-  nextCursor: string | undefined;
+  nextCursor?: string;
+  ageGroup: IAgeGroup;
 }
 
 export interface IUploadPermission {

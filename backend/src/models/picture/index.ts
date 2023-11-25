@@ -9,6 +9,7 @@ import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
 import { calculateAge } from "@shared/helpers/date";
+import { IAgeGroup } from "@shared/types/picture";
 
 const getAgeQuery = (minAge: number, maxAge?: number) => {
   const query = `"dateOfBirth" < '${formatDate(
@@ -69,7 +70,7 @@ async function getPicturesWithPercentile(
 ): Promise<{
   pictures: IReturnPicWithPervental[];
   nextCursor: string | undefined;
-  ageGroup: { min: number; max?: number } | undefined;
+  ageGroup: IAgeGroup;
 }> {
   const loggedUserId = loggedUser.id;
   const role = loggedUser.role;
@@ -252,7 +253,11 @@ async function getPicturesWithPercentile(
 
   const percentileSelect = `${
     isGlobal
-      ? `100 * PERCENT_RANK() OVER (ORDER BY pic.rating)`
+      ? `
+      100 * CASE 
+        WHEN COUNT(*) OVER() = 1 THEN 1
+        ELSE PERCENT_RANK() OVER (ORDER BY pic.rating)
+      END`
       : `
     CASE
       WHEN MIN(pic.rating) OVER () < 0 THEN 100 * (pic.rating - MIN(pic.rating) OVER ())/(MAX(pic.rating) OVER () - MIN(pic.rating) OVER ())
@@ -284,10 +289,15 @@ async function getPicturesWithPercentile(
 
     ageGroup = { min: _ageGroup.min, max: _ageGroup.max };
 
-    const percentileAgeGroupSelect = `100 * PERCENT_RANK() OVER (
-        PARTITION BY CASE WHEN ${ageGroupQuery} THEN 1 ELSE 0 END 
-        ORDER BY pic.rating
-        ) AS "ageGroupPercentile"`;
+    const percentileAgeGroupSelect = `
+      100 * 
+      CASE 
+        WHEN COUNT(*) OVER(PARTITION BY CASE WHEN ${ageGroupQuery} THEN 1 ELSE 0 END) = 1 THEN 1
+        ELSE PERCENT_RANK() OVER (
+          PARTITION BY CASE WHEN ${ageGroupQuery} THEN 1 ELSE 0 END 
+          ORDER BY pic.rating
+        )
+      END AS "ageGroupPercentile"`;
 
     subQueryPicPercentileSelect.push(percentileAgeGroupSelect);
   }

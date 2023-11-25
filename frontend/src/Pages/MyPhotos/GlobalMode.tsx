@@ -167,6 +167,7 @@ export default function GlobalMode() {
             isFetchingFilter={state.isFetchingFilter}
             isLoadingMorePhotos={isLoadingMoreImages.state}
             loggedUser={loggedUser}
+            ageGroup={state.ageGroup}
             picUrls={state.picUrls}
             picsInfo={state.picsInfo}
             setPicUrls={(value) => dispatch({ key: "picUrls", value })}

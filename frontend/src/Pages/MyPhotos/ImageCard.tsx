@@ -17,16 +17,12 @@ interface IPhotoCard {
   onClickDeletePic: (event: React.MouseEvent) => Promise<void>;
   onClickBanUser: (event: React.MouseEvent) => Promise<void>;
   picInfo: IPictureWithPercentile;
+  ageGroupStr?: string;
 }
 
 const getHumanReadablePerc = (perc: number) => {
-  if (perc < 50) {
-    if (perc < 0.1) return `Bottom <0.1%`;
-    return `Bottom ${perc.toFixed(1)}%`;
-  } else {
-    if (perc > 99.9) return `Top <0.1%`;
-    return `Top ${(100 - perc).toFixed(1)}%`;
-  }
+  if (perc > 99.9) return `Top <0.1%`;
+  return `Top ${(100 - perc).toFixed(1)}%`;
 };
 
 export const PhotoCard = ({
@@ -37,6 +33,7 @@ export const PhotoCard = ({
   isGlobal,
   onClickDeletePic: handleClickDeletePic,
   onClickBanUser: handleClickBanUser,
+  ageGroupStr,
 }: IPhotoCard) => {
   const { img } = useProgressiveImage(pic);
 
@@ -72,7 +69,7 @@ export const PhotoCard = ({
           setIsOpenUnlockVotesModal(false);
         }}
       />
-      <div ref={cardRef} className="w-full min-[350px]:w-1/2 md:w-1/3 lg:w-1/4 p-2">
+      <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2">
         <div className="cursor-pointer rounded-b-md shadow-md h-full">
           <div className="relative">
             {loggedUser && isAdmin(loggedUser.role) && (
@@ -124,9 +121,9 @@ export const PhotoCard = ({
           </div>
           <div className={`p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
             <div className="flex justify-between mb-1">
-              <span>Score</span>{" "}
+              <span>Global</span>{" "}
               <span>
-                {picInfo.numVotes > 0 && picInfo.percentile
+                {picInfo.numVotes > 0 && picInfo.percentile !== null
                   ? isGlobal
                     ? getHumanReadablePerc(picInfo.percentile)
                     : picInfo.percentile.toFixed(1)
@@ -142,6 +139,31 @@ export const PhotoCard = ({
                 }}
               />
             </div>
+            {ageGroupStr && picInfo.ageGroupPercentile !== undefined && (
+              <>
+                <div className="flex justify-between mb-1 mt-2">
+                  <span>Age: {ageGroupStr}</span>{" "}
+                  <span>
+                    {picInfo.numVotes > 0
+                      ? isGlobal
+                        ? getHumanReadablePerc(picInfo.ageGroupPercentile)
+                        : picInfo.ageGroupPercentile.toFixed(1)
+                      : "-"}
+                  </span>
+                </div>
+                <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+                  <div
+                    className="rounded-md bg-green-500 h-full"
+                    style={{
+                      width:
+                        picInfo.ageGroupPercentile === undefined
+                          ? "0%"
+                          : (picInfo.ageGroupPercentile * 99) / 100 + 1 + "%",
+                    }}
+                  />
+                </div>
+              </>
+            )}
             {picInfo.cannotSeeAllVotes && (UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON) && (
               <>
                 <div className="flex justify-between mb-1 mt-2">

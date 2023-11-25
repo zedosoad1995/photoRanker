@@ -45,7 +45,7 @@ export const getMany =
       throw new BadRequestError("Cannot call belongsToMe and userId simulataneously");
     }
 
-    const { pictures, nextCursor } = await PictureModel.getPicturesWithPercentile(
+    const { pictures, nextCursor, ageGroup } = await PictureModel.getPicturesWithPercentile(
       userId,
       loggedUser,
       hasReport,
@@ -65,6 +65,7 @@ export const getMany =
     res.status(200).json({
       pictures: retPics,
       nextCursor,
+      ageGroup,
     });
   };
 

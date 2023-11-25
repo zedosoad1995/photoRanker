@@ -5,8 +5,10 @@ import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
 import { isAdmin } from "@/Utils/role";
 import { createContext, useContext, useReducer } from "react";
+import { IAgeGroup } from "@shared/types/picture";
 
 export interface MyPhotosState {
+  ageGroup: IAgeGroup;
   picUrls: string[];
   picsInfo: IPictureWithPercentile[];
   nextCursor?: string;
@@ -50,6 +52,7 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
   const [isLoadingMoreImages, updateLoadingMoreImages] = useStateRef(false);
 
   const initialState: MyPhotosState = {
+    ageGroup: undefined,
     picUrls: [],
     picsInfo: [],
     nextCursor: undefined,
@@ -80,7 +83,7 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
       const orderByKey = state.sortValue.split(" ")[0];
       const orderByDir = state.sortValue.split(" ")[1];
 
-      const res = await getManyPictures({
+      return getManyPictures({
         ...(isAdmin(loggedUser.role) ? {} : { userId: loggedUser.id }),
         ...(state.filterSelect ? { [state.filterSelect]: true } : {}),
         ...(mode === Mode.Personal ? { isGlobal: false } : {}),
@@ -92,6 +95,7 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
         limit: 30,
         cursor,
       }).then(async (res) => {
+        dispatch({ key: "ageGroup", value: res.ageGroup });
         dispatch({ key: "nextCursor", value: res.nextCursor });
 
         dispatch({
@@ -113,8 +117,6 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
             : res.pictures.map((pic) => pic),
         });
       });
-
-      return res;
     } finally {
       checkCanUploadMorePics();
       updateLoadingMoreImages(false);
