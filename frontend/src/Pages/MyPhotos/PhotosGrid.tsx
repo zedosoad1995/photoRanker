@@ -19,7 +19,7 @@ interface IPhotoGrid {
   setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
   prevCursor: string | undefined;
   isGlobal?: boolean;
-  ageGroup: IAgeGroup;
+  ageGroup?: IAgeGroup;
 }
 
 export const PhotosGird = ({
