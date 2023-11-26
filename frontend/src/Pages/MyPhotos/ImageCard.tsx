@@ -8,6 +8,7 @@ import { isAdmin, isRegular } from "@/Utils/role";
 import { EllipsisVerticalIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
+import { Tooltip } from "@/Components/Tooltip";
 
 interface IPhotoCard {
   pic: string;
@@ -58,6 +59,60 @@ export const PhotoCard = ({
 
     return () => resizeObserver.disconnect();
   }, []);
+
+  const overallScoreText = useMemo(() => {
+    if (picInfo.numVotes === 0) {
+      return (
+        <>
+          <div>You currently have no votes.</div>
+          <div>Come back later to find out your score!</div>
+        </>
+      );
+    }
+
+    if (picInfo.percentile === null) {
+      return null;
+    }
+
+    if (isGlobal) {
+      return (
+        <>
+          <div>
+            This photo is {picInfo.percentile.toFixed(1)}% more attractive than the rest of the{" "}
+            {loggedUser.gender} population in this app.
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <div>
+          This value is just a way to quantify how much better/worse each of your pictures is in
+          relation to eachother. A score of 100, means it is your best picture.
+        </div>
+      </>
+    );
+  }, [picInfo.percentile]);
+
+  const ageGroupScoreText = useMemo(() => {
+    if (
+      picInfo.numVotes === 0 ||
+      picInfo.ageGroupPercentile === undefined ||
+      ageGroupStr === undefined
+    ) {
+      return null;
+    }
+
+    return (
+      <>
+        <div>
+          This photo is {picInfo.ageGroupPercentile.toFixed(1)}% more attractive than the rest of
+          the {loggedUser.gender} population for the age group {ageGroupStr}.
+        </div>
+      </>
+    );
+  }, [picInfo.percentile]);
 
   return (
     <>
@@ -122,13 +177,15 @@ export const PhotoCard = ({
           <div className={`p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
             <div className="flex justify-between mb-1">
               <span>{isGlobal ? "Overall" : "Score"}</span>{" "}
-              <span>
-                {picInfo.numVotes > 0 && picInfo.percentile !== null
-                  ? isGlobal
-                    ? getHumanReadablePerc(picInfo.percentile)
-                    : picInfo.percentile.toFixed(1)
-                  : "-"}
-              </span>
+              <Tooltip tooltipText={overallScoreText}>
+                <span>
+                  {picInfo.numVotes > 0 && picInfo.percentile !== null
+                    ? isGlobal
+                      ? getHumanReadablePerc(picInfo.percentile)
+                      : picInfo.percentile.toFixed(1)
+                    : "-"}
+                </span>
+              </Tooltip>
             </div>
             <div className="rounded-md h-2 bg-light-contour overflow-hidden">
               <div
@@ -143,17 +200,19 @@ export const PhotoCard = ({
               <>
                 <div className="flex justify-between mb-1 mt-2">
                   <span>Age: {ageGroupStr}</span>{" "}
-                  <span>
-                    {picInfo.numVotes > 0
-                      ? isGlobal
-                        ? getHumanReadablePerc(picInfo.ageGroupPercentile)
-                        : picInfo.ageGroupPercentile.toFixed(1)
-                      : "-"}
-                  </span>
+                  <Tooltip tooltipText={ageGroupScoreText}>
+                    <span>
+                      {picInfo.numVotes > 0
+                        ? isGlobal
+                          ? getHumanReadablePerc(picInfo.ageGroupPercentile)
+                          : picInfo.ageGroupPercentile.toFixed(1)
+                        : "-"}
+                    </span>
+                  </Tooltip>
                 </div>
                 <div className="rounded-md h-2 bg-light-contour overflow-hidden">
                   <div
-                    className="rounded-md bg-green-500 h-full"
+                    className="rounded-md bg-orange-400 h-full"
                     style={{
                       width:
                         picInfo.ageGroupPercentile === undefined
