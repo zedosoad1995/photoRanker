@@ -17,7 +17,7 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
           mode === Mode.Global ? "bg-white font-semibold" : ""
         }`}
       >
-        <div>You vs Others</div>
+        <div>Me vs Others</div>
         <HelpIcon
           tooltipText={
             <>
@@ -38,7 +38,7 @@ export const ModeSelect = ({ mode, handleUpdateMode }: IModeSelect) => {
           mode === Mode.Personal ? "bg-white font-semibold" : ""
         }`}
       >
-        <div>You vs Self</div>
+        <div>Me vs Me</div>
         <HelpIcon
           tooltipText={
             <>

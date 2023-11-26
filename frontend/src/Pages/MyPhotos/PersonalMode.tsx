@@ -164,7 +164,7 @@ export default function PersonalMode() {
           />
           {state.picUrls.length === 1 && (
             <div className="text-danger my-1 mx-2">
-              You need at least 2 photos to start getting votes in personal mode.
+              You need at least 2 photos to start getting votes.
             </div>
           )}
           <PhotosGird
