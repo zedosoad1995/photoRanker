@@ -121,7 +121,7 @@ export const PhotoCard = ({
           </div>
           <div className={`p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
             <div className="flex justify-between mb-1">
-              <span>Global</span>{" "}
+              <span>{isGlobal ? "Overall" : "Score"}</span>{" "}
               <span>
                 {picInfo.numVotes > 0 && picInfo.percentile !== null
                   ? isGlobal
@@ -153,7 +153,7 @@ export const PhotoCard = ({
                 </div>
                 <div className="rounded-md h-2 bg-light-contour overflow-hidden">
                   <div
-                    className="rounded-md bg-green-500 h-full"
+                    className="rounded-md bg-red-500 h-full"
                     style={{
                       width:
                         picInfo.ageGroupPercentile === undefined
