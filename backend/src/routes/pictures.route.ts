@@ -6,68 +6,43 @@ import {
   getOne,
   uploadOne,
 } from "@/controllers/pictures.controller";
-import { checkAuth } from "@/middlewares/checkAuth";
 import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
 import { validateImage } from "@/middlewares/validateImage";
 import { validateQuery } from "@/middlewares/validateQuery";
-import { checkProfileCompleted } from "@/middlewares/checkProfileCompleted";
-import { checkEmailVerified } from "@/middlewares/checkEmailVerified";
+import { validateForm } from "@/middlewares/validateForm";
 import { mainStorageInteractor } from "@/container";
-import { checkBanned } from "@/middlewares/checkBanned";
 import { getManyPicturesSchema } from "@/schemas/picture/query/getManyPictures";
 import { createPictureSchema } from "@/schemas/picture/createPicture";
 import { validateFormDataJson } from "@/middlewares/validateFormDataJson";
+import { checkBasicUserSettings } from "@/middlewares/checkBasicUserSetting";
+import { updateOne } from "@/controllers/users.controller";
+import { updatePictureSchema } from "@/schemas/picture/updatePicture";
 
 const router = Router();
 
 router.get(
   "/",
-  checkAuth,
-  checkBanned,
-  checkProfileCompleted,
-  checkEmailVerified,
+  checkBasicUserSettings,
   // @ts-ignore
   validateQuery(getManyPicturesSchema),
   getMany(mainStorageInteractor)
 );
 
-router.get(
-  "/upload-permission",
-  checkAuth,
-  checkBanned,
-  checkProfileCompleted,
-  checkEmailVerified,
-  checkUploadPermission
-);
+router.get("/upload-permission", checkBasicUserSettings, checkUploadPermission);
 
-router.get(
-  "/:pictureId",
-  checkAuth,
-  checkBanned,
-  checkProfileCompleted,
-  checkEmailVerified,
-  getOne(mainStorageInteractor)
-);
+router.get("/:pictureId", checkBasicUserSettings, getOne(mainStorageInteractor));
 
 router.post(
   "/",
-  checkAuth,
-  checkBanned,
-  checkProfileCompleted,
-  checkEmailVerified,
+  checkBasicUserSettings,
   convertFormDataToBuffer,
   validateFormDataJson(createPictureSchema, "info"),
   validateImage(mainStorageInteractor),
   uploadOne(mainStorageInteractor)
 );
 
-router.delete(
-  "/:pictureId",
-  checkAuth,
-  checkBanned,
-  checkProfileCompleted,
-  checkEmailVerified,
-  deleteOne(mainStorageInteractor)
-);
+router.patch("/:pictureId", checkBasicUserSettings, validateForm(updatePictureSchema), updateOne);
+
+router.delete("/:pictureId", checkBasicUserSettings, deleteOne(mainStorageInteractor));
 
 export default router;
