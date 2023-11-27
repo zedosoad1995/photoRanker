@@ -81,7 +81,11 @@ export const getFirstPic = async (
   loggedUser: User,
   userPreferences: Preference | null
 ): Promise<(Picture & { gender: Gender }) | null> => {
-  let whereArr = [`pic."userId" != '${loggedUser.id}'`, `usr."isBanned" IS FALSE`];
+  let whereArr = [
+    `pic."userId" != '${loggedUser.id}'`,
+    `usr."isBanned" IS FALSE`,
+    `pic."isActive" IS TRUE`,
+  ];
 
   whereArr = [...whereArr, ...getPhotoPreferencesQueries(userPreferences)];
   whereArr = [...whereArr, ...getVoterPreferencesQueries(loggedUser)];
