@@ -4,6 +4,7 @@ import {
   deleteOne,
   getMany,
   getOne,
+  updateOne,
   uploadOne,
 } from "@/controllers/pictures.controller";
 import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
@@ -15,7 +16,6 @@ import { getManyPicturesSchema } from "@/schemas/picture/query/getManyPictures";
 import { createPictureSchema } from "@/schemas/picture/createPicture";
 import { validateFormDataJson } from "@/middlewares/validateFormDataJson";
 import { checkBasicUserSettings } from "@/middlewares/checkBasicUserSetting";
-import { updateOne } from "@/controllers/users.controller";
 import { updatePictureSchema } from "@/schemas/picture/updatePicture";
 
 const router = Router();
