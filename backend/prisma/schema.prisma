@@ -84,6 +84,7 @@ model Picture {
   maxFreeVotes               Int      @default(30)
   hasPurchasedUnlimitedVotes Boolean  @default(false)
   isGlobal                   Boolean  @default(true)
+  isActive                   Boolean  @default(true)
   user                       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                     String
   matches                    Match[]

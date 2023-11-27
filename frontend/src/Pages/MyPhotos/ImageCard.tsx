@@ -22,8 +22,9 @@ interface IPhotoCard {
 }
 
 const getHumanReadablePerc = (perc: number) => {
-  if (perc > 99.9) return `Top <0.1%`;
-  return `Top ${(100 - perc).toFixed(1)}%`;
+  /* if (perc > 99.9) return `Top <0.1%`;
+  return `Top ${(100 - perc).toFixed(1)}%`; */
+  return perc.toFixed();
 };
 
 export const PhotoCard = ({
@@ -78,7 +79,7 @@ export const PhotoCard = ({
       return (
         <>
           <div>
-            This photo is {picInfo.percentile.toFixed(1)}% more attractive than the rest of the{" "}
+            This photo is more attractive than {picInfo.percentile.toFixed(2)}% of the{" "}
             {loggedUser.gender} population in this app.
           </div>
         </>
@@ -107,8 +108,8 @@ export const PhotoCard = ({
     return (
       <>
         <div>
-          This photo is {picInfo.ageGroupPercentile.toFixed(1)}% more attractive than the rest of
-          the {loggedUser.gender} population for the age group {ageGroupStr}.
+          This photo is more attractive than {picInfo.ageGroupPercentile.toFixed(2)}% of the{" "}
+          {loggedUser.gender} population for the age group {ageGroupStr}.
         </div>
       </>
     );
