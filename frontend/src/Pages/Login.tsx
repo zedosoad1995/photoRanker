@@ -6,7 +6,6 @@ import { FORGOT_PASSWORD, REGISTER, VOTE } from "@/Constants/routes";
 import { useAuth } from "@/Contexts/auth";
 import { useNavigate } from "react-router-dom";
 import GoogleButton from "@/Components/GoogleButton";
-import FacebookButton from "@/Components/FacebookButton";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import {
@@ -113,7 +112,6 @@ export default function SignIn() {
           </div>
 
           <GoogleButton />
-          <FacebookButton />
         </div>
 
         <p className="mt-6 text-center text-sm text-light-text">
