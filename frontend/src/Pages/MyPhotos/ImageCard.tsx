@@ -4,19 +4,19 @@ import { ImageSkeleton } from "@/Components/Skeletons/ImageSkeleton";
 import { useProgressiveImage } from "@/Hooks/useProgressiveImage";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
-import { isAdmin, isRegular } from "@/Utils/role";
+import { isAdmin } from "@/Utils/role";
 import {
   EllipsisVerticalIcon,
   LockClosedIcon,
   PauseIcon,
   PlayIcon,
-  XMarkIcon,
 } from "@heroicons/react/20/solid";
 import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
 import { Tooltip } from "@/Components/Tooltip";
 import { updateImage } from "@/Services/picture";
 import { useMyPhotos } from "./Contexts/myPhotos";
+import PauseUnpauseModal from "./Modals/PauseUnpauseModal";
 
 interface IPhotoCard {
   pic: string;
@@ -49,11 +49,16 @@ export const PhotoCard = ({
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
+  const [isOpenPauseUnpause, setIsOpenPauseUnpause] = useState(false);
   const [isOpenUnlockVotesModal, setIsOpenUnlockVotesModal] = useState(false);
   const [width, setWidth] = useState(0);
   const isSmall = useMemo(() => width < 240, [width]);
 
   const { dispatch, state } = useMyPhotos();
+
+  const handleOpenPauseUnpauseModal = async () => {
+    setIsOpenPauseUnpause(true);
+  };
 
   const handlePauseUnpause = async () => {
     const picId = picInfo.id;
@@ -150,11 +155,19 @@ export const PhotoCard = ({
           setIsOpenUnlockVotesModal(false);
         }}
       />
+      <PauseUnpauseModal
+        isActive={picInfo.isActive}
+        isOpen={isOpenPauseUnpause}
+        onAccepted={handlePauseUnpause}
+        onClose={() => {
+          setIsOpenPauseUnpause(false);
+        }}
+      />
       <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
         <div className="cursor-default rounded-b-md shadow-md h-full">
           <div className="relative">
             <div
-              onClick={handlePauseUnpause}
+              onClick={handleOpenPauseUnpauseModal}
               className={`absolute flex justify-center items-center gap-[2px] bg-white ${
                 picInfo.isActive ? "card-group-child-active" : "card-group-child"
               } in rounded-xl py-1 px-2 left-1 top-1 cursor-pointer`}
@@ -178,7 +191,7 @@ export const PhotoCard = ({
                   items={[
                     {
                       label: picInfo.isActive ? "Pause Voting" : "Activate Photo",
-                      onClick: handlePauseUnpause,
+                      onClick: handleOpenPauseUnpauseModal,
                     },
                     {
                       label: "Delete Photo",
