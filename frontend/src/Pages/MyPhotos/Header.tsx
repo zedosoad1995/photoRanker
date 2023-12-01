@@ -131,7 +131,7 @@ export const Header = ({
             isHeightFull={true}
           >
             <div className="flex items-center justify-center">
-              <div className="mr-3 text-xl -translate-y-[1px]">+</div>
+              <div className="mr-3 text-xl -translate-y-[2px]">+</div>
               <div>Add Photo</div>
             </div>
           </Button>

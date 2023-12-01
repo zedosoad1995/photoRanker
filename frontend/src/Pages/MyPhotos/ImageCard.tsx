@@ -5,10 +5,18 @@ import { useProgressiveImage } from "@/Hooks/useProgressiveImage";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
 import { isAdmin, isRegular } from "@/Utils/role";
-import { EllipsisVerticalIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import {
+  EllipsisVerticalIcon,
+  LockClosedIcon,
+  PauseIcon,
+  PlayIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
 import { Tooltip } from "@/Components/Tooltip";
+import { updateImage } from "@/Services/picture";
+import { useMyPhotos } from "./Contexts/myPhotos";
 
 interface IPhotoCard {
   pic: string;
@@ -44,6 +52,23 @@ export const PhotoCard = ({
   const [isOpenUnlockVotesModal, setIsOpenUnlockVotesModal] = useState(false);
   const [width, setWidth] = useState(0);
   const isSmall = useMemo(() => width < 240, [width]);
+
+  const { dispatch, state } = useMyPhotos();
+
+  const handlePauseUnpause = async () => {
+    const picId = picInfo.id;
+
+    const updatedPic = await updateImage(picId, { isActive: !picInfo.isActive });
+    const updatedPics = state.picsInfo.reduce((pics, _pic) => {
+      if (_pic.id !== picId) {
+        return [...pics, _pic];
+      }
+
+      return [...pics, { ..._pic, isActive: updatedPic.isActive }];
+    }, [] as IPictureWithPercentile[]);
+
+    dispatch({ key: "picsInfo", value: updatedPics });
+  };
 
   useEffect(() => {
     if (!cardRef.current) {
@@ -125,9 +150,28 @@ export const PhotoCard = ({
           setIsOpenUnlockVotesModal(false);
         }}
       />
-      <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2">
+      <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
         <div className="cursor-pointer rounded-b-md shadow-md h-full">
           <div className="relative">
+            <div
+              onClick={handlePauseUnpause}
+              className={`absolute flex justify-center items-center gap-[2px] bg-white ${
+                picInfo.isActive ? "card-group-child-active" : "card-group-child"
+              } in rounded-xl py-1 px-2 left-1 top-1`}
+            >
+              {picInfo.isActive && (
+                <>
+                  <PauseIcon className="h-4 w-4 text-center" />
+                  <div className="text-sm font-semibold leading-none">Active</div>
+                </>
+              )}
+              {!picInfo.isActive && (
+                <>
+                  <PlayIcon className="h-4 w-4 text-center" />
+                  <div className="text-sm font-semibold leading-none">Paused</div>
+                </>
+              )}
+            </div>
             {loggedUser && isAdmin(loggedUser.role) && (
               <div className="absolute right-[2%] top-[2%] origin-top-right">
                 <Menu

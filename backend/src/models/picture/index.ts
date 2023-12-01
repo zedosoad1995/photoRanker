@@ -51,6 +51,7 @@ interface IReturnPicWithPervental {
   filepath: string;
   numVotes: number;
   percentile: number;
+  isActive: boolean;
 }
 
 // TODO: Improve this function code
@@ -347,7 +348,7 @@ async function getPicturesWithPercentile(
   const pictures: (IReturnPicWithPervental & {
     cursor?: any;
   })[] = await prisma.$queryRawUnsafe(`
-      SELECT pic.id, pic."userId", pic.filepath, pic."numVotes" AS "numPaidVotes", pic_perc.percentile,
+      SELECT pic.id, pic."userId", pic.filepath, pic."isActive", pic."numVotes" AS "numPaidVotes", pic_perc.percentile,
       CASE
         WHEN pic_perc."numVotes" IS NULL THEN 0
         ELSE pic_perc."numVotes"
@@ -411,10 +412,22 @@ function getReturnPic(
   return { ...ommitedPic, url: imgUrl };
 }
 
+function getUpdateFieldsToReturn(
+  pic: Partial<Picture> & Record<string, any>,
+  storageInteractor: StorageInteractor
+) {
+  const { filepath, ...ommitedPic } = omitRatingParams(pic);
+  const imgUrl = storageInteractor.getImageUrl(filepath);
+  const retPic = _.omit(ommitedPic, "freeRating", "hasPurchasedUnlimitedVotes", "isGlobal");
+
+  return { ...retPic, url: imgUrl };
+}
+
 export const PictureModel = {
   ...prisma.picture,
   getMatchPictures,
   getPicturesWithPercentile,
   omitRatingParams,
   getReturnPic,
+  getUpdateFieldsToReturn,
 };

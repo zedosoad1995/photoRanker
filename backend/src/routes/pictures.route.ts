@@ -41,7 +41,12 @@ router.post(
   uploadOne(mainStorageInteractor)
 );
 
-router.patch("/:pictureId", checkBasicUserSettings, validateForm(updatePictureSchema), updateOne);
+router.patch(
+  "/:pictureId",
+  checkBasicUserSettings,
+  validateForm(updatePictureSchema),
+  updateOne(mainStorageInteractor)
+);
 
 router.delete("/:pictureId", checkBasicUserSettings, deleteOne(mainStorageInteractor));
 
