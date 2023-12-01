@@ -47,7 +47,7 @@ export const Tooltip = ({ children, tooltipText }: ITooltip) => {
 
   return (
     <div
-      className="relative"
+      className="relative cursor-pointer"
       onMouseEnter={(event: React.MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
         if (!tooltipText) return;

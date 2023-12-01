@@ -32,7 +32,7 @@ interface IPhotoCard {
 const getHumanReadablePerc = (perc: number) => {
   /* if (perc > 99.9) return `Top <0.1%`;
   return `Top ${(100 - perc).toFixed(1)}%`; */
-  return perc.toFixed();
+  return perc.toFixed() + "%";
 };
 
 export const PhotoCard = ({
@@ -151,13 +151,13 @@ export const PhotoCard = ({
         }}
       />
       <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
-        <div className="cursor-pointer rounded-b-md shadow-md h-full">
+        <div className="cursor-default rounded-b-md shadow-md h-full">
           <div className="relative">
             <div
               onClick={handlePauseUnpause}
               className={`absolute flex justify-center items-center gap-[2px] bg-white ${
                 picInfo.isActive ? "card-group-child-active" : "card-group-child"
-              } in rounded-xl py-1 px-2 left-1 top-1`}
+              } in rounded-xl py-1 px-2 left-1 top-1 cursor-pointer`}
             >
               {picInfo.isActive && (
                 <>
@@ -172,30 +172,32 @@ export const PhotoCard = ({
                 </>
               )}
             </div>
-            {loggedUser && isAdmin(loggedUser.role) && (
+            {loggedUser && (
               <div className="absolute right-[2%] top-[2%] origin-top-right">
                 <Menu
                   items={[
                     {
+                      label: picInfo.isActive ? "Pause Voting" : "Activate Photo",
+                      onClick: handlePauseUnpause,
+                    },
+                    {
                       label: "Delete Photo",
                       onClick: handleClickDeletePic,
                     },
-                    {
-                      label: "Ban User",
-                      onClick: handleClickBanUser,
-                      disabled: loggedUser.id === picInfo.userId,
-                    },
+                    ...(isAdmin(loggedUser.role)
+                      ? [
+                          {
+                            label: "Ban User",
+                            onClick: handleClickBanUser,
+                            disabled: loggedUser.id === picInfo.userId,
+                          },
+                        ]
+                      : []),
                   ]}
                 >
                   <EllipsisVerticalIcon className="p-[2px] h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200" />
                 </Menu>
               </div>
-            )}
-            {loggedUser && isRegular(loggedUser.role) && (
-              <XMarkIcon
-                onClick={handleClickDeletePic}
-                className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
-              />
             )}
             <div className="rounded-t-md overflow-hidden">
               <div
