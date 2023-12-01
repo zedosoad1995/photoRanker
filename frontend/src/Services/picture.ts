@@ -1,4 +1,4 @@
-import { IGetManyPictures, IUploadPermission, PictureRes } from "@/Types/picture";
+import { IGetManyPictures, IUpdatedPic, IUploadPermission, PictureRes } from "@/Types/picture";
 import api from "./index";
 import { GENDER } from "@shared/constants/user";
 
@@ -32,6 +32,13 @@ export const getPicture = async (id: string): Promise<PictureRes> => {
 
 export const getUploadPermission = async (): Promise<IUploadPermission> => {
   return api.get("/pictures/upload-permission");
+};
+
+export const updateImage = async (
+  id: string,
+  body: Partial<{ isActive: boolean }>
+): Promise<IUpdatedPic> => {
+  return api.patch(`/pictures/${id}`, body);
 };
 
 export const deleteImage = async (id: string): Promise<void> => {

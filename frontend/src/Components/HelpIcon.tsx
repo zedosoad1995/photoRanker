@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
 import { IconContext } from "react-icons";
 import { MdHelp } from "react-icons/md";
+import { Tooltip } from "./Tooltip";
 
 interface IHelpIcon {
   size?: number;
@@ -8,70 +8,15 @@ interface IHelpIcon {
 }
 
 export const HelpIcon = ({ size = 18, tooltipText }: IHelpIcon) => {
-  const [isTouching, setIsTouching] = useState(false);
-  const tooltipRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const checkBoundaries = () => {
-      if (!tooltipRef.current) return;
-
-      const rect = tooltipRef.current.getBoundingClientRect();
-
-      const widths = [window.innerWidth];
-      if (window.screen?.width) {
-        widths.push(window.screen?.width);
-      }
-      const windowWidth = Math.min(...widths);
-
-      if (rect.right > windowWidth) {
-        tooltipRef.current.style.transform = `translateX(-${
-          rect.right - windowWidth + rect.width / 2
-        }px) translateY(4px)`;
-        tooltipRef.current.style.left = "0px";
-      } else if (rect.left < 0) {
-        tooltipRef.current.style.transform = `translateX(-${
-          rect.width / 2 + rect.left
-        }px) translateY(4px)`;
-        tooltipRef.current.style.left = "100%";
-      }
-    };
-
-    window.addEventListener("resize", checkBoundaries);
-    checkBoundaries();
-    return () => window.removeEventListener("resize", checkBoundaries);
-  }, []);
-
   return (
-    <div
-      className="relative group"
-      onMouseEnter={(event: React.MouseEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        setIsTouching(true);
-      }}
-      onMouseLeave={(event: React.MouseEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        setIsTouching(false);
-      }}
-      onTouchStart={(event: React.TouchEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        setIsTouching(true);
-      }}
-      onTouchEnd={(event: React.TouchEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        setIsTouching(false);
-      }}
-    >
-      <IconContext.Provider
-        value={{ color: isTouching ? "#111827" : "#70747D", size: `${size}px` }}
-      >
-        <MdHelp />
-      </IconContext.Provider>
-      <div
-        ref={tooltipRef}
-        className="z-50 absolute invisible group-hover:visible p-2 -translate-x-1/2 left-1/2 translate-y-1 bg-normal-text opacity-90 text-white rounded-lg font-normal w-52"
-      >
-        {tooltipText}
-      </div>
-    </div>
+    <Tooltip tooltipText={tooltipText}>
+      {({ isTouching }) => (
+        <IconContext.Provider
+          value={{ color: isTouching ? "#111827" : "#70747D", size: `${size}px` }}
+        >
+          <MdHelp />
+        </IconContext.Provider>
+      )}
+    </Tooltip>
   );
 };

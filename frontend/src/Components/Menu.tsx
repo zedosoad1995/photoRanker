@@ -28,7 +28,9 @@ export default function Menu({ children, items }: IMenu) {
               onClick={item.onClick}
               key={item.label}
               disabled={item.disabled ?? false}
-              className={`text-sm ${item.disabled ? "opacity-40 cursor-default" : ""}`}
+              className={`text-sm cursor-pointer ${
+                item.disabled ? "opacity-40 cursor-default" : ""
+              }`}
             >
               {({ active }) => (
                 <div

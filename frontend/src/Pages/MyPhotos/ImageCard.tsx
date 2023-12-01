@@ -4,10 +4,19 @@ import { ImageSkeleton } from "@/Components/Skeletons/ImageSkeleton";
 import { useProgressiveImage } from "@/Hooks/useProgressiveImage";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
-import { isAdmin, isRegular } from "@/Utils/role";
-import { EllipsisVerticalIcon, LockClosedIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { isAdmin } from "@/Utils/role";
+import {
+  EllipsisVerticalIcon,
+  LockClosedIcon,
+  PauseIcon,
+  PlayIcon,
+} from "@heroicons/react/20/solid";
 import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
+import { Tooltip } from "@/Components/Tooltip";
+import { updateImage } from "@/Services/picture";
+import { useMyPhotos } from "./Contexts/myPhotos";
+import PauseUnpauseModal from "./Modals/PauseUnpauseModal";
 
 interface IPhotoCard {
   pic: string;
@@ -21,8 +30,9 @@ interface IPhotoCard {
 }
 
 const getHumanReadablePerc = (perc: number) => {
-  if (perc > 99.9) return `Top <0.1%`;
-  return `Top ${(100 - perc).toFixed(1)}%`;
+  /* if (perc > 99.9) return `Top <0.1%`;
+  return `Top ${(100 - perc).toFixed(1)}%`; */
+  return perc.toFixed() + "%";
 };
 
 export const PhotoCard = ({
@@ -39,9 +49,31 @@ export const PhotoCard = ({
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
+  const [isOpenPauseUnpause, setIsOpenPauseUnpause] = useState(false);
   const [isOpenUnlockVotesModal, setIsOpenUnlockVotesModal] = useState(false);
   const [width, setWidth] = useState(0);
   const isSmall = useMemo(() => width < 240, [width]);
+
+  const { dispatch, state } = useMyPhotos();
+
+  const handleOpenPauseUnpauseModal = async () => {
+    setIsOpenPauseUnpause(true);
+  };
+
+  const handlePauseUnpause = async () => {
+    const picId = picInfo.id;
+
+    const updatedPic = await updateImage(picId, { isActive: !picInfo.isActive });
+    const updatedPics = state.picsInfo.reduce((pics, _pic) => {
+      if (_pic.id !== picId) {
+        return [...pics, _pic];
+      }
+
+      return [...pics, { ..._pic, isActive: updatedPic.isActive }];
+    }, [] as IPictureWithPercentile[]);
+
+    dispatch({ key: "picsInfo", value: updatedPics });
+  };
 
   useEffect(() => {
     if (!cardRef.current) {
@@ -59,6 +91,60 @@ export const PhotoCard = ({
     return () => resizeObserver.disconnect();
   }, []);
 
+  const overallScoreText = useMemo(() => {
+    if (picInfo.numVotes === 0) {
+      return (
+        <>
+          <div>You currently have no votes.</div>
+          <div>Come back later to find out your score!</div>
+        </>
+      );
+    }
+
+    if (picInfo.percentile === null) {
+      return null;
+    }
+
+    if (isGlobal) {
+      return (
+        <>
+          <div>
+            This photo is more attractive than {picInfo.percentile.toFixed(2)}% of the{" "}
+            {loggedUser.gender} population in this app.
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <div>
+          This value is just a way to quantify how much better/worse each of your pictures is in
+          relation to eachother. A score of 100, means it is your best picture.
+        </div>
+      </>
+    );
+  }, [picInfo.percentile]);
+
+  const ageGroupScoreText = useMemo(() => {
+    if (
+      picInfo.numVotes === 0 ||
+      picInfo.ageGroupPercentile === undefined ||
+      ageGroupStr === undefined
+    ) {
+      return null;
+    }
+
+    return (
+      <>
+        <div>
+          This photo is more attractive than {picInfo.ageGroupPercentile.toFixed(2)}% of the{" "}
+          {loggedUser.gender} population for the age group {ageGroupStr}.
+        </div>
+      </>
+    );
+  }, [picInfo.percentile]);
+
   return (
     <>
       <BuyUnlimitedVotesModal
@@ -69,33 +155,62 @@ export const PhotoCard = ({
           setIsOpenUnlockVotesModal(false);
         }}
       />
-      <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2">
-        <div className="cursor-pointer rounded-b-md shadow-md h-full">
+      <PauseUnpauseModal
+        isActive={picInfo.isActive}
+        isOpen={isOpenPauseUnpause}
+        onAccepted={handlePauseUnpause}
+        onClose={() => {
+          setIsOpenPauseUnpause(false);
+        }}
+      />
+      <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
+        <div className="cursor-default rounded-b-md shadow-md h-full">
           <div className="relative">
-            {loggedUser && isAdmin(loggedUser.role) && (
+            <div
+              onClick={handleOpenPauseUnpauseModal}
+              className={`absolute flex justify-center items-center gap-[2px] bg-white ${
+                picInfo.isActive ? "card-group-child-active" : "card-group-child"
+              } in rounded-xl py-1 px-2 left-1 top-1 cursor-pointer`}
+            >
+              {picInfo.isActive && (
+                <>
+                  <PauseIcon className="h-4 w-4 text-center" />
+                  <div className="text-sm font-semibold leading-none">Active</div>
+                </>
+              )}
+              {!picInfo.isActive && (
+                <>
+                  <PlayIcon className="h-4 w-4 text-center" />
+                  <div className="text-sm font-semibold leading-none">Paused</div>
+                </>
+              )}
+            </div>
+            {loggedUser && (
               <div className="absolute right-[2%] top-[2%] origin-top-right">
                 <Menu
                   items={[
                     {
+                      label: picInfo.isActive ? "Pause Voting" : "Activate Photo",
+                      onClick: handleOpenPauseUnpauseModal,
+                    },
+                    {
                       label: "Delete Photo",
                       onClick: handleClickDeletePic,
                     },
-                    {
-                      label: "Ban User",
-                      onClick: handleClickBanUser,
-                      disabled: loggedUser.id === picInfo.userId,
-                    },
+                    ...(isAdmin(loggedUser.role)
+                      ? [
+                          {
+                            label: "Ban User",
+                            onClick: handleClickBanUser,
+                            disabled: loggedUser.id === picInfo.userId,
+                          },
+                        ]
+                      : []),
                   ]}
                 >
                   <EllipsisVerticalIcon className="p-[2px] h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200" />
                 </Menu>
               </div>
-            )}
-            {loggedUser && isRegular(loggedUser.role) && (
-              <XMarkIcon
-                onClick={handleClickDeletePic}
-                className="absolute right-[2%] top-[2%] origin-top-right h-5 w-5 cursor-pointer rounded-full bg-white bg-opacity-30 hover:bg-opacity-60 transition duration-200"
-              />
             )}
             <div className="rounded-t-md overflow-hidden">
               <div
@@ -122,13 +237,15 @@ export const PhotoCard = ({
           <div className={`p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
             <div className="flex justify-between mb-1">
               <span>{isGlobal ? "Overall" : "Score"}</span>{" "}
-              <span>
-                {picInfo.numVotes > 0 && picInfo.percentile !== null
-                  ? isGlobal
-                    ? getHumanReadablePerc(picInfo.percentile)
-                    : picInfo.percentile.toFixed(1)
-                  : "-"}
-              </span>
+              <Tooltip tooltipText={overallScoreText}>
+                <span>
+                  {picInfo.numVotes > 0 && picInfo.percentile !== null
+                    ? isGlobal
+                      ? getHumanReadablePerc(picInfo.percentile)
+                      : picInfo.percentile.toFixed(1)
+                    : "-"}
+                </span>
+              </Tooltip>
             </div>
             <div className="rounded-md h-2 bg-light-contour overflow-hidden">
               <div
@@ -143,17 +260,19 @@ export const PhotoCard = ({
               <>
                 <div className="flex justify-between mb-1 mt-2">
                   <span>Age: {ageGroupStr}</span>{" "}
-                  <span>
-                    {picInfo.numVotes > 0
-                      ? isGlobal
-                        ? getHumanReadablePerc(picInfo.ageGroupPercentile)
-                        : picInfo.ageGroupPercentile.toFixed(1)
-                      : "-"}
-                  </span>
+                  <Tooltip tooltipText={ageGroupScoreText}>
+                    <span>
+                      {picInfo.numVotes > 0
+                        ? isGlobal
+                          ? getHumanReadablePerc(picInfo.ageGroupPercentile)
+                          : picInfo.ageGroupPercentile.toFixed(1)
+                        : "-"}
+                    </span>
+                  </Tooltip>
                 </div>
                 <div className="rounded-md h-2 bg-light-contour overflow-hidden">
                   <div
-                    className="rounded-md bg-green-500 h-full"
+                    className="rounded-md bg-orange-400 h-full"
                     style={{
                       width:
                         picInfo.ageGroupPercentile === undefined

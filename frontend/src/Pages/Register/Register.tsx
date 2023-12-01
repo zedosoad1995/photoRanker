@@ -8,7 +8,6 @@ import { LOGIN, VOTE } from "@/Constants/routes";
 import { useNavigate } from "react-router-dom";
 import _ from "underscore";
 import GoogleButton from "@/Components/GoogleButton";
-import FacebookButton from "@/Components/FacebookButton";
 import { useAuth } from "@/Contexts/auth";
 import { ICreateUser } from "@/Types/user";
 import { BANNED_ACCOUNT } from "@shared/constants/errorCodes";
@@ -107,7 +106,6 @@ export default function Register() {
               </div>
             )}
             {formStage === 0 && <GoogleButton text="Sign up with Google" />}
-            {formStage === 0 && <FacebookButton text="Sign up with Facebook" />}
           </div>
 
           <p className="mt-6 text-center text-sm text-light-text">

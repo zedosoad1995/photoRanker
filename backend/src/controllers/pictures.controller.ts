@@ -15,6 +15,7 @@ import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
 import { MAX_FREE_VOTES } from "@shared/constants/purchase";
 import { ILoggedUserMiddleware } from "@/types/user";
+import { Prisma } from "@prisma/client";
 
 export const getMany =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
@@ -174,6 +175,42 @@ export const uploadOne =
     res.status(201).json({
       picture: PictureModel.getReturnPic(picture, storageInteractor),
     });
+  };
+
+export const updateOne =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const loggedUser = req.loggedUser as ILoggedUserMiddleware;
+    const pictureId = req.params.pictureId;
+
+    if (isRegular(loggedUser.role)) {
+      const pictureBelongingToUser = await PictureModel.findUnique({
+        where: {
+          id: pictureId,
+          userId: loggedUser.id,
+        },
+      });
+
+      if (!pictureBelongingToUser) {
+        throw new NotFoundError("Picture does not exist or belong to user");
+      }
+    } else {
+      const picture = await PictureModel.findUnique({
+        where: {
+          id: pictureId,
+        },
+      });
+
+      if (!picture) {
+        throw new NotFoundError("Picture does not exist");
+      }
+    }
+
+    const picture = await PictureModel.update({
+      data: req.body,
+      where: { id: pictureId },
+    });
+
+    res.status(200).json(PictureModel.getUpdateFieldsToReturn(picture, storageInteractor));
   };
 
 export const deleteOne =

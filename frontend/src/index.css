@@ -13,3 +13,30 @@
     @apply h-full;
   }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .card-group .card-group-child {
+    opacity: 0.7;
+    transition: opacity 300ms ease-in-out;
+  }
+
+  .card-group .card-group-child-active {
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+  }
+
+  .card-group:hover .card-group-child,
+  .card-group:hover .card-group-child-active {
+    opacity: 0.9;
+  }
+}
+
+@media (hover: none) {
+  .card-group .card-group-child {
+    opacity: 0.9;
+  }
+
+  .card-group .card-group-child-active {
+    visibility: hidden;
+  }
+}

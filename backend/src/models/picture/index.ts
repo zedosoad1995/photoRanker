@@ -51,6 +51,7 @@ interface IReturnPicWithPervental {
   filepath: string;
   numVotes: number;
   percentile: number;
+  isActive: boolean;
 }
 
 // TODO: Improve this function code
@@ -93,7 +94,7 @@ async function getPicturesWithPercentile(
 
   const PIC_GROUP_BY =
     (getAllColumnNames() ?? ["id"]).map((col) => `pic."${col}"`).join(", ") +
-    ", pic_perc.percentile";
+    `, pic_perc.percentile, pic_perc."numVotes", pic_perc."cannotSeeAllVotes", pic_perc."ageGroupPercentile"`;
 
   const USER_JOIN = `
     INNER JOIN "User" as usr
@@ -153,7 +154,7 @@ async function getPicturesWithPercentile(
     joinQuery.push(USER_JOIN);
 
     if (isBanned) {
-      joinInnerQuery = joinInnerQuery.filter((q) => ![USER_JOIN, PURCHASE_JOIN].includes(q));
+      joinInnerQuery = joinInnerQuery.filter((q) => ![PURCHASE_JOIN].includes(q));
       whereInnerQuery = whereInnerQuery.filter((q) => q != NO_BANNED_USERS_WHERE);
     }
 
@@ -347,7 +348,7 @@ async function getPicturesWithPercentile(
   const pictures: (IReturnPicWithPervental & {
     cursor?: any;
   })[] = await prisma.$queryRawUnsafe(`
-      SELECT pic.id, pic.filepath, pic."numVotes" AS "numPaidVotes", pic_perc.percentile,
+      SELECT pic.id, pic."userId", pic.filepath, pic."isActive", pic."numVotes" AS "numPaidVotes", pic_perc.percentile,
       CASE
         WHEN pic_perc."numVotes" IS NULL THEN 0
         ELSE pic_perc."numVotes"
@@ -411,10 +412,22 @@ function getReturnPic(
   return { ...ommitedPic, url: imgUrl };
 }
 
+function getUpdateFieldsToReturn(
+  pic: Partial<Picture> & Record<string, any>,
+  storageInteractor: StorageInteractor
+) {
+  const { filepath, ...ommitedPic } = omitRatingParams(pic);
+  const imgUrl = storageInteractor.getImageUrl(filepath);
+  const retPic = _.omit(ommitedPic, "freeRating", "hasPurchasedUnlimitedVotes", "isGlobal");
+
+  return { ...retPic, url: imgUrl };
+}
+
 export const PictureModel = {
   ...prisma.picture,
   getMatchPictures,
   getPicturesWithPercentile,
   omitRatingParams,
   getReturnPic,
+  getUpdateFieldsToReturn,
 };

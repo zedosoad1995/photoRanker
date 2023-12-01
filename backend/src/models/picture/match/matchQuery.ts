@@ -85,7 +85,7 @@ const getPicturesWithClosestElos = (
       LEFT JOIN "Preference" AS preference ON usr.id = preference."userId"
       WHERE pic."userId" != '${loggedUser.id}' AND pic.id != '${
     opponentPicture.id
-  }' AND usr."isBanned" = FALSE ${where} AND
+  }' AND usr."isBanned" = FALSE AND pic."isActive" IS TRUE ${where} AND
         NOT EXISTS (
           SELECT 1
           FROM "Report" AS report
