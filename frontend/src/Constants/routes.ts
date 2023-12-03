@@ -7,6 +7,7 @@ export const FORGOT_PASSWORD = "/forgot-password";
 export const RESET_PASSWORD = "/reset-password";
 export const VOTE = "/vote";
 export const PHOTOS = "/photos";
+export const PHOTO_VOTING_STATS = "/photos/:pictureId/stats";
 export const SETTINGS = "/settings";
 
 export const FACEBOOK_CALLBACK = "/auth/facebook";

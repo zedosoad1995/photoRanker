@@ -9,6 +9,7 @@ export const getPictureVotesStats = async (
     WITH
       CTE AS (
         SELECT
+          m2p."A" AS id
           v."voterId" AS voter_id,
           v."createdAt",
           v."matchId",
@@ -49,6 +50,7 @@ export const getPictureVotesStats = async (
       )
 
     SELECT
+      main.id,
       u.name AS voter_name,
       u.gender AS voter_gender,
       u."countryOfOrigin" AS voter_country,

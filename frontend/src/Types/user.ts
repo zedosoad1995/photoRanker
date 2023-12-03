@@ -1,13 +1,14 @@
-import { COUNTRIES, ETHNICITY, GENDER, ROLE } from "@shared/constants/user";
+import { ROLE } from "@shared/constants/user";
+import { Countries, Ethnicities, Genders } from "@shared/types/user";
 
 export interface IUser {
   id: string;
   name: string;
   email: string;
-  ethnicity: (typeof ETHNICITY)[number] | null;
-  countryOfOrigin: (typeof COUNTRIES)[number] | null;
+  ethnicity: Ethnicities | null;
+  countryOfOrigin: Countries | null;
   dateOfBirth: string | null;
-  gender: (typeof GENDER)[keyof typeof GENDER] | null;
+  gender: Genders | null;
   role: (typeof ROLE)[keyof typeof ROLE];
   isProfileCompleted: boolean;
   isEmailVerified: boolean;
@@ -33,10 +34,10 @@ export interface ICreateUser {
   name: string;
   email: string;
   password: string;
-  ethnicity: (typeof ETHNICITY)[number] | "";
-  countryOfOrigin: (typeof COUNTRIES)[number] | "";
+  ethnicity: Ethnicities | "";
+  countryOfOrigin: Countries | "";
   dateOfBirth: string;
-  gender: (typeof GENDER)[keyof typeof GENDER] | "";
+  gender: Genders | "";
 }
 
 export type ICreateProfile = Pick<
