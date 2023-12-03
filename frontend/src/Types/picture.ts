@@ -26,7 +26,7 @@ export interface IPictureWithPercentile {
   updatedAt: Date;
 }
 
-interface IPictureVotingStats {
+export interface IPictureVotingStats {
   id: string;
   voter_name: string;
   voter_gender: Genders | null;

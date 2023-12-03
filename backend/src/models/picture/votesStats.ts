@@ -9,7 +9,7 @@ export const getPictureVotesStats = async (
     WITH
       CTE AS (
         SELECT
-          m2p."A" AS id
+          m2p."A" AS id,
           v."voterId" AS voter_id,
           v."createdAt",
           v."matchId",
@@ -71,7 +71,8 @@ export const getPictureVotesStats = async (
       main."matchId",
       main."createdAt",
       main.is_winner,
-      u.id
+      u.id,
+      main.id
     ORDER BY
       main."createdAt" DESC`);
 };
