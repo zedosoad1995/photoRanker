@@ -36,10 +36,12 @@ export class S3Interactor implements StorageInteractor {
     return fileName;
   }
 
+  public getBaseDir() {
+    return `https://${process.env.IMAGES_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`;
+  }
+
   public getImageUrl(imagePath: string) {
-    return `https://${process.env.IMAGES_BUCKET}.s3.${
-      process.env.S3_REGION
-    }.amazonaws.com/${decodeURI(imagePath).replace(/\\/g, "/")}`;
+    return `${this.getBaseDir()}/${decodeURI(imagePath).replace(/\\/g, "/")}`;
   }
 
   public async deleteImage(encodedImagePage: string) {

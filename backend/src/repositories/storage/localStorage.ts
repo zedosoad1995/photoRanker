@@ -37,8 +37,12 @@ export class LocalStorageInteractor implements StorageInteractor {
     return fullPath;
   }
 
+  public getBaseDir() {
+    return `${process.env.BACKEND_URL}/image`;
+  }
+
   public getImageUrl(imagePath: string) {
-    return `${process.env.BACKEND_URL}/image/${imagePath.replace(/\\/g, "/")}`;
+    return `${this.getBaseDir()}/${imagePath.replace(/\\/g, "/")}`;
   }
 
   public async deleteImage(encodedImagePage: string) {

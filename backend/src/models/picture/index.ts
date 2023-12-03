@@ -10,6 +10,7 @@ import { getMatchPictures } from "./match/matchQuery";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
 import { calculateAge } from "@shared/helpers/date";
 import { IAgeGroup } from "@shared/types/picture";
+import { getPictureVotesStats } from "./votesStats";
 
 const getAgeQuery = (minAge: number, maxAge?: number) => {
   const query = `"dateOfBirth" < '${formatDate(
@@ -430,4 +431,5 @@ export const PictureModel = {
   omitRatingParams,
   getReturnPic,
   getUpdateFieldsToReturn,
+  getPictureVotesStats,
 };
