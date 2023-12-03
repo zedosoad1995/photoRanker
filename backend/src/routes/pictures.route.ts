@@ -32,7 +32,7 @@ router.get(
 router.get("/upload-permission", checkBasicUserSettings, checkUploadPermission);
 
 router.get("/:pictureId", checkBasicUserSettings, getOne(mainStorageInteractor));
-router.get("/:pictureId/stats", getVotesStats(mainStorageInteractor));
+router.get("/:pictureId/stats", checkBasicUserSettings, getVotesStats(mainStorageInteractor));
 
 router.post(
   "/",

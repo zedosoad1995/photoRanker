@@ -118,7 +118,15 @@ export const getVotesStats =
     const pictureId = req.params.pictureId;
     const loggedUser = req.loggedUser as ILoggedUserMiddleware;
 
-    // Check if picId belongs to logged user. Unless user is Admin.
+    const picture = await PictureModel.findUnique({
+      where: {
+        id: pictureId,
+      },
+    });
+
+    if (!picture || (isRegular(loggedUser.role) && picture.userId !== loggedUser.id)) {
+      throw new NotFoundError("Piture not found");
+    }
 
     const stats = await PictureModel.getPictureVotesStats(pictureId, storageInteractor);
 
