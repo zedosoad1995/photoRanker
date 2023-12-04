@@ -28,7 +28,6 @@ export interface IPictureWithPercentile {
 
 export interface IPictureVotingStats {
   id: string;
-  voter_name: string;
   voter_gender: Genders | null;
   voter_country: Countries | null;
   voter_ethnicity: Ethnicities | null;

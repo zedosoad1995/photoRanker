@@ -51,7 +51,6 @@ export const getPictureVotesStats = async (
 
     SELECT
       main.id,
-      u.name AS voter_name,
       u.gender AS voter_gender,
       u."countryOfOrigin" AS voter_country,
       u.ethnicity AS voter_ethnicity,
