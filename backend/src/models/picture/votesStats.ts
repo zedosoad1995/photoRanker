@@ -72,6 +72,7 @@ export const getPictureVotesStats = async (
       main.is_winner,
       u.id,
       main.id
+    HAVING MAX(main.winner_pic) IS NOT NULL AND MAX(main.loser_pic) IS NOT NULL
     ORDER BY
       main."createdAt" DESC`);
 };
