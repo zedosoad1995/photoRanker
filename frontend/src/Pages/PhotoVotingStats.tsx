@@ -24,6 +24,9 @@ export const PhotoVotingStats = () => {
 
         return (
           <div className="mb-6 rounded-lg border shadow overflow-clip bg-white">
+            {/* <div className="text-sm text-center font-medium py-1 bg-primary text-white">
+              Voter Info
+            </div> */}
             <div className="flex items-center">
               <div className={`relative`}>
                 <img src={String(selectedPic)} />
@@ -31,9 +34,9 @@ export const PhotoVotingStats = () => {
                   <div
                     style={{
                       background:
-                        "linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(34, 197, 94, 0.9) 100%)",
+                        "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(34, 197, 94, 0.9) 100%)",
                     }}
-                    className="absolute -translate-x-1/2 left-1/2 top-0 text-center pb-4 w-full font-semibold text-white"
+                    className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white"
                   >
                     Winner
                   </div>
@@ -42,9 +45,9 @@ export const PhotoVotingStats = () => {
                   <div
                     style={{
                       background:
-                        "linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255, 0, 0, 0.9) 100%)",
+                        "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255, 0, 0, 0.9) 100%)",
                     }}
-                    className="absolute -translate-x-1/2 left-1/2 top-0 text-center pb-4 w-full font-semibold text-white"
+                    className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white"
                   >
                     Loser
                   </div>
@@ -56,9 +59,9 @@ export const PhotoVotingStats = () => {
                   <div
                     style={{
                       background:
-                        "linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(34, 197, 94, 0.9) 100%)",
+                        "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(34, 197, 94, 0.9) 100%)",
                     }}
-                    className="absolute -translate-x-1/2 left-1/2 top-0 text-center pb-4 w-full font-semibold text-white"
+                    className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white"
                   >
                     Winner
                   </div>
@@ -67,9 +70,9 @@ export const PhotoVotingStats = () => {
                   <div
                     style={{
                       background:
-                        "linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255, 0, 0, 0.9) 100%)",
+                        "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255, 0, 0, 0.9) 100%)",
                     }}
-                    className="absolute -translate-x-1/2 left-1/2 top-0 text-center pb-4 w-full font-semibold text-white"
+                    className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white"
                   >
                     Loser
                   </div>
@@ -77,9 +80,6 @@ export const PhotoVotingStats = () => {
               </div>
             </div>
             <div>
-              <div className="text-sm text-center font-medium py-1 bg-primary text-white">
-                Voter Info
-              </div>
               <div className="border-b-2 mx-2" />
               <div className="flex bg-white">
                 <div className="flex flex-col w-1/4 items-center py-2">

@@ -163,10 +163,7 @@ export const PhotoCard = ({
           setIsOpenPauseUnpause(false);
         }}
       />
-      <div
-        ref={cardRef}
-        className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group bg-white"
-      >
+      <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
         <div className="cursor-default rounded-b-md shadow-md h-full">
           <div className="relative">
             <div
