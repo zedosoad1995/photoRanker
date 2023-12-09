@@ -2,6 +2,7 @@ import {
   FAKE_AGE_DISTRIBUTION,
   FAKE_COUNTRY_DISTRIBUTION,
   FAKE_MAIN_ETHNICITY,
+  FAKE_OTHER_RACE_PROB,
 } from "@/constants/user";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
@@ -13,6 +14,7 @@ import { PictureModel } from "@/models/picture";
 import { VoteModel } from "@/models/vote";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
 import { Gender } from "@prisma/client";
+import { ETHNICITY } from "@shared/constants/user";
 import { Request, Response } from "express";
 import { omit } from "underscore";
 
@@ -56,7 +58,12 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
   if (isAdmin(loggedUser.role)) {
     const country = pickRandomKey(FAKE_COUNTRY_DISTRIBUTION);
     //@ts-ignore
-    const ethnicity = FAKE_MAIN_ETHNICITY[country];
+    let ethnicity = FAKE_MAIN_ETHNICITY[country];
+    //@ts-ignore
+    if (Math.random() > 1 - FAKE_OTHER_RACE_PROB[country]) {
+      ethnicity = ETHNICITY[Math.floor(Math.random() * ETHNICITY.length)];
+    }
+
     const age = Number(pickRandomKey(FAKE_AGE_DISTRIBUTION));
     const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
     voterInfo = {
@@ -70,7 +77,6 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
   const createNewVote = VoteModel.create({
     data: {
       ...voterInfo,
-      voterAge: 1,
       match: {
         connect: {
           id: matchId,

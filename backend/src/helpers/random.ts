@@ -1,4 +1,4 @@
-export const pickRandomKey = (weights: { [key: string]: number }): string => {
+export const pickRandomKey = <T>(weights: { [key: string]: number }): string => {
   let totalWeight = 0;
   for (const key in weights) {
     totalWeight += weights[key];

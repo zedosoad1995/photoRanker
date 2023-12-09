@@ -10,6 +10,10 @@ export interface IGetPictureVotesStatsQueryReturn {
   voter_country: Countries | null;
   voter_ethnicity: Ethnicities | null;
   voter_age: number;
+  fake_gender: Genders | null;
+  fake_country: Countries | null;
+  fake_ethnicity: Ethnicities | null;
+  fake_age: number | null;
   voter_role: UserRole;
   is_winner: boolean;
   winner: string | null;
@@ -29,6 +33,10 @@ export const getPictureVotesStats = async (
           v."voterId" AS voter_id,
           v."createdAt",
           v."matchId",
+          v."voterAge",
+          v."voterGender",
+          v."voterCountry",
+          v."voterEthnicity",
           CASE
             WHEN v."winnerPictureId" = pic.id THEN CONCAT(
               '${storageInteractor.getBaseDir()}',
@@ -79,7 +87,11 @@ export const getPictureVotesStats = async (
       main.is_winner,
       MAX(main.winner_pic) AS winner,
       MAX(main.loser_pic) AS loser,
-      main."createdAt"
+      main."createdAt",
+      main."voterAge" AS fake_age,
+      main."voterGender" AS fake_gender,
+      main."voterCountry" AS fake_country,
+      main."voterEthnicity" AS fake_ethnicity
     FROM
       CTE AS main
       INNER JOIN "User" AS u ON main.voter_id = u.id
@@ -87,6 +99,10 @@ export const getPictureVotesStats = async (
       main."matchId",
       main."createdAt",
       main.is_winner,
+      main."voterAge",
+      main."voterGender",
+      main."voterCountry",
+      main."voterEthnicity",
       u.id,
       main.id
     HAVING MAX(main.winner_pic) IS NOT NULL AND MAX(main.loser_pic) IS NOT NULL

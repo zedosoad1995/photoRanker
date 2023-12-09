@@ -1,6 +1,6 @@
 import { COUNTRIES, ETHNICITY } from "@shared/constants/user";
 
-export const FAKE_COUNTRY_DISTRIBUTION: { [K in (typeof COUNTRIES)[number]]?: number } = {
+export const FAKE_COUNTRY_DISTRIBUTION = {
   "United States": 20,
   "United Kingdom": 18,
   Canada: 16,
@@ -41,10 +41,10 @@ export const FAKE_COUNTRY_DISTRIBUTION: { [K in (typeof COUNTRIES)[number]]?: nu
   Israel: 1,
   Thailand: 1,
   Indonesia: 1,
-};
+} as const;
 
 export const FAKE_MAIN_ETHNICITY: {
-  [K in (typeof COUNTRIES)[number]]?: (typeof ETHNICITY)[number];
+  [K in keyof typeof FAKE_COUNTRY_DISTRIBUTION]: (typeof ETHNICITY)[number];
 } = {
   "United States": "White",
   "United Kingdom": "White",
@@ -86,6 +86,51 @@ export const FAKE_MAIN_ETHNICITY: {
   Israel: "Asian",
   Thailand: "Asian",
   Indonesia: "Asian",
+};
+
+export const FAKE_OTHER_RACE_PROB: {
+  [K in keyof typeof FAKE_COUNTRY_DISTRIBUTION]: number;
+} = {
+  "United States": 0.5,
+  "United Kingdom": 0.2,
+  Canada: 0.3,
+  Australia: 0.4,
+  India: 0.02,
+  Germany: 0.2,
+  France: 0.25,
+  Netherlands: 0.15,
+  Sweden: 0.25,
+  Italy: 0.15,
+  Spain: 0.15,
+  Brazil: 0.1,
+  "South Korea": 0.01,
+  Japan: 0.01,
+  Mexico: 0.05,
+  Russia: 0.05,
+  "South Africa": 0.1,
+  Philippines: 0.01,
+  Malaysia: 0.01,
+  Singapore: 0.05,
+  "New Zealand": 0.15,
+  Ireland: 0.2,
+  Belgium: 0.25,
+  Norway: 0.1,
+  Denmark: 0.15,
+  Finland: 0.1,
+  Poland: 0.05,
+  Austria: 0.2,
+  Switzerland: 0.15,
+  Portugal: 0.1,
+  Greece: 0.1,
+  Hungary: 0.05,
+  "Czech Republic": 0.05,
+  Romania: 0.02,
+  Turkey: 0.1,
+  "Saudi Arabia": 0.001,
+  "United Arab Emirates": 0.001,
+  Israel: 0.01,
+  Thailand: 0.03,
+  Indonesia: 0.01,
 };
 
 export const FAKE_AGE_DISTRIBUTION = {
