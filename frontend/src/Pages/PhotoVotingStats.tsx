@@ -1,12 +1,15 @@
+import { PHOTOS } from "@/Constants/routes";
 import { getPictureVotingStats } from "@/Services/picture";
 import { IPictureVotingStats } from "@/Types/picture";
+import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const PhotoVotingStats = () => {
-  const [stats, setStats] = useState<IPictureVotingStats[]>([]);
-
+  const navigate = useNavigate();
   const { pictureId } = useParams();
+
+  const [stats, setStats] = useState<IPictureVotingStats[]>([]);
 
   useEffect(() => {
     if (!pictureId) {
@@ -18,7 +21,15 @@ export const PhotoVotingStats = () => {
 
   return (
     <>
-      <div className="text-xl min-[350px]:text-2xl font-semibold text-center mb-3">Photo Votes</div>
+      <div className="flex gap-2 items-center mb-3">
+        <button
+          onClick={() => navigate(PHOTOS)}
+          className="rounded-full hover:bg-black/5 cursor-pointer p-1 transition-colors duration-150 ease-in"
+        >
+          <ArrowLeftIcon className="h-5 w-5" />
+        </button>
+        <div className="text-xl min-[350px]:text-2xl font-semibold">Photo Votes</div>
+      </div>
       <div className="text-light-text mb-5 text-xs min-[350px]:text-sm font-light max-w-[800px] mx-auto">
         <div className="">
           Explore your photo's competitive history: Discover your opponents, outcomes of battles

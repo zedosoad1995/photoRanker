@@ -2,7 +2,7 @@ interface IButton {
   children?: React.ReactNode;
   type?: "button" | "reset" | "submit";
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  size?: "medium" | "large";
+  size?: "small" | "medium" | "large";
   isFull?: boolean;
   isHeightFull?: boolean;
   style?: "primary" | "danger" | "none";
@@ -67,6 +67,20 @@ export default function Button({
       className = disabled ? "text-disabled-button-text" : "hover:bg-light-contour";
   }
 
+  let sizeClassName = "";
+  switch (size) {
+    case "small":
+      sizeClassName = "px-3 py-1 text-xs";
+      break;
+    case "medium":
+      sizeClassName = "px-3 py-1.5 text-sm";
+      break;
+    case "large":
+      sizeClassName = "px-5 py-2.5 text-base";
+      break;
+    default:
+  }
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!isLoading && onClick) {
       onClick(event);
@@ -79,9 +93,9 @@ export default function Button({
       type={type}
       className={`flex ${isLoading ? "cursor-default" : "cursor-pointer"} ${
         isHeightFull ? "h-full" : ""
-      } justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-        size === "medium" ? "px-3 py-1.5 text-sm" : "px-5 py-2.5 text-base"
-      } ${isFull ? "w-full" : ""} ${className}`}
+      } justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${sizeClassName} ${
+        isFull ? "w-full" : ""
+      } ${className}`}
       onClick={handleClick}
     >
       {isLoading && (

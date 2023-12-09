@@ -4,7 +4,7 @@
 
 @layer base {
   html {
-    @apply h-full bg-[#F8FAFD];
+    @apply h-full bg-[#F8F8FB];
   }
   body {
     @apply h-full text-normal-text;
