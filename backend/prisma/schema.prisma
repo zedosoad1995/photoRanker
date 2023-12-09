@@ -96,6 +96,10 @@ model Picture {
 
 model Vote {
   id              String   @id @default(uuid())
+  voterGender     Gender?
+  voterAge        Int?
+  voterEthnicity  String?
+  voterCountry    String?
   winnerPicture   Picture? @relation(fields: [winnerPictureId], references: [id], onDelete: Cascade, name: "winnerPicture")
   winnerPictureId String?
   voter           User     @relation(fields: [voterId], references: [id], onDelete: Cascade, name: "voter")
