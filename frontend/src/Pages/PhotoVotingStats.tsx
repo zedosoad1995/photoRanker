@@ -18,6 +18,19 @@ export const PhotoVotingStats = () => {
 
   return (
     <>
+      <div className="text-xl min-[350px]:text-2xl font-semibold text-center mb-3">Photo Votes</div>
+      <div className="text-light-text mb-5 text-xs min-[350px]:text-sm font-light max-w-[800px] mx-auto">
+        <div className="">
+          Explore your photo's competitive history: Discover your opponents, outcomes of battles
+          (win/loss), and gain insights into the voters' demographics including age, gender,
+          nationality, and ethnicity.
+        </div>
+        <div className="mt-1">
+          <b className="font-medium">Note:</b> some votes may not appear due to the opponent's pic
+          being deleted.
+        </div>
+      </div>
+
       {stats.map((stat) => {
         const selectedPic = stat.is_winner ? stat.winner : stat.loser;
         const otherPic = stat.is_winner ? stat.loser : stat.winner;
@@ -82,19 +95,19 @@ export const PhotoVotingStats = () => {
               <div className="flex bg-white">
                 <div className="flex flex-col w-1/4 items-center py-2">
                   <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
-                    VOTER AGE
+                    GENDER
                   </div>
                   <div className="font-semibold max-[550px]:text-sm max-[400px]:text-xs">
-                    {stat.voter_age}
+                    {stat.voter_gender}
                   </div>
                 </div>
                 <div className="my-2 w-0 border-l-2" />
                 <div className="flex flex-col w-1/4 items-center py-2">
                   <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
-                    GENDER
+                    AGE
                   </div>
                   <div className="font-semibold max-[550px]:text-sm max-[400px]:text-xs">
-                    {stat.voter_gender}
+                    {stat.voter_age}
                   </div>
                 </div>
                 <div className="my-2 w-0 border-l-2" />
@@ -115,6 +128,9 @@ export const PhotoVotingStats = () => {
                     {stat.voter_ethnicity}
                   </div>
                 </div>
+              </div>
+              <div className="text-sm max-[550px]:text-xs font-medium text-center -mt-2 max-[550px]:-mt-1 mb-1 text-placeholder-text">
+                VOTER INFO
               </div>
             </div>
           </div>
