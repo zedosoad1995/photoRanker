@@ -1,11 +1,20 @@
+import {
+  FAKE_AGE_DISTRIBUTION,
+  FAKE_COUNTRY_DISTRIBUTION,
+  FAKE_MAIN_ETHNICITY,
+} from "@/constants/user";
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
+import { pickRandomKey } from "@/helpers/random";
+import { isAdmin } from "@/helpers/role";
 import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { VoteModel } from "@/models/vote";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
+import { Gender } from "@prisma/client";
 import { Request, Response } from "express";
+import { omit } from "underscore";
 
 export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
@@ -37,8 +46,31 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     }
   }
 
+  let voterInfo: Partial<{
+    voterCountry: string;
+    voterEthnicity: string;
+    voterAge: number;
+    voterGender: Gender;
+  }> = {};
+
+  if (isAdmin(loggedUser.role)) {
+    const country = pickRandomKey(FAKE_COUNTRY_DISTRIBUTION);
+    //@ts-ignore
+    const ethnicity = FAKE_MAIN_ETHNICITY[country];
+    const age = Number(pickRandomKey(FAKE_AGE_DISTRIBUTION));
+    const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
+    voterInfo = {
+      voterCountry: country,
+      voterEthnicity: ethnicity,
+      voterAge: age,
+      voterGender: gender,
+    };
+  }
+
   const createNewVote = VoteModel.create({
     data: {
+      ...voterInfo,
+      voterAge: 1,
       match: {
         connect: {
           id: matchId,
@@ -118,5 +150,7 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     var [vote, _] = await prisma.$transaction([createNewVote, makeMatchInactive]);
   }
 
-  res.status(201).send({ vote });
+  res
+    .status(201)
+    .send({ vote: omit(vote, "voterCountry", "voterEthnicity", "voterAge", "voterGender") });
 };
