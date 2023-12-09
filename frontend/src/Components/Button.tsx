@@ -40,7 +40,7 @@ export default function Button({
         spinnerClassName = "fill-primary";
 
         className =
-          "shadow-sm border border-[#4038ca] text-[#4038ca] " +
+          "bg-white shadow-sm border border-[#4038ca] text-[#4038ca] " +
           (disabled ? "opacity-50" : "hover:bg-[#efeeff]");
       }
 
@@ -56,7 +56,7 @@ export default function Button({
         spinnerClassName = "fill-danger";
 
         className =
-          "shadow-sm border border-danger text-danger " +
+          "bg-white shadow-sm border border-danger text-danger " +
           (disabled ? "opacity-50" : "hover:bg-[#fef2f2]");
       }
 

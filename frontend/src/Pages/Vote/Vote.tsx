@@ -232,7 +232,7 @@ export default function Vote() {
       {pic1 && pic2 && match && (
         <>
           <div className="flex max-w-[35vh] xs:w-40 mx-auto mt-3 xs:mt-5 gap-2">
-            <Button style="primary" variant="outline" onClick={handleSkipMatch}>
+            <Button isFull style="primary" variant="outline" onClick={handleSkipMatch}>
               Skip
             </Button>
             <FlagButton pic1={pic1} pic2={pic2} match={match} onReport={handleReport} />

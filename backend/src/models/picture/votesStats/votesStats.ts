@@ -1,11 +1,27 @@
+import { prisma } from "@/models";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
-import { prisma } from "..";
+import { UserRole } from "@prisma/client";
+import { Countries, Ethnicities, Genders } from "@shared/types/user";
+import { generateUserStatsWhenAdmin } from "./generateAdminUserStats";
+
+export interface IGetPictureVotesStatsQueryReturn {
+  id: string;
+  voter_gender: Genders | null;
+  voter_country: Countries | null;
+  voter_ethnicity: Ethnicities | null;
+  voter_age: number;
+  voter_role: UserRole;
+  is_winner: boolean;
+  winner: string | null;
+  loser: string | null;
+  createdAt: Date;
+}
 
 export const getPictureVotesStats = async (
   pictureId: string,
   storageInteractor: StorageInteractor
 ) => {
-  return prisma.$queryRawUnsafe(`
+  const res: IGetPictureVotesStatsQueryReturn[] = await prisma.$queryRawUnsafe(`
     WITH
       CTE AS (
         SELECT
@@ -54,6 +70,7 @@ export const getPictureVotesStats = async (
       u.gender AS voter_gender,
       u."countryOfOrigin" AS voter_country,
       u.ethnicity AS voter_ethnicity,
+      u.role AS voter_role,
       EXTRACT(
         YEAR
         FROM
@@ -75,4 +92,6 @@ export const getPictureVotesStats = async (
     HAVING MAX(main.winner_pic) IS NOT NULL AND MAX(main.loser_pic) IS NOT NULL
     ORDER BY
       main."createdAt" DESC`);
+
+  return generateUserStatsWhenAdmin(res);
 };
