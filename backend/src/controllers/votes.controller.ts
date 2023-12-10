@@ -7,7 +7,7 @@ import {
 import { ForbiddenError } from "@/errors/ForbiddenError";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { pickRandomKey } from "@/helpers/random";
-import { isAdmin } from "@/helpers/role";
+import { isAdmin, isRegular } from "@/helpers/role";
 import { prisma } from "@/models";
 import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
@@ -15,8 +15,9 @@ import { PreferenceModel } from "@/models/preference";
 import { VoteModel } from "@/models/vote";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
 import { ILoggedUserMiddleware } from "@/types/user";
-import { Gender } from "@prisma/client";
+import { Gender, UserRole } from "@prisma/client";
 import { ETHNICITY } from "@shared/constants/user";
+import { calculateAge } from "@shared/helpers/date";
 import { Request, Response } from "express";
 import { omit } from "underscore";
 
@@ -73,33 +74,69 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
       },
     });
 
+    let isValidVoter = false;
+
     if (preferenceLoser) {
-      const filteredAgeDistribution = Object.fromEntries(
-        Object.entries(FAKE_AGE_DISTRIBUTION).filter(
-          ([k, v]) =>
-            Number(k) >= preferenceLoser.exposureMinAge &&
-            (!preferenceLoser.exposureMaxAge || Number(k) <= preferenceLoser.exposureMaxAge)
-        )
-      );
+      const hasVoterValidAge =
+        loggedUser.dateOfBirth &&
+        calculateAge(loggedUser.dateOfBirth) >= preferenceLoser.exposureMinAge &&
+        (!preferenceLoser.exposureMaxAge ||
+          calculateAge(loggedUser.dateOfBirth) <= preferenceLoser.exposureMaxAge);
 
-      if (Object.keys(filteredAgeDistribution).length === 0) {
-        filteredAgeDistribution[25] = 1;
-      }
+      const hasVoterValidGender =
+        !preferenceLoser.exposureGender || preferenceLoser.exposureGender === loggedUser.gender;
 
-      const age = Number(pickRandomKey(filteredAgeDistribution));
-      loserVoterInfo.loserVoterAge = age;
+      isValidVoter = Boolean(hasVoterValidAge && hasVoterValidGender && isRegular(loggedUser.role));
 
-      if (preferenceLoser.exposureGender) {
-        loserVoterInfo.loserVoterGender = preferenceLoser.exposureGender;
-      } else {
-        const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
-        loserVoterInfo.loserVoterGender = gender;
+      if (!isValidVoter) {
+        const filteredAgeDistribution = Object.fromEntries(
+          Object.entries(FAKE_AGE_DISTRIBUTION).filter(
+            ([k, v]) =>
+              Number(k) >= preferenceLoser.exposureMinAge &&
+              (!preferenceLoser.exposureMaxAge || Number(k) <= preferenceLoser.exposureMaxAge)
+          )
+        );
+
+        if (Object.keys(filteredAgeDistribution).length === 0) {
+          filteredAgeDistribution[25] = 1;
+        }
+
+        const age = Number(pickRandomKey(filteredAgeDistribution));
+        loserVoterInfo.loserVoterAge = age;
+
+        if (preferenceLoser.exposureGender) {
+          loserVoterInfo.loserVoterGender = preferenceLoser.exposureGender;
+        } else {
+          const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
+          loserVoterInfo.loserVoterGender = gender;
+        }
       }
     } else {
-      const age = Number(pickRandomKey(FAKE_AGE_DISTRIBUTION));
-      const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
-      loserVoterInfo.loserVoterAge = age;
-      loserVoterInfo.loserVoterGender = gender;
+      isValidVoter = isRegular(loggedUser.role);
+
+      if (!isValidVoter) {
+        const age = Number(pickRandomKey(FAKE_AGE_DISTRIBUTION));
+        const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
+        loserVoterInfo.loserVoterAge = age;
+        loserVoterInfo.loserVoterGender = gender;
+      }
+    }
+
+    let country;
+    let ethnicity;
+
+    if (!isValidVoter) {
+      country = pickRandomKey(FAKE_COUNTRY_DISTRIBUTION);
+      ethnicity = FAKE_MAIN_ETHNICITY[country];
+      if (Math.random() > 1 - FAKE_OTHER_RACE_PROB[country]) {
+        ethnicity = ETHNICITY[Math.floor(Math.random() * ETHNICITY.length)];
+      }
+
+      loserVoterInfo = {
+        ...loserVoterInfo,
+        loserVoterCountry: country,
+        loserVoterEthnicity: ethnicity,
+      };
     }
 
     const preferenceWinner = await PreferenceModel.findUnique({
@@ -109,51 +146,58 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     });
 
     if (preferenceWinner) {
-      const filteredAgeDistribution = Object.fromEntries(
-        Object.entries(FAKE_AGE_DISTRIBUTION).filter(
-          ([k, v]) =>
-            Number(k) >= preferenceWinner.exposureMinAge &&
-            (!preferenceWinner.exposureMaxAge || Number(k) <= preferenceWinner.exposureMaxAge)
-        )
-      );
+      const hasVoterValidAge =
+        loggedUser.dateOfBirth &&
+        calculateAge(loggedUser.dateOfBirth) >= preferenceWinner.exposureMinAge &&
+        (!preferenceWinner.exposureMaxAge ||
+          calculateAge(loggedUser.dateOfBirth) <= preferenceWinner.exposureMaxAge);
 
-      if (Object.keys(filteredAgeDistribution).length === 0) {
-        filteredAgeDistribution[25] = 1;
-      }
+      const hasVoterValidGender =
+        !preferenceWinner.exposureGender || preferenceWinner.exposureGender === loggedUser.gender;
 
-      const age = Number(pickRandomKey(filteredAgeDistribution));
-      winnerVoterInfo.winnerVoterAge = age;
+      isValidVoter = Boolean(hasVoterValidAge && hasVoterValidGender && isRegular(loggedUser.role));
 
-      if (preferenceWinner.exposureGender) {
-        winnerVoterInfo.winnerVoterGender = preferenceWinner.exposureGender;
-      } else {
-        const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
-        winnerVoterInfo.winnerVoterGender = gender;
+      if (!isValidVoter) {
+        const filteredAgeDistribution = Object.fromEntries(
+          Object.entries(FAKE_AGE_DISTRIBUTION).filter(
+            ([k, v]) =>
+              Number(k) >= preferenceWinner.exposureMinAge &&
+              (!preferenceWinner.exposureMaxAge || Number(k) <= preferenceWinner.exposureMaxAge)
+          )
+        );
+
+        if (Object.keys(filteredAgeDistribution).length === 0) {
+          filteredAgeDistribution[25] = 1;
+        }
+
+        const age = Number(pickRandomKey(filteredAgeDistribution));
+        winnerVoterInfo.winnerVoterAge = age;
+
+        if (preferenceWinner.exposureGender) {
+          winnerVoterInfo.winnerVoterGender = preferenceWinner.exposureGender;
+        } else {
+          const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
+          winnerVoterInfo.winnerVoterGender = gender;
+        }
       }
     } else {
-      const age = Number(pickRandomKey(FAKE_AGE_DISTRIBUTION));
-      const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
-      winnerVoterInfo.winnerVoterAge = age;
-      winnerVoterInfo.winnerVoterGender = gender;
+      isValidVoter = isRegular(loggedUser.role);
+
+      if (!isValidVoter) {
+        const age = Number(pickRandomKey(FAKE_AGE_DISTRIBUTION));
+        const gender = Math.random() > 0.5 ? Gender.Female : Gender.Male;
+        winnerVoterInfo.winnerVoterAge = age;
+        winnerVoterInfo.winnerVoterGender = gender;
+      }
     }
 
-    const country = pickRandomKey(FAKE_COUNTRY_DISTRIBUTION);
-    let ethnicity = FAKE_MAIN_ETHNICITY[country];
-    if (Math.random() > 1 - FAKE_OTHER_RACE_PROB[country]) {
-      ethnicity = ETHNICITY[Math.floor(Math.random() * ETHNICITY.length)];
+    if (!isValidVoter) {
+      winnerVoterInfo = {
+        ...winnerVoterInfo,
+        winnerVoterCountry: country,
+        winnerVoterEthnicity: ethnicity,
+      };
     }
-
-    loserVoterInfo = {
-      ...loserVoterInfo,
-      loserVoterCountry: country,
-      loserVoterEthnicity: ethnicity,
-    };
-
-    winnerVoterInfo = {
-      ...winnerVoterInfo,
-      winnerVoterCountry: country,
-      winnerVoterEthnicity: ethnicity,
-    };
   }
 
   const createNewVote = VoteModel.create({
