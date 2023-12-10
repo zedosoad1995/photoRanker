@@ -17,6 +17,9 @@ import { Tooltip } from "@/Components/Tooltip";
 import { updateImage } from "@/Services/picture";
 import { useMyPhotos } from "./Contexts/myPhotos";
 import PauseUnpauseModal from "./Modals/PauseUnpauseModal";
+import { useNavigate } from "react-router-dom";
+import { PHOTO_VOTING_STATS_PATH } from "@/Constants/routes";
+import Button from "@/Components/Button";
 
 interface IPhotoCard {
   pic: string;
@@ -46,6 +49,7 @@ export const PhotoCard = ({
   ageGroupStr,
 }: IPhotoCard) => {
   const { img } = useProgressiveImage(pic);
+  const navigate = useNavigate();
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
@@ -164,7 +168,7 @@ export const PhotoCard = ({
         }}
       />
       <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
-        <div className="cursor-default rounded-b-md shadow-md h-full">
+        <div className="rounded-b-md shadow-md h-full cursor-default overflow-hidden">
           <div className="relative">
             <div
               onClick={handleOpenPauseUnpauseModal}
@@ -234,7 +238,7 @@ export const PhotoCard = ({
               )}
             </div>
           </div>
-          <div className={`p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
+          <div className={`bg-white p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
             <div className="flex justify-between mb-1">
               <span>{isGlobal ? "Overall" : "Score"}</span>{" "}
               <Tooltip tooltipText={overallScoreText}>
@@ -315,6 +319,16 @@ export const PhotoCard = ({
                 </div>
               </>
             )}
+            <div className="mt-4 flex justify-center">
+              <Button
+                onClick={() => navigate(PHOTO_VOTING_STATS_PATH(picInfo.id))}
+                isFull={false}
+                variant="outline"
+                size="small"
+              >
+                View Votes
+              </Button>
+            </div>
           </div>
         </div>
       </div>

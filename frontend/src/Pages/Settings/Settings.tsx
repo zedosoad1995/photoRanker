@@ -8,6 +8,7 @@ import ButtonGroup from "@/Components/ButtonGroup";
 import MultipleRangeSlider from "@/Components/MultipleRangeSlider";
 import { getPreferences, updatePreferences } from "@/Services/preference";
 import { GENDER, MIN_AGE } from "@shared/constants/user";
+import { Genders } from "@shared/types/user";
 import { IUpdatePreferencesBody } from "@/Types/preference";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { debounce } from "underscore";
@@ -19,17 +20,13 @@ export default function Settings() {
   const [canUpdate, setCanUpdate] = useState(false);
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
 
-  const [contentGender, setContentGender] = useState<(typeof GENDER)[keyof typeof GENDER] | null>(
-    null
-  );
+  const [contentGender, setContentGender] = useState<Genders | null>(null);
   const [initialContentMinAge, setInitialContentMinAge] = useState(MIN_AGE);
   const [initialContentMaxAge, setInitialContentMaxAge] = useState<number | null>(null);
   const [contentMinAge, setContentMinAge] = useState(MIN_AGE);
   const [contentMaxAge, setContentMaxAge] = useState<number | null>(null);
 
-  const [exposureGender, setExposureGender] = useState<(typeof GENDER)[keyof typeof GENDER] | null>(
-    null
-  );
+  const [exposureGender, setExposureGender] = useState<Genders | null>(null);
   const [initialExposureMinAge, setInitialExposureMinAge] = useState(MIN_AGE);
   const [initialExposureMaxAge, setInitialExposureMaxAge] = useState<number | null>(null);
   const [exposureMinAge, setExposureMinAge] = useState(MIN_AGE);
@@ -54,9 +51,7 @@ export default function Settings() {
     setIsDeleteAccountModalOpen(false);
   };
 
-  const handleShowMeGenderSelection = (
-    selectedGender: (typeof GENDER)[keyof typeof GENDER] | "Both"
-  ) => {
+  const handleShowMeGenderSelection = (selectedGender: Genders | "Both") => {
     if (selectedGender === "Both") {
       setContentGender(null);
     } else {
@@ -64,9 +59,7 @@ export default function Settings() {
     }
   };
 
-  const handleVoterGenderSelection = (
-    selectedGender: (typeof GENDER)[keyof typeof GENDER] | "Both"
-  ) => {
+  const handleVoterGenderSelection = (selectedGender: Genders | "Both") => {
     if (selectedGender === "Both") {
       setExposureGender(null);
     } else {

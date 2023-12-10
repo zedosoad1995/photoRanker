@@ -144,7 +144,7 @@ function App() {
   }, []);
 
   return (
-    <div className="font-poppins">
+    <div className="font-poppins bg-white">
       <button
         onClick={scrollToTop}
         className={`z-50 fixed text-xl rounded-full right-6 bottom-6 bg-[#111827] text-white hover:bg-[#0084FF] transition-all ease-in-out duration-[400ms] w-14 h-14 pb-1 ${

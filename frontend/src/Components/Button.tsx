@@ -2,7 +2,7 @@ interface IButton {
   children?: React.ReactNode;
   type?: "button" | "reset" | "submit";
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  size?: "medium" | "large";
+  size?: "small" | "medium" | "large";
   isFull?: boolean;
   isHeightFull?: boolean;
   style?: "primary" | "danger" | "none";
@@ -40,7 +40,7 @@ export default function Button({
         spinnerClassName = "fill-primary";
 
         className =
-          "shadow-sm border border-[#4038ca] text-[#4038ca] " +
+          "bg-white shadow-sm border border-[#4038ca] text-[#4038ca] " +
           (disabled ? "opacity-50" : "hover:bg-[#efeeff]");
       }
 
@@ -56,7 +56,7 @@ export default function Button({
         spinnerClassName = "fill-danger";
 
         className =
-          "shadow-sm border border-danger text-danger " +
+          "bg-white shadow-sm border border-danger text-danger " +
           (disabled ? "opacity-50" : "hover:bg-[#fef2f2]");
       }
 
@@ -65,6 +65,20 @@ export default function Button({
     default:
       spinnerClassName = "fill-primary";
       className = disabled ? "text-disabled-button-text" : "hover:bg-light-contour";
+  }
+
+  let sizeClassName = "";
+  switch (size) {
+    case "small":
+      sizeClassName = "px-3 py-1 text-xs";
+      break;
+    case "medium":
+      sizeClassName = "px-3 py-1.5 text-sm";
+      break;
+    case "large":
+      sizeClassName = "px-5 py-2.5 text-base";
+      break;
+    default:
   }
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -79,9 +93,9 @@ export default function Button({
       type={type}
       className={`flex ${isLoading ? "cursor-default" : "cursor-pointer"} ${
         isHeightFull ? "h-full" : ""
-      } justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-        size === "medium" ? "px-3 py-1.5 text-sm" : "px-5 py-2.5 text-base"
-      } ${isFull ? "w-full" : ""} ${className}`}
+      } justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${sizeClassName} ${
+        isFull ? "w-full" : ""
+      } ${className}`}
       onClick={handleClick}
     >
       {isLoading && (

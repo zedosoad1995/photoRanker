@@ -113,6 +113,26 @@ export const getOne =
     });
   };
 
+export const getVotesStats =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const pictureId = req.params.pictureId;
+    const loggedUser = req.loggedUser as ILoggedUserMiddleware;
+
+    const picture = await PictureModel.findUnique({
+      where: {
+        id: pictureId,
+      },
+    });
+
+    if (!picture || (isRegular(loggedUser.role) && picture.userId !== loggedUser.id)) {
+      throw new NotFoundError("Piture not found");
+    }
+
+    const stats = await PictureModel.getPictureVotesStats(pictureId, storageInteractor);
+
+    res.status(200).json({ stats });
+  };
+
 export const checkUploadPermission = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 

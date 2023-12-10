@@ -4,6 +4,7 @@ import {
   deleteOne,
   getMany,
   getOne,
+  getVotesStats,
   updateOne,
   uploadOne,
 } from "@/controllers/pictures.controller";
@@ -31,6 +32,7 @@ router.get(
 router.get("/upload-permission", checkBasicUserSettings, checkUploadPermission);
 
 router.get("/:pictureId", checkBasicUserSettings, getOne(mainStorageInteractor));
+router.get("/:pictureId/stats", checkBasicUserSettings, getVotesStats(mainStorageInteractor));
 
 router.post(
   "/",

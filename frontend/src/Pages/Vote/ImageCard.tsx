@@ -25,7 +25,7 @@ export const ImageCard = ({
 
   const [isImageHovered, setIsImageHovered] = useState(false);
 
-  const divClass = `${className} text-white font-bold text-xl]`;
+  const divClass = `${className} text-white font-bold text-xl`;
 
   return (
     <>

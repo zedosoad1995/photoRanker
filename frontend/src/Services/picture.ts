@@ -1,4 +1,10 @@
-import { IGetManyPictures, IUpdatedPic, IUploadPermission, PictureRes } from "@/Types/picture";
+import {
+  IGetManyPictures,
+  IGetPictureVotingStats,
+  IUpdatedPic,
+  IUploadPermission,
+  PictureRes,
+} from "@/Types/picture";
 import api from "./index";
 import { GENDER } from "@shared/constants/user";
 
@@ -28,6 +34,10 @@ export const getManyPictures = async (
 
 export const getPicture = async (id: string): Promise<PictureRes> => {
   return api.get(`/pictures/${id}`);
+};
+
+export const getPictureVotingStats = async (id: string): Promise<IGetPictureVotingStats> => {
+  return api.get(`/pictures/${id}/stats`);
 };
 
 export const getUploadPermission = async (): Promise<IUploadPermission> => {

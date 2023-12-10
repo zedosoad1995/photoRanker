@@ -1,13 +1,13 @@
-import { GENDER } from "@shared/constants/user";
+import { Genders } from "@shared/types/user";
 
 export interface IPreference {
   id: string;
   contentMinAge: number;
   contentMaxAge: number | null;
-  contentGender: (typeof GENDER)[keyof typeof GENDER] | null;
+  contentGender: Genders | null;
   exposureMinAge: number;
   exposureMaxAge: number | null;
-  exposureGender: (typeof GENDER)[keyof typeof GENDER] | null;
+  exposureGender: Genders | null;
   createdAt: Date;
   updatedAt: Date;
   userId: string;
@@ -20,8 +20,8 @@ export interface IPreferenceRes {
 export interface IUpdatePreferencesBody {
   contentMinAge: number;
   contentMaxAge: number | null;
-  contentGender: (typeof GENDER)[keyof typeof GENDER] | null;
+  contentGender: Genders | null;
   exposureMinAge: number;
   exposureMaxAge: number | null;
-  exposureGender: (typeof GENDER)[keyof typeof GENDER] | null;
+  exposureGender: Genders | null;
 }
