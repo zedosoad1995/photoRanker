@@ -47,7 +47,7 @@ export const PhotoVotingStats = () => {
 
   return (
     <>
-      <div className="flex gap-2 items-center mb-3">
+      <div className="flex gap-2 items-center mb-3 max-w-[800px] mx-auto">
         <button
           onClick={() => navigate(PHOTOS)}
           className="rounded-full hover:bg-black/5 cursor-pointer p-1 transition-colors duration-150 ease-in"
