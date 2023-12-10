@@ -33,10 +33,22 @@ export const getPictureVotesStats = async (
           v."voterId" AS voter_id,
           v."createdAt",
           v."matchId",
-          v."voterAge",
-          v."voterGender",
-          v."voterCountry",
-          v."voterEthnicity",
+          CASE
+            WHEN v."winnerPictureId" = '${pictureId}' THEN v."winnerVoterAge"
+            ELSE v."loserVoterAge"
+          END AS "voterAge",
+          CASE
+            WHEN v."winnerPictureId" = '${pictureId}' THEN v."winnerVoterGender"
+            ELSE v."loserVoterGender"
+          END AS "voterGender",
+          CASE
+            WHEN v."winnerPictureId" = '${pictureId}' THEN v."winnerVoterCountry"
+            ELSE v."loserVoterCountry"
+          END AS "voterCountry",
+          CASE
+            WHEN v."winnerPictureId" = '${pictureId}' THEN v."winnerVoterEthnicity"
+            ELSE v."loserVoterEthnicity"
+          END AS "voterEthnicity",
           CASE
             WHEN v."winnerPictureId" = pic.id THEN CONCAT(
               '${storageInteractor.getBaseDir()}',
