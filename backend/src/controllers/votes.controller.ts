@@ -192,11 +192,24 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     }
 
     if (!isValidVoter) {
-      winnerVoterInfo = {
-        ...winnerVoterInfo,
-        winnerVoterCountry: country,
-        winnerVoterEthnicity: ethnicity,
-      };
+      if (
+        winnerPicture?.userId === loserPicture?.userId &&
+        loserVoterInfo.loserVoterAge &&
+        loserVoterInfo.loserVoterGender
+      ) {
+        winnerVoterInfo = {
+          winnerVoterAge: loserVoterInfo.loserVoterAge,
+          winnerVoterGender: loserVoterInfo.loserVoterGender,
+          winnerVoterCountry: country,
+          winnerVoterEthnicity: ethnicity,
+        };
+      } else {
+        winnerVoterInfo = {
+          ...winnerVoterInfo,
+          winnerVoterCountry: country,
+          winnerVoterEthnicity: ethnicity,
+        };
+      }
     }
   }
 
