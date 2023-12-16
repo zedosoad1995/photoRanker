@@ -5,4 +5,4 @@ export type ILoggedUserMiddleware = Prisma.UserGetPayload<{
     activeMatch: true;
     purchase: true;
   };
-}>;
+}> & { dateOfBirth: string };
