@@ -16,9 +16,17 @@ const isAgeValid = (age: number, minAge: number, maxAge: number | null) => {
   return age >= minAge && (maxAge === null || age <= maxAge);
 };
 
+type IVoterInfo = Partial<{
+  country: string;
+  ethnicity: string;
+  age: number;
+  gender: Gender;
+}>;
+
 export const getFakeVoterDemographics = async (
   loggedUser: ILoggedUserMiddleware,
-  pictureUserId?: string
+  pictureUserId?: string,
+  otherVoterInfo?: IVoterInfo
 ) => {
   if (isRegular(loggedUser.role) && !loggedUser.canBypassPreferences) {
     return;
@@ -38,6 +46,21 @@ export const getFakeVoterDemographics = async (
   });
 
   if (preference) {
+    if (otherVoterInfo?.age && otherVoterInfo.gender) {
+      const hasOtherUserValidAge = isAgeValid(
+        otherVoterInfo.age,
+        preference.exposureMinAge,
+        preference.exposureMaxAge
+      );
+
+      const hasOtherUserValidGender =
+        !preference.exposureGender || preference.exposureGender === otherVoterInfo.gender;
+
+      if (hasOtherUserValidAge && hasOtherUserValidGender) {
+        return otherVoterInfo;
+      }
+    }
+
     const voterAge = calculateAge(loggedUser.dateOfBirth);
 
     const hasValidAge = isAgeValid(voterAge, preference.exposureMinAge, preference.exposureMaxAge);
@@ -69,6 +92,10 @@ export const getFakeVoterDemographics = async (
       voterInfo.gender = randomGender;
     }
   } else {
+    if (otherVoterInfo?.age && otherVoterInfo.gender) {
+      return otherVoterInfo;
+    }
+
     if (isRegular(loggedUser.role)) {
       return;
     }

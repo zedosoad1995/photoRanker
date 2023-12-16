@@ -44,7 +44,8 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
   const loserVoterInfo = await VoteModel.getFakeVoterDemographics(loggedUser, loserPicture?.userId);
   const winnerVoterInfo = await VoteModel.getFakeVoterDemographics(
     loggedUser,
-    winnerPicture?.userId
+    winnerPicture?.userId,
+    loserVoterInfo
   );
 
   const voteVotersInfo = {
