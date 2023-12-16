@@ -12,6 +12,32 @@ import { pickRandomKey } from "@/helpers/random";
 import { Gender } from "@prisma/client";
 import { ETHNICITY } from "@shared/constants/user";
 
+const generateAge = (minAge: number, maxAge: number | null) => {
+  const filteredAgeDistribution = Object.fromEntries(
+    Object.entries(FAKE_AGE_DISTRIBUTION).filter(([age, _]) =>
+      isAgeValid(Number(age), minAge, maxAge)
+    )
+  );
+
+  if (Object.keys(filteredAgeDistribution).length === 0) {
+    filteredAgeDistribution[25] = 1;
+  }
+
+  return Number(pickRandomKey(filteredAgeDistribution));
+};
+
+const generateGender = (desiredGender: Gender | null) => {
+  if (desiredGender) {
+    return desiredGender;
+  } else {
+    return Math.random() < 0.4 ? Gender.Female : Gender.Male;
+  }
+};
+
+const isGenderValid = (gender: Gender, desiredGender: Gender | null) => {
+  return desiredGender === null || desiredGender === gender;
+};
+
 const isAgeValid = (age: number, minAge: number, maxAge: number | null) => {
   return age >= minAge && (maxAge === null || age <= maxAge);
 };
@@ -53,8 +79,10 @@ export const getFakeVoterDemographics = async (
         preference.exposureMaxAge
       );
 
-      const hasOtherUserValidGender =
-        !preference.exposureGender || preference.exposureGender === otherVoterInfo.gender;
+      const hasOtherUserValidGender = isGenderValid(
+        otherVoterInfo.gender,
+        preference.exposureGender
+      );
 
       if (hasOtherUserValidAge && hasOtherUserValidGender) {
         return otherVoterInfo;
@@ -62,35 +90,15 @@ export const getFakeVoterDemographics = async (
     }
 
     const voterAge = calculateAge(loggedUser.dateOfBirth);
-
     const hasValidAge = isAgeValid(voterAge, preference.exposureMinAge, preference.exposureMaxAge);
-
-    const hasValidGender =
-      !preference.exposureGender || preference.exposureGender === loggedUser.gender;
+    const hasValidGender = isGenderValid(loggedUser.gender, preference.exposureGender);
 
     if (hasValidAge && hasValidGender && isRegular(loggedUser.role)) {
       return;
     }
 
-    const filteredAgeDistribution = Object.fromEntries(
-      Object.entries(FAKE_AGE_DISTRIBUTION).filter(([age, _]) =>
-        isAgeValid(Number(age), preference.exposureMinAge, preference.exposureMaxAge)
-      )
-    );
-
-    if (Object.keys(filteredAgeDistribution).length === 0) {
-      filteredAgeDistribution[25] = 1;
-    }
-
-    const randomAge = Number(pickRandomKey(filteredAgeDistribution));
-    voterInfo.age = randomAge;
-
-    if (preference.exposureGender) {
-      voterInfo.gender = preference.exposureGender;
-    } else {
-      const randomGender = Math.random() < 0.4 ? Gender.Female : Gender.Male;
-      voterInfo.gender = randomGender;
-    }
+    voterInfo.age = generateAge(preference.exposureMinAge, preference.exposureMaxAge);
+    voterInfo.gender = generateGender(preference.exposureGender);
   } else {
     if (otherVoterInfo?.age && otherVoterInfo.gender) {
       return otherVoterInfo;

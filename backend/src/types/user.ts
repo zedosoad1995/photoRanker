@@ -1,8 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { Gender, Prisma } from "@prisma/client";
 
 export type ILoggedUserMiddleware = Prisma.UserGetPayload<{
   include: {
     activeMatch: true;
     purchase: true;
   };
-}> & { dateOfBirth: string };
+}> & { dateOfBirth: string; gender: Gender };
