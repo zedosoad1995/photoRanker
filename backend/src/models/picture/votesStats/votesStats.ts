@@ -3,6 +3,10 @@ import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { UserRole } from "@prisma/client";
 import { Countries, Ethnicities, Genders } from "@shared/types/user";
 import { generateUserStatsWhenAdmin } from "./generateAdminUserStats";
+import { ILoggedUser } from "@/types/user";
+import { UNLIMITED_STATS_ON } from "@shared/constants/purchase";
+import { isRegular } from "@/helpers/role";
+import { MAX_FREE_STATS_PER_PIC } from "@shared/constants/purchase";
 
 export interface IGetPictureVotesStatsQueryReturn {
   id: string;
@@ -23,8 +27,12 @@ export interface IGetPictureVotesStatsQueryReturn {
 
 export const getPictureVotesStats = async (
   pictureId: string,
-  storageInteractor: StorageInteractor
+  storageInteractor: StorageInteractor,
+  loggedUser: ILoggedUser
 ) => {
+  // regular && not purchased && flag_on -> order by asc, Limit 5
+  const hasLimitedStats = UNLIMITED_STATS_ON && isRegular(loggedUser.role) && !loggedUser.purchase?.hasUnlimitedStats
+
   const res: IGetPictureVotesStatsQueryReturn[] = await prisma.$queryRawUnsafe(`
     WITH
       CTE AS (
@@ -122,7 +130,8 @@ export const getPictureVotesStats = async (
       main.id
     HAVING MAX(main.winner_pic) IS NOT NULL AND MAX(main.loser_pic) IS NOT NULL
     ORDER BY
-      main."createdAt" DESC`);
+      main."createdAt" ${hasLimitedStats ? "ASC" : "DESC"}
+    ${hasLimitedStats ? `LIMIT ${MAX_FREE_STATS_PER_PIC}` : ""}`);
 
   return generateUserStatsWhenAdmin(res);
 };
