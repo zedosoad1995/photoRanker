@@ -21,3 +21,6 @@ export const UNLIMITED_VOTE_ALL_ON = false;
 export const MAX_FREE_VOTES = 30;
 
 export const UNLIMITED_VOTE_MULTIPLE_ON = false;
+
+export const UNLIMITED_STATS_ON = false;
+export const MAX_FREE_STATS_PER_PIC = 5;
