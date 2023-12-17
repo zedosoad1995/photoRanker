@@ -73,6 +73,7 @@ export const getPictureVotesStats = async (
           "Picture" AS pic
           INNER JOIN "_MatchToPicture" AS m2p ON m2p."B" = pic."id"
           INNER JOIN "Vote" AS v ON m2p."A" = v."matchId"
+          INNER JOIN "User" as u ON u.id = pic."userId"
         WHERE
           m2p."A" IN (
             SELECT
@@ -83,6 +84,8 @@ export const getPictureVotesStats = async (
               "B" = '${pictureId}'
           )
           AND v."winnerPictureId" IS NOT NULL
+          AND u."isBanned" IS FALSE
+
       )
 
     SELECT
