@@ -1,5 +1,5 @@
 import { isAdmin, isRegular } from "@/helpers/role";
-import { ILoggedUserMiddleware } from "@/types/user";
+import { ILoggedUser } from "@/types/user";
 import { PreferenceModel } from "../preference";
 import { calculateAge } from "@shared/helpers/date";
 import {
@@ -50,7 +50,7 @@ type IVoterInfo = Partial<{
 }>;
 
 export const getFakeVoterDemographics = async (
-  loggedUser: ILoggedUserMiddleware,
+  loggedUser: ILoggedUser,
   pictureUserId?: string,
   otherVoterInfo?: IVoterInfo
 ) => {

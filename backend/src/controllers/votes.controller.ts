@@ -5,12 +5,12 @@ import { MatchModel } from "@/models/match";
 import { PictureModel } from "@/models/picture";
 import { VoteModel } from "@/models/vote";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
-import { ILoggedUserMiddleware } from "@/types/user";
+import { ILoggedUser } from "@/types/user";
 import { Request, Response } from "express";
 import { omit } from "underscore";
 
 export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Response) => {
-  const loggedUser = req.loggedUser as ILoggedUserMiddleware;
+  const loggedUser = req.loggedUser as ILoggedUser;
   const matchId = req.body.matchId;
   const winnerPictureId = req.body.winnerPictureId;
 
@@ -58,6 +58,8 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     winnerVoterCountry: winnerVoterInfo?.country,
     winnerVoterEthnicity: winnerVoterInfo?.ethnicity,
   };
+
+  console.log(voteVotersInfo);
 
   const createNewVote = VoteModel.create({
     data: {
