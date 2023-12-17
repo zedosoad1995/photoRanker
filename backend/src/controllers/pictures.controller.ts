@@ -14,7 +14,7 @@ import { parseBoolean, parseNumber, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
 import { MAX_FREE_VOTES } from "@shared/constants/purchase";
-import { ILoggedUserMiddleware } from "@/types/user";
+import { ILoggedUser, ILoggedUserMiddleware } from "@/types/user";
 import { Prisma } from "@prisma/client";
 
 export const getMany =
@@ -116,7 +116,7 @@ export const getOne =
 export const getVotesStats =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const pictureId = req.params.pictureId;
-    const loggedUser = req.loggedUser as ILoggedUserMiddleware;
+    const loggedUser = req.loggedUser as ILoggedUser;
 
     const picture = await PictureModel.findUnique({
       where: {
@@ -128,9 +128,13 @@ export const getVotesStats =
       throw new NotFoundError("Piture not found");
     }
 
-    const stats = await PictureModel.getPictureVotesStats(pictureId, storageInteractor);
+    const { stats, count } = await PictureModel.getPictureVotesStats(
+      pictureId,
+      storageInteractor,
+      loggedUser
+    );
 
-    res.status(200).json({ stats });
+    res.status(200).json({ stats, total: count });
   };
 
 export const checkUploadPermission = async (req: Request, res: Response) => {

@@ -31,9 +31,10 @@ export const getPictureVotesStats = async (
   loggedUser: ILoggedUser
 ) => {
   // regular && not purchased && flag_on -> order by asc, Limit 5
-  const hasLimitedStats = UNLIMITED_STATS_ON && isRegular(loggedUser.role) && !loggedUser.purchase?.hasUnlimitedStats
+  const hasLimitedStats =
+    UNLIMITED_STATS_ON && isRegular(loggedUser.role) && !loggedUser.purchase?.hasUnlimitedStats;
 
-  const res: IGetPictureVotesStatsQueryReturn[] = await prisma.$queryRawUnsafe(`
+  let res: IGetPictureVotesStatsQueryReturn[] = await prisma.$queryRawUnsafe(`
     WITH
       CTE AS (
         SELECT
@@ -130,8 +131,13 @@ export const getPictureVotesStats = async (
       main.id
     HAVING MAX(main.winner_pic) IS NOT NULL AND MAX(main.loser_pic) IS NOT NULL
     ORDER BY
-      main."createdAt" ${hasLimitedStats ? "ASC" : "DESC"}
-    ${hasLimitedStats ? `LIMIT ${MAX_FREE_STATS_PER_PIC}` : ""}`);
+      main."createdAt" ${hasLimitedStats ? "ASC" : "DESC"}`);
 
-  return generateUserStatsWhenAdmin(res);
+  const count = res.length;
+  if (hasLimitedStats) {
+    // The plus 1, is because we want to kinda display an extra stat, for visual purposes. We do not really care if the user can find the extra vote trhough the API
+    res = res.slice(0, MAX_FREE_STATS_PER_PIC + 1);
+  }
+
+  return { stats: generateUserStatsWhenAdmin(res), count };
 };
