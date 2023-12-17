@@ -13,6 +13,7 @@ import { IncreasePhotos } from "./repositories/purchase/increasePhotos";
 import { UnlimitedVotes } from "./repositories/purchase/unlimitedVotes";
 import { PURCHASE_TYPE } from "@shared/constants/purchase";
 import { MultipleUnlimitedVotes } from "./repositories/purchase/multipleUnlimitedVotes";
+import { UnlimitedStats } from "./repositories/purchase/unlimitedStats";
 
 const s3 = new S3Client({
   region: process.env.S3_REGION,
@@ -56,4 +57,5 @@ export const purchaser = {
   [PURCHASE_TYPE.INCREASE_PHOTOS]: new IncreasePhotos(),
   [PURCHASE_TYPE.UNLIMITED_VOTES_ALL]: new UnlimitedVotes(),
   [PURCHASE_TYPE.UNLIMITED_VOTES_MULTIPLE]: new MultipleUnlimitedVotes(),
+  [PURCHASE_TYPE.UNLIMITED_STATS]: new UnlimitedStats(),
 };
