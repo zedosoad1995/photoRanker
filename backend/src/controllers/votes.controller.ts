@@ -59,8 +59,6 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     winnerVoterEthnicity: winnerVoterInfo?.ethnicity,
   };
 
-  console.log(voteVotersInfo);
-
   const createNewVote = VoteModel.create({
     data: {
       ...voteVotersInfo,
