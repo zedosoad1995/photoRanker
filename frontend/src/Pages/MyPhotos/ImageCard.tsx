@@ -168,7 +168,7 @@ export const PhotoCard = ({
         }}
       />
       <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
-        <div className="rounded-b-md shadow-md h-full cursor-default overflow-hidden">
+        <div className="shadow-md h-full cursor-default rounded-md">
           <div className="relative">
             <div
               onClick={handleOpenPauseUnpauseModal}
@@ -238,7 +238,11 @@ export const PhotoCard = ({
               )}
             </div>
           </div>
-          <div className={`bg-white p-3 pb-4 font-semibold ${isSmall ? "text-xs" : "text-sm"}`}>
+          <div
+            className={`bg-white p-3 pb-4 rounded-b-md font-semibold ${
+              isSmall ? "text-xs" : "text-sm"
+            }`}
+          >
             <div className="flex justify-between mb-1">
               <span>{isGlobal ? "Overall" : "Score"}</span>{" "}
               <Tooltip tooltipText={overallScoreText}>

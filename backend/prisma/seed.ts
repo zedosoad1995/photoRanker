@@ -170,11 +170,24 @@ async function main() {
       loserVoterEthnicity: ethnicity,
     };
 
-    winnerVoterInfo = {
-      ...winnerVoterInfo,
-      winnerVoterCountry: country,
-      winnerVoterEthnicity: ethnicity,
-    };
+    if (
+      winnerPic.userId === loserPic.userId &&
+      loserVoterInfo.loserVoterAge &&
+      loserVoterInfo.loserVoterGender
+    ) {
+      winnerVoterInfo = {
+        winnerVoterAge: loserVoterInfo.loserVoterAge,
+        winnerVoterGender: loserVoterInfo.loserVoterGender,
+        winnerVoterCountry: country,
+        winnerVoterEthnicity: ethnicity,
+      };
+    } else {
+      winnerVoterInfo = {
+        ...winnerVoterInfo,
+        winnerVoterCountry: country,
+        winnerVoterEthnicity: ethnicity,
+      };
+    }
 
     await prisma.vote.update({
       where: {

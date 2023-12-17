@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Gender, Prisma } from "@prisma/client";
 
 export type ILoggedUserMiddleware = Prisma.UserGetPayload<{
   include: {
@@ -6,3 +6,5 @@ export type ILoggedUserMiddleware = Prisma.UserGetPayload<{
     purchase: true;
   };
 }>;
+
+export type ILoggedUser = ILoggedUserMiddleware & { dateOfBirth: string; gender: Gender };
