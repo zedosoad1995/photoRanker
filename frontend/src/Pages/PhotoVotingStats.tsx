@@ -1,10 +1,11 @@
+import Button from "@/Components/Button";
 import { Spinner } from "@/Components/Loading/Spinner";
 import { PHOTOS } from "@/Constants/routes";
 import { getPictureVotingStats } from "@/Services/picture";
 import { IPictureVotingStats } from "@/Types/picture";
 import { loadImage } from "@/Utils/image";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const PhotoVotingStats = () => {
@@ -13,6 +14,9 @@ export const PhotoVotingStats = () => {
 
   const [stats, setStats] = useState<IPictureVotingStats[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const innerCardRef = useRef<HTMLDivElement | null>(null);
+  const statCardRef = useRef<HTMLDivElement | null>(null);
+  const hiddingBottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!pictureId) {
@@ -45,8 +49,33 @@ export const PhotoVotingStats = () => {
       });
   }, [pictureId]);
 
+  useEffect(() => {
+    if (isLoading) return;
+
+    const setHiddenBottomHeight = () => {
+      if (!statCardRef.current || !innerCardRef.current || !hiddingBottomRef.current) {
+        return;
+      }
+
+      const height = innerCardRef.current.getBoundingClientRect().height;
+
+      const cutOffHeight = height * 0.3;
+
+      statCardRef.current.style.height = `${cutOffHeight}px`;
+      hiddingBottomRef.current.style.height = `${cutOffHeight}px`;
+      hiddingBottomRef.current.style.background = `linear-gradient(to bottom, #F8F8FB00 0px, #F8F8FBFF ${cutOffHeight}px)`;
+    };
+
+    setHiddenBottomHeight();
+
+    window.addEventListener("resize", setHiddenBottomHeight);
+    return () => {
+      window.removeEventListener("resize", setHiddenBottomHeight);
+    };
+  }, [isLoading]);
+
   return (
-    <>
+    <div className="relative">
       <div className="flex gap-2 items-center mb-3 max-w-[800px] mx-auto">
         <button
           onClick={() => navigate(PHOTOS)}
@@ -71,14 +100,16 @@ export const PhotoVotingStats = () => {
       {isLoading && <Spinner />}
       {!isLoading && (
         <>
-          {stats.map((stat) => {
+          {stats.map((stat, index) => {
             const selectedPic = stat.is_winner ? stat.winner : stat.loser;
             const otherPic = stat.is_winner ? stat.loser : stat.winner;
 
-            return (
+            const isLast = index === stats.length - 1;
+
+            const VotingCard = (
               <div
-                key={stat.id}
-                className="mb-6 rounded-lg border shadow overflow-clip bg-white max-w-[800px] mx-auto"
+                ref={isLast ? innerCardRef : undefined}
+                className="rounded-lg border shadow overflow-clip bg-white mx-auto mb-6 max-w-[800px]"
               >
                 <div className="flex items-center">
                   <div className={`relative`}>
@@ -178,9 +209,26 @@ export const PhotoVotingStats = () => {
                 </div>
               </div>
             );
+
+            if (isLast) {
+              return (
+                <div key={stat.id} ref={statCardRef} className="overflow-hidden relative">
+                  <div ref={hiddingBottomRef} className="absolute w-[102%] -left-[1%] z-10" />
+                  {VotingCard}
+                </div>
+              );
+            }
+
+            return <React.Fragment key={stat.id}>{VotingCard}</React.Fragment>;
           })}
         </>
       )}
-    </>
+
+      <div className="flex justify-center my-4">
+        <Button isFull={false} variant="outline">
+          Show more
+        </Button>
+      </div>
+    </div>
   );
 };
