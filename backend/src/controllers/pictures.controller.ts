@@ -128,13 +128,13 @@ export const getVotesStats =
       throw new NotFoundError("Piture not found");
     }
 
-    const { stats, count } = await PictureModel.getPictureVotesStats(
+    const { stats, count, hasMore } = await PictureModel.getPictureVotesStats(
       pictureId,
       storageInteractor,
       loggedUser
     );
 
-    res.status(200).json({ stats, total: count });
+    res.status(200).json({ stats, total: count, hasMore });
   };
 
 export const checkUploadPermission = async (req: Request, res: Response) => {

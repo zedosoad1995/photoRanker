@@ -133,11 +133,15 @@ export const getPictureVotesStats = async (
     ORDER BY
       main."createdAt" ${hasLimitedStats ? "ASC" : "DESC"}`);
 
+  let hasMore = false;
   const count = res.length;
   if (hasLimitedStats) {
     // The plus 1, is because we want to kinda display an extra stat, for visual purposes. We do not really care if the user can find the extra vote trhough the API
     res = res.slice(0, MAX_FREE_STATS_PER_PIC + 1);
+    if (count > MAX_FREE_STATS_PER_PIC) {
+      hasMore = true;
+    }
   }
 
-  return { stats: generateUserStatsWhenAdmin(res), count };
+  return { stats: generateUserStatsWhenAdmin(res), count, hasMore };
 };

@@ -5,6 +5,7 @@ import { getPictureVotingStats } from "@/Services/picture";
 import { IPictureVotingStats } from "@/Types/picture";
 import { loadImage } from "@/Utils/image";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
+import { MAX_FREE_STATS_PER_PIC } from "@shared/constants/purchase";
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -13,6 +14,8 @@ export const PhotoVotingStats = () => {
   const { pictureId } = useParams();
 
   const [stats, setStats] = useState<IPictureVotingStats[]>([]);
+  const [count, setCount] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const innerCardRef = useRef<HTMLDivElement | null>(null);
   const statCardRef = useRef<HTMLDivElement | null>(null);
@@ -26,8 +29,10 @@ export const PhotoVotingStats = () => {
     setIsLoading(true);
 
     getPictureVotingStats(pictureId)
-      .then(async ({ stats }) => {
+      .then(async ({ stats, total, hasMore }) => {
         setStats(stats);
+        setCount(total);
+        setHasMore(hasMore);
 
         await Promise.all(
           stats.flatMap(({ winner, loser }) => {
@@ -104,7 +109,7 @@ export const PhotoVotingStats = () => {
             const selectedPic = stat.is_winner ? stat.winner : stat.loser;
             const otherPic = stat.is_winner ? stat.loser : stat.winner;
 
-            const isLast = index === stats.length - 1;
+            const isLast = index === stats.length - 1 && hasMore;
 
             const VotingCard = (
               <div
@@ -112,7 +117,7 @@ export const PhotoVotingStats = () => {
                 className="rounded-lg border shadow overflow-clip bg-white mx-auto mb-6 max-w-[800px]"
               >
                 <div className="flex items-center">
-                  <div className={`relative`}>
+                  <div className="relative">
                     <img src={String(selectedPic)} />
                     {stat.is_winner && (
                       <div
@@ -164,8 +169,6 @@ export const PhotoVotingStats = () => {
                   </div>
                 </div>
                 <div>
-                  {/* <div className="text-xl font-semibold py-2 text-center">Voter Info</div> */}
-                  {/* <div className="border-b-2 mx-2" /> */}
                   <div className="flex bg-white">
                     <div className="flex flex-col w-1/4 items-center py-2">
                       <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
@@ -224,11 +227,13 @@ export const PhotoVotingStats = () => {
         </>
       )}
 
-      <div className="flex justify-center my-4">
-        <Button isFull={false} variant="outline">
-          Show more
-        </Button>
-      </div>
+      {hasMore && !isLoading && (
+        <div className="flex justify-center my-4">
+          <Button isFull={false} variant="outline">
+            Show {count - MAX_FREE_STATS_PER_PIC} more
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
