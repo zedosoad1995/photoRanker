@@ -45,4 +45,3 @@ The goal of Photo Ranker is to address a common problem: receiving honest feedba
 <div style="margin-left: 40px; margin-top: -10px">
   <img src="assets/settings.png" width="500" />
 </div>
-
