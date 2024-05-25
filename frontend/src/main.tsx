@@ -35,7 +35,7 @@ import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
 import App from "./Pages/App/index.tsx";
 import RedirectLayout from "./Components/RedirectLayout.tsx";
 import { NotFoundPage } from "./Pages/404.tsx";
-import { PhotoVotingStats } from "./Pages/PhotoVotingStats.tsx";
+import { PhotoVotingStats } from "./Pages/PhotoVotingStats/PhotoVotingStats.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};

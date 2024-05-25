@@ -56,6 +56,12 @@ export const createPaymentIntentMultipleUnlimitedVotes = async (req: Request, re
   res.status(200).send({ clientSecret });
 };
 
+export const createPaymentIntentUnlimitedStats = async (req: Request, res: Response) => {
+  const clientSecret = await createPaymentIntentHandler(purchaser["unlimited-stats"], req);
+
+  res.status(200).send({ clientSecret });
+};
+
 export const stripeWebhook = async (req: Request, res: Response, next: NextFunction) => {
   const sig = req.headers["stripe-signature"];
 

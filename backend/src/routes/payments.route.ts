@@ -8,6 +8,7 @@ import {
   createPaymentIntentUnlimitedVotes,
   createPaymentIntentMultipleUnlimitedVotes,
   stripeWebhook,
+  createPaymentIntentUnlimitedStats,
 } from "@/controllers/payments.controller";
 import { validateForm } from "@/middlewares/validateForm";
 import { createPaymentIntentMultipleUnlimitedVotesSchema } from "@/schemas/purchase/createPaymentIntentMultipleUnlimitedVotes";
@@ -33,7 +34,13 @@ router.post(
   ...profileChecks,
   validateForm(createPaymentIntentMultipleUnlimitedVotesSchema),
   createPaymentIntentMultipleUnlimitedVotes
-);
+  );
+
+  router.post(
+    "/create-payment-intent/unlimited-stats",
+    ...profileChecks,
+    createPaymentIntentUnlimitedStats
+  );
 
 router.post("/stripe-webhook", stripeWebhook);
 

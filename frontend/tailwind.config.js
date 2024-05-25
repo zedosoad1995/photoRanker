@@ -31,6 +31,7 @@ export default {
         "disabled-button-text": "rgba(0, 0, 0, 0.26)",
         "disabled-button-bg": "rgba(0, 0, 0, 0.12)",
         danger: "#b32522",
+        bg: "#F8F8FB",
       },
       fontSize: {
         label: ["0.875rem", "1.25rem"],

@@ -67,6 +67,7 @@ model Purchase {
   id                     String   @id @default(uuid())
   hasIncreasedPhotoLimit Boolean  @default(false)
   hasUnlimitedVotes      Boolean  @default(false)
+  hasUnlimitedStats      Boolean  @default(false)
   user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt

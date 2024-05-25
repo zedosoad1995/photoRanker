@@ -40,6 +40,8 @@ export interface IPictureVotingStats {
 
 export interface IGetPictureVotingStats {
   stats: IPictureVotingStats[];
+  total: number;
+  hasMore: boolean;
 }
 
 export interface PictureRes {
