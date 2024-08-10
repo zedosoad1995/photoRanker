@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name api.photoscorer.com;
+    server_name api2.photoscorer.com;
 
     client_max_body_size 10M;
 

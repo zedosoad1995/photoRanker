@@ -20,7 +20,7 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Set up environment
-        run: echo "${{ secrets.ENV_FILE }}" > backend/.env
+        run: echo "${{ secrets.ENV_FILE_MIGRATION }}" > backend/.env
 
       - name: Set up SSL certs
         run: |
