@@ -15,10 +15,11 @@ import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
 import { MAX_FREE_VOTES } from "@shared/constants/purchase";
 import { ILoggedUserMiddleware } from "@/types/user";
-import { Prisma } from "@prisma/client";
+import { RatingRepo } from "@/types/repositories/ratingRepo";
 
 export const getMany =
-  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+  (ratingRepo: RatingRepo, storageInteractor: StorageInteractor) =>
+  async (req: Request, res: Response) => {
     const loggedUser = req.loggedUser!;
     const userId = req.query.userId as string | undefined;
     const hasReport = parseBoolean(req.query.hasReport as string | undefined);
@@ -58,7 +59,8 @@ export const getMany =
       maxAge,
       limit,
       cursor,
-      orderByQuery
+      orderByQuery,
+      ratingRepo,
     );
 
     const retPics = pictures.map((pic) => PictureModel.getReturnPic(pic, storageInteractor));

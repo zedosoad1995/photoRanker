@@ -12,7 +12,10 @@ import {
   PlayIcon,
 } from "@heroicons/react/20/solid";
 import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
-import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
+import {
+  UNLIMITED_VOTE_ALL_ON,
+  UNLIMITED_VOTE_MULTIPLE_ON,
+} from "@shared/constants/purchase";
 import { Tooltip } from "@/Components/Tooltip";
 import { updateImage } from "@/Services/picture";
 import { useMyPhotos } from "./Contexts/myPhotos";
@@ -32,10 +35,10 @@ interface IPhotoCard {
   ageGroupStr?: string;
 }
 
-const getHumanReadablePerc = (perc: number) => {
+const getHumanReadablePerc = (perc: number, precision: number = 0) => {
   /* if (perc > 99.9) return `Top <0.1%`;
   return `Top ${(100 - perc).toFixed(1)}%`; */
-  return perc.toFixed() + "%";
+  return perc.toFixed(precision) + "%";
 };
 
 export const PhotoCard = ({
@@ -67,7 +70,9 @@ export const PhotoCard = ({
   const handlePauseUnpause = async () => {
     const picId = picInfo.id;
 
-    const updatedPic = await updateImage(picId, { isActive: !picInfo.isActive });
+    const updatedPic = await updateImage(picId, {
+      isActive: !picInfo.isActive,
+    });
     const updatedPics = state.picsInfo.reduce((pics, _pic) => {
       if (_pic.id !== picId) {
         return [...pics, _pic];
@@ -113,8 +118,8 @@ export const PhotoCard = ({
       return (
         <>
           <div>
-            This photo is more attractive than {picInfo.percentile.toFixed(2)}% of the{" "}
-            {loggedUser.gender} population in this app.
+            This photo is more attractive than {picInfo.percentile.toFixed(2)}%
+            of the {loggedUser.gender} population in this app.
           </div>
         </>
       );
@@ -123,8 +128,8 @@ export const PhotoCard = ({
     return (
       <>
         <div>
-          This value is just a way to quantify how much better/worse each of your pictures is in
-          relation to eachother. A score of 100, means it is your best picture.
+          This picture has a {picInfo.percentile.toFixed(2)}% chance of being
+          the preferred one.
         </div>
       </>
     );
@@ -142,8 +147,9 @@ export const PhotoCard = ({
     return (
       <>
         <div>
-          This photo is more attractive than {picInfo.ageGroupPercentile.toFixed(2)}% of the{" "}
-          {loggedUser.gender} population for the age group {ageGroupStr}.
+          This photo is more attractive than{" "}
+          {picInfo.ageGroupPercentile.toFixed(2)}% of the {loggedUser.gender}{" "}
+          population for the age group {ageGroupStr}.
         </div>
       </>
     );
@@ -167,25 +173,34 @@ export const PhotoCard = ({
           setIsOpenPauseUnpause(false);
         }}
       />
-      <div ref={cardRef} className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group">
+      <div
+        ref={cardRef}
+        className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group"
+      >
         <div className="shadow-md h-full cursor-default rounded-md">
           <div className="relative">
             <div
               onClick={handleOpenPauseUnpauseModal}
               className={`absolute flex justify-center items-center gap-[2px] bg-white ${
-                picInfo.isActive ? "card-group-child-active" : "card-group-child"
+                picInfo.isActive
+                  ? "card-group-child-active"
+                  : "card-group-child"
               } in rounded-xl py-1 px-2 left-1 top-1 cursor-pointer`}
             >
               {picInfo.isActive && (
                 <>
                   <PauseIcon className="h-4 w-4 text-center" />
-                  <div className="text-sm font-semibold leading-none">Active</div>
+                  <div className="text-sm font-semibold leading-none">
+                    Active
+                  </div>
                 </>
               )}
               {!picInfo.isActive && (
                 <>
                   <PlayIcon className="h-4 w-4 text-center" />
-                  <div className="text-sm font-semibold leading-none">Paused</div>
+                  <div className="text-sm font-semibold leading-none">
+                    Paused
+                  </div>
                 </>
               )}
             </div>
@@ -194,7 +209,9 @@ export const PhotoCard = ({
                 <Menu
                   items={[
                     {
-                      label: picInfo.isActive ? "Pause Voting" : "Activate Photo",
+                      label: picInfo.isActive
+                        ? "Pause Voting"
+                        : "Activate Photo",
                       onClick: handleOpenPauseUnpauseModal,
                     },
                     {
@@ -230,7 +247,13 @@ export const PhotoCard = ({
                 </div>
               </div>
 
-              {img && <img className="mx-auto w-full" src={img} alt={`picture-${index}`} />}
+              {img && (
+                <img
+                  className="mx-auto w-full"
+                  src={img}
+                  alt={`picture-${index}`}
+                />
+              )}
               {!img && (
                 <div className="relative -z-10">
                   <ImageSkeleton divClass="aspect-square" />
@@ -248,9 +271,7 @@ export const PhotoCard = ({
               <Tooltip tooltipText={overallScoreText}>
                 <span>
                   {picInfo.numVotes > 0 && picInfo.percentile !== null
-                    ? isGlobal
-                      ? getHumanReadablePerc(picInfo.percentile)
-                      : picInfo.percentile.toFixed(1)
+                    ? getHumanReadablePerc(picInfo.percentile, isGlobal ? 0 : 1)
                     : "-"}
                 </span>
               </Tooltip>
@@ -260,7 +281,9 @@ export const PhotoCard = ({
                 className="rounded-md bg-primary h-full"
                 style={{
                   width:
-                    picInfo.percentile === null ? "0%" : (picInfo.percentile * 99) / 100 + 1 + "%",
+                    picInfo.percentile === null
+                      ? "0%"
+                      : (picInfo.percentile * 99) / 100 + 1 + "%",
                 }}
               />
             </div>
@@ -271,9 +294,7 @@ export const PhotoCard = ({
                   <Tooltip tooltipText={ageGroupScoreText}>
                     <span>
                       {picInfo.numVotes > 0
-                        ? isGlobal
-                          ? getHumanReadablePerc(picInfo.ageGroupPercentile)
-                          : picInfo.ageGroupPercentile.toFixed(1)
+                        ? getHumanReadablePerc(picInfo.ageGroupPercentile)
                         : "-"}
                     </span>
                   </Tooltip>
@@ -291,38 +312,39 @@ export const PhotoCard = ({
                 </div>
               </>
             )}
-            {picInfo.cannotSeeAllVotes && (UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON) && (
-              <>
-                <div className="flex justify-between mb-1 mt-2">
-                  <span>Score ({picInfo.numPaidVotes} votes)</span>{" "}
-                </div>
-                <div className="relative group">
-                  <LockClosedIcon
-                    onClick={() => {
-                      setIsOpenUnlockVotesModal(true);
-                    }}
-                    className={`${
-                      isSmall ? "w-5 h-5" : "w-6 h-6"
-                    } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
-                  />
-                  <div
-                    className="bg-white absolute h-full w-full"
-                    style={{
-                      background:
-                        "linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%)",
-                    }}
-                  />
-                  <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+            {picInfo.cannotSeeAllVotes &&
+              (UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON) && (
+                <>
+                  <div className="flex justify-between mb-1 mt-2">
+                    <span>Score ({picInfo.numPaidVotes} votes)</span>{" "}
+                  </div>
+                  <div className="relative group">
+                    <LockClosedIcon
+                      onClick={() => {
+                        setIsOpenUnlockVotesModal(true);
+                      }}
+                      className={`${
+                        isSmall ? "w-5 h-5" : "w-6 h-6"
+                      } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
+                    />
                     <div
-                      className="rounded-md bg-amber-400 h-full"
+                      className="bg-white absolute h-full w-full"
                       style={{
-                        width: "100%",
+                        background:
+                          "linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%)",
                       }}
                     />
+                    <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+                      <div
+                        className="rounded-md bg-amber-400 h-full"
+                        style={{
+                          width: "100%",
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
             <div className="mt-4 flex justify-center">
               <Button
                 onClick={() => navigate(PHOTO_VOTING_STATS_PATH(picInfo.id))}

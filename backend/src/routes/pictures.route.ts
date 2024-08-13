@@ -12,7 +12,7 @@ import { convertFormDataToBuffer } from "@/middlewares/convertFormDataToBuffer";
 import { validateImage } from "@/middlewares/validateImage";
 import { validateQuery } from "@/middlewares/validateQuery";
 import { validateForm } from "@/middlewares/validateForm";
-import { mainStorageInteractor } from "@/container";
+import { glicko2, mainStorageInteractor } from "@/container";
 import { getManyPicturesSchema } from "@/schemas/picture/query/getManyPictures";
 import { createPictureSchema } from "@/schemas/picture/createPicture";
 import { validateFormDataJson } from "@/middlewares/validateFormDataJson";
@@ -26,7 +26,7 @@ router.get(
   checkBasicUserSettings,
   // @ts-ignore
   validateQuery(getManyPicturesSchema),
-  getMany(mainStorageInteractor)
+  getMany(glicko2, mainStorageInteractor),
 );
 
 router.get("/upload-permission", checkBasicUserSettings, checkUploadPermission);
@@ -40,14 +40,14 @@ router.post(
   convertFormDataToBuffer,
   validateFormDataJson(createPictureSchema, "info"),
   validateImage(mainStorageInteractor),
-  uploadOne(mainStorageInteractor)
+  uploadOne(mainStorageInteractor),
 );
 
 router.patch(
   "/:pictureId",
   checkBasicUserSettings,
   validateForm(updatePictureSchema),
-  updateOne(mainStorageInteractor)
+  updateOne(mainStorageInteractor),
 );
 
 router.delete("/:pictureId", checkBasicUserSettings, deleteOne(mainStorageInteractor));
