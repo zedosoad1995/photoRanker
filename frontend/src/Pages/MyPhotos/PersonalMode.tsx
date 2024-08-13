@@ -63,9 +63,10 @@ export default function PersonalMode() {
     }
   };
 
-  useInfiniteScroll({ isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate }, [
-    state.nextCursor,
-  ]);
+  useInfiniteScroll(
+    { isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate },
+    [state.nextCursor]
+  );
 
   useEffect(() => {
     if (!state.isSet || !isFirstRender.current) getPictures();
@@ -73,7 +74,13 @@ export default function PersonalMode() {
     if (isFirstRender.current) {
       isFirstRender.current = false;
     }
-  }, [state.sortValue, state.filterSelect, state.gender, state.minAge, state.maxAge]);
+  }, [
+    state.sortValue,
+    state.filterSelect,
+    state.gender,
+    state.minAge,
+    state.maxAge,
+  ]);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -93,7 +100,9 @@ export default function PersonalMode() {
       reader.onloadend = async () => {
         let base64Image = reader.result as string;
 
-        const { height, width } = await getImageDimensionsFromBase64(base64Image);
+        const { height, width } = await getImageDimensionsFromBase64(
+          base64Image
+        );
 
         if (height < MIN_HEIGHT || width < MIN_WIDTH) {
           toast.error(`Picture must be at least ${MIN_WIDTH}x${MIN_HEIGHT}`, {
@@ -148,38 +157,44 @@ export default function PersonalMode() {
           setIsOpen(false);
         }}
       />
-      {!isLoading && state.picUrls.length === 0 && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && state.picUrls.length > 0 && (
-        <>
-          <Header
-            getPictures={getPictures}
-            hasReachedPicsLimit={state.hasReachedPicsLimit}
-            loggedUser={loggedUser}
-            setIsFetchingFilter={(value) => dispatch({ key: "isFetchingFilter", value })}
-            filename={filename}
-            handleFileChange={handleFileChange}
-            selectedImage={selectedImage}
-            filterState={state}
-            filterDispatch={dispatch}
-          />
-          {state.picUrls.length === 1 && (
-            <div className="text-danger my-1 mx-2">
-              You need at least 2 photos to start getting votes.
-            </div>
-          )}
-          <PhotosGird
-            getPictures={getPictures}
-            isFetchingFilter={state.isFetchingFilter}
-            isLoadingMorePhotos={isLoadingMoreImages.state}
-            loggedUser={loggedUser}
-            picUrls={state.picUrls}
-            picsInfo={state.picsInfo}
-            setPicUrls={(value) => dispatch({ key: "picUrls", value })}
-            setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
-            prevCursor={prevCursor}
-          />
-        </>
-      )}
+      {!isLoading &&
+        state.picUrls.length === 0 &&
+        loggedUser?.role !== "ADMIN" && <EmptyPlaceholder />}
+      {loggedUser &&
+        !isLoading &&
+        (state.picUrls.length > 0 || loggedUser.role === "ADMIN") && (
+          <>
+            <Header
+              getPictures={getPictures}
+              hasReachedPicsLimit={state.hasReachedPicsLimit}
+              loggedUser={loggedUser}
+              setIsFetchingFilter={(value) =>
+                dispatch({ key: "isFetchingFilter", value })
+              }
+              filename={filename}
+              handleFileChange={handleFileChange}
+              selectedImage={selectedImage}
+              filterState={state}
+              filterDispatch={dispatch}
+            />
+            {state.picUrls.length === 1 && (
+              <div className="text-danger my-1 mx-2">
+                You need at least 2 photos to start getting votes.
+              </div>
+            )}
+            <PhotosGird
+              getPictures={getPictures}
+              isFetchingFilter={state.isFetchingFilter}
+              isLoadingMorePhotos={isLoadingMoreImages.state}
+              loggedUser={loggedUser}
+              picUrls={state.picUrls}
+              picsInfo={state.picsInfo}
+              setPicUrls={(value) => dispatch({ key: "picUrls", value })}
+              setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
+              prevCursor={prevCursor}
+            />
+          </>
+        )}
     </>
   );
 }

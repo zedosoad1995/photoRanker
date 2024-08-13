@@ -90,7 +90,7 @@ async function getPicturesWithPercentile(
 
   const orderKey = Object.keys(orderByObj)[0];
   const orderValue = Object.values(orderByObj)[0];
-  const extraSelectField = [];
+  const extraSelectField = [`pic_perc."ageGroupPercentile"`];
 
   let orderType: "date" | "number" = "number";
   let useHaving = false;
@@ -270,8 +270,6 @@ async function getPicturesWithPercentile(
   let ageGroup;
 
   if (isGlobal) {
-    extraSelectField.push(`pic_perc."ageGroupPercentile"`);
-
     if (!loggedUser.dateOfBirth) {
       throw new Error("User does not have dateOfBirth");
     }
@@ -300,6 +298,8 @@ async function getPicturesWithPercentile(
       END AS "ageGroupPercentile"`;
 
     subQueryPicPercentileSelect.push(percentileAgeGroupSelect);
+  } else {
+    subQueryPicPercentileSelect.push(`NULL AS "ageGroupPercentile"`);
   }
 
   const whenLimitedVotes =

@@ -48,7 +48,11 @@ interface IMyPhotosProvider {
 
 export const DEFAULT_SORT = "score desc";
 
-export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvider) => {
+export const MyPhotosProvider = ({
+  children,
+  loggedUser,
+  mode,
+}: IMyPhotosProvider) => {
   const [isLoadingMoreImages, updateLoadingMoreImages] = useStateRef(false);
 
   const initialState: MyPhotosState = {
@@ -57,9 +61,9 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
     picsInfo: [],
     nextCursor: undefined,
     isSet: false,
-    filterSelect: "",
-    sortValue: DEFAULT_SORT,
-    gender: undefined,
+    filterSelect: localStorage.getItem("filterSelect " + mode) ?? "",
+    sortValue: localStorage.getItem("sortValue " + mode) ?? DEFAULT_SORT,
+    gender: localStorage.getItem("gender " + mode) ?? undefined,
     minAge: undefined,
     maxAge: undefined,
     hasReachedPicsLimit: false,
@@ -69,6 +73,10 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
   function setterReducer(state: MyPhotosState, action: MyPhotosAction) {
     if (typeof action.value === "function") {
       return { ...state, [action.key]: action.value(state[action.key]) };
+    }
+
+    if (["sortValue", "filterSelect", "gender"].includes(action.key)) {
+      localStorage.setItem(action.key + " " + mode, action.value);
     }
 
     return { ...state, [action.key]: action.value };
@@ -101,7 +109,12 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
         dispatch({
           key: "picUrls",
           value: cursor
-            ? [...new Set([...state.picUrls, ...res.pictures.map(({ url }) => url)])]
+            ? [
+                ...new Set([
+                  ...state.picUrls,
+                  ...res.pictures.map(({ url }) => url),
+                ]),
+              ]
             : res.pictures.map(({ url }) => url),
         });
 

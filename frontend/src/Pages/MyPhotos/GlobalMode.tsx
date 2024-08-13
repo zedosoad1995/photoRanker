@@ -63,9 +63,10 @@ export default function GlobalMode() {
     }
   };
 
-  useInfiniteScroll({ isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate }, [
-    state.nextCursor,
-  ]);
+  useInfiniteScroll(
+    { isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate },
+    [state.nextCursor]
+  );
 
   useEffect(() => {
     if (!state.isSet || !isFirstRender.current) getPictures();
@@ -73,7 +74,13 @@ export default function GlobalMode() {
     if (isFirstRender.current) {
       isFirstRender.current = false;
     }
-  }, [state.sortValue, state.filterSelect, state.gender, state.minAge, state.maxAge]);
+  }, [
+    state.sortValue,
+    state.filterSelect,
+    state.gender,
+    state.minAge,
+    state.maxAge,
+  ]);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -93,7 +100,9 @@ export default function GlobalMode() {
       reader.onloadend = async () => {
         let base64Image = reader.result as string;
 
-        const { height, width } = await getImageDimensionsFromBase64(base64Image);
+        const { height, width } = await getImageDimensionsFromBase64(
+          base64Image
+        );
 
         if (height < MIN_HEIGHT || width < MIN_WIDTH) {
           toast.error(`Picture must be at least ${MIN_WIDTH}x${MIN_HEIGHT}`, {
@@ -148,35 +157,41 @@ export default function GlobalMode() {
           setIsOpen(false);
         }}
       />
-      {!isLoading && state.picUrls.length === 0 && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && state.picUrls.length > 0 && (
-        <>
-          <Header
-            getPictures={getPictures}
-            hasReachedPicsLimit={state.hasReachedPicsLimit}
-            loggedUser={loggedUser}
-            setIsFetchingFilter={(value) => dispatch({ key: "isFetchingFilter", value })}
-            filename={filename}
-            handleFileChange={handleFileChange}
-            selectedImage={selectedImage}
-            filterState={state}
-            filterDispatch={dispatch}
-          />
-          <PhotosGird
-            getPictures={getPictures}
-            isFetchingFilter={state.isFetchingFilter}
-            isLoadingMorePhotos={isLoadingMoreImages.state}
-            loggedUser={loggedUser}
-            ageGroup={state.ageGroup}
-            picUrls={state.picUrls}
-            picsInfo={state.picsInfo}
-            setPicUrls={(value) => dispatch({ key: "picUrls", value })}
-            setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
-            prevCursor={prevCursor}
-            isGlobal
-          />
-        </>
-      )}
+      {!isLoading &&
+        state.picUrls.length === 0 &&
+        loggedUser?.role !== "ADMIN" && <EmptyPlaceholder />}
+      {loggedUser &&
+        !isLoading &&
+        (state.picUrls.length > 0 || loggedUser.role === "ADMIN") && (
+          <>
+            <Header
+              getPictures={getPictures}
+              hasReachedPicsLimit={state.hasReachedPicsLimit}
+              loggedUser={loggedUser}
+              setIsFetchingFilter={(value) =>
+                dispatch({ key: "isFetchingFilter", value })
+              }
+              filename={filename}
+              handleFileChange={handleFileChange}
+              selectedImage={selectedImage}
+              filterState={state}
+              filterDispatch={dispatch}
+            />
+            <PhotosGird
+              getPictures={getPictures}
+              isFetchingFilter={state.isFetchingFilter}
+              isLoadingMorePhotos={isLoadingMoreImages.state}
+              loggedUser={loggedUser}
+              ageGroup={state.ageGroup}
+              picUrls={state.picUrls}
+              picsInfo={state.picsInfo}
+              setPicUrls={(value) => dispatch({ key: "picUrls", value })}
+              setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
+              prevCursor={prevCursor}
+              isGlobal
+            />
+          </>
+        )}
     </>
   );
 }
