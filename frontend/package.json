@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e .env.dev -- vite",
+    "dev": "dotenv -e .env -- vite",
     "build": "rimraf ./dist/ && tsc && vite build",
     "build:netlify": "rimraf ./dist/ && tsc && vite build && copyfiles -u 1 ./netlify/_redirects ./dist",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
