@@ -25,7 +25,7 @@ function useInfiniteScroll(
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [...deps, isLoading]);
+  }, [...deps, isLoading, handleUpdate]);
 }
 
 export default useInfiniteScroll;

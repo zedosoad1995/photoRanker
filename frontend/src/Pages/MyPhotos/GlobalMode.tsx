@@ -1,5 +1,5 @@
 import Button from "@/Components/Button";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./Modals/UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
@@ -59,12 +59,12 @@ export default function GlobalMode() {
     });
   };
 
-  const handleScrollUpdate = () => {
+  const handleScrollUpdate = useCallback(() => {
     if (state.nextCursor) {
       updateLoadingMoreImages(true);
       getPictures(state.nextCursor);
     }
-  };
+  }, [isFirstRender]);
 
   useInfiniteScroll(
     { isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate },

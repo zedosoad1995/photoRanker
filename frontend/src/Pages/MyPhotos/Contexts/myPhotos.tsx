@@ -54,7 +54,14 @@ export const MyPhotosProvider = ({
   loggedUser,
   mode,
 }: IMyPhotosProvider) => {
-  const { picUrls, picsInfo, setPicUrls, setPicsInfo } = usePhotos(mode);
+  const {
+    picUrls,
+    picsInfo,
+    setPicUrls,
+    setPicsInfo,
+    nextCursor,
+    setNextCursor,
+  } = usePhotos(mode);
 
   const [isLoadingMoreImages, updateLoadingMoreImages] = useStateRef(false);
 
@@ -62,7 +69,7 @@ export const MyPhotosProvider = ({
     ageGroup: undefined,
     picUrls,
     picsInfo,
-    nextCursor: undefined,
+    nextCursor,
     isSet: false,
     filterSelect: localStorage.getItem("filterSelect " + mode) ?? "",
     sortValue: localStorage.getItem("sortValue " + mode) ?? DEFAULT_SORT,
@@ -98,6 +105,10 @@ export const MyPhotosProvider = ({
   useEffect(() => {
     setPicsInfo(state.picsInfo);
   }, [state.picsInfo]);
+
+  useEffect(() => {
+    setNextCursor(state.nextCursor);
+  }, [state.nextCursor]);
 
   const getPictures = async (cursor?: string) => {
     dispatch({ key: "isSet", value: false });
