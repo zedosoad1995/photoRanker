@@ -73,7 +73,7 @@ export const PhotoCard = ({
     const updatedPic = await updateImage(picId, {
       isActive: !picInfo.isActive,
     });
-    const updatedPics = state.picsInfo.reduce((pics, _pic) => {
+    const updatedPics = state.picsInfo?.reduce((pics, _pic) => {
       if (_pic.id !== picId) {
         return [...pics, _pic];
       }
@@ -347,7 +347,13 @@ export const PhotoCard = ({
               )}
             <div className="mt-4 flex justify-center">
               <Button
-                onClick={() => navigate(PHOTO_VOTING_STATS_PATH(picInfo.id))}
+                onClick={() => {
+                  localStorage.setItem(
+                    "scrollPosition",
+                    String(window.scrollY)
+                  );
+                  navigate(PHOTO_VOTING_STATS_PATH(picInfo.id));
+                }}
                 isFull={false}
                 variant="outline"
                 size="small"

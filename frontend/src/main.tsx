@@ -36,6 +36,7 @@ import App from "./Pages/App/index.tsx";
 import RedirectLayout from "./Components/RedirectLayout.tsx";
 import { NotFoundPage } from "./Pages/404.tsx";
 import { PhotoVotingStats } from "./Pages/PhotoVotingStats.tsx";
+import { PhotosProvider } from "./Contexts/photos.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -127,8 +128,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_AUTH_ID!}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Toaster position="top-center" reverseOrder={false} />
-          <RouterProvider router={router} />
+          <PhotosProvider>
+            <Toaster position="top-center" reverseOrder={false} />
+            <RouterProvider router={router} />
+          </PhotosProvider>
         </AuthProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>

@@ -33,26 +33,29 @@ export default function GlobalMode() {
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(!state.isSet);
+  const [isInitLoading, setIsInitLoading] = useState(false);
   const prevCursor = usePrevious(state.nextCursor);
 
   const [showSpinner, setShowSpinner] = useState(false);
-
-  const isFirstRender = useRef(true);
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (isLoading) {
+    if (isInitLoading) {
       timer = setTimeout(() => setShowSpinner(true), 200);
     } else {
       setShowSpinner(false);
     }
     return () => clearTimeout(timer);
-  }, [isLoading]);
+  }, [isInitLoading]);
 
   const getPictures = async (cursor?: string) => {
-    _getPictures(cursor).finally(() => {
-      setIsLoading(false);
+    if (isFirstRender) {
+      setIsInitLoading(true);
+    }
+
+    await _getPictures(cursor).finally(() => {
+      setIsInitLoading(false);
     });
   };
 
@@ -69,10 +72,15 @@ export default function GlobalMode() {
   );
 
   useEffect(() => {
-    if (!state.isSet || !isFirstRender.current) getPictures();
+    if (
+      (!state.isSet && localStorage.getItem("doNotFetchPhotos") !== "true") ||
+      !isFirstRender
+    ) {
+      getPictures();
+    }
 
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (isFirstRender) {
+      setIsFirstRender(false);
     }
   }, [
     state.sortValue,
@@ -81,6 +89,22 @@ export default function GlobalMode() {
     state.minAge,
     state.maxAge,
   ]);
+
+  useEffect(() => {
+    if (!isFirstRender) {
+      localStorage.removeItem("doNotFetchPhotos");
+    }
+  }, [isFirstRender]);
+
+  useEffect(() => {
+    const scrollPosition = localStorage.getItem("scrollPosition");
+    if (scrollPosition) {
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(scrollPosition));
+        localStorage.removeItem("scrollPosition");
+      }, 0);
+    }
+  }, []);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -157,12 +181,12 @@ export default function GlobalMode() {
           setIsOpen(false);
         }}
       />
-      {!isLoading &&
-        state.picUrls.length === 0 &&
+      {!isInitLoading &&
+        !state.picUrls?.length &&
         loggedUser?.role !== "ADMIN" && <EmptyPlaceholder />}
       {loggedUser &&
-        !isLoading &&
-        (state.picUrls.length > 0 || loggedUser.role === "ADMIN") && (
+        !isInitLoading &&
+        (state.picUrls?.length || loggedUser.role === "ADMIN") && (
           <>
             <Header
               getPictures={getPictures}
@@ -183,8 +207,8 @@ export default function GlobalMode() {
               isLoadingMorePhotos={isLoadingMoreImages.state}
               loggedUser={loggedUser}
               ageGroup={state.ageGroup}
-              picUrls={state.picUrls}
-              picsInfo={state.picsInfo}
+              picUrls={state.picUrls ?? []}
+              picsInfo={state.picsInfo ?? []}
               setPicUrls={(value) => dispatch({ key: "picUrls", value })}
               setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
               prevCursor={prevCursor}

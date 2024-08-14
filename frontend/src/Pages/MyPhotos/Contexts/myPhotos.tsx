@@ -4,13 +4,14 @@ import { getManyPictures, getUploadPermission } from "@/Services/picture";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
 import { isAdmin } from "@/Utils/role";
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { IAgeGroup } from "@shared/types/picture";
+import { usePhotos } from "@/Contexts/photos";
 
 export interface MyPhotosState {
   ageGroup: IAgeGroup;
-  picUrls: string[];
-  picsInfo: IPictureWithPercentile[];
+  picUrls?: string[];
+  picsInfo?: IPictureWithPercentile[];
   nextCursor?: string;
   isSet: boolean;
   filterSelect: string;
@@ -53,19 +54,21 @@ export const MyPhotosProvider = ({
   loggedUser,
   mode,
 }: IMyPhotosProvider) => {
+  const { picUrls, picsInfo, setPicUrls, setPicsInfo } = usePhotos(mode);
+
   const [isLoadingMoreImages, updateLoadingMoreImages] = useStateRef(false);
 
   const initialState: MyPhotosState = {
     ageGroup: undefined,
-    picUrls: [],
-    picsInfo: [],
+    picUrls,
+    picsInfo,
     nextCursor: undefined,
     isSet: false,
     filterSelect: localStorage.getItem("filterSelect " + mode) ?? "",
     sortValue: localStorage.getItem("sortValue " + mode) ?? DEFAULT_SORT,
     gender: localStorage.getItem("gender " + mode) ?? undefined,
-    minAge: undefined,
-    maxAge: undefined,
+    minAge: Number(localStorage.getItem("minAge " + mode)) || undefined,
+    maxAge: Number(localStorage.getItem("maxAge " + mode)) || undefined,
     hasReachedPicsLimit: false,
     isFetchingFilter: false,
   };
@@ -75,7 +78,11 @@ export const MyPhotosProvider = ({
       return { ...state, [action.key]: action.value(state[action.key]) };
     }
 
-    if (["sortValue", "filterSelect", "gender"].includes(action.key)) {
+    if (
+      ["sortValue", "filterSelect", "gender", "minAge", "maxAge"].includes(
+        action.key
+      )
+    ) {
       localStorage.setItem(action.key + " " + mode, action.value);
     }
 
@@ -84,7 +91,17 @@ export const MyPhotosProvider = ({
 
   const [state, dispatch] = useReducer(setterReducer, initialState);
 
+  useEffect(() => {
+    setPicUrls(state.picUrls);
+  }, [state.picUrls]);
+
+  useEffect(() => {
+    setPicsInfo(state.picsInfo);
+  }, [state.picsInfo]);
+
   const getPictures = async (cursor?: string) => {
+    dispatch({ key: "isSet", value: false });
+
     try {
       if (!loggedUser) return;
 
@@ -111,7 +128,7 @@ export const MyPhotosProvider = ({
           value: cursor
             ? [
                 ...new Set([
-                  ...state.picUrls,
+                  ...(state.picUrls ?? []),
                   ...res.pictures.map(({ url }) => url),
                 ]),
               ]
@@ -123,7 +140,7 @@ export const MyPhotosProvider = ({
           value: cursor
             ? [
                 ...new Set([
-                  ...state.picsInfo.map((row) => JSON.stringify(row)),
+                  ...(state.picsInfo?.map((row) => JSON.stringify(row)) ?? []),
                   ...res.pictures.map((pic) => JSON.stringify(pic)),
                 ]),
               ].map((row) => JSON.parse(row))

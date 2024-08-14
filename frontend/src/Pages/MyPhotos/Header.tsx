@@ -99,7 +99,8 @@ export const Header = ({
 
   const debouncedUpdateAgeRange = useCallback(
     debounce((minAge: number, maxAge: number) => {
-      if (minAge === filterState.minAge && maxAge === filterState.maxAge) return;
+      if (minAge === filterState.minAge && maxAge === filterState.maxAge)
+        return;
 
       setIsFetchingFilter(true);
       filterDispatch({ key: "minAge", value: minAge });
@@ -110,7 +111,10 @@ export const Header = ({
 
   return (
     <>
-      <BuyMorePhotosModal isOpen={isOpenMultiPicsModal} onClose={handleCloseMultiPicsModal} />
+      <BuyMorePhotosModal
+        isOpen={isOpenMultiPicsModal}
+        onClose={handleCloseMultiPicsModal}
+      />
       <input
         type="file"
         accept="image/jpeg, image/png"

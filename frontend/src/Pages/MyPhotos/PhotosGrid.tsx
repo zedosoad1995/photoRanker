@@ -40,19 +40,21 @@ export const PhotosGird = ({
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
   const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
-  const handleClickDeletePic = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
+  const handleClickDeletePic =
+    (index: number) => async (event: React.MouseEvent) => {
+      event.stopPropagation();
 
-    setIsOpenDelete(true);
-    setPicToDeleteIndex(index);
-  };
+      setIsOpenDelete(true);
+      setPicToDeleteIndex(index);
+    };
 
-  const handleClickBanUser = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
+  const handleClickBanUser =
+    (index: number) => async (event: React.MouseEvent) => {
+      event.stopPropagation();
 
-    setIsOpenBan(true);
-    setUserIdToBan(picsInfo[index].userId);
-  };
+      setIsOpenBan(true);
+      setUserIdToBan(picsInfo[index].userId);
+    };
 
   const handleCloseDeleteModal = () => {
     setIsOpenDelete(false);
