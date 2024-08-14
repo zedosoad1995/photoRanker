@@ -74,7 +74,10 @@ export default function GlobalMode() {
 
   useEffect(() => {
     if (
-      (!state.isSet && localStorage.getItem("doNotFetchPhotos") !== "true") ||
+      (!state.isSet &&
+        (localStorage.getItem("doNotFetchPhotos") !== "true" ||
+          !state.picsInfo ||
+          !state.picUrls)) ||
       !isFirstRender
     ) {
       getPictures();

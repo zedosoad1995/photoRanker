@@ -61,12 +61,14 @@ export const MyPhotosProvider = ({
     setPicsInfo,
     nextCursor,
     setNextCursor,
+    ageGroup,
+    setAgeGroup,
   } = usePhotos(mode);
 
   const [isLoadingMoreImages, updateLoadingMoreImages] = useStateRef(false);
 
   const initialState: MyPhotosState = {
-    ageGroup: undefined,
+    ageGroup,
     picUrls,
     picsInfo,
     nextCursor,
@@ -109,6 +111,10 @@ export const MyPhotosProvider = ({
   useEffect(() => {
     setNextCursor(state.nextCursor);
   }, [state.nextCursor]);
+
+  useEffect(() => {
+    setAgeGroup(state.ageGroup);
+  }, [state.ageGroup]);
 
   const getPictures = async (cursor?: string) => {
     dispatch({ key: "isSet", value: false });

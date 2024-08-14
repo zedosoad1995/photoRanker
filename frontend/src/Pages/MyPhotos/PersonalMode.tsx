@@ -73,7 +73,10 @@ export default function PersonalMode() {
 
   useEffect(() => {
     if (
-      (!state.isSet && localStorage.getItem("doNotFetchPhotos") !== "true") ||
+      (!state.isSet &&
+        (localStorage.getItem("doNotFetchPhotos") !== "true" ||
+          !state.picsInfo ||
+          !state.picUrls)) ||
       !isFirstRender
     ) {
       getPictures();
