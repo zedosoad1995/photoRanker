@@ -60,11 +60,12 @@ export default function GlobalMode() {
   };
 
   const handleScrollUpdate = useCallback(() => {
+    console.log(state.nextCursor);
     if (state.nextCursor) {
       updateLoadingMoreImages(true);
       getPictures(state.nextCursor);
     }
-  }, [isFirstRender]);
+  }, [isFirstRender, state.nextCursor]);
 
   useInfiniteScroll(
     { isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate },

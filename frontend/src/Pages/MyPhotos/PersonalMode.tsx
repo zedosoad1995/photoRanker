@@ -64,7 +64,7 @@ export default function PersonalMode() {
       updateLoadingMoreImages(true);
       getPictures(state.nextCursor);
     }
-  }, [isFirstRender]);
+  }, [isFirstRender, state.nextCursor]);
 
   useInfiniteScroll(
     { isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate },
