@@ -36,7 +36,9 @@ export const getPicture = async (id: string): Promise<PictureRes> => {
   return api.get(`/pictures/${id}`);
 };
 
-export const getPictureVotingStats = async (id: string): Promise<IGetPictureVotingStats> => {
+export const getPictureVotingStats = async (
+  id: string
+): Promise<IGetPictureVotingStats> => {
   return api.get(`/pictures/${id}/stats`);
 };
 

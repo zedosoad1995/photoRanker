@@ -33,26 +33,29 @@ export default function PersonalMode() {
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(!state.isSet);
+  const [isInitLoading, setIsInitLoading] = useState(false);
   const prevCursor = usePrevious(state.nextCursor);
 
   const [showSpinner, setShowSpinner] = useState(false);
-
-  const isFirstRender = useRef(true);
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (isLoading) {
+    if (isInitLoading) {
       timer = setTimeout(() => setShowSpinner(true), 200);
     } else {
       setShowSpinner(false);
     }
     return () => clearTimeout(timer);
-  }, [isLoading]);
+  }, [isInitLoading]);
 
   const getPictures = async (cursor?: string) => {
+    if (isFirstRender) {
+      setIsInitLoading(true);
+    }
+
     _getPictures(cursor).finally(() => {
-      setIsLoading(false);
+      setIsInitLoading(false);
     });
   };
 
@@ -63,17 +66,45 @@ export default function PersonalMode() {
     }
   };
 
-  useInfiniteScroll({ isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate }, [
-    state.nextCursor,
+  useInfiniteScroll(
+    { isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate },
+    [state.nextCursor]
+  );
+
+  useEffect(() => {
+    if (
+      (!state.isSet && localStorage.getItem("doNotFetchPhotos") !== "true") ||
+      !isFirstRender
+    ) {
+      getPictures();
+    }
+
+    if (isFirstRender) {
+      setIsFirstRender(false);
+    }
+  }, [
+    state.sortValue,
+    state.filterSelect,
+    state.gender,
+    state.minAge,
+    state.maxAge,
   ]);
 
   useEffect(() => {
-    if (!state.isSet || !isFirstRender.current) getPictures();
-
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (!isFirstRender) {
+      localStorage.removeItem("doNotFetchPhotos");
     }
-  }, [state.sortValue, state.filterSelect, state.gender, state.minAge, state.maxAge]);
+  }, [isFirstRender]);
+
+  useEffect(() => {
+    const scrollPosition = localStorage.getItem("scrollPosition");
+    if (scrollPosition) {
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(scrollPosition));
+        localStorage.removeItem("scrollPosition");
+      }, 0);
+    }
+  }, []);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -93,7 +124,9 @@ export default function PersonalMode() {
       reader.onloadend = async () => {
         let base64Image = reader.result as string;
 
-        const { height, width } = await getImageDimensionsFromBase64(base64Image);
+        const { height, width } = await getImageDimensionsFromBase64(
+          base64Image
+        );
 
         if (height < MIN_HEIGHT || width < MIN_WIDTH) {
           toast.error(`Picture must be at least ${MIN_WIDTH}x${MIN_HEIGHT}`, {
@@ -148,38 +181,44 @@ export default function PersonalMode() {
           setIsOpen(false);
         }}
       />
-      {!isLoading && state.picUrls.length === 0 && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && state.picUrls.length > 0 && (
-        <>
-          <Header
-            getPictures={getPictures}
-            hasReachedPicsLimit={state.hasReachedPicsLimit}
-            loggedUser={loggedUser}
-            setIsFetchingFilter={(value) => dispatch({ key: "isFetchingFilter", value })}
-            filename={filename}
-            handleFileChange={handleFileChange}
-            selectedImage={selectedImage}
-            filterState={state}
-            filterDispatch={dispatch}
-          />
-          {state.picUrls.length === 1 && (
-            <div className="text-danger my-1 mx-2">
-              You need at least 2 photos to start getting votes.
-            </div>
-          )}
-          <PhotosGird
-            getPictures={getPictures}
-            isFetchingFilter={state.isFetchingFilter}
-            isLoadingMorePhotos={isLoadingMoreImages.state}
-            loggedUser={loggedUser}
-            picUrls={state.picUrls}
-            picsInfo={state.picsInfo}
-            setPicUrls={(value) => dispatch({ key: "picUrls", value })}
-            setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
-            prevCursor={prevCursor}
-          />
-        </>
-      )}
+      {!isInitLoading &&
+        !state.picUrls?.length &&
+        loggedUser?.role !== "ADMIN" && <EmptyPlaceholder />}
+      {loggedUser &&
+        !isInitLoading &&
+        (state.picUrls?.length || loggedUser.role === "ADMIN") && (
+          <>
+            <Header
+              getPictures={getPictures}
+              hasReachedPicsLimit={state.hasReachedPicsLimit}
+              loggedUser={loggedUser}
+              setIsFetchingFilter={(value) =>
+                dispatch({ key: "isFetchingFilter", value })
+              }
+              filename={filename}
+              handleFileChange={handleFileChange}
+              selectedImage={selectedImage}
+              filterState={state}
+              filterDispatch={dispatch}
+            />
+            {state.picUrls?.length === 1 && (
+              <div className="text-danger my-1 mx-2">
+                You need at least 2 photos to start getting votes.
+              </div>
+            )}
+            <PhotosGird
+              getPictures={getPictures}
+              isFetchingFilter={state.isFetchingFilter}
+              isLoadingMorePhotos={isLoadingMoreImages.state}
+              loggedUser={loggedUser}
+              picUrls={state.picUrls ?? []}
+              picsInfo={state.picsInfo ?? []}
+              setPicUrls={(value) => dispatch({ key: "picUrls", value })}
+              setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
+              prevCursor={prevCursor}
+            />
+          </>
+        )}
     </>
   );
 }

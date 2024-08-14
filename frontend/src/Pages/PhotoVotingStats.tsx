@@ -45,26 +45,33 @@ export const PhotoVotingStats = () => {
       });
   }, [pictureId]);
 
+  const handleNavigateBack = () => {
+    navigate(PHOTOS);
+    localStorage.setItem("doNotFetchPhotos", "true");
+  };
+
   return (
     <>
       <div className="flex gap-2 items-center mb-3 max-w-[800px] mx-auto">
         <button
-          onClick={() => navigate(PHOTOS)}
+          onClick={handleNavigateBack}
           className="rounded-full hover:bg-black/5 cursor-pointer p-1 transition-colors duration-150 ease-in"
         >
           <ArrowLeftIcon className="h-5 w-5" />
         </button>
-        <div className="text-xl min-[350px]:text-2xl font-semibold">Photo Votes</div>
+        <div className="text-xl min-[350px]:text-2xl font-semibold">
+          Photo Votes
+        </div>
       </div>
       <div className="text-light-text mb-5 text-xs min-[350px]:text-sm font-light max-w-[800px] mx-auto">
         <div className="">
-          Explore your photo's competitive history: Discover your opponents, outcomes of battles
-          (win/loss), and gain insights into the voters' demographics including age, gender,
-          nationality, and ethnicity.
+          Explore your photo's competitive history: Discover your opponents,
+          outcomes of battles (win/loss), and gain insights into the voters'
+          demographics including age, gender, nationality, and ethnicity.
         </div>
         <div className="mt-1">
-          <b className="font-medium">Note:</b> some votes may not appear due to the opponent's pic
-          being deleted.
+          <b className="font-medium">Note:</b> some votes may not appear due to
+          the opponent's pic being deleted.
         </div>
       </div>
 

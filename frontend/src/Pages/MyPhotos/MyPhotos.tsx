@@ -9,9 +9,12 @@ import { useAuth } from "@/Contexts/auth";
 export default function MyPhotos() {
   const { user } = useAuth();
 
-  const [mode, setMode] = useState<IMode>(Mode.Global);
+  const [mode, setMode] = useState<IMode>(
+    (localStorage.getItem("mode") as IMode) ?? Mode.Global
+  );
 
   const handleUpdateMode = (mode: IMode) => {
+    localStorage.setItem("mode", mode);
     setMode(mode);
   };
 
