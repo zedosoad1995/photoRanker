@@ -41,12 +41,12 @@ export const signIn = async (req: Request, res: Response) => {
     if (user.googleId !== null) {
       throw new UnauthorizedError(
         "You already have an account with google. Please log in with that method",
-        INVALID_LOGIN_METHOD_GOOGLE
+        INVALID_LOGIN_METHOD_GOOGLE,
       );
     } else if (user.facebookId !== null) {
       throw new UnauthorizedError(
         "You already have an account with facebook. Please log in with that method",
-        INVALID_LOGIN_METHOD_FACEBOOK
+        INVALID_LOGIN_METHOD_FACEBOOK,
       );
     } else {
       throw new UnauthorizedError("Invalid credentials", INVALID_CREDENTIALS);
@@ -62,7 +62,7 @@ export const signIn = async (req: Request, res: Response) => {
     {
       email: user.email,
     },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY!,
   );
 
   res.cookie(
@@ -70,7 +70,7 @@ export const signIn = async (req: Request, res: Response) => {
     {
       jwt: userJwt,
     },
-    cookieOptions
+    cookieOptions,
   );
 
   res.status(200).json({ user: UserModel.dump(user) });
@@ -85,7 +85,7 @@ export const signOut = (req: Request, res: Response) => {
 const oAuth2Client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  "postmessage"
+  "postmessage",
 );
 
 export const signInGoogle = async (req: Request, res: Response) => {
@@ -122,7 +122,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
     if (bannedUser) {
       throw new ForbiddenError(
         "This email has been banned. You cannot create another account",
-        BANNED_ACCOUNT
+        BANNED_ACCOUNT,
       );
     }
 
@@ -140,7 +140,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
       {
         email: newUser.email,
       },
-      process.env.JWT_KEY!
+      process.env.JWT_KEY!,
     );
 
     res.cookie(
@@ -148,7 +148,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
       {
         jwt: userJwt,
       },
-      cookieOptions
+      cookieOptions,
     );
 
     return res.status(201).json({ user: UserModel.dump(newUser) });
@@ -158,12 +158,12 @@ export const signInGoogle = async (req: Request, res: Response) => {
     if (user.password !== null) {
       throw new UnauthorizedError(
         "You already have an account with this email. Please log in with that method",
-        INVALID_LOGIN_METHOD_EMAIL
+        INVALID_LOGIN_METHOD_EMAIL,
       );
     } else if (user.facebookId !== null) {
       throw new UnauthorizedError(
         "You already have an account with facebook. Please log in with that method",
-        INVALID_LOGIN_METHOD_FACEBOOK
+        INVALID_LOGIN_METHOD_FACEBOOK,
       );
     }
   }
@@ -176,7 +176,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
     {
       email: user.email,
     },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY!,
   );
 
   res.cookie(
@@ -184,7 +184,7 @@ export const signInGoogle = async (req: Request, res: Response) => {
     {
       jwt: userJwt,
     },
-    cookieOptions
+    cookieOptions,
   );
 
   res.status(200).json({ user: UserModel.dump(user) });
@@ -230,7 +230,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
     if (bannedUser) {
       throw new ForbiddenError(
         "This email has been banned. You cannot create another account",
-        BANNED_ACCOUNT
+        BANNED_ACCOUNT,
       );
     }
 
@@ -248,7 +248,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
       {
         email: newUser.email,
       },
-      process.env.JWT_KEY!
+      process.env.JWT_KEY!,
     );
 
     res.cookie(
@@ -256,7 +256,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
       {
         jwt: userJwt,
       },
-      cookieOptions
+      cookieOptions,
     );
 
     return res.status(201).json({ user: UserModel.dump(newUser) });
@@ -266,12 +266,12 @@ export const signInFacebook = async (req: Request, res: Response) => {
     if (user.password !== null) {
       throw new UnauthorizedError(
         "You already have an account with this email. Please log in with that method",
-        INVALID_LOGIN_METHOD_EMAIL
+        INVALID_LOGIN_METHOD_EMAIL,
       );
     } else if (user.googleId !== null) {
       throw new UnauthorizedError(
         "You already have an account with google. Please log in with that method",
-        INVALID_LOGIN_METHOD_GOOGLE
+        INVALID_LOGIN_METHOD_GOOGLE,
       );
     }
   }
@@ -284,7 +284,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
     {
       email: user.email,
     },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY!,
   );
 
   res.cookie(
@@ -292,7 +292,7 @@ export const signInFacebook = async (req: Request, res: Response) => {
     {
       jwt: userJwt,
     },
-    cookieOptions
+    cookieOptions,
   );
 
   res.status(200).send({ user: UserModel.dump(user) });
@@ -334,7 +334,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     {
       email: updatedUser.email,
     },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY!,
   );
 
   res.cookie(
@@ -342,7 +342,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     {
       jwt: userJwt,
     },
-    cookieOptions
+    cookieOptions,
   );
 
   return res.status(204).send();
@@ -403,7 +403,7 @@ export const forgotPassword = (mailingService: MailRepo) => async (req: Request,
   if (!user.password) {
     throw new ForbiddenError(
       "This account does not need a password reset",
-      PASSWORD_RESET_NOT_NEEDED
+      PASSWORD_RESET_NOT_NEEDED,
     );
   }
 

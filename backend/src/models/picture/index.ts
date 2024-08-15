@@ -12,6 +12,7 @@ import { calculateAge } from "@shared/helpers/date";
 import { IAgeGroup } from "@shared/types/picture";
 import { getPictureVotesStats } from "./votesStats/votesStats";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
+import { getPictureStats } from "./stats/stats";
 
 const getAgeQuery = (minAge: number, maxAge?: number) => {
   const query = `"dateOfBirth" < '${formatDate(
@@ -466,4 +467,5 @@ export const PictureModel = {
   getReturnPic,
   getUpdateFieldsToReturn,
   getPictureVotesStats,
+  getPictureStats,
 };

@@ -39,6 +39,12 @@ export const getPicture = async (id: string): Promise<PictureRes> => {
 export const getPictureVotingStats = async (
   id: string
 ): Promise<IGetPictureVotingStats> => {
+  return api.get(`/pictures/${id}/vote-stats`);
+};
+
+export const getPictureStats = async (
+  id: string
+): Promise<IGetPictureVotingStats> => {
   return api.get(`/pictures/${id}/stats`);
 };
 

@@ -135,6 +135,15 @@ export const getVotesStats =
     res.status(200).json({ stats });
   };
 
+export const getStats = async (req: Request, res: Response) => {
+  const pictureId = req.params.pictureId;
+  const loggedUser = req.loggedUser as ILoggedUserMiddleware;
+
+  const stats = await PictureModel.getPictureStats(pictureId, loggedUser);
+
+  res.status(200).json({ stats });
+};
+
 export const checkUploadPermission = async (req: Request, res: Response) => {
   const loggedUser = req.loggedUser!;
 

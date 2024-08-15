@@ -1,6 +1,6 @@
 import { Spinner } from "@/Components/Loading/Spinner";
 import { PHOTOS } from "@/Constants/routes";
-import { getPictureVotingStats } from "@/Services/picture";
+import { getPictureStats, getPictureVotingStats } from "@/Services/picture";
 import { IPictureVotingStats } from "@/Types/picture";
 import { loadImage } from "@/Utils/image";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
@@ -20,6 +20,8 @@ export const PhotoVotingStats = () => {
     }
 
     setIsLoading(true);
+
+    getPictureStats(pictureId);
 
     getPictureVotingStats(pictureId)
       .then(async ({ stats }) => {
