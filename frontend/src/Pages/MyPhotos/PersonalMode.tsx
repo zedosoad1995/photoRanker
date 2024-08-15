@@ -82,6 +82,8 @@ export default function PersonalMode() {
       getPictures();
     }
 
+    localStorage.removeItem("doNotFetchPhotos");
+
     if (isFirstRender) {
       setIsFirstRender(false);
     }
@@ -92,12 +94,6 @@ export default function PersonalMode() {
     state.minAge,
     state.maxAge,
   ]);
-
-  useEffect(() => {
-    if (!isFirstRender) {
-      localStorage.removeItem("doNotFetchPhotos");
-    }
-  }, [isFirstRender]);
 
   useEffect(() => {
     const scrollPosition = localStorage.getItem("scrollPosition");

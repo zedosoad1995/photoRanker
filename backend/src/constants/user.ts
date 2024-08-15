@@ -1,4 +1,4 @@
-import { COUNTRIES, ETHNICITY } from "@shared/constants/user";
+import { ETHNICITY } from "@shared/constants/user";
 
 export const FAKE_COUNTRY_DISTRIBUTION = {
   "United States": 40,
@@ -105,8 +105,8 @@ export const FAKE_OTHER_RACE_PROB: {
   Brazil: 0.1,
   "South Korea": 0.01,
   Japan: 0.01,
-  Mexico: 0.05,
-  Russia: 0.05,
+  Mexico: 0.03,
+  Russia: 0.02,
   "South Africa": 0.1,
   Philippines: 0.01,
   Malaysia: 0.01,
