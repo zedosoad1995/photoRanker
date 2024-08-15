@@ -8,46 +8,11 @@ import { adjustDate, formatDate } from "@/helpers/date";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
-import { calculateAge } from "@shared/helpers/date";
 import { IAgeGroup } from "@shared/types/picture";
 import { getPictureVotesStats } from "./votesStats/votesStats";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
 import { getPictureStats } from "./stats/stats";
-
-const getAgeQuery = (minAge: number, maxAge?: number) => {
-  const query = `"dateOfBirth" < '${formatDate(
-    adjustDate(new Date(), { years: -minAge, days: 1 }),
-  )}'`;
-
-  if (maxAge === undefined) {
-    return query;
-  }
-
-  return `${query} AND 
-    "dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`;
-};
-
-const AGE_GROUPS = [
-  {
-    min: 18,
-    max: 23,
-    query: getAgeQuery(18, 23),
-  },
-  {
-    min: 24,
-    max: 29,
-    query: getAgeQuery(24, 29),
-  },
-  {
-    min: 30,
-    max: 39,
-    query: getAgeQuery(30, 39),
-  },
-  {
-    min: 40,
-    query: getAgeQuery(40),
-  },
-];
+import { getAgeGroupQuery } from "./helpers/user";
 
 interface IReturnPicWithPervental {
   id: string;
@@ -268,25 +233,10 @@ async function getPicturesWithPercentile(
 
   subQueryPicPercentileSelect.push(percentileSelect);
 
-  let ageGroup;
-
+  let ageGroupQuery: string = "";
+  let ageGroup: IAgeGroup;
   if (isGlobal) {
-    if (!loggedUser.dateOfBirth) {
-      throw new Error("User does not have dateOfBirth");
-    }
-
-    const userAge = calculateAge(loggedUser.dateOfBirth);
-    const _ageGroup = AGE_GROUPS.find(
-      (row) => userAge >= row.min && (row.max === undefined || userAge <= row.max),
-    );
-
-    const ageGroupQuery = _ageGroup?.query;
-
-    if (_ageGroup === undefined || ageGroupQuery === undefined) {
-      throw new Error("No age group found");
-    }
-
-    ageGroup = { min: _ageGroup.min, max: _ageGroup.max };
+    [ageGroupQuery, ageGroup] = getAgeGroupQuery(loggedUser.dateOfBirth as string, `"dateOfBirth"`);
 
     const percentileAgeGroupSelect = `
       100 * 

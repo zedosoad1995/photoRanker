@@ -1,5 +1,23 @@
 import { ETHNICITY } from "@shared/constants/user";
 
+export const AGE_GROUPS = [
+  {
+    min: 18,
+    max: 23,
+  },
+  {
+    min: 24,
+    max: 29,
+  },
+  {
+    min: 30,
+    max: 39,
+  },
+  {
+    min: 40,
+  },
+];
+
 export const FAKE_COUNTRY_DISTRIBUTION = {
   "United States": 40,
   "United Kingdom": 20,

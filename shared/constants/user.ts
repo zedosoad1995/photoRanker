@@ -74,7 +74,6 @@ export const COUNTRIES = [
   "Comoros",
   "Congo",
   "Costa Rica",
-  "Côte d'Ivoire",
   "Croatia",
   "Cuba",
   "Cyprus",
@@ -119,6 +118,7 @@ export const COUNTRIES = [
   "Ireland",
   "Israel",
   "Italy",
+  "Ivory Coast",
   "Jamaica",
   "Japan",
   "Jordan",
@@ -244,9 +244,10 @@ export const CONTINENT = {
   Oceania: "Oceania",
 } as const;
 
-export const COUNTRIES_BY_CONTINENT: {
+/* : {
   [k in keyof typeof CONTINENT]?: (typeof COUNTRIES)[number][];
-} = {
+} */
+export const COUNTRIES_BY_CONTINENT = {
   Africa: [
     "Algeria",
     "Angola",
@@ -260,7 +261,6 @@ export const COUNTRIES_BY_CONTINENT: {
     "Chad",
     "Comoros",
     "Congo",
-    "Côte d'Ivoire",
     "DR Congo",
     "Djibouti",
     "Egypt",
@@ -273,6 +273,7 @@ export const COUNTRIES_BY_CONTINENT: {
     "Ghana",
     "Guinea",
     "Guinea-Bissau",
+    "Ivory Coast",
     "Kenya",
     "Lesotho",
     "Liberia",
