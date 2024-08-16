@@ -1,6 +1,7 @@
 import {
   IGetManyPictures,
   IGetPictureVotingStats,
+  IPictureStats,
   IUpdatedPic,
   IUploadPermission,
   PictureRes,
@@ -42,9 +43,7 @@ export const getPictureVotingStats = async (
   return api.get(`/pictures/${id}/vote-stats`);
 };
 
-export const getPictureStats = async (
-  id: string
-): Promise<IGetPictureVotingStats> => {
+export const getPictureStats = async (id: string): Promise<IPictureStats> => {
   return api.get(`/pictures/${id}/stats`);
 };
 

@@ -19,8 +19,8 @@ export class S3Interactor implements StorageInteractor {
     if (!(extension in EXTENSION_TO_MIME_TYPE)) {
       throw new BadRequestError(
         `Invalid extension. Can only be one of the following: ${Object.keys(
-          EXTENSION_TO_MIME_TYPE
-        ).join(", ")}`
+          EXTENSION_TO_MIME_TYPE,
+        ).join(", ")}`,
       );
     }
 
@@ -52,7 +52,7 @@ export class S3Interactor implements StorageInteractor {
         new DeleteObjectCommand({
           Bucket: process.env.IMAGES_BUCKET as string,
           Key: key,
-        })
+        }),
       );
     } catch (error) {
       console.error(error);

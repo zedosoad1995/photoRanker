@@ -60,7 +60,6 @@ export default function GlobalMode() {
   };
 
   const handleScrollUpdate = useCallback(() => {
-    console.log(state.nextCursor);
     if (state.nextCursor) {
       updateLoadingMoreImages(true);
       getPictures(state.nextCursor);

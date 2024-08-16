@@ -26,6 +26,20 @@ export interface IPictureWithPercentile {
   updatedAt: Date;
 }
 
+export interface IPictureStats {
+  id: string;
+  percentileGeneral?: number;
+  percentileByAgeGroup?: number;
+  percentileByEthnicity?: number;
+  percentileByContinent?: number;
+  numVotes: number;
+  url: string;
+  isActive: boolean;
+  ageGroup: IAgeGroup;
+  ethnicity: string | null;
+  continent?: string;
+}
+
 export interface IPictureVotingStats {
   id: string;
   voter_gender: Genders | null;
