@@ -13,6 +13,10 @@ import { Mode } from "@/Constants/mode";
 import { PhotosGird } from "./PhotosGrid";
 import { Header } from "./Header";
 import { useMyPhotos } from "./Contexts/myPhotos";
+import {
+  DO_NOT_FETCH_PHOTOS,
+  SCROLL_POSITION,
+} from "@/Constants/localStorageKeys";
 
 export default function GlobalMode() {
   const {
@@ -74,7 +78,7 @@ export default function GlobalMode() {
   useEffect(() => {
     if (
       (!state.isSet &&
-        (localStorage.getItem("doNotFetchPhotos") !== "true" ||
+        (localStorage.getItem(DO_NOT_FETCH_PHOTOS) !== "true" ||
           !state.picsInfo ||
           !state.picUrls)) ||
       !isFirstRender
@@ -95,16 +99,16 @@ export default function GlobalMode() {
 
   useEffect(() => {
     if (!isFirstRender) {
-      localStorage.removeItem("doNotFetchPhotos");
+      localStorage.removeItem(DO_NOT_FETCH_PHOTOS);
     }
   }, [isFirstRender]);
 
   useEffect(() => {
-    const scrollPosition = localStorage.getItem("scrollPosition");
+    const scrollPosition = localStorage.getItem(SCROLL_POSITION);
     if (scrollPosition) {
       setTimeout(() => {
         window.scrollTo(0, parseInt(scrollPosition));
-        localStorage.removeItem("scrollPosition");
+        localStorage.removeItem(SCROLL_POSITION);
       }, 0);
     }
   }, []);

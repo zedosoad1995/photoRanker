@@ -7,6 +7,13 @@ import { isAdmin } from "@/Utils/role";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { IAgeGroup } from "@shared/types/picture";
 import { usePhotos } from "@/Contexts/photos";
+import {
+  FILTER_SELECT,
+  GENDER,
+  MAX_AGE,
+  MIN_AGE,
+  SORT_VALUE,
+} from "@/Constants/localStorageKeys";
 
 export interface MyPhotosState {
   ageGroup: IAgeGroup;
@@ -73,11 +80,11 @@ export const MyPhotosProvider = ({
     picsInfo,
     nextCursor,
     isSet: false,
-    filterSelect: localStorage.getItem("filterSelect " + mode) ?? "",
-    sortValue: localStorage.getItem("sortValue " + mode) ?? DEFAULT_SORT,
-    gender: localStorage.getItem("gender " + mode) ?? undefined,
-    minAge: Number(localStorage.getItem("minAge " + mode)) || undefined,
-    maxAge: Number(localStorage.getItem("maxAge " + mode)) || undefined,
+    filterSelect: localStorage.getItem(FILTER_SELECT(mode)) ?? "",
+    sortValue: localStorage.getItem(SORT_VALUE(mode)) ?? DEFAULT_SORT,
+    gender: localStorage.getItem(GENDER(mode)) ?? undefined,
+    minAge: Number(localStorage.getItem(MIN_AGE(mode))) || undefined,
+    maxAge: Number(localStorage.getItem(MAX_AGE(mode))) || undefined,
     hasReachedPicsLimit: false,
     isFetchingFilter: false,
   };

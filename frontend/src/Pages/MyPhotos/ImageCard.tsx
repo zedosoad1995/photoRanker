@@ -21,8 +21,9 @@ import { updateImage } from "@/Services/picture";
 import { useMyPhotos } from "./Contexts/myPhotos";
 import PauseUnpauseModal from "./Modals/PauseUnpauseModal";
 import { useNavigate } from "react-router-dom";
-import { PHOTO_VOTING_STATS_PATH } from "@/Constants/routes";
+import { PHOTO_DETAILS_PATH } from "@/Constants/routes";
 import Button from "@/Components/Button";
+import { SCROLL_POSITION } from "@/Constants/localStorageKeys";
 
 interface IPhotoCard {
   pic: string;
@@ -175,7 +176,7 @@ export const PhotoCard = ({
       />
       <div
         ref={cardRef}
-        className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group"
+        className="w-full min-[465px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group"
       >
         <div className="shadow-md h-full cursor-default rounded-md">
           <div className="relative">
@@ -348,11 +349,8 @@ export const PhotoCard = ({
             <div className="mt-4 flex justify-center">
               <Button
                 onClick={() => {
-                  localStorage.setItem(
-                    "scrollPosition",
-                    String(window.scrollY)
-                  );
-                  navigate(PHOTO_VOTING_STATS_PATH(picInfo.id));
+                  localStorage.setItem(SCROLL_POSITION, String(window.scrollY));
+                  navigate(PHOTO_DETAILS_PATH(picInfo.id));
                 }}
                 isFull={false}
                 variant="outline"

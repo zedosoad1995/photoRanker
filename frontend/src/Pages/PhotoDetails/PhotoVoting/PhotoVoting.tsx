@@ -1,14 +1,11 @@
 import { Spinner } from "@/Components/Loading/Spinner";
-import { PHOTOS } from "@/Constants/routes";
 import { getPictureStats, getPictureVotingStats } from "@/Services/picture";
 import { IPictureVotingStats } from "@/Types/picture";
 import { loadImage } from "@/Utils/image";
-import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-export const PhotoVotingStats = () => {
-  const navigate = useNavigate();
+export const PhotoVoting = () => {
   const { pictureId } = useParams();
 
   const [stats, setStats] = useState<IPictureVotingStats[]>([]);
@@ -25,8 +22,6 @@ export const PhotoVotingStats = () => {
 
     getPictureVotingStats(pictureId)
       .then(async ({ stats }) => {
-        setStats(stats);
-
         await Promise.all(
           stats.flatMap(({ winner, loser }) => {
             return [
@@ -41,30 +36,16 @@ export const PhotoVotingStats = () => {
             ];
           })
         );
+
+        setStats(stats);
       })
       .finally(() => {
         setIsLoading(false);
       });
   }, [pictureId]);
 
-  const handleNavigateBack = () => {
-    navigate(PHOTOS);
-    localStorage.setItem("doNotFetchPhotos", "true");
-  };
-
   return (
     <>
-      <div className="flex gap-2 items-center mb-3 max-w-[800px] mx-auto">
-        <button
-          onClick={handleNavigateBack}
-          className="rounded-full hover:bg-black/5 cursor-pointer p-1 transition-colors duration-150 ease-in"
-        >
-          <ArrowLeftIcon className="h-5 w-5" />
-        </button>
-        <div className="text-xl min-[350px]:text-2xl font-semibold">
-          Photo Votes
-        </div>
-      </div>
       <div className="text-light-text mb-5 text-xs min-[350px]:text-sm font-light max-w-[800px] mx-auto">
         <div className="">
           Explore your photo's competitive history: Discover your opponents,

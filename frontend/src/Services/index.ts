@@ -10,14 +10,16 @@ const api: AxiosInstance = axios.create({
 api.interceptors.response.use(
   (response: AxiosResponse) => response.data,
   async (error: AxiosError) => {
-    if (error.response?.status === 401 && "error" in (error.response.data as any)) {
+    if (
+      error.response?.status === 401 &&
+      "error" in (error.response.data as any)
+    ) {
       const isPathProtected = AUTH_ROUTES.some((path) =>
         matchPath({ path }, window.location.pathname)
       );
 
       if (isPathProtected) {
         await logout();
-        localStorage.removeItem("user");
         window.location.href = LOGIN;
       }
     }

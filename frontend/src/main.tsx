@@ -14,8 +14,7 @@ import {
   CHECKING_VALIDATION,
   FORGOT_PASSWORD,
   RESET_PASSWORD,
-  PHOTO_VOTING_STATS,
-  PHOTO_STATS,
+  PHOTO_DETAILS,
 } from "./Constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
@@ -36,9 +35,8 @@ import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
 import App from "./Pages/App/index.tsx";
 import RedirectLayout from "./Components/RedirectLayout.tsx";
 import { NotFoundPage } from "./Pages/404.tsx";
-import { PhotoVotingStats } from "./Pages/PhotoVotingStats.tsx";
 import { PhotosProvider } from "./Contexts/photos.tsx";
-import { PhotoStats } from "./Pages/PhotoStats/PhotoStats.tsx";
+import { PhotoDetails } from "./Pages/PhotoDetails/PhotoDetails.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -61,12 +59,8 @@ const router = createBrowserRouter([
         element: <MyPhotos />,
       },
       {
-        path: PHOTO_VOTING_STATS,
-        element: <PhotoVotingStats />,
-      },
-      {
-        path: PHOTO_STATS,
-        element: <PhotoStats />,
+        path: PHOTO_DETAILS,
+        element: <PhotoDetails />,
       },
       {
         path: SETTINGS,
