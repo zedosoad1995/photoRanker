@@ -15,6 +15,10 @@ export const AGE_GROUPS = [
   },
   {
     min: 40,
+    max: 49,
+  },
+  {
+    min: 50,
   },
 ];
 
