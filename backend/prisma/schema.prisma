@@ -85,6 +85,8 @@ model Picture {
   hasPurchasedUnlimitedVotes Boolean  @default(false)
   isGlobal                   Boolean  @default(true)
   isActive                   Boolean  @default(true)
+  ethnicity                  String?
+  countryOfOrigin            String?
   user                       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                     String
   matches                    Match[]

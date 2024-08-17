@@ -274,3 +274,31 @@ export const deleteOne =
 
     res.sendStatus(204);
   };
+
+export const getAdminPics =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const pics = await PictureModel.findMany({
+      select: {
+        id: true,
+        ethnicity: true,
+        filepath: true,
+      },
+      include: {
+        user: true,
+      },
+      where: {
+        user: {
+          role: "ADMIN",
+        },
+      },
+    });
+
+    const transformedPics = pics.map((pic) => ({
+      id: pic.id,
+      ethnicity: pic.ethnicity ?? pic.user.ethnicity,
+      countryOfOrigin: pic.countryOfOrigin ?? pic.user.countryOfOrigin,
+      url: storageInteractor.getImageUrl(pic.filepath),
+    }));
+
+    res.status(200).json({ pictures: transformedPics });
+  };

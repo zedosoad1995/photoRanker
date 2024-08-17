@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   checkUploadPermission,
   deleteOne,
+  getAdminPics,
   getMany,
   getOne,
   getStats,
@@ -19,6 +20,7 @@ import { createPictureSchema } from "@/schemas/picture/createPicture";
 import { validateFormDataJson } from "@/middlewares/validateFormDataJson";
 import { checkBasicUserSettings } from "@/middlewares/checkBasicUserSetting";
 import { updatePictureSchema } from "@/schemas/picture/updatePicture";
+import { checkAdmin } from "@/middlewares/checkAdmin";
 
 const router = Router();
 
@@ -35,6 +37,7 @@ router.get("/upload-permission", checkBasicUserSettings, checkUploadPermission);
 router.get("/:pictureId", checkBasicUserSettings, getOne(mainStorageInteractor));
 router.get("/:pictureId/vote-stats", checkBasicUserSettings, getVotesStats(mainStorageInteractor));
 router.get("/:pictureId/stats", checkBasicUserSettings, getStats(mainStorageInteractor));
+router.get("/admin", checkAdmin, getAdminPics(mainStorageInteractor));
 
 router.post(
   "/",
