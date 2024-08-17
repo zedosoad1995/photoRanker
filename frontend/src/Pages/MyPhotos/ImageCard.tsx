@@ -11,7 +11,6 @@ import {
   PauseIcon,
   PlayIcon,
 } from "@heroicons/react/20/solid";
-import BuyUnlimitedVotesModal from "./Modals/BuyUnlimitedVotesModal";
 import {
   UNLIMITED_VOTE_ALL_ON,
   UNLIMITED_VOTE_MULTIPLE_ON,
@@ -56,7 +55,7 @@ export const PhotoCard = ({
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   const [isOpenPauseUnpause, setIsOpenPauseUnpause] = useState(false);
-  const [isOpenUnlockVotesModal, setIsOpenUnlockVotesModal] = useState(false);
+  const [_, setIsOpenUnlockVotesModal] = useState(false);
   const [width, setWidth] = useState(0);
   const isSmall = useMemo(() => width < 240, [width]);
 

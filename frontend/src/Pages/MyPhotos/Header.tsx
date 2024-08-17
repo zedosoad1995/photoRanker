@@ -5,7 +5,6 @@ import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
 import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
-import BuyMorePhotosModal from "./Modals/BuyMorePhotosModal";
 import { PHOTO_LIMIT_PURCHASE_ON } from "@shared/constants/purchase";
 
 const DEFAULT_SORT = "score desc";
@@ -36,11 +35,7 @@ export const Header = ({
 }: IHeader) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [isOpenMultiPicsModal, setIsOpenMultiPicsModal] = useState(false);
-
-  const handleCloseMultiPicsModal = () => {
-    setIsOpenMultiPicsModal(false);
-  };
+  const [_, setIsOpenMultiPicsModal] = useState(false);
 
   const handleClickUploadPhoto = () => {
     if (hasReachedPicsLimit && PHOTO_LIMIT_PURCHASE_ON) {
