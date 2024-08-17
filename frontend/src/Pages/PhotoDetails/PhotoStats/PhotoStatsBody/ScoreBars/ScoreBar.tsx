@@ -12,14 +12,14 @@ export const ScoreBar = ({ label, score, color }: IScoreBar) => {
       <div className="flex justify-between mb-1">
         <span>{label}</span>
         <span className="font-semibold">
-          {score ? score.toFixed(1) + "%" : ""}
+          {score !== undefined ? score.toFixed(1) + "%" : ""}
         </span>
       </div>
       <div className="rounded-md h-2 bg-light-contour overflow-hidden">
         <div
           className={`rounded-md h-full`}
           style={{
-            width: score ? (score * 99) / 100 + 1 + "%" : 0,
+            width: score !== undefined ? (score * 99) / 100 + 1 + "%" : 0,
             backgroundColor: color ?? colors.primary,
           }}
         />

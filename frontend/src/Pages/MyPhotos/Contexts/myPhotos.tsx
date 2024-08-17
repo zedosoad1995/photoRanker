@@ -80,9 +80,9 @@ export const MyPhotosProvider = ({
     picsInfo,
     nextCursor,
     isSet: false,
-    filterSelect: localStorage.getItem(FILTER_SELECT(mode)) ?? "",
-    sortValue: localStorage.getItem(SORT_VALUE(mode)) ?? DEFAULT_SORT,
-    gender: localStorage.getItem(GENDER(mode)) ?? undefined,
+    filterSelect: localStorage.getItem(FILTER_SELECT(mode)) || "",
+    sortValue: localStorage.getItem(SORT_VALUE(mode)) || DEFAULT_SORT,
+    gender: localStorage.getItem(GENDER(mode)) || undefined,
     minAge: Number(localStorage.getItem(MIN_AGE(mode))) || undefined,
     maxAge: Number(localStorage.getItem(MAX_AGE(mode))) || undefined,
     hasReachedPicsLimit: false,
@@ -97,8 +97,7 @@ export const MyPhotosProvider = ({
     if (
       ["sortValue", "filterSelect", "gender", "minAge", "maxAge"].includes(
         action.key
-      ) &&
-      action.value.trim()
+      )
     ) {
       localStorage.setItem(action.key + " " + mode, action.value);
     }

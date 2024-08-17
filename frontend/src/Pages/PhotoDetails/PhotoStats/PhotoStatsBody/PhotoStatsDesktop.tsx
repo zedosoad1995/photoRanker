@@ -29,9 +29,7 @@ export const PhotoStatsDesktop = ({ picStats }: IPhotoStatsDesktop) => {
             </span>
           </div>
           <div className="my-2 w-0 border-l-2" />
-          <div className="flex items-center justify-center gap-2 w-1/2">
-            <PauseActive isActive={picStats.isActive} />
-          </div>
+          <PauseActive isActive={picStats.isActive} />
         </div>
       </div>
     );
@@ -55,9 +53,7 @@ export const PhotoStatsDesktop = ({ picStats }: IPhotoStatsDesktop) => {
             </span>
           </div>
           <div className="my-2 w-0 border-l-2" />
-          <div className="flex items-center justify-center gap-2 w-1/2">
-            <PauseActive isActive={picStats.isActive} />
-          </div>
+          <PauseActive isActive={picStats.isActive} />
         </div>
       </div>
       <div style={{ flex: 1 }}>
