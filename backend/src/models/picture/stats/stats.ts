@@ -129,6 +129,7 @@ export const getPictureStats = async (
     continent,
     ethnicity,
     url,
+    gender: picture.user.gender,
     ..._.pick(picture, ["numVotes", "isActive", "isGlobal"]),
   };
 };

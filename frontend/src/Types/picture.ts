@@ -34,6 +34,7 @@ export interface IPictureStats {
   percentileByContinent?: number;
   numVotes: number;
   url: string;
+  gender?: Genders | null;
   isActive: boolean;
   isGlobal: boolean;
   ageGroup?: IAgeGroup;
