@@ -111,10 +111,10 @@ export const Header = ({
 
   return (
     <>
-      <BuyMorePhotosModal
+      {/* <BuyMorePhotosModal
         isOpen={isOpenMultiPicsModal}
         onClose={handleCloseMultiPicsModal}
-      />
+      /> */}
       <input
         type="file"
         accept="image/jpeg, image/png"

@@ -155,14 +155,14 @@ export const PhotoCard = ({
 
   return (
     <>
-      <BuyUnlimitedVotesModal
+      {/* <BuyUnlimitedVotesModal
         pictureId={picInfo.id}
         currNumVotes={picInfo.numPaidVotes}
         isOpen={isOpenUnlockVotesModal}
         onClose={() => {
           setIsOpenUnlockVotesModal(false);
         }}
-      />
+      /> */}
       <PauseUnpauseModal
         isActive={picInfo.isActive}
         isOpen={isOpenPauseUnpause}
