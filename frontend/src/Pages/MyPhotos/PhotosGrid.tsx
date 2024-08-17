@@ -5,8 +5,7 @@ import { IUser } from "@/Types/user";
 import { IPictureWithPercentile } from "@/Types/picture";
 import BanUserModal from "./Modals/BanUserModal";
 import DeletePhotoModal from "./Modals/DeletePhotoModal";
-import { useState, useMemo } from "react";
-import { IAgeGroup } from "@shared/types/picture";
+import { useState } from "react";
 
 interface IPhotoGrid {
   isFetchingFilter: boolean;
@@ -19,7 +18,6 @@ interface IPhotoGrid {
   setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
   prevCursor: string | undefined;
   isGlobal?: boolean;
-  ageGroup?: IAgeGroup;
 }
 
 export const PhotosGird = ({
@@ -33,7 +31,6 @@ export const PhotosGird = ({
   setPicsInfo,
   prevCursor,
   isGlobal,
-  ageGroup,
 }: IPhotoGrid) => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenBan, setIsOpenBan] = useState(false);
@@ -63,16 +60,6 @@ export const PhotosGird = ({
   const handleCloseBanModal = () => {
     setIsOpenBan(false);
   };
-
-  const ageGroupStr = useMemo(() => {
-    if (!ageGroup) return;
-
-    if (ageGroup.max === undefined) {
-      return `${ageGroup.min}+`;
-    }
-
-    return `${ageGroup.min}-${ageGroup.max}`;
-  }, [ageGroup]);
 
   return (
     <>
@@ -104,7 +91,6 @@ export const PhotosGird = ({
                 onClickDeletePic={handleClickDeletePic(index)}
                 pic={pic}
                 picInfo={picsInfo[index]}
-                ageGroupStr={ageGroupStr}
                 isGlobal={isGlobal}
               />
             ))}

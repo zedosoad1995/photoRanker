@@ -33,7 +33,6 @@ interface IPhotoCard {
   onClickDeletePic: (event: React.MouseEvent) => Promise<void>;
   onClickBanUser: (event: React.MouseEvent) => Promise<void>;
   picInfo: IPictureWithPercentile;
-  ageGroupStr?: string;
 }
 
 const getHumanReadablePerc = (perc: number, precision: number = 0) => {
@@ -50,7 +49,6 @@ export const PhotoCard = ({
   isGlobal,
   onClickDeletePic: handleClickDeletePic,
   onClickBanUser: handleClickBanUser,
-  ageGroupStr,
 }: IPhotoCard) => {
   const { img } = useProgressiveImage(pic);
   const navigate = useNavigate();
@@ -136,25 +134,24 @@ export const PhotoCard = ({
     );
   }, [picInfo.percentile]);
 
-  const ageGroupScoreText = useMemo(() => {
-    if (
-      picInfo.numVotes === 0 ||
-      picInfo.ageGroupPercentile === undefined ||
-      ageGroupStr === undefined
-    ) {
-      return null;
+  let scoreBarColor = "";
+  if (picInfo.percentile !== null) {
+    if (picInfo.percentile < 10) {
+      scoreBarColor = "bg-red-400";
+    } else if (picInfo.percentile >= 10 && picInfo.percentile < 25) {
+      scoreBarColor = "bg-orange-400";
+    } else if (picInfo.percentile >= 25 && picInfo.percentile < 50) {
+      scoreBarColor = "bg-yellow-300";
+    } else if (picInfo.percentile >= 50 && picInfo.percentile < 60) {
+      scoreBarColor = "bg-lime-400";
+    } else if (picInfo.percentile >= 60 && picInfo.percentile < 90) {
+      scoreBarColor = "bg-green-400";
+    } else if (picInfo.percentile >= 90 && picInfo.percentile < 95) {
+      scoreBarColor = "bg-blue-400";
+    } else {
+      scoreBarColor = "bg-blue-600";
     }
-
-    return (
-      <>
-        <div>
-          This photo is more attractive than{" "}
-          {picInfo.ageGroupPercentile.toFixed(2)}% of the {loggedUser.gender}{" "}
-          population for the age group {ageGroupStr}.
-        </div>
-      </>
-    );
-  }, [picInfo.percentile]);
+  }
 
   return (
     <>
@@ -268,7 +265,7 @@ export const PhotoCard = ({
             }`}
           >
             <div className="flex justify-between mb-1">
-              <span>{isGlobal ? "Overall" : "Score"}</span>{" "}
+              <span>{"Score"}</span>{" "}
               <Tooltip tooltipText={overallScoreText}>
                 <span>
                   {picInfo.numVotes > 0 && picInfo.percentile !== null
@@ -279,7 +276,7 @@ export const PhotoCard = ({
             </div>
             <div className="rounded-md h-2 bg-light-contour overflow-hidden">
               <div
-                className="rounded-md bg-primary h-full"
+                className={"rounded-md h-full " + scoreBarColor}
                 style={{
                   width:
                     picInfo.percentile === null
@@ -288,31 +285,6 @@ export const PhotoCard = ({
                 }}
               />
             </div>
-            {ageGroupStr && picInfo.ageGroupPercentile !== undefined && (
-              <>
-                <div className="flex justify-between mb-1 mt-2">
-                  <span>Age: {ageGroupStr}</span>{" "}
-                  <Tooltip tooltipText={ageGroupScoreText}>
-                    <span>
-                      {picInfo.numVotes > 0
-                        ? getHumanReadablePerc(picInfo.ageGroupPercentile)
-                        : "-"}
-                    </span>
-                  </Tooltip>
-                </div>
-                <div className="rounded-md h-2 bg-light-contour overflow-hidden">
-                  <div
-                    className="rounded-md bg-orange-400 h-full"
-                    style={{
-                      width:
-                        picInfo.ageGroupPercentile === undefined
-                          ? "0%"
-                          : (picInfo.ageGroupPercentile * 99) / 100 + 1 + "%",
-                    }}
-                  />
-                </div>
-              </>
-            )}
             {picInfo.cannotSeeAllVotes &&
               (UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON) && (
                 <>
@@ -356,7 +328,7 @@ export const PhotoCard = ({
                 variant="outline"
                 size="small"
               >
-                View Votes
+                View Details
               </Button>
             </div>
           </div>
