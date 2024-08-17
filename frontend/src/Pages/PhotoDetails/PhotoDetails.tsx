@@ -7,6 +7,7 @@ import { PHOTOS } from "@/Constants/routes";
 import { useState } from "react";
 import { IPhotoMode, PhotoMode } from "@/Constants/mode";
 import { DO_NOT_FETCH_PHOTOS, PHOTO_MODE } from "@/Constants/localStorageKeys";
+import { PhotoInfoProvider } from "./Contexts/photoInfo";
 
 export const PhotoDetails = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export const PhotoDetails = () => {
   };
 
   return (
-    <>
+    <PhotoInfoProvider>
       <div className="flex gap-2 items-center mb-3 max-w-[800px] mx-auto">
         <button
           onClick={handleNavigateBack}
@@ -42,6 +43,6 @@ export const PhotoDetails = () => {
       </div>
       {mode === "stats" && <PhotoStats />}
       {mode === "votes" && <PhotoVoting />}
-    </>
+    </PhotoInfoProvider>
   );
 };

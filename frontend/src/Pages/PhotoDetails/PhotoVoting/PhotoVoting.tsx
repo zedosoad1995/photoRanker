@@ -1,24 +1,21 @@
 import { Spinner } from "@/Components/Loading/Spinner";
-import { getPictureStats, getPictureVotingStats } from "@/Services/picture";
-import { IPictureVotingStats } from "@/Types/picture";
+import { getPictureVotingStats } from "@/Services/picture";
 import { loadImage } from "@/Utils/image";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { usePhotoInfo } from "../Contexts/photoInfo";
 
 export const PhotoVoting = () => {
   const { pictureId } = useParams();
-
-  const [stats, setStats] = useState<IPictureVotingStats[]>([]);
+  const { voteStats, setVoteStats } = usePhotoInfo();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!pictureId) {
+    if (!pictureId || voteStats) {
       return;
     }
 
     setIsLoading(true);
-
-    getPictureStats(pictureId);
 
     getPictureVotingStats(pictureId)
       .then(async ({ stats }) => {
@@ -37,12 +34,12 @@ export const PhotoVoting = () => {
           })
         );
 
-        setStats(stats);
+        setVoteStats(stats);
       })
       .finally(() => {
         setIsLoading(false);
       });
-  }, [pictureId]);
+  }, []);
 
   return (
     <>
@@ -61,7 +58,7 @@ export const PhotoVoting = () => {
       {isLoading && <Spinner />}
       {!isLoading && (
         <>
-          {stats.map((stat) => {
+          {voteStats?.map((stat) => {
             const selectedPic = stat.is_winner ? stat.winner : stat.loser;
             const otherPic = stat.is_winner ? stat.loser : stat.winner;
 
@@ -123,8 +120,6 @@ export const PhotoVoting = () => {
                   </div>
                 </div>
                 <div>
-                  {/* <div className="text-xl font-semibold py-2 text-center">Voter Info</div> */}
-                  {/* <div className="border-b-2 mx-2" /> */}
                   <div className="flex bg-white">
                     <div className="flex flex-col w-1/4 items-center py-2">
                       <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
