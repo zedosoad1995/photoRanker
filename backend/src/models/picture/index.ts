@@ -384,15 +384,15 @@ function getAllColumnNames() {
     .map((f) => f.name);
 }
 
-function omitRatingParams(pic: Partial<Picture> & Record<string, any>) {
-  return _.omit(pic, "rating", "ratingDeviation", "volatility");
+function omittedField(pic: Partial<Picture> & Record<string, any>) {
+  return _.omit(pic, "rating", "ratingDeviation", "volatility", "countryOfOrigin", "ethnicity");
 }
 
 function getReturnPic(
   pic: Partial<Picture> & Record<string, any>,
   storageInteractor: StorageInteractor,
 ) {
-  const { filepath, ...ommitedPic } = omitRatingParams(pic);
+  const { filepath, ...ommitedPic } = omittedField(pic);
   const imgUrl = storageInteractor.getImageUrl(filepath);
 
   return { ...ommitedPic, url: imgUrl };
@@ -402,7 +402,7 @@ function getUpdateFieldsToReturn(
   pic: Partial<Picture> & Record<string, any>,
   storageInteractor: StorageInteractor,
 ) {
-  const { filepath, ...ommitedPic } = omitRatingParams(pic);
+  const { filepath, ...ommitedPic } = omittedField(pic);
   const imgUrl = storageInteractor.getImageUrl(filepath);
   const retPic = _.omit(ommitedPic, "freeRating", "hasPurchasedUnlimitedVotes", "isGlobal");
 
@@ -413,7 +413,6 @@ export const PictureModel = {
   ...prisma.picture,
   getMatchPictures,
   getPicturesWithPercentile,
-  omitRatingParams,
   getReturnPic,
   getUpdateFieldsToReturn,
   getPictureVotesStats,
