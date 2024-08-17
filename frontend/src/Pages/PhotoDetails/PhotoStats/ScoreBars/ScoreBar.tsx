@@ -11,7 +11,7 @@ export const ScoreBar = ({ label, score, color }: IScoreBar) => {
     <div>
       <div className="flex justify-between mb-1">
         <span>{label}</span>
-        <span className="font-semibold">{score}%</span>
+        <span className="font-semibold">{score.toFixed(1)}%</span>
       </div>
       <div className="rounded-md h-2 bg-light-contour overflow-hidden">
         <div
