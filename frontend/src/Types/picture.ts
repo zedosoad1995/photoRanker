@@ -35,8 +35,9 @@ export interface IPictureStats {
   numVotes: number;
   url: string;
   isActive: boolean;
-  ageGroup: IAgeGroup;
-  ethnicity: string | null;
+  isGlobal: boolean;
+  ageGroup?: IAgeGroup;
+  ethnicity?: string | null;
   continent?: string;
 }
 

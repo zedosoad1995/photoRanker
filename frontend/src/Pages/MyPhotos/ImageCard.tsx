@@ -176,7 +176,7 @@ export const PhotoCard = ({
       />
       <div
         ref={cardRef}
-        className="w-full min-[465px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group"
+        className="w-full min-[365px]:w-1/2 md:w-1/3 lg:w-1/4 p-2 card-group"
       >
         <div className="shadow-md h-full cursor-default rounded-md">
           <div className="relative">

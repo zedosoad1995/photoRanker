@@ -97,7 +97,8 @@ export const MyPhotosProvider = ({
     if (
       ["sortValue", "filterSelect", "gender", "minAge", "maxAge"].includes(
         action.key
-      )
+      ) &&
+      action.value.trim()
     ) {
       localStorage.setItem(action.key + " " + mode, action.value);
     }

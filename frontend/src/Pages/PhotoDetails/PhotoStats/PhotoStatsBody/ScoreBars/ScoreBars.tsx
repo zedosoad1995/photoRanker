@@ -18,24 +18,22 @@ export const ScoreBars = ({ picStats }: IScoreBars) => {
 
   return (
     <>
-      {picStats.percentileGeneral !== undefined && (
-        <ScoreBar label="Overall" score={picStats.percentileGeneral} />
-      )}
-      {ageGroupText && picStats.percentileByAgeGroup !== undefined && (
+      <ScoreBar label="Overall" score={picStats.percentileGeneral} />
+      {ageGroupText && (
         <ScoreBar
           label={ageGroupText}
           score={picStats.percentileByAgeGroup}
           color={colors.green[400]}
         />
       )}
-      {picStats.ethnicity && picStats.percentileByEthnicity !== undefined && (
+      {picStats.ethnicity && (
         <ScoreBar
           label={picStats.ethnicity}
           score={picStats.percentileByEthnicity}
           color={colors.orange[400]}
         />
       )}
-      {picStats.percentileByContinent !== undefined && picStats.continent && (
+      {picStats.continent && (
         <ScoreBar
           label={picStats.continent}
           score={picStats.percentileByContinent}

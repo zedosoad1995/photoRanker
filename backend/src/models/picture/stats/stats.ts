@@ -80,9 +80,8 @@ export const getPictureStats = async (
   }
 
   if (!picture.isGlobal) {
-    // TODO...
     const url = storageInteractor.getImageUrl(picture.filepath);
-    return _.pick(picture, ["id", "numVotes", "isActive"]);
+    return { ..._.pick(picture, ["id", "numVotes", "isActive", "isGlobal"]), url };
   }
 
   const whereQuery = [`pic.id = '${pictureId}'`];
@@ -109,6 +108,6 @@ export const getPictureStats = async (
     continent,
     ethnicity: picture.user.ethnicity,
     url,
-    ..._.pick(picture, ["numVotes", "isActive"]),
+    ..._.pick(picture, ["numVotes", "isActive", "isGlobal"]),
   };
 };
