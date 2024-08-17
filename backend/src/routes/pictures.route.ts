@@ -21,6 +21,7 @@ import { validateFormDataJson } from "@/middlewares/validateFormDataJson";
 import { checkBasicUserSettings } from "@/middlewares/checkBasicUserSetting";
 import { updatePictureSchema } from "@/schemas/picture/updatePicture";
 import { checkAdmin } from "@/middlewares/checkAdmin";
+import { checkAuth } from "@/middlewares/checkAuth";
 
 const router = Router();
 
@@ -33,11 +34,11 @@ router.get(
 );
 
 router.get("/upload-permission", checkBasicUserSettings, checkUploadPermission);
+router.get("/admin", checkAuth, checkAdmin, getAdminPics(mainStorageInteractor));
 
 router.get("/:pictureId", checkBasicUserSettings, getOne(mainStorageInteractor));
 router.get("/:pictureId/vote-stats", checkBasicUserSettings, getVotesStats(mainStorageInteractor));
 router.get("/:pictureId/stats", checkBasicUserSettings, getStats(mainStorageInteractor));
-router.get("/admin", checkAdmin, getAdminPics(mainStorageInteractor));
 
 router.post(
   "/",

@@ -1,4 +1,5 @@
 import {
+  IGetAdminPhoto,
   IGetManyPictures,
   IGetPictureVotingStats,
   IPictureStats,
@@ -31,6 +32,10 @@ export const getManyPictures = async (
       .map(([key, value]) => `${key}=${value}`)
       .join("&")}`
   );
+};
+
+export const getAdminPhotos = async (): Promise<IGetAdminPhoto> => {
+  return api.get(`/pictures/admin`);
 };
 
 export const getPicture = async (id: string): Promise<PictureRes> => {

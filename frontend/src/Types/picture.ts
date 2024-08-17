@@ -53,6 +53,17 @@ export interface IPictureVotingStats {
   createdAt: Date;
 }
 
+export interface IAdminPhoto {
+  id: string;
+  ethnicity: string | null;
+  countryOfOrigin: string | null;
+  url: string;
+}
+
+export interface IGetAdminPhoto {
+  pictures: IAdminPhoto[];
+}
+
 export interface IGetPictureVotingStats {
   stats: IPictureVotingStats[];
 }

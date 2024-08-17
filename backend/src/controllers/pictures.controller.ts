@@ -280,10 +280,9 @@ export const getAdminPics =
     const pics = await PictureModel.findMany({
       select: {
         id: true,
+        countryOfOrigin: true,
         ethnicity: true,
         filepath: true,
-      },
-      include: {
         user: true,
       },
       where: {
