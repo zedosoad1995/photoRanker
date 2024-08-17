@@ -1,12 +1,12 @@
 import _ from "underscore";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { prisma } from "@/models";
-import { User } from "@prisma/client";
+import { Picture, User } from "@prisma/client";
 import { getAgeGroupQuery } from "../helpers/user";
 import { COUNTRIES_BY_CONTINENT } from "@shared/constants/user";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
 
-const getInnerPicturesQuery = (picUser: User) => {
+const getInnerPicturesQuery = (picUser: User, pic: Picture) => {
   const whereQuery = [
     `usr."isBanned" IS FALSE`,
     `usr.gender = '${picUser.gender}'`,
@@ -20,6 +20,13 @@ const getInnerPicturesQuery = (picUser: User) => {
     `usr."dateOfBirth"`,
   );
 
+  const ethnicity =
+    picUser.role === "ADMIN" && pic.ethnicity !== null ? pic.ethnicity : picUser.ethnicity;
+  const country =
+    picUser.role === "ADMIN" && pic.countryOfOrigin !== null
+      ? pic.countryOfOrigin
+      : picUser.countryOfOrigin;
+
   const selectsQuery = [
     `pic.id`,
     `100 * PERCENT_RANK() OVER (ORDER BY pic.rating) AS "percentileGeneral"`,
@@ -28,19 +35,27 @@ const getInnerPicturesQuery = (picUser: User) => {
         ORDER BY pic.rating
         ) AS "percentileByAgeGroup"`,
     `100 * PERCENT_RANK() OVER (
-        PARTITION BY CASE WHEN ethnicity = '${picUser.ethnicity}' THEN 1 ELSE 0 END
+        PARTITION BY CASE WHEN 
+          CASE 
+              WHEN usr.role = 'ADMIN' AND pic.ethnicity IS NOT NULL THEN pic.ethnicity
+              ELSE usr.ethnicity
+          END = '${ethnicity}' THEN 1 ELSE 0 END
         ORDER BY pic.rating
         ) AS "percentileByEthnicity"`,
   ];
 
   const continentCountry = Object.entries(COUNTRIES_BY_CONTINENT).find(([_, countries]) =>
-    (countries as string[]).includes(picUser.countryOfOrigin as string),
+    (countries as string[]).includes(country as string),
   );
   if (continentCountry) {
     const [_, countries] = continentCountry;
 
     selectsQuery.push(`100 * PERCENT_RANK() OVER (
-        PARTITION BY CASE WHEN "countryOfOrigin" IN ('${countries.join("', '")}') THEN 1 ELSE 0 END
+        PARTITION BY CASE WHEN 
+          CASE 
+              WHEN usr.role = 'ADMIN' AND pic."countryOfOrigin" IS NOT NULL THEN pic."countryOfOrigin"
+              ELSE usr."countryOfOrigin"
+          END IN ('${countries.join("', '")}') THEN 1 ELSE 0 END
         ORDER BY pic.rating
         ) AS "percentileByContinent"`);
   }
@@ -57,6 +72,7 @@ const getInnerPicturesQuery = (picUser: User) => {
     `,
     ageGroup,
     continent: continentCountry?.[0],
+    ethnicity,
   };
 };
 
@@ -87,7 +103,12 @@ export const getPictureStats = async (
   const whereQuery = [`pic.id = '${pictureId}'`];
   const whereStr = whereQuery.join(" AND ");
 
-  const { query: innerQuery, ageGroup, continent } = getInnerPicturesQuery(picture.user);
+  const {
+    query: innerQuery,
+    ageGroup,
+    continent,
+    ethnicity,
+  } = getInnerPicturesQuery(picture.user, picture);
 
   const res: {
     id: string;
@@ -106,7 +127,7 @@ export const getPictureStats = async (
     ...res[0],
     ageGroup,
     continent,
-    ethnicity: picture.user.ethnicity,
+    ethnicity,
     url,
     ..._.pick(picture, ["numVotes", "isActive", "isGlobal"]),
   };
