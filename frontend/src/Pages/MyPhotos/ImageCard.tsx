@@ -15,7 +15,6 @@ import {
   UNLIMITED_VOTE_ALL_ON,
   UNLIMITED_VOTE_MULTIPLE_ON,
 } from "@shared/constants/purchase";
-import { Tooltip } from "@/Components/Tooltip";
 import { updateImage } from "@/Services/picture";
 import { useMyPhotos } from "./Contexts/myPhotos";
 import PauseUnpauseModal from "./Modals/PauseUnpauseModal";
@@ -23,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { PHOTO_DETAILS_PATH } from "@/Constants/routes";
 import Button from "@/Components/Button";
 import { SCROLL_POSITION } from "@/Constants/localStorageKeys";
+import { HelpIcon } from "@/Components/HelpIcon";
 
 interface IPhotoCard {
   pic: string;
@@ -154,14 +154,6 @@ export const PhotoCard = ({
 
   return (
     <>
-      {/* <BuyUnlimitedVotesModal
-        pictureId={picInfo.id}
-        currNumVotes={picInfo.numPaidVotes}
-        isOpen={isOpenUnlockVotesModal}
-        onClose={() => {
-          setIsOpenUnlockVotesModal(false);
-        }}
-      /> */}
       <PauseUnpauseModal
         isActive={picInfo.isActive}
         isOpen={isOpenPauseUnpause}
@@ -264,14 +256,15 @@ export const PhotoCard = ({
             }`}
           >
             <div className="flex justify-between mb-1">
-              <span>{"Score"}</span>{" "}
-              <Tooltip tooltipText={overallScoreText}>
-                <span>
-                  {picInfo.numVotes > 0 && picInfo.percentile !== null
-                    ? getHumanReadablePerc(picInfo.percentile, isGlobal ? 0 : 1)
-                    : "-"}
-                </span>
-              </Tooltip>
+              <div className="flex gap-1 items-center">
+                <span>Score</span>
+                <HelpIcon tooltipText={overallScoreText} size={16} />
+              </div>
+              <span>
+                {picInfo.numVotes > 0 && picInfo.percentile !== null
+                  ? getHumanReadablePerc(picInfo.percentile, isGlobal ? 0 : 1)
+                  : "-"}
+              </span>
             </div>
             <div className="rounded-md h-2 bg-light-contour overflow-hidden">
               <div
