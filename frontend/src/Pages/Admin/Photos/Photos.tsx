@@ -1,5 +1,5 @@
 import Select from "@/Components/AutoCompleteSelect";
-import { getAdminPhotos } from "@/Services/picture";
+import { getAdminPhotos, updateAdminPhoto } from "@/Services/picture";
 import { IAdminPhoto } from "@/Types/picture";
 import { loadImage } from "@/Utils/image";
 import { COUNTRIES, ETHNICITY } from "@shared/constants/user";
@@ -19,6 +19,8 @@ export const AdminPhotos = () => {
     setPics((pics) => {
       if (!pics) return;
 
+      updateAdminPhoto(pics[index].id, { countryOfOrigin: value });
+
       return [
         ...pics?.slice(0, index),
         { ...pics[index], countryOfOrigin: value },
@@ -30,6 +32,8 @@ export const AdminPhotos = () => {
   const handleEthnicityChange = (index: number) => (value: string) => {
     setPics((pics) => {
       if (!pics) return;
+
+      updateAdminPhoto(pics[index].id, { ethnicity: value });
 
       return [
         ...pics?.slice(0, index),
@@ -43,7 +47,7 @@ export const AdminPhotos = () => {
     <div className="">
       {pics?.map(({ id, url, countryOfOrigin, ethnicity }, index) => (
         <div key={id} className="flex">
-          <img src={url} />
+          <img src={url} className="w-52" />
           <Select
             label="Country of Origin"
             options={COUNTRIES}

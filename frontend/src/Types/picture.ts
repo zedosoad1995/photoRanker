@@ -81,3 +81,8 @@ export interface IGetManyPictures {
 export interface IUploadPermission {
   canUploadMore: boolean;
 }
+
+export interface IAdminPictureBody {
+  countryOfOrigin?: string;
+  ethnicity?: string;
+}

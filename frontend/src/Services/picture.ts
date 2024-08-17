@@ -1,4 +1,5 @@
 import {
+  IAdminPictureBody,
   IGetAdminPhoto,
   IGetManyPictures,
   IGetPictureVotingStats,
@@ -36,6 +37,13 @@ export const getManyPictures = async (
 
 export const getAdminPhotos = async (): Promise<IGetAdminPhoto> => {
   return api.get(`/pictures/admin`);
+};
+
+export const updateAdminPhoto = async (
+  id: string,
+  body: IAdminPictureBody
+): Promise<any> => {
+  return api.patch(`/pictures/admin/${id}`, body);
 };
 
 export const getPicture = async (id: string): Promise<PictureRes> => {

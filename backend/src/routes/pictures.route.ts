@@ -7,6 +7,7 @@ import {
   getOne,
   getStats,
   getVotesStats,
+  updateAdminPhoto,
   updateOne,
   uploadOne,
 } from "@/controllers/pictures.controller";
@@ -22,6 +23,7 @@ import { checkBasicUserSettings } from "@/middlewares/checkBasicUserSetting";
 import { updatePictureSchema } from "@/schemas/picture/updatePicture";
 import { checkAdmin } from "@/middlewares/checkAdmin";
 import { checkAuth } from "@/middlewares/checkAuth";
+import { updateAdminPictureSchema } from "@/schemas/picture/admin/updateAdminPicture";
 
 const router = Router();
 
@@ -49,6 +51,13 @@ router.post(
   uploadOne(mainStorageInteractor),
 );
 
+router.patch(
+  "/admin/:pictureId",
+  checkAuth,
+  checkAdmin,
+  validateForm(updateAdminPictureSchema),
+  updateAdminPhoto,
+);
 router.patch(
   "/:pictureId",
   checkBasicUserSettings,

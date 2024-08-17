@@ -301,3 +301,24 @@ export const getAdminPics =
 
     res.status(200).json({ pictures: transformedPics });
   };
+
+export const updateAdminPhoto = async (req: Request, res: Response) => {
+  const pictureId = req.params.pictureId;
+
+  const picture = await PictureModel.findUnique({
+    where: {
+      id: pictureId,
+    },
+  });
+
+  if (!picture) {
+    throw new NotFoundError("Picture does not exist");
+  }
+
+  const updatedPic = await PictureModel.update({
+    data: req.body,
+    where: { id: pictureId },
+  });
+
+  res.status(200).json(updatedPic);
+};
