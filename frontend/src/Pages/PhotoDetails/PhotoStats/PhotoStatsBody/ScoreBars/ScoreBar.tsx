@@ -1,5 +1,6 @@
 import { HelpIcon } from "@/Components/HelpIcon";
 import { colors } from "@/theme/colors";
+import { useInView } from "react-intersection-observer";
 
 interface IScoreBar {
   label: string;
@@ -9,6 +10,17 @@ interface IScoreBar {
 }
 
 export const ScoreBar = ({ label, score, color, tooltipText }: IScoreBar) => {
+  const { ref, inView } = useInView({
+    threshold: 1,
+    triggerOnce: true,
+    delay: 30,
+  });
+
+  let displayPercentile = "0%";
+  if (inView && score !== undefined) {
+    displayPercentile = (score * 99) / 100 + 1 + "%";
+  }
+
   return (
     <div>
       <div className="flex justify-between mb-1">
@@ -20,11 +32,12 @@ export const ScoreBar = ({ label, score, color, tooltipText }: IScoreBar) => {
           {score !== undefined ? score.toFixed(1) + "%" : ""}
         </span>
       </div>
-      <div className="rounded-md h-2 bg-light-contour overflow-hidden">
+      <div className="rounded-md h-3 bg-light-contour overflow-hidden">
         <div
-          className={`rounded-md h-full`}
+          ref={ref}
+          className={`transition-all duration-[250ms] ease-in rounded-md h-full`}
           style={{
-            width: score !== undefined ? (score * 99) / 100 + 1 + "%" : 0,
+            width: displayPercentile,
             backgroundColor: color ?? colors.primary,
           }}
         />

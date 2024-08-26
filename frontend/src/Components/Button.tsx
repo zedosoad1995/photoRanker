@@ -35,13 +35,16 @@ export default function Button({
           "text-white shadow-sm " +
           (disabled
             ? "bg-[#cac7fe] text-[#4038ca] opacity-50"
-            : "bg-primary hover:bg-primary-hover focus-visible:outline-primary");
+            : "bg-primary hover:bg-white hover:outline-primary hover:text-primary hover:outline hover:outline-1");
+        // : "bg-primary hover:bg-white hover:outline-primary hover:text-primary hover:outline hover:outline-1");
       } else if (variant === "outline") {
         spinnerClassName = "fill-primary";
 
         className =
-          "bg-white shadow-sm border border-[#4038ca] text-[#4038ca] " +
-          (disabled ? "opacity-50" : "hover:bg-[#efeeff]");
+          "bg-white shadow-sm outline outline-1 outline-primary text-primary " +
+          (disabled
+            ? "opacity-50"
+            : "hover:bg-primary hover:outline-0 hover:text-white");
       }
 
       break;
@@ -51,7 +54,9 @@ export default function Button({
 
         className =
           "text-white shadow-sm " +
-          (disabled ? "bg-[#fccdcc] text-[#b32422] opacity-50" : "bg-[#e94c4a] hover:bg-[#d63230]");
+          (disabled
+            ? "bg-[#fccdcc] text-[#b32422] opacity-50"
+            : "bg-[#e94c4a] hover:bg-[#d63230]");
       } else if (variant === "outline") {
         spinnerClassName = "fill-danger";
 
@@ -64,7 +69,9 @@ export default function Button({
     case "none":
     default:
       spinnerClassName = "fill-primary";
-      className = disabled ? "text-disabled-button-text" : "hover:bg-light-contour";
+      className = disabled
+        ? "text-disabled-button-text"
+        : "hover:bg-light-contour";
   }
 
   let sizeClassName = "";
@@ -93,7 +100,7 @@ export default function Button({
       type={type}
       className={`flex ${isLoading ? "cursor-default" : "cursor-pointer"} ${
         isHeightFull ? "h-full" : ""
-      } justify-center items-center rounded-md font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${sizeClassName} ${
+      } justify-center items-center rounded-lg font-semibold leading-6 whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${sizeClassName} ${
         isFull ? "w-full" : ""
       } ${className}`}
       onClick={handleClick}

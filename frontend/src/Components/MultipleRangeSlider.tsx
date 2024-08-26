@@ -51,7 +51,8 @@ const MultipleRangeSlider = ({
 
     if (handleRef === sliderLeftHandleRef && sliderRightHandleRef.current) {
       const rightHandleRightPosition =
-        sliderRightHandleRef.current.offsetLeft + sliderRightHandleRef.current.offsetWidth;
+        sliderRightHandleRef.current.offsetLeft +
+        sliderRightHandleRef.current.offsetWidth;
       if (newX + handleRef.current.offsetWidth > rightHandleRightPosition) {
         newX = rightHandleRightPosition - handleRef.current.offsetWidth;
       }
@@ -65,8 +66,10 @@ const MultipleRangeSlider = ({
     }
 
     let newValue =
-      Math.round((newX / (containerBounds.width - handleRef.current.offsetWidth)) * (max - min)) +
-      min;
+      Math.round(
+        (newX / (containerBounds.width - handleRef.current.offsetWidth)) *
+          (max - min)
+      ) + min;
 
     newValue = Math.round(newValue / step) * step;
 
@@ -74,15 +77,18 @@ const MultipleRangeSlider = ({
     if (newValue > max) newValue = max;
 
     if (handleRef === sliderLeftHandleRef) {
-      if (newValue !== leftValueRef.current) handleChange(newValue, rightValueRef.current);
+      if (newValue !== leftValueRef.current)
+        handleChange(newValue, rightValueRef.current);
       leftValueRef.current = newValue;
     } else {
-      if (newValue !== rightValueRef.current) handleChange(leftValueRef.current, newValue);
+      if (newValue !== rightValueRef.current)
+        handleChange(leftValueRef.current, newValue);
       rightValueRef.current = newValue;
     }
 
     newX =
-      ((newValue - min) / (max - min)) * (containerBounds.width - handleRef.current.offsetWidth);
+      ((newValue - min) / (max - min)) *
+      (containerBounds.width - handleRef.current.offsetWidth);
 
     handleRef.current.style.left = newX + "px";
 
@@ -94,20 +100,24 @@ const MultipleRangeSlider = ({
     betweenTrailRef.current.style.width = rightHandlePos - leftHandlePos + "px";
   };
 
-  const handleMouseDown = (handleRef: React.RefObject<HTMLDivElement>) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    isDraggingRef.current = true;
-    activeHandler.current = handleRef;
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-  };
+  const handleMouseDown =
+    (handleRef: React.RefObject<HTMLDivElement>) => (e: React.MouseEvent) => {
+      e.preventDefault();
+      isDraggingRef.current = true;
+      activeHandler.current = handleRef;
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    };
 
-  const handleTouchStart = (handleRef: React.RefObject<HTMLDivElement>) => () => {
-    isDraggingRef.current = true;
-    activeHandler.current = handleRef;
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleMouseUp, { passive: false });
-  };
+  const handleTouchStart =
+    (handleRef: React.RefObject<HTMLDivElement>) => () => {
+      isDraggingRef.current = true;
+      activeHandler.current = handleRef;
+      document.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+      document.addEventListener("touchend", handleMouseUp, { passive: false });
+    };
 
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDraggingRef.current || !activeHandler.current) return;
@@ -132,7 +142,9 @@ const MultipleRangeSlider = ({
     const rectRight = sliderRightHandleRef.current.getBoundingClientRect();
     const centerRightX = rectRight.left + rectRight.width / 2;
 
-    if (Math.abs(e.clientX - centerLeftX) < Math.abs(e.clientX - centerRightX)) {
+    if (
+      Math.abs(e.clientX - centerLeftX) < Math.abs(e.clientX - centerRightX)
+    ) {
       activeHandler.current = sliderLeftHandleRef;
     } else {
       activeHandler.current = sliderRightHandleRef;
@@ -160,26 +172,33 @@ const MultipleRangeSlider = ({
     };
   }, []);
 
-  const computePosition = (val: number, ref: React.RefObject<HTMLDivElement>) => {
+  const computePosition = (
+    val: number,
+    ref: React.RefObject<HTMLDivElement>
+  ) => {
     if (!sliderContainerRef.current || !ref.current) return 0;
 
     const containerWidth =
-      sliderContainerRef.current.getBoundingClientRect().width - ref.current.offsetWidth;
+      sliderContainerRef.current.getBoundingClientRect().width -
+      ref.current.offsetWidth;
     const position = ((val - min) / (max - min)) * containerWidth;
     return position;
   };
 
   const computeHighlighter = (left: number, right: number) => {
-    if (!sliderContainerRef.current || !sliderLeftHandleRef.current) return ["0", "0"];
+    if (!sliderContainerRef.current || !sliderLeftHandleRef.current)
+      return ["0", "0"];
 
     const containerWidth =
       sliderContainerRef.current.getBoundingClientRect().width -
       sliderLeftHandleRef.current.offsetWidth;
 
     const positionLeft =
-      ((left - min) / (max - min)) * containerWidth + sliderLeftHandleRef.current.offsetWidth / 2;
+      ((left - min) / (max - min)) * containerWidth +
+      sliderLeftHandleRef.current.offsetWidth / 2;
     const width =
-      ((right - left) / (max - min)) * containerWidth + sliderLeftHandleRef.current.offsetWidth / 2;
+      ((right - left) / (max - min)) * containerWidth +
+      sliderLeftHandleRef.current.offsetWidth / 2;
 
     return [positionLeft + "px", width + "px"];
   };
@@ -188,8 +207,12 @@ const MultipleRangeSlider = ({
     const [left, width] = computeHighlighter(initialValue[0], initialValue[1]);
     setHighlightLeft(left);
     setHighlightWidth(width);
-    setInitialLeft(computePosition(initialValue[0], sliderLeftHandleRef) + "px");
-    setInitialRight(computePosition(initialValue[1], sliderRightHandleRef) + "px");
+    setInitialLeft(
+      computePosition(initialValue[0], sliderLeftHandleRef) + "px"
+    );
+    setInitialRight(
+      computePosition(initialValue[1], sliderRightHandleRef) + "px"
+    );
   }, []);
 
   useEffect(() => {
@@ -205,11 +228,18 @@ const MultipleRangeSlider = ({
 
   useEffect(() => {
     const updateHandlePositions = () => {
-      const [left, width] = computeHighlighter(leftValueRef.current, rightValueRef.current);
+      const [left, width] = computeHighlighter(
+        leftValueRef.current,
+        rightValueRef.current
+      );
       setHighlightLeft(left);
       setHighlightWidth(width);
-      setInitialLeft(computePosition(leftValueRef.current, sliderLeftHandleRef) + "px");
-      setInitialRight(computePosition(rightValueRef.current, sliderRightHandleRef) + "px");
+      setInitialLeft(
+        computePosition(leftValueRef.current, sliderLeftHandleRef) + "px"
+      );
+      setInitialRight(
+        computePosition(rightValueRef.current, sliderRightHandleRef) + "px"
+      );
     };
 
     window.addEventListener("resize", updateHandlePositions);
@@ -219,12 +249,16 @@ const MultipleRangeSlider = ({
     };
   }, []);
 
-  const areBothMax = leftValueRef.current === rightValueRef.current && leftValueRef.current === max;
+  const areBothMax =
+    leftValueRef.current === rightValueRef.current &&
+    leftValueRef.current === max;
 
   return (
     <div
       onClick={handleClickTrack}
-      className={`relative cursor-pointer w-full h-5 ${isInitialized ? "visible" : "invisible"}`}
+      className={`relative cursor-pointer w-full h-5 ${
+        isInitialized ? "visible" : "invisible"
+      }`}
       ref={sliderContainerRef}
     >
       <div className="bg-gray-200 rounded-lg w-full h-1 absolute top-1/2 -translate-y-1/2"></div>

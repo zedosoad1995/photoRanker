@@ -4,8 +4,10 @@ import Filters from "./Filters/Filters";
 import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
+import { IoCameraSharp } from "react-icons/io5";
 import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
 import { PHOTO_LIMIT_PURCHASE_ON } from "@shared/constants/purchase";
+import { IconContext } from "react-icons";
 
 const DEFAULT_SORT = "score desc";
 
@@ -129,8 +131,10 @@ export const Header = ({
             isFull={true}
             isHeightFull={true}
           >
-            <div className="flex items-center justify-center">
-              <div className="mr-3 text-xl -translate-y-[2px]">+</div>
+            <div className="flex items-center gap-2">
+              <IconContext.Provider value={{ size: "18px" }}>
+                <IoCameraSharp />
+              </IconContext.Provider>
               <div>Add Photo</div>
             </div>
           </Button>

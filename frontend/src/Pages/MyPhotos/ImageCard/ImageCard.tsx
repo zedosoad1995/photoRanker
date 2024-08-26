@@ -16,13 +16,14 @@ import {
   UNLIMITED_VOTE_MULTIPLE_ON,
 } from "@shared/constants/purchase";
 import { updateImage } from "@/Services/picture";
-import { useMyPhotos } from "./Contexts/myPhotos";
-import PauseUnpauseModal from "./Modals/PauseUnpauseModal";
+import { useMyPhotos } from "../Contexts/myPhotos";
+import PauseUnpauseModal from "../Modals/PauseUnpauseModal";
 import { useNavigate } from "react-router-dom";
 import { PHOTO_DETAILS_PATH } from "@/Constants/routes";
 import Button from "@/Components/Button";
 import { SCROLL_POSITION } from "@/Constants/localStorageKeys";
 import { HelpIcon } from "@/Components/HelpIcon";
+import { ScoreBar } from "./ScoreBar/ScoreBar";
 
 interface IPhotoCard {
   pic: string;
@@ -132,25 +133,6 @@ export const PhotoCard = ({
       </>
     );
   }, [picInfo.percentile]);
-
-  let scoreBarColor = "";
-  if (picInfo.percentile !== null) {
-    if (picInfo.percentile < 10) {
-      scoreBarColor = "bg-red-400";
-    } else if (picInfo.percentile >= 10 && picInfo.percentile < 25) {
-      scoreBarColor = "bg-orange-400";
-    } else if (picInfo.percentile >= 25 && picInfo.percentile < 50) {
-      scoreBarColor = "bg-yellow-300";
-    } else if (picInfo.percentile >= 50 && picInfo.percentile < 60) {
-      scoreBarColor = "bg-lime-400";
-    } else if (picInfo.percentile >= 60 && picInfo.percentile < 90) {
-      scoreBarColor = "bg-green-400";
-    } else if (picInfo.percentile >= 90 && picInfo.percentile < 95) {
-      scoreBarColor = "bg-blue-400";
-    } else {
-      scoreBarColor = "bg-blue-600";
-    }
-  }
 
   return (
     <>
@@ -266,17 +248,7 @@ export const PhotoCard = ({
                   : "-"}
               </span>
             </div>
-            <div className="rounded-md h-2 bg-light-contour overflow-hidden">
-              <div
-                className={"rounded-md h-full " + scoreBarColor}
-                style={{
-                  width:
-                    picInfo.percentile === null
-                      ? "0%"
-                      : (picInfo.percentile * 99) / 100 + 1 + "%",
-                }}
-              />
-            </div>
+            <ScoreBar percentile={picInfo.percentile} />
             {picInfo.cannotSeeAllVotes &&
               (UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON) && (
                 <>
@@ -320,7 +292,7 @@ export const PhotoCard = ({
                 variant="outline"
                 size="small"
               >
-                View Details
+                See Details
               </Button>
             </div>
           </div>

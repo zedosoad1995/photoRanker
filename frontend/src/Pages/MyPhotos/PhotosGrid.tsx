@@ -1,5 +1,5 @@
 import { Spinner } from "@/Components/Loading/Spinner";
-import { PhotoCard } from "./ImageCard";
+import { PhotoCard } from "./ImageCard/ImageCard";
 import { PhotosLoaderCover } from "./PhotosLoaderCover";
 import { IUser } from "@/Types/user";
 import { IPictureWithPercentile } from "@/Types/picture";

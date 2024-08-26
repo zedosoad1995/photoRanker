@@ -8,6 +8,7 @@
   }
   body {
     @apply h-full text-normal-text;
+    @apply font-poppins;
   }
   #root {
     @apply h-full;
