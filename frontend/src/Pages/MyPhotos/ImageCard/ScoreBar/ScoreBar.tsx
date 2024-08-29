@@ -38,7 +38,7 @@ export const ScoreBar = ({ percentile }: IScoreBar) => {
       <div
         ref={ref}
         className={
-          "transition-all duration-[250ms] ease-in rounded-lg h-full " +
+          "transition-all duration-[200ms] ease-in rounded-lg h-full " +
           scoreBarColor
         }
         style={{

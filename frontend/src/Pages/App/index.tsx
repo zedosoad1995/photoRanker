@@ -150,7 +150,7 @@ function App() {
   }, []);
 
   return (
-    <div className="font-poppins bg-white">
+    <div className="bg-white">
       <button
         onClick={scrollToTop}
         className={`z-50 fixed text-xl rounded-full right-6 bottom-6 bg-[#111827] text-white hover:bg-[#0084FF] transition-all ease-in-out duration-[400ms] w-14 h-14 pb-1 ${
@@ -167,7 +167,7 @@ function App() {
       >
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center w-full px-5 py-6">
-            <Logo />
+            <Logo hideIcon />
             <div className="hidden md:flex gap-3">
               <button
                 onClick={handleGoToLogin}

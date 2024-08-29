@@ -35,7 +35,7 @@ export const ScoreBar = ({ label, score, color, tooltipText }: IScoreBar) => {
       <div className="rounded-md h-3 bg-light-contour overflow-hidden">
         <div
           ref={ref}
-          className={`transition-all duration-[250ms] ease-in rounded-md h-full`}
+          className={`transition-all duration-[200ms] ease-in rounded-md h-full`}
           style={{
             width: displayPercentile,
             backgroundColor: color ?? colors.primary,

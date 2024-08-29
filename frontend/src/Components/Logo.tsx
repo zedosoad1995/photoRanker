@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { PiScanSmileyFill } from "react-icons/pi";
 import { IconContext } from "react-icons";
-import { colors } from "@/theme/colors";
 
 interface ILogo {
   navigatePath?: string;
   color?: "normal" | "contrast";
+  hideIcon?: boolean;
 }
 
-export default function Logo({ navigatePath, color }: ILogo) {
+export default function Logo({ navigatePath, color, hideIcon }: ILogo) {
   const navigate = useNavigate();
 
   let className =
@@ -24,11 +24,13 @@ export default function Logo({ navigatePath, color }: ILogo) {
       }}
       className={className}
     >
-      <IconContext.Provider
-        value={{ color: color === "contrast" ? "yellow" : "" }}
-      >
-        <PiScanSmileyFill />
-      </IconContext.Provider>
+      {!hideIcon && (
+        <IconContext.Provider
+          value={{ color: color === "contrast" ? "yellow" : "" }}
+        >
+          <PiScanSmileyFill />
+        </IconContext.Provider>
+      )}
       Photo Scorer
     </div>
   );

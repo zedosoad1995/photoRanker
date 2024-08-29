@@ -45,26 +45,27 @@ export default function Navbar({
           </div>
           <div className="hidden md:flex items-center justify-between gap-8 w-full">
             {navbarOptions.map(({ label, url }) => (
-              <div>
-                <NavLink
-                  key={label}
-                  to={url}
-                  className={({ isActive }) =>
-                    `text-lg font-semibold cursor-pointer ${
-                      isActive
-                        ? "text-white"
-                        : "text-[#FFFFFFC0] hover:text-[#FFFFFFE0]"
-                    }`
-                  }
-                >
-                  {label}
-                </NavLink>
-              </div>
+              <NavLink
+                key={label}
+                to={url}
+                className={({ isActive }) =>
+                  `text-lg font-semibold cursor-pointer ${
+                    isActive
+                      ? "text-white"
+                      : "text-[#FFFFFFC0] hover:text-[#FFFFFFE0]"
+                  }`
+                }
+              >
+                {label}
+              </NavLink>
             ))}
             <div className="ml-auto">
-              <Button onClick={handleLogout} size="large">
+              <button
+                onClick={handleLogout}
+                className={`text-lg font-semibold cursor-pointer text-[#FFFFFF] hover:text-[#FFFFFFE0]`}
+              >
                 Logout
-              </Button>
+              </button>
             </div>
           </div>
         </>

@@ -13,7 +13,12 @@ interface IFlagButton {
   onReport: () => void;
 }
 
-export const FlagButton = ({ pic1, pic2, match, onReport: handleReportParent }: IFlagButton) => {
+export const FlagButton = ({
+  pic1,
+  pic2,
+  match,
+  onReport: handleReportParent,
+}: IFlagButton) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleClickReport = () => {

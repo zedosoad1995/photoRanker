@@ -5,7 +5,7 @@ interface IButton {
   size?: "small" | "medium" | "large";
   isFull?: boolean;
   isHeightFull?: boolean;
-  style?: "primary" | "danger" | "none";
+  style?: "primary" | "danger" | "gray" | "none";
   variant?: "solid" | "outline";
   disabled?: boolean;
   isLoading?: boolean;
@@ -63,6 +63,26 @@ export default function Button({
         className =
           "bg-white shadow-sm border border-danger text-danger " +
           (disabled ? "opacity-50" : "hover:bg-[#fef2f2]");
+      }
+
+      break;
+    case "gray":
+      if (variant === "solid") {
+        spinnerClassName = "fill-white";
+
+        className =
+          "text-white shadow-sm " +
+          (disabled
+            ? "bg-[#fccdcc] text-[#b32422] opacity-50"
+            : "bg-[#e94c4a] hover:bg-[#d63230]");
+      } else if (variant === "outline") {
+        spinnerClassName = "";
+
+        className =
+          "shadow-sm border border-light-text text-light-text " +
+          (disabled
+            ? "opacity-50"
+            : "hover:bg-light-text hover:bg-opacity-[0.05]");
       }
 
       break;
