@@ -264,7 +264,7 @@ const MultipleRangeSlider = ({
       <div className="bg-gray-200 rounded-lg w-full h-1 absolute top-1/2 -translate-y-1/2"></div>
       <div
         ref={betweenTrailRef}
-        className="bg-primary-hover rounded-lg w-full h-[6px] absolute top-1/2 -translate-y-1/2"
+        className="bg-light-text rounded-lg w-full h-[6px] absolute top-1/2 -translate-y-1/2"
         style={{
           left: highlightLeft,
           width: highlightWidth,
@@ -272,7 +272,7 @@ const MultipleRangeSlider = ({
       ></div>
       <div
         ref={sliderLeftHandleRef}
-        className={`w-4 h-4 bg-white border border-normal-contour hover:border-primary rounded-full absolute top-1/2 -translate-y-1/2 cursor-pointer ${
+        className={`w-4 h-4 bg-white border border-normal-contour hover:border-light-text rounded-full absolute top-1/2 -translate-y-1/2 cursor-pointer ${
           areBothMax ? "z-10" : ""
         }`}
         style={{ left: initialLeft }}
@@ -281,7 +281,7 @@ const MultipleRangeSlider = ({
       ></div>
       <div
         ref={sliderRightHandleRef}
-        className="w-4 h-4 bg-white border border-normal-contour hover:border-primary rounded-full absolute top-1/2 -translate-y-1/2 cursor-pointer"
+        className="w-4 h-4 bg-white border border-normal-contour hover:border-light-text rounded-full absolute top-1/2 -translate-y-1/2 cursor-pointer"
         style={{ left: initialRight }}
         onMouseDown={handleMouseDown(sliderRightHandleRef)}
         onTouchStart={handleTouchStart(sliderRightHandleRef)}
