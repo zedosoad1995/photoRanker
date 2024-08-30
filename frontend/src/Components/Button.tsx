@@ -76,7 +76,7 @@ export default function Button({
             ? "bg-[#fccdcc] text-[#b32422] opacity-50"
             : "bg-[#e94c4a] hover:bg-[#d63230]");
       } else if (variant === "outline") {
-        spinnerClassName = "";
+        spinnerClassName = "fill-light-text";
 
         className =
           "shadow-sm border border-light-text text-light-text " +
