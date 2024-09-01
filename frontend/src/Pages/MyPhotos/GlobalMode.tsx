@@ -1,5 +1,5 @@
 import Button from "@/Components/Button";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MIN_HEIGHT, MIN_WIDTH } from "@shared/constants/picture";
 import UploadPhotoModal from "./Modals/UploadPhotoModal";
 import { getImageDimensionsFromBase64 } from "@/Utils/image";
@@ -13,6 +13,10 @@ import { Mode } from "@/Constants/mode";
 import { PhotosGird } from "./PhotosGrid";
 import { Header } from "./Header";
 import { useMyPhotos } from "./Contexts/myPhotos";
+import {
+  DO_NOT_FETCH_PHOTOS,
+  SCROLL_POSITION,
+} from "@/Constants/localStorageKeys";
 
 export default function GlobalMode() {
   const {
@@ -33,47 +37,81 @@ export default function GlobalMode() {
   } | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(!state.isSet);
+  const [isInitLoading, setIsInitLoading] = useState(false);
   const prevCursor = usePrevious(state.nextCursor);
 
   const [showSpinner, setShowSpinner] = useState(false);
-
-  const isFirstRender = useRef(true);
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (isLoading) {
+    if (isInitLoading) {
       timer = setTimeout(() => setShowSpinner(true), 200);
     } else {
       setShowSpinner(false);
     }
     return () => clearTimeout(timer);
-  }, [isLoading]);
+  }, [isInitLoading]);
 
   const getPictures = async (cursor?: string) => {
-    _getPictures(cursor).finally(() => {
-      setIsLoading(false);
+    if (isFirstRender) {
+      setIsInitLoading(true);
+    }
+
+    await _getPictures(cursor).finally(() => {
+      setIsInitLoading(false);
     });
   };
 
-  const handleScrollUpdate = () => {
+  const handleScrollUpdate = useCallback(() => {
     if (state.nextCursor) {
       updateLoadingMoreImages(true);
       getPictures(state.nextCursor);
     }
-  };
+  }, [isFirstRender, state.nextCursor]);
 
-  useInfiniteScroll({ isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate }, [
-    state.nextCursor,
+  useInfiniteScroll(
+    { isLoading: isLoadingMoreImages.ref, onUpdate: handleScrollUpdate },
+    [state.nextCursor]
+  );
+
+  useEffect(() => {
+    if (
+      (!state.isSet &&
+        (localStorage.getItem(DO_NOT_FETCH_PHOTOS) !== "true" ||
+          !state.picsInfo ||
+          !state.picUrls)) ||
+      !isFirstRender
+    ) {
+      getPictures();
+    }
+
+    if (isFirstRender) {
+      setIsFirstRender(false);
+    }
+  }, [
+    state.sortValue,
+    state.filterSelect,
+    state.gender,
+    state.minAge,
+    state.maxAge,
   ]);
 
   useEffect(() => {
-    if (!state.isSet || !isFirstRender.current) getPictures();
-
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (!isFirstRender) {
+      localStorage.removeItem(DO_NOT_FETCH_PHOTOS);
     }
-  }, [state.sortValue, state.filterSelect, state.gender, state.minAge, state.maxAge]);
+  }, [isFirstRender]);
+
+  useEffect(() => {
+    const scrollPosition = localStorage.getItem(SCROLL_POSITION);
+    if (scrollPosition) {
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(scrollPosition));
+        localStorage.removeItem(SCROLL_POSITION);
+      }, 0);
+    }
+  }, []);
 
   const handlePictureUpload = async () => {
     await getPictures();
@@ -93,7 +131,9 @@ export default function GlobalMode() {
       reader.onloadend = async () => {
         let base64Image = reader.result as string;
 
-        const { height, width } = await getImageDimensionsFromBase64(base64Image);
+        const { height, width } = await getImageDimensionsFromBase64(
+          base64Image
+        );
 
         if (height < MIN_HEIGHT || width < MIN_WIDTH) {
           toast.error(`Picture must be at least ${MIN_WIDTH}x${MIN_HEIGHT}`, {
@@ -148,35 +188,40 @@ export default function GlobalMode() {
           setIsOpen(false);
         }}
       />
-      {!isLoading && state.picUrls.length === 0 && <EmptyPlaceholder />}
-      {loggedUser && !isLoading && state.picUrls.length > 0 && (
-        <>
-          <Header
-            getPictures={getPictures}
-            hasReachedPicsLimit={state.hasReachedPicsLimit}
-            loggedUser={loggedUser}
-            setIsFetchingFilter={(value) => dispatch({ key: "isFetchingFilter", value })}
-            filename={filename}
-            handleFileChange={handleFileChange}
-            selectedImage={selectedImage}
-            filterState={state}
-            filterDispatch={dispatch}
-          />
-          <PhotosGird
-            getPictures={getPictures}
-            isFetchingFilter={state.isFetchingFilter}
-            isLoadingMorePhotos={isLoadingMoreImages.state}
-            loggedUser={loggedUser}
-            ageGroup={state.ageGroup}
-            picUrls={state.picUrls}
-            picsInfo={state.picsInfo}
-            setPicUrls={(value) => dispatch({ key: "picUrls", value })}
-            setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
-            prevCursor={prevCursor}
-            isGlobal
-          />
-        </>
-      )}
+      {!isInitLoading &&
+        !state.picUrls?.length &&
+        loggedUser?.role !== "ADMIN" && <EmptyPlaceholder />}
+      {loggedUser &&
+        !isInitLoading &&
+        (state.picUrls?.length || loggedUser.role === "ADMIN") && (
+          <>
+            <Header
+              getPictures={getPictures}
+              hasReachedPicsLimit={state.hasReachedPicsLimit}
+              loggedUser={loggedUser}
+              setIsFetchingFilter={(value) =>
+                dispatch({ key: "isFetchingFilter", value })
+              }
+              filename={filename}
+              handleFileChange={handleFileChange}
+              selectedImage={selectedImage}
+              filterState={state}
+              filterDispatch={dispatch}
+            />
+            <PhotosGird
+              getPictures={getPictures}
+              isFetchingFilter={state.isFetchingFilter}
+              isLoadingMorePhotos={isLoadingMoreImages.state}
+              loggedUser={loggedUser}
+              picUrls={state.picUrls ?? []}
+              picsInfo={state.picsInfo ?? []}
+              setPicUrls={(value) => dispatch({ key: "picUrls", value })}
+              setPicsInfo={(value) => dispatch({ key: "picsInfo", value })}
+              prevCursor={prevCursor}
+              isGlobal
+            />
+          </>
+        )}
     </>
   );
 }

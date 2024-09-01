@@ -25,7 +25,7 @@ export const ImageCard = ({
 
   const [isImageHovered, setIsImageHovered] = useState(false);
 
-  const divClass = `${className} text-white font-bold text-xl`;
+  const divClass = `${className} text-white font-bold text-4xl max-md:text-3xl max-xs:text-4xl`;
 
   return (
     <>
@@ -36,7 +36,9 @@ export const ImageCard = ({
           className={divClass}
           style={{
             backgroundImage: `${
-              hasVoted ? "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8))," : ""
+              hasVoted
+                ? "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8)),"
+                : ""
             } url(${img})`,
             backgroundSize: isImageHovered ? "101%" : "100%",
             transition: "background-size 0.3s ease",

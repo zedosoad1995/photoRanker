@@ -8,44 +8,11 @@ import { adjustDate, formatDate } from "@/helpers/date";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
 import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
-import { calculateAge } from "@shared/helpers/date";
 import { IAgeGroup } from "@shared/types/picture";
 import { getPictureVotesStats } from "./votesStats/votesStats";
-
-const getAgeQuery = (minAge: number, maxAge?: number) => {
-  const query = `"dateOfBirth" < '${formatDate(
-    adjustDate(new Date(), { years: -minAge, days: 1 })
-  )}'`;
-
-  if (maxAge === undefined) {
-    return query;
-  }
-
-  return `${query} AND 
-    "dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`;
-};
-
-const AGE_GROUPS = [
-  {
-    min: 18,
-    max: 23,
-    query: getAgeQuery(18, 23),
-  },
-  {
-    min: 24,
-    max: 29,
-    query: getAgeQuery(24, 29),
-  },
-  {
-    min: 30,
-    max: 39,
-    query: getAgeQuery(30, 39),
-  },
-  {
-    min: 40,
-    query: getAgeQuery(40),
-  },
-];
+import { RatingRepo } from "@/types/repositories/ratingRepo";
+import { getPictureStats } from "./stats/stats";
+import { getAgeGroupQuery } from "./helpers/user";
 
 interface IReturnPicWithPervental {
   id: string;
@@ -68,7 +35,8 @@ async function getPicturesWithPercentile(
   maxAge: number | undefined,
   limit: number | undefined,
   cursor: string | undefined,
-  orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>
+  orderByObj: Record<string, ORDER_BY_DIR_OPTIONS_TYPE>,
+  ratingRepo: RatingRepo,
 ): Promise<{
   pictures: IReturnPicWithPervental[];
   nextCursor: string | undefined;
@@ -88,7 +56,7 @@ async function getPicturesWithPercentile(
 
   const orderKey = Object.keys(orderByObj)[0];
   const orderValue = Object.values(orderByObj)[0];
-  const extraSelectField = [];
+  const extraSelectField = [`pic_perc."ageGroupPercentile"`];
 
   let orderType: "date" | "number" = "number";
   let useHaving = false;
@@ -175,13 +143,13 @@ async function getPicturesWithPercentile(
 
     if (minAge) {
       whereQuery.push(
-        `usr."dateOfBirth" < '${formatDate(adjustDate(new Date(), { years: -minAge, days: 1 }))}'`
+        `usr."dateOfBirth" < '${formatDate(adjustDate(new Date(), { years: -minAge, days: 1 }))}'`,
       );
     }
 
     if (maxAge) {
       whereQuery.push(
-        `usr."dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`
+        `usr."dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`,
       );
     }
 
@@ -203,7 +171,7 @@ async function getPicturesWithPercentile(
     limitQuery = `LIMIT ${limit + 1}`;
     if (orderType === "date") {
       extraSelectField.push(
-        `to_char(${orderByQuery[0].orderByField}, 'YYYY-MM-DD HH24:MI:SS.MS') AS cursor`
+        `to_char(${orderByQuery[0].orderByField}, 'YYYY-MM-DD HH24:MI:SS.MS') AS cursor`,
       );
     } else {
       extraSelectField.push(`${orderByQuery[0].orderByField} AS cursor`);
@@ -233,11 +201,11 @@ async function getPicturesWithPercentile(
     } else {
       if (useHaving) {
         havingQuery.push(
-          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ) OR ${firstOrderBy.orderByField} IS NULL)`
+          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ) OR ${firstOrderBy.orderByField} IS NULL)`,
         );
       } else {
         whereQuery.push(
-          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ) OR ${firstOrderBy.orderByField} IS NULL)`
+          `(${firstOrderBy.orderByField} ${sign} ${transformedMainField} OR (${firstOrderBy.orderByField} = ${transformedMainField} AND pic.id > '${cursorId}' ) OR ${firstOrderBy.orderByField} IS NULL)`,
         );
       }
     }
@@ -260,36 +228,15 @@ async function getPicturesWithPercentile(
         WHEN COUNT(*) OVER() = 1 THEN 1
         ELSE PERCENT_RANK() OVER (ORDER BY pic.rating)
       END`
-      : `
-    CASE
-      WHEN MIN(pic.rating) OVER () < 0 THEN 100 * (pic.rating - MIN(pic.rating) OVER ())/(MAX(pic.rating) OVER () - MIN(pic.rating) OVER ())
-      ELSE 100 * pic.rating/MAX(pic.rating) OVER () 
-    END`
+      : `pic.rating`
   } AS percentile`;
 
   subQueryPicPercentileSelect.push(percentileSelect);
 
-  let ageGroup;
-
+  let ageGroupQuery: string = "";
+  let ageGroup: IAgeGroup;
   if (isGlobal) {
-    extraSelectField.push(`pic_perc."ageGroupPercentile"`);
-
-    if (!loggedUser.dateOfBirth) {
-      throw new Error("User does not have dateOfBirth");
-    }
-
-    const userAge = calculateAge(loggedUser.dateOfBirth);
-    const _ageGroup = AGE_GROUPS.find(
-      (row) => userAge >= row.min && (row.max === undefined || userAge <= row.max)
-    );
-
-    const ageGroupQuery = _ageGroup?.query;
-
-    if (_ageGroup === undefined || ageGroupQuery === undefined) {
-      throw new Error("No age group found");
-    }
-
-    ageGroup = { min: _ageGroup.min, max: _ageGroup.max };
+    [ageGroupQuery, ageGroup] = getAgeGroupQuery(loggedUser.dateOfBirth as string, `"dateOfBirth"`);
 
     const percentileAgeGroupSelect = `
       100 * 
@@ -302,6 +249,8 @@ async function getPicturesWithPercentile(
       END AS "ageGroupPercentile"`;
 
     subQueryPicPercentileSelect.push(percentileAgeGroupSelect);
+  } else {
+    subQueryPicPercentileSelect.push(`NULL AS "ageGroupPercentile"`);
   }
 
   const whenLimitedVotes =
@@ -374,6 +323,31 @@ async function getPicturesWithPercentile(
 
   const picturesWithoutLast = hasMore ? pictures.slice(0, -1) : pictures;
 
+  if (!isGlobal) {
+    const picsWithVotes = picturesWithoutLast.filter((pic) => pic.numVotes > 0);
+
+    if (picsWithVotes.length > 1) {
+      const nonGlobalPics = await getUserNonGlobalPics(loggedUser);
+
+      const newScores = Object.fromEntries(
+        picsWithVotes
+          .slice()
+          .sort((a, b) => b.percentile - a.percentile)
+          .map((pic, index, pics) => {
+            const pic1 = nonGlobalPics[pic.id];
+            const pic2 = nonGlobalPics[pics[index === 0 ? 1 : 0].id];
+            return [pic.id, ratingRepo.getWinProbability(pic1, pic2)];
+          }),
+      );
+
+      const sumScores = Object.entries(newScores).reduce((prev, [_, value]) => prev + value, 0);
+
+      picturesWithoutLast.forEach(({ id }, index) => {
+        picturesWithoutLast[index].percentile = (100 * newScores[id]) / sumScores;
+      });
+    }
+  }
+
   let nextCursor: string | undefined;
   if (hasMore) {
     const lastPic = picturesWithoutLast[picturesWithoutLast.length - 1];
@@ -392,6 +366,17 @@ async function getPicturesWithPercentile(
   };
 }
 
+async function getUserNonGlobalPics(loggedUser: User) {
+  const nonGlobalPics = await prisma.picture.findMany({
+    where: {
+      userId: loggedUser.id,
+      isGlobal: false,
+    },
+  });
+
+  return Object.fromEntries(nonGlobalPics.map((pic) => [pic.id, pic]));
+}
+
 function getAllColumnNames() {
   return Prisma.dmmf.datamodel.models
     .find((model) => model.name === "Picture")
@@ -399,15 +384,15 @@ function getAllColumnNames() {
     .map((f) => f.name);
 }
 
-function omitRatingParams(pic: Partial<Picture> & Record<string, any>) {
-  return _.omit(pic, "rating", "ratingDeviation", "volatility");
+function omittedField(pic: Partial<Picture> & Record<string, any>) {
+  return _.omit(pic, "rating", "ratingDeviation", "volatility", "countryOfOrigin", "ethnicity");
 }
 
 function getReturnPic(
   pic: Partial<Picture> & Record<string, any>,
-  storageInteractor: StorageInteractor
+  storageInteractor: StorageInteractor,
 ) {
-  const { filepath, ...ommitedPic } = omitRatingParams(pic);
+  const { filepath, ...ommitedPic } = omittedField(pic);
   const imgUrl = storageInteractor.getImageUrl(filepath);
 
   return { ...ommitedPic, url: imgUrl };
@@ -415,9 +400,9 @@ function getReturnPic(
 
 function getUpdateFieldsToReturn(
   pic: Partial<Picture> & Record<string, any>,
-  storageInteractor: StorageInteractor
+  storageInteractor: StorageInteractor,
 ) {
-  const { filepath, ...ommitedPic } = omitRatingParams(pic);
+  const { filepath, ...ommitedPic } = omittedField(pic);
   const imgUrl = storageInteractor.getImageUrl(filepath);
   const retPic = _.omit(ommitedPic, "freeRating", "hasPurchasedUnlimitedVotes", "isGlobal");
 
@@ -428,8 +413,8 @@ export const PictureModel = {
   ...prisma.picture,
   getMatchPictures,
   getPicturesWithPercentile,
-  omitRatingParams,
   getReturnPic,
   getUpdateFieldsToReturn,
   getPictureVotesStats,
+  getPictureStats,
 };

@@ -35,7 +35,11 @@ const navbarOptions = [
   },
 ];
 
-export default function Sidebar({ open, onClose: handleClose, onLogout: handleLogout }: ISidebar) {
+export default function Sidebar({
+  open,
+  onClose: handleClose,
+  onLogout: handleLogout,
+}: ISidebar) {
   return (
     <Transition show={open}>
       <Dialog onClose={handleClose} className="fixed inset-0 z-40">
@@ -58,22 +62,26 @@ export default function Sidebar({ open, onClose: handleClose, onLogout: handleLo
                     to={url}
                     onClick={handleClose}
                     className={({ isActive }) =>
-                      `flex items-center gap-4 py-3 hover:text-primary-hover cursor-pointer ${
-                        isActive ? "text-primary-hover" : ""
+                      `flex items-center gap-4 py-3 hover:text-primary cursor-pointer ${
+                        isActive ? "text-primary" : ""
                       }`
                     }
                   >
                     <Icon className="h-6 w-6" />
-                    <div className="text-xl font-semibold cursor-pointer">{label}</div>
+                    <div className="text-xl font-semibold cursor-pointer">
+                      {label}
+                    </div>
                   </NavLink>
                 );
               })}
               <div
                 onClick={handleLogout}
-                className="flex items-center gap-4 py-3 hover:text-primary-hover cursor-pointer"
+                className="flex items-center gap-4 py-3 hover:text-primary cursor-pointer"
               >
                 <ArrowLeftOnRectangleIcon className="h-6 w-6" />
-                <div className="text-xl font-semibold cursor-pointer">Logout</div>
+                <div className="text-xl font-semibold cursor-pointer">
+                  Logout
+                </div>
               </div>
             </div>
           </Transition.Child>

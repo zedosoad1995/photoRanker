@@ -5,13 +5,17 @@ import { IMode, Mode } from "@/Constants/mode";
 import PersonalMode from "./PersonalMode";
 import { MyPhotosProvider } from "./Contexts/myPhotos";
 import { useAuth } from "@/Contexts/auth";
+import { MODE } from "@/Constants/localStorageKeys";
 
 export default function MyPhotos() {
   const { user } = useAuth();
 
-  const [mode, setMode] = useState<IMode>(Mode.Global);
+  const [mode, setMode] = useState<IMode>(
+    (localStorage.getItem(MODE) as IMode) ?? Mode.Global
+  );
 
   const handleUpdateMode = (mode: IMode) => {
+    localStorage.setItem(MODE, mode);
     setMode(mode);
   };
 

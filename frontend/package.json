@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e .env.dev -- vite",
+    "dev": "dotenv -e .env -- vite",
     "build": "rimraf ./dist/ && tsc && vite build",
     "build:netlify": "rimraf ./dist/ && tsc && vite build && copyfiles -u 1 ./netlify/_redirects ./dist",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -26,7 +26,7 @@
     "react-easy-crop": "^5.0.0",
     "react-hook-form": "^7.45.1",
     "react-hot-toast": "^2.4.1",
-    "react-icons": "^4.11.0",
+    "react-icons": "^5.3.0",
     "react-image-file-resizer": "^0.4.8",
     "react-intersection-observer": "^9.5.2",
     "react-query": "^3.39.3",

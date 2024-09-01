@@ -26,6 +26,22 @@ export interface IPictureWithPercentile {
   updatedAt: Date;
 }
 
+export interface IPictureStats {
+  id: string;
+  percentileGeneral?: number;
+  percentileByAgeGroup?: number;
+  percentileByEthnicity?: number;
+  percentileByContinent?: number;
+  numVotes: number;
+  url: string;
+  gender?: Genders | null;
+  isActive: boolean;
+  isGlobal: boolean;
+  ageGroup?: IAgeGroup;
+  ethnicity?: string | null;
+  continent?: string;
+}
+
 export interface IPictureVotingStats {
   id: string;
   voter_gender: Genders | null;
@@ -36,6 +52,17 @@ export interface IPictureVotingStats {
   winner: string | null;
   loser: string | null;
   createdAt: Date;
+}
+
+export interface IAdminPhoto {
+  id: string;
+  ethnicity: string | null;
+  countryOfOrigin: string | null;
+  url: string;
+}
+
+export interface IGetAdminPhoto {
+  pictures: IAdminPhoto[];
 }
 
 export interface IGetPictureVotingStats {
@@ -56,4 +83,9 @@ export interface IGetManyPictures {
 
 export interface IUploadPermission {
   canUploadMore: boolean;
+}
+
+export interface IAdminPictureBody {
+  countryOfOrigin?: string;
+  ethnicity?: string;
 }

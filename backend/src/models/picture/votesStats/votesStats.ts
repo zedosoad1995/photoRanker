@@ -3,7 +3,7 @@ import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { UserRole } from "@prisma/client";
 import { Countries, Ethnicities, Genders } from "@shared/types/user";
 import { generateUserStatsWhenAdmin } from "./generateAdminUserStats";
-import { ILoggedUser } from "@/types/user";
+import { ILoggedUser, ILoggedUserMiddleware } from "@/types/user";
 import { UNLIMITED_STATS_ON } from "@shared/constants/purchase";
 import { isRegular } from "@/helpers/role";
 import { MAX_FREE_STATS_PER_PIC } from "@shared/constants/purchase";
@@ -28,7 +28,7 @@ export interface IGetPictureVotesStatsQueryReturn {
 export const getPictureVotesStats = async (
   pictureId: string,
   storageInteractor: StorageInteractor,
-  loggedUser: ILoggedUser
+  loggedUser: ILoggedUserMiddleware,
 ) => {
   // regular && not purchased && flag_on -> order by asc, Limit 5
   const hasLimitedStats =

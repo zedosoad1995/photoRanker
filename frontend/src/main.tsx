@@ -14,7 +14,8 @@ import {
   CHECKING_VALIDATION,
   FORGOT_PASSWORD,
   RESET_PASSWORD,
-  PHOTO_VOTING_STATS,
+  PHOTO_DETAILS,
+  ADMIN_PHOTOS,
 } from "./Constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
@@ -31,11 +32,14 @@ import ForgotPassword from "./Pages/ForgotPassword.tsx";
 import ResetPassword from "./Pages/ResetPassword.tsx";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "react-query";
-import UnprotectedLayout from "./Components/UnprotectedLayout/Layout.tsx";
+import UnprotectedLayout from "./Components/Layout/UnprotectedLayout/Layout.tsx";
 import App from "./Pages/App/index.tsx";
 import RedirectLayout from "./Components/RedirectLayout.tsx";
 import { NotFoundPage } from "./Pages/404.tsx";
-import { PhotoVotingStats } from "./Pages/PhotoVotingStats/PhotoVotingStats.tsx";
+import { PhotosProvider } from "./Contexts/photos.tsx";
+import { PhotoDetails } from "./Pages/PhotoDetails/PhotoDetails.tsx";
+import AdminLayout from "./Components/Layout/AdminLayout.tsx";
+import { AdminPhotos } from "./Pages/Admin/Photos/Photos.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -58,12 +62,21 @@ const router = createBrowserRouter([
         element: <MyPhotos />,
       },
       {
-        path: PHOTO_VOTING_STATS,
-        element: <PhotoVotingStats />,
+        path: PHOTO_DETAILS,
+        element: <PhotoDetails />,
       },
       {
         path: SETTINGS,
         element: <Settings />,
+      },
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            path: ADMIN_PHOTOS,
+            element: <AdminPhotos />,
+          },
+        ],
       },
     ],
   },
@@ -127,8 +140,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_AUTH_ID!}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Toaster position="top-center" reverseOrder={false} />
-          <RouterProvider router={router} />
+          <PhotosProvider>
+            <Toaster position="top-center" reverseOrder={false} />
+            <RouterProvider router={router} />
+          </PhotosProvider>
         </AuthProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>

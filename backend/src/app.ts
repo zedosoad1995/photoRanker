@@ -20,7 +20,6 @@ app.use(
 );
 app.use("/image", express.static(IMAGES_FOLDER_PATH));
 app.use(routes);
-
 app.all("*", async (req, res) => {
   throw new NotFoundError("Invalid route path");
 });

@@ -1,12 +1,11 @@
 import { Spinner } from "@/Components/Loading/Spinner";
-import { PhotoCard } from "./ImageCard";
+import { PhotoCard } from "./ImageCard/ImageCard";
 import { PhotosLoaderCover } from "./PhotosLoaderCover";
 import { IUser } from "@/Types/user";
 import { IPictureWithPercentile } from "@/Types/picture";
 import BanUserModal from "./Modals/BanUserModal";
 import DeletePhotoModal from "./Modals/DeletePhotoModal";
-import { useState, useMemo } from "react";
-import { IAgeGroup } from "@shared/types/picture";
+import { useState } from "react";
 
 interface IPhotoGrid {
   isFetchingFilter: boolean;
@@ -19,7 +18,6 @@ interface IPhotoGrid {
   setPicsInfo: React.Dispatch<React.SetStateAction<IPictureWithPercentile[]>>;
   prevCursor: string | undefined;
   isGlobal?: boolean;
-  ageGroup?: IAgeGroup;
 }
 
 export const PhotosGird = ({
@@ -33,26 +31,27 @@ export const PhotosGird = ({
   setPicsInfo,
   prevCursor,
   isGlobal,
-  ageGroup,
 }: IPhotoGrid) => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
   const [isOpenBan, setIsOpenBan] = useState(false);
   const [picToDeleteIndex, setPicToDeleteIndex] = useState<number | null>(null);
   const [userIdToBan, setUserIdToBan] = useState<string | null>(null);
 
-  const handleClickDeletePic = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
+  const handleClickDeletePic =
+    (index: number) => async (event: React.MouseEvent) => {
+      event.stopPropagation();
 
-    setIsOpenDelete(true);
-    setPicToDeleteIndex(index);
-  };
+      setIsOpenDelete(true);
+      setPicToDeleteIndex(index);
+    };
 
-  const handleClickBanUser = (index: number) => async (event: React.MouseEvent) => {
-    event.stopPropagation();
+  const handleClickBanUser =
+    (index: number) => async (event: React.MouseEvent) => {
+      event.stopPropagation();
 
-    setIsOpenBan(true);
-    setUserIdToBan(picsInfo[index].userId);
-  };
+      setIsOpenBan(true);
+      setUserIdToBan(picsInfo[index].userId);
+    };
 
   const handleCloseDeleteModal = () => {
     setIsOpenDelete(false);
@@ -61,16 +60,6 @@ export const PhotosGird = ({
   const handleCloseBanModal = () => {
     setIsOpenBan(false);
   };
-
-  const ageGroupStr = useMemo(() => {
-    if (!ageGroup) return;
-
-    if (ageGroup.max === undefined) {
-      return `${ageGroup.min}+`;
-    }
-
-    return `${ageGroup.min}-${ageGroup.max}`;
-  }, [ageGroup]);
 
   return (
     <>
@@ -102,7 +91,6 @@ export const PhotosGird = ({
                 onClickDeletePic={handleClickDeletePic(index)}
                 pic={pic}
                 picInfo={picsInfo[index]}
-                ageGroupStr={ageGroupStr}
                 isGlobal={isGlobal}
               />
             ))}

@@ -14,11 +14,12 @@ import { parseBoolean, parseNumber, parseOrderBy } from "@/helpers/query";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { RATING_INI, RD_INI, VOLATILITY_INI } from "@/constants/rating";
 import { MAX_FREE_VOTES } from "@shared/constants/purchase";
-import { ILoggedUser, ILoggedUserMiddleware } from "@/types/user";
-import { Prisma } from "@prisma/client";
+import { ILoggedUserMiddleware } from "@/types/user";
+import { RatingRepo } from "@/types/repositories/ratingRepo";
 
 export const getMany =
-  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+  (ratingRepo: RatingRepo, storageInteractor: StorageInteractor) =>
+  async (req: Request, res: Response) => {
     const loggedUser = req.loggedUser!;
     const userId = req.query.userId as string | undefined;
     const hasReport = parseBoolean(req.query.hasReport as string | undefined);
@@ -58,7 +59,8 @@ export const getMany =
       maxAge,
       limit,
       cursor,
-      orderByQuery
+      orderByQuery,
+      ratingRepo,
     );
 
     const retPics = pictures.map((pic) => PictureModel.getReturnPic(pic, storageInteractor));
@@ -116,7 +118,7 @@ export const getOne =
 export const getVotesStats =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const pictureId = req.params.pictureId;
-    const loggedUser = req.loggedUser as ILoggedUser;
+    const loggedUser = req.loggedUser as ILoggedUserMiddleware;
 
     const picture = await PictureModel.findUnique({
       where: {
@@ -131,10 +133,20 @@ export const getVotesStats =
     const { stats, count, hasMore } = await PictureModel.getPictureVotesStats(
       pictureId,
       storageInteractor,
-      loggedUser
+      loggedUser,
     );
 
     res.status(200).json({ stats, total: count, hasMore });
+  };
+
+export const getStats =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const pictureId = req.params.pictureId;
+    const loggedUser = req.loggedUser as ILoggedUserMiddleware;
+
+    const stats = await PictureModel.getPictureStats(pictureId, loggedUser, storageInteractor);
+
+    res.status(200).json({ ...stats });
   };
 
 export const checkUploadPermission = async (req: Request, res: Response) => {
@@ -266,3 +278,51 @@ export const deleteOne =
 
     res.sendStatus(204);
   };
+
+export const getAdminPics =
+  (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
+    const pics = await PictureModel.findMany({
+      select: {
+        id: true,
+        countryOfOrigin: true,
+        ethnicity: true,
+        filepath: true,
+        user: true,
+      },
+      where: {
+        user: {
+          role: "ADMIN",
+        },
+      },
+    });
+
+    const transformedPics = pics.map((pic) => ({
+      id: pic.id,
+      ethnicity: pic.ethnicity ?? pic.user.ethnicity,
+      countryOfOrigin: pic.countryOfOrigin ?? pic.user.countryOfOrigin,
+      url: storageInteractor.getImageUrl(pic.filepath),
+    }));
+
+    res.status(200).json({ pictures: transformedPics });
+  };
+
+export const updateAdminPhoto = async (req: Request, res: Response) => {
+  const pictureId = req.params.pictureId;
+
+  const picture = await PictureModel.findUnique({
+    where: {
+      id: pictureId,
+    },
+  });
+
+  if (!picture) {
+    throw new NotFoundError("Picture does not exist");
+  }
+
+  const updatedPic = await PictureModel.update({
+    data: req.body,
+    where: { id: pictureId },
+  });
+
+  res.status(200).json(updatedPic);
+};

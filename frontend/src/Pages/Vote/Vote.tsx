@@ -14,19 +14,20 @@ import { NoVotesPlaceholder } from "./NoVotesPlaceholder";
 import { TIME_VOTE_TRANSITION } from "@/Constants/vote";
 
 export default function Vote() {
-  const [{ pic1, pic2, match, prob1, prob2 }, setState, applyUpdates] = useDeferredState<{
-    pic1?: string;
-    pic2?: string;
-    prob1?: number;
-    prob2?: number;
-    match?: IMatch;
-  }>({
-    pic1: undefined,
-    pic2: undefined,
-    prob1: undefined,
-    prob2: undefined,
-    match: undefined,
-  });
+  const [{ pic1, pic2, match, prob1, prob2 }, setState, applyUpdates] =
+    useDeferredState<{
+      pic1?: string;
+      pic2?: string;
+      prob1?: number;
+      prob2?: number;
+      match?: IMatch;
+    }>({
+      pic1: undefined,
+      pic2: undefined,
+      prob1: undefined,
+      prob2: undefined,
+      match: undefined,
+    });
 
   const hasVoted = useRef(false);
   const canGoToNextRef = useRef(true);
@@ -142,7 +143,11 @@ export default function Vote() {
 
     let intervalTime = TIME_VOTE_TRANSITION;
     const checkCondition = () => {
-      if (canGoToNextRef.current && isPic1Loaded.current && isPic2Loaded.current) {
+      if (
+        canGoToNextRef.current &&
+        isPic1Loaded.current &&
+        isPic2Loaded.current
+      ) {
         hasVoted.current = false;
         applyUpdates();
         clearInterval(interval);
@@ -232,10 +237,20 @@ export default function Vote() {
       {pic1 && pic2 && match && (
         <>
           <div className="flex max-w-[35vh] xs:w-40 mx-auto mt-3 xs:mt-5 gap-2">
-            <Button isFull style="primary" variant="outline" onClick={handleSkipMatch}>
+            <Button
+              isFull
+              style="gray"
+              variant="outline"
+              onClick={handleSkipMatch}
+            >
               Skip
             </Button>
-            <FlagButton pic1={pic1} pic2={pic2} match={match} onReport={handleReport} />
+            <FlagButton
+              pic1={pic1}
+              pic2={pic2}
+              match={match}
+              onReport={handleReport}
+            />
           </div>
         </>
       )}

@@ -4,9 +4,10 @@ import Filters from "./Filters/Filters";
 import { isAdmin } from "@/Utils/role";
 import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
+import { IoCameraSharp } from "react-icons/io5";
 import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
-import BuyMorePhotosModal from "./Modals/BuyMorePhotosModal";
 import { PHOTO_LIMIT_PURCHASE_ON } from "@shared/constants/purchase";
+import { IconContext } from "react-icons";
 
 const DEFAULT_SORT = "score desc";
 
@@ -36,11 +37,7 @@ export const Header = ({
 }: IHeader) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [isOpenMultiPicsModal, setIsOpenMultiPicsModal] = useState(false);
-
-  const handleCloseMultiPicsModal = () => {
-    setIsOpenMultiPicsModal(false);
-  };
+  const [_, setIsOpenMultiPicsModal] = useState(false);
 
   const handleClickUploadPhoto = () => {
     if (hasReachedPicsLimit && PHOTO_LIMIT_PURCHASE_ON) {
@@ -99,7 +96,8 @@ export const Header = ({
 
   const debouncedUpdateAgeRange = useCallback(
     debounce((minAge: number, maxAge: number) => {
-      if (minAge === filterState.minAge && maxAge === filterState.maxAge) return;
+      if (minAge === filterState.minAge && maxAge === filterState.maxAge)
+        return;
 
       setIsFetchingFilter(true);
       filterDispatch({ key: "minAge", value: minAge });
@@ -110,7 +108,10 @@ export const Header = ({
 
   return (
     <>
-      <BuyMorePhotosModal isOpen={isOpenMultiPicsModal} onClose={handleCloseMultiPicsModal} />
+      {/* <BuyMorePhotosModal
+        isOpen={isOpenMultiPicsModal}
+        onClose={handleCloseMultiPicsModal}
+      /> */}
       <input
         type="file"
         accept="image/jpeg, image/png"
@@ -130,8 +131,10 @@ export const Header = ({
             isFull={true}
             isHeightFull={true}
           >
-            <div className="flex items-center justify-center">
-              <div className="mr-3 text-xl -translate-y-[2px]">+</div>
+            <div className="flex items-center gap-2">
+              <IconContext.Provider value={{ size: "18px" }}>
+                <IoCameraSharp />
+              </IconContext.Provider>
               <div>Add Photo</div>
             </div>
           </Button>

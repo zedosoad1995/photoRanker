@@ -1,6 +1,9 @@
 import {
+  IAdminPictureBody,
+  IGetAdminPhoto,
   IGetManyPictures,
   IGetPictureVotingStats,
+  IPictureStats,
   IUpdatedPic,
   IUploadPermission,
   PictureRes,
@@ -32,11 +35,28 @@ export const getManyPictures = async (
   );
 };
 
+export const getAdminPhotos = async (): Promise<IGetAdminPhoto> => {
+  return api.get(`/pictures/admin`);
+};
+
+export const updateAdminPhoto = async (
+  id: string,
+  body: IAdminPictureBody
+): Promise<any> => {
+  return api.patch(`/pictures/admin/${id}`, body);
+};
+
 export const getPicture = async (id: string): Promise<PictureRes> => {
   return api.get(`/pictures/${id}`);
 };
 
-export const getPictureVotingStats = async (id: string): Promise<IGetPictureVotingStats> => {
+export const getPictureVotingStats = async (
+  id: string
+): Promise<IGetPictureVotingStats> => {
+  return api.get(`/pictures/${id}/vote-stats`);
+};
+
+export const getPictureStats = async (id: string): Promise<IPictureStats> => {
   return api.get(`/pictures/${id}/stats`);
 };
 

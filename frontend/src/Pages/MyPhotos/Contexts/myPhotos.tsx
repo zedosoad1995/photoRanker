@@ -4,13 +4,21 @@ import { getManyPictures, getUploadPermission } from "@/Services/picture";
 import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
 import { isAdmin } from "@/Utils/role";
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { IAgeGroup } from "@shared/types/picture";
+import { usePhotos } from "@/Contexts/photos";
+import {
+  FILTER_SELECT,
+  GENDER,
+  MAX_AGE,
+  MIN_AGE,
+  SORT_VALUE,
+} from "@/Constants/localStorageKeys";
 
 export interface MyPhotosState {
   ageGroup: IAgeGroup;
-  picUrls: string[];
-  picsInfo: IPictureWithPercentile[];
+  picUrls?: string[];
+  picsInfo?: IPictureWithPercentile[];
   nextCursor?: string;
   isSet: boolean;
   filterSelect: string;
@@ -48,20 +56,35 @@ interface IMyPhotosProvider {
 
 export const DEFAULT_SORT = "score desc";
 
-export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvider) => {
+export const MyPhotosProvider = ({
+  children,
+  loggedUser,
+  mode,
+}: IMyPhotosProvider) => {
+  const {
+    picUrls,
+    picsInfo,
+    setPicUrls,
+    setPicsInfo,
+    nextCursor,
+    setNextCursor,
+    ageGroup,
+    setAgeGroup,
+  } = usePhotos(mode);
+
   const [isLoadingMoreImages, updateLoadingMoreImages] = useStateRef(false);
 
   const initialState: MyPhotosState = {
-    ageGroup: undefined,
-    picUrls: [],
-    picsInfo: [],
-    nextCursor: undefined,
+    ageGroup,
+    picUrls,
+    picsInfo,
+    nextCursor,
     isSet: false,
-    filterSelect: "",
-    sortValue: DEFAULT_SORT,
-    gender: undefined,
-    minAge: undefined,
-    maxAge: undefined,
+    filterSelect: localStorage.getItem(FILTER_SELECT(mode)) || "",
+    sortValue: localStorage.getItem(SORT_VALUE(mode)) || DEFAULT_SORT,
+    gender: localStorage.getItem(GENDER(mode)) || undefined,
+    minAge: Number(localStorage.getItem(MIN_AGE(mode))) || undefined,
+    maxAge: Number(localStorage.getItem(MAX_AGE(mode))) || undefined,
     hasReachedPicsLimit: false,
     isFetchingFilter: false,
   };
@@ -71,12 +94,38 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
       return { ...state, [action.key]: action.value(state[action.key]) };
     }
 
+    if (
+      ["sortValue", "filterSelect", "gender", "minAge", "maxAge"].includes(
+        action.key
+      )
+    ) {
+      localStorage.setItem(action.key + " " + mode, action.value);
+    }
+
     return { ...state, [action.key]: action.value };
   }
 
   const [state, dispatch] = useReducer(setterReducer, initialState);
 
+  useEffect(() => {
+    setPicUrls(state.picUrls);
+  }, [state.picUrls]);
+
+  useEffect(() => {
+    setPicsInfo(state.picsInfo);
+  }, [state.picsInfo]);
+
+  useEffect(() => {
+    setNextCursor(state.nextCursor);
+  }, [state.nextCursor]);
+
+  useEffect(() => {
+    setAgeGroup(state.ageGroup);
+  }, [state.ageGroup]);
+
   const getPictures = async (cursor?: string) => {
+    dispatch({ key: "isSet", value: false });
+
     try {
       if (!loggedUser) return;
 
@@ -101,7 +150,12 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
         dispatch({
           key: "picUrls",
           value: cursor
-            ? [...new Set([...state.picUrls, ...res.pictures.map(({ url }) => url)])]
+            ? [
+                ...new Set([
+                  ...(state.picUrls ?? []),
+                  ...res.pictures.map(({ url }) => url),
+                ]),
+              ]
             : res.pictures.map(({ url }) => url),
         });
 
@@ -110,7 +164,7 @@ export const MyPhotosProvider = ({ children, loggedUser, mode }: IMyPhotosProvid
           value: cursor
             ? [
                 ...new Set([
-                  ...state.picsInfo.map((row) => JSON.stringify(row)),
+                  ...(state.picsInfo?.map((row) => JSON.stringify(row)) ?? []),
                   ...res.pictures.map((pic) => JSON.stringify(pic)),
                 ]),
               ].map((row) => JSON.parse(row))

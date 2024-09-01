@@ -121,8 +121,14 @@ function App() {
     const handleResize = () => {
       if (!vsRef.current || !imgRef.current) return;
       vsRef.current.style.top = `${imgRef.current.height / 2}px`;
-      vsRef.current.style.width = `${Math.max(imgRef.current.width * 0.3, 50)}px`;
-      vsRef.current.style.height = `${Math.max(imgRef.current.width * 0.3, 50)}px`;
+      vsRef.current.style.width = `${Math.max(
+        imgRef.current.width * 0.3,
+        50
+      )}px`;
+      vsRef.current.style.height = `${Math.max(
+        imgRef.current.width * 0.3,
+        50
+      )}px`;
     };
 
     const imgEl = imgRef.current;
@@ -144,7 +150,7 @@ function App() {
   }, []);
 
   return (
-    <div className="font-poppins bg-white">
+    <div className="bg-white">
       <button
         onClick={scrollToTop}
         className={`z-50 fixed text-xl rounded-full right-6 bottom-6 bg-[#111827] text-white hover:bg-[#0084FF] transition-all ease-in-out duration-[400ms] w-14 h-14 pb-1 ${
@@ -161,7 +167,7 @@ function App() {
       >
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center w-full px-5 py-6">
-            <Logo />
+            <Logo hideIcon />
             <div className="hidden md:flex gap-3">
               <button
                 onClick={handleGoToLogin}
@@ -180,7 +186,9 @@ function App() {
               onClick={() => setIsMenuOpen((val) => !val)}
               className="block md:hidden cursor-pointer"
             >
-              <IconContext.Provider value={{ color: "#111827", className: "text-[32px]" }}>
+              <IconContext.Provider
+                value={{ color: "#111827", className: "text-[32px]" }}
+              >
                 {isMenuOpen ? <MdClose /> : <MdMenu />}
               </IconContext.Provider>
             </div>
@@ -211,7 +219,8 @@ function App() {
                 Find your best photo
               </h1>
               <h2 className="text-[#8a9095] max-[350px]:text-lg max-[500px]:text-xl text-[24px] mb-[40px] text-center">
-                Let strangers rate your pictures, in a fun side-by-side comparison
+                Let strangers rate your pictures, in a fun side-by-side
+                comparison
               </h2>
               <div className="flex relative justify-center max-[370px]:gap-3 gap-5 mb-[40px]">
                 <div className="cursor-pointer rounded-t-md shadow-md w-56">
@@ -282,7 +291,9 @@ function App() {
           <div
             ref={refHowItWorks}
             className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[75px] ${
-              inViewHowItWorks ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              inViewHowItWorks
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
             } transition-all duration-500 ease-in`}
           >
             HOW IT WORKS
@@ -304,9 +315,12 @@ function App() {
                 inViewStep1TextMobile ? "opacity-100" : "opacity-0"
               } transition-opacity duration-500 ease-in`}
             >
-              <div className="text-[#374048] text-2xl font-semibold mb-5">1. Upload Photo</div>
+              <div className="text-[#374048] text-2xl font-semibold mb-5">
+                1. Upload Photo
+              </div>
               <div className="text-[#82898f] text-base font-light mb-5">
-                Upload a picture you want to get rated. You can upload multiple if you wish.
+                Upload a picture you want to get rated. You can upload multiple
+                if you wish.
               </div>
               <button
                 onClick={handleGoToSignUp}
@@ -340,7 +354,8 @@ function App() {
                   inViewStep1Img ? "opacity-100" : "opacity-0"
                 } transition-opacity duration-500 ease-in`}
               >
-                Upload a picture you want to get rated. You can upload multiple if you wish.
+                Upload a picture you want to get rated. You can upload multiple
+                if you wish.
               </div>
               <button
                 onClick={handleGoToSignUp}
@@ -366,7 +381,10 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/side-by-side-click.webp" alt="vote images side by side" />
+                <img
+                  src="/side-by-side-click.webp"
+                  alt="vote images side by side"
+                />
               </div>
             </div>
             <div
@@ -375,10 +393,13 @@ function App() {
                 inViewStep2TextMobile ? "opacity-100" : "opacity-0"
               } transition-opacity duration-500 ease-in`}
             >
-              <div className="text-[#374048] text-2xl font-semibold mb-5">2. Receive Votes</div>
+              <div className="text-[#374048] text-2xl font-semibold mb-5">
+                2. Receive Votes
+              </div>
               <div className="text-[#82898f] text-base font-light mb-5">
-                Get rated by strangers based on attractiveness. Our unique side-by-side voting
-                system allows for more votes and avoids gray areas typical in 1-10 rating.
+                Get rated by strangers based on attractiveness. Our unique
+                side-by-side voting system allows for more votes and avoids gray
+                areas typical in 1-10 rating.
               </div>
               <button
                 onClick={handleGoToSignUp}
@@ -403,8 +424,9 @@ function App() {
                   inViewStep2Img ? "opacity-100" : "opacity-0"
                 } transition-opacity duration-500 ease-in`}
               >
-                Get rated by strangers based on attractiveness. Our unique side-by-side voting
-                system allows for more votes and avoids gray areas typical in 1-10 rating.
+                Get rated by strangers based on attractiveness. Our unique
+                side-by-side voting system allows for more votes and avoids gray
+                areas typical in 1-10 rating.
               </div>
               <button
                 onClick={handleGoToSignUp}
@@ -427,7 +449,10 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/side-by-side-click.webp" alt="vote images side by side" />
+                <img
+                  src="/side-by-side-click.webp"
+                  alt="vote images side by side"
+                />
               </div>
             </div>
           </div>
@@ -449,7 +474,9 @@ function App() {
                 inViewStep3TextMobile ? "opacity-100" : "opacity-0"
               } transition-opacity duration-500 ease-in`}
             >
-              <div className="text-[#374048] text-2xl font-semibold mb-5">3. Get Score</div>
+              <div className="text-[#374048] text-2xl font-semibold mb-5">
+                3. Get Score
+              </div>
               <div className="text-[#82898f] text-base font-light mb-5">
                 Discover how does you photo compare to the general population.
               </div>
@@ -510,14 +537,18 @@ function App() {
           <div
             ref={refFeatures}
             className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px] ${
-              inViewFeatures ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              inViewFeatures
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
             } transition-all duration-500 ease-in`}
           >
             FEATURES
           </div>
           <div
             className={`mb-[25px] ${
-              inViewFeatures ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              inViewFeatures
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
             } transition-all duration-500 ease-in`}
           >
             <div className="w-[82px] h-[6px] bg-[#eee] mx-auto" />
@@ -531,7 +562,9 @@ function App() {
             >
               <div className="flex">
                 <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <IconContext.Provider
+                    value={{ color: "#0084ff", className: "text-[36px]" }}
+                  >
                     <MdOutlinePhotoLibrary />
                   </IconContext.Provider>
                 </div>
@@ -540,8 +573,8 @@ function App() {
                     Many Votes Quickly
                   </div>
                   <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                    Our side-by-side makes voting easy and fun, leading to more votes and greater
-                    accuracy.
+                    Our side-by-side makes voting easy and fun, leading to more
+                    votes and greater accuracy.
                   </div>
                 </div>
               </div>
@@ -553,7 +586,9 @@ function App() {
             >
               <div className="flex">
                 <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <IconContext.Provider
+                    value={{ color: "#0084ff", className: "text-[36px]" }}
+                  >
                     <MdOutlineManageAccounts />
                   </IconContext.Provider>
                 </div>
@@ -562,7 +597,8 @@ function App() {
                     Choose Your Judges
                   </div>
                   <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                    Select the age and gender of your voters for targeted feedback.
+                    Select the age and gender of your voters for targeted
+                    feedback.
                   </div>
                 </div>
               </div>
@@ -574,7 +610,9 @@ function App() {
             >
               <div className="flex">
                 <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <IconContext.Provider
+                    value={{ color: "#0084ff", className: "text-[36px]" }}
+                  >
                     <MdSpeed />
                   </IconContext.Provider>
                 </div>
@@ -583,8 +621,8 @@ function App() {
                     High Accuracy
                   </div>
                   <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                    Our algorithm is designed for speed and precision, delivering reliable photo
-                    rankings quickly.
+                    Our algorithm is designed for speed and precision,
+                    delivering reliable photo rankings quickly.
                   </div>
                 </div>
               </div>
@@ -596,7 +634,9 @@ function App() {
             >
               <div className="flex">
                 <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <IconContext.Provider
+                    value={{ color: "#0084ff", className: "text-[36px]" }}
+                  >
                     <MdTune />
                   </IconContext.Provider>
                 </div>
@@ -605,7 +645,8 @@ function App() {
                     Vote Your Way
                   </div>
                   <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                    Pick the photos you want to vote based on age and gender preferences.
+                    Pick the photos you want to vote based on age and gender
+                    preferences.
                   </div>
                 </div>
               </div>
@@ -617,7 +658,9 @@ function App() {
             >
               <div className="flex">
                 <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <IconContext.Provider
+                    value={{ color: "#0084ff", className: "text-[36px]" }}
+                  >
                     <MdBalance />
                   </IconContext.Provider>
                 </div>
@@ -626,8 +669,8 @@ function App() {
                     Bias-Free Voting
                   </div>
                   <div className="text-[#82898f] text-[14px] leading-[22px] font-light">
-                    Binary decisions remove ambiguity, making each vote more meaningful and
-                    reliable.
+                    Binary decisions remove ambiguity, making each vote more
+                    meaningful and reliable.
                   </div>
                 </div>
               </div>
@@ -639,7 +682,9 @@ function App() {
             >
               <div className="flex">
                 <div className="w-[70px] min-w-[70px] flex justify-center items-start">
-                  <IconContext.Provider value={{ color: "#0084ff", className: "text-[36px]" }}>
+                  <IconContext.Provider
+                    value={{ color: "#0084ff", className: "text-[36px]" }}
+                  >
                     <MdPercent />
                   </IconContext.Provider>
                 </div>
@@ -661,14 +706,18 @@ function App() {
           <div
             ref={refFAQ}
             className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px] ${
-              inViewFAQ ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              inViewFAQ
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
             } transition-all duration-500 ease-in`}
           >
             FAQ
           </div>
           <div
             className={`mb-[75px] ${
-              inViewFAQ ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              inViewFAQ
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
             } transition-all duration-500 ease-in`}
           >
             <div className="text-[#969da3] text-lg md:text-xl text-center leading-8 font-thin mb-5">
