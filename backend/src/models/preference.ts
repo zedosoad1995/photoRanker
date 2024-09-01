@@ -8,7 +8,7 @@ const checkMinMaxAges = (
   field1: MinAgeField | MaxAgeField,
   value1: number | null | undefined,
   field2: MinAgeField | MaxAgeField,
-  value2: number | null | undefined
+  value2: number | null | undefined,
 ) => {
   const isField1Max = field1 === "contentMaxAge" || field1 === "exposureMaxAge" ? true : false;
 
