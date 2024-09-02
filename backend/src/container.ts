@@ -38,6 +38,6 @@ export const logger =
 // Purchase
 export const purchaser = {
   [PURCHASE_TYPE.INCREASE_PHOTOS]: new IncreasePhotos(),
-  [PURCHASE_TYPE.UNLIMITED_VOTES_ALL]: new UnlimitedVotes(),
+  [PURCHASE_TYPE.UNLIMITED_VOTES]: new UnlimitedVotes(),
   [PURCHASE_TYPE.UNLIMITED_STATS]: new UnlimitedStats(),
 };

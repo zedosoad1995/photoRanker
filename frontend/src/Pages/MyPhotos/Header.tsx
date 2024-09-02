@@ -6,7 +6,6 @@ import { debounce } from "underscore";
 import { IUser } from "@/Types/user";
 import { IoCameraSharp } from "react-icons/io5";
 import { MyPhotosAction, MyPhotosState } from "./Contexts/myPhotos";
-import { PHOTO_LIMIT_PURCHASE_ON } from "@shared/constants/purchase";
 import { IconContext } from "react-icons";
 
 const DEFAULT_SORT = "score desc";
@@ -40,7 +39,7 @@ export const Header = ({
   const [_, setIsOpenMultiPicsModal] = useState(false);
 
   const handleClickUploadPhoto = () => {
-    if (hasReachedPicsLimit && PHOTO_LIMIT_PURCHASE_ON) {
+    if (hasReachedPicsLimit) {
       setIsOpenMultiPicsModal(true);
     } else {
       if (fileInputRef.current) {
@@ -108,10 +107,6 @@ export const Header = ({
 
   return (
     <>
-      {/* <BuyMorePhotosModal
-        isOpen={isOpenMultiPicsModal}
-        onClose={handleCloseMultiPicsModal}
-      /> */}
       <input
         type="file"
         accept="image/jpeg, image/png"
@@ -126,7 +121,6 @@ export const Header = ({
       >
         <div className="w-full sm:w-fit">
           <Button
-            disabled={!PHOTO_LIMIT_PURCHASE_ON && hasReachedPicsLimit}
             onClick={handleClickUploadPhoto}
             isFull={true}
             isHeightFull={true}

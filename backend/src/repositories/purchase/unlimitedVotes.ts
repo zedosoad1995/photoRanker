@@ -2,26 +2,22 @@ import { NotFoundError } from "@/errors/NotFoundError";
 import { prisma } from "@/models";
 import { PurchaseRepo } from "@/types/repositories/purchase";
 import { ILoggedUserMiddleware } from "@/types/user";
-import { PURCHASE_AMOUNT, PURCHASE_TYPE, UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
+import { PURCHASE_AMOUNT, PURCHASE_TYPE } from "@shared/constants/purchase";
 
 export class UnlimitedVotes implements PurchaseRepo {
-  purchaseName = PURCHASE_TYPE.UNLIMITED_VOTES_ALL;
+  purchaseName = PURCHASE_TYPE.UNLIMITED_VOTES;
 
   public async hasAlreadyBeenPurchased(user: ILoggedUserMiddleware) {
     return Boolean(user?.purchase?.hasUnlimitedVotes);
   }
 
   public getPurchaseAmountAndMetadata() {
-    if (UNLIMITED_VOTE_ALL_ON) {
-      return {
-        amount: PURCHASE_AMOUNT[this.purchaseName],
-        metadata: {
-          type: this.purchaseName,
-        },
-      };
-    }
-
-    return null;
+    return {
+      amount: PURCHASE_AMOUNT[this.purchaseName],
+      metadata: {
+        type: this.purchaseName,
+      },
+    };
   }
 
   public async handlePurchase(userId: string) {

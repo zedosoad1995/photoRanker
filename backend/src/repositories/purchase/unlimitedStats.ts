@@ -1,11 +1,7 @@
 import { prisma } from "@/models";
 import { PurchaseRepo } from "@/types/repositories/purchase";
 import { ILoggedUserMiddleware } from "@/types/user";
-import {
-  PHOTO_LIMIT_PURCHASE_ON,
-  PURCHASE_AMOUNT,
-  PURCHASE_TYPE,
-} from "@shared/constants/purchase";
+import { PURCHASE_AMOUNT, PURCHASE_TYPE } from "@shared/constants/purchase";
 
 export class UnlimitedStats implements PurchaseRepo {
   purchaseName = PURCHASE_TYPE.UNLIMITED_STATS;
@@ -15,16 +11,12 @@ export class UnlimitedStats implements PurchaseRepo {
   }
 
   public getPurchaseAmountAndMetadata() {
-    if (PHOTO_LIMIT_PURCHASE_ON) {
-      return {
-        amount: PURCHASE_AMOUNT[this.purchaseName],
-        metadata: {
-          type: this.purchaseName,
-        },
-      };
-    }
-
-    return null;
+    return {
+      amount: PURCHASE_AMOUNT[this.purchaseName],
+      metadata: {
+        type: this.purchaseName,
+      },
+    };
   }
 
   public async handlePurchase(userId: string) {

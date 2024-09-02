@@ -11,7 +11,6 @@ import {
   PauseIcon,
   PlayIcon,
 } from "@heroicons/react/20/solid";
-import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
 import { updateImage } from "@/Services/picture";
 import { useMyPhotos } from "../Contexts/myPhotos";
 import { useNavigate } from "react-router-dom";
@@ -223,7 +222,7 @@ export const PhotoCard = ({
             </span>
           </div>
           <ScoreBar percentile={picInfo.percentile} />
-          {picInfo.cannotSeeAllVotes && UNLIMITED_VOTE_ALL_ON && (
+          {picInfo.cannotSeeAllVotes && (
             <>
               <div className="flex justify-between mb-1 mt-2">
                 <span>Score ({picInfo.numPaidVotes} votes)</span>{" "}

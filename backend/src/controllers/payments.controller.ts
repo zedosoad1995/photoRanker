@@ -50,12 +50,6 @@ export const createPaymentIntentUnlimitedVotes = async (req: Request, res: Respo
   res.status(200).send({ clientSecret });
 };
 
-export const createPaymentIntentMultipleUnlimitedVotes = async (req: Request, res: Response) => {
-  const clientSecret = await createPaymentIntentHandler(purchaser["unlimited-votes-multiple"], req);
-
-  res.status(200).send({ clientSecret });
-};
-
 export const createPaymentIntentUnlimitedStats = async (req: Request, res: Response) => {
   const clientSecret = await createPaymentIntentHandler(purchaser["unlimited-stats"], req);
 
@@ -75,7 +69,7 @@ export const stripeWebhook = async (req: Request, res: Response, next: NextFunct
     event = stripe.webhooks.constructEvent(
       req.rawBody,
       sig,
-      "whsec_3c3fc9ee91e7f7271610a20f0590ea8091b297c977eaa77ec8cf381b4e91f2bd"
+      "whsec_3c3fc9ee91e7f7271610a20f0590ea8091b297c977eaa77ec8cf381b4e91f2bd",
     );
   } catch (err) {
     res.status(400).send(`Webhook Error: ${err ? (err as any).message : "Something went wrong"}`);
@@ -99,9 +93,6 @@ export const stripeWebhook = async (req: Request, res: Response, next: NextFunct
       if (purchaseType in purchaser) {
         await purchaser[purchaseType as IPurchaseType].handlePurchase(
           paymentIntentSucceeded.metadata.userId,
-          paymentIntentSucceeded.metadata.extra
-            ? JSON.parse(paymentIntentSucceeded.metadata.extra)
-            : undefined
         );
       } else {
         throw new ValidationError({

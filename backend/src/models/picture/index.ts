@@ -7,7 +7,6 @@ import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, formatDate } from "@/helpers/date";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
-import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
 import { IAgeGroup } from "@shared/types/picture";
 import { getPictureVotesStats } from "./votesStats/votesStats";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
@@ -254,13 +253,9 @@ async function getPicturesWithPercentile(
   }
 
   const whenLimitedVotes =
-    isBanned || isAdmin(role) || !UNLIMITED_VOTE_ALL_ON
+    isBanned || isAdmin(role)
       ? `FALSE`
-      : `${
-          UNLIMITED_VOTE_ALL_ON
-            ? '(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND'
-            : ""
-        } pic."numVotes" > pic."maxFreeVotes"`;
+      : `(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND pic."numVotes" > pic."maxFreeVotes"`;
 
   const subQueryPicPercentile = `
     SELECT 
