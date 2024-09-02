@@ -83,7 +83,6 @@ model Picture {
   numVotes                   Int      @default(0)
   freeRating                 Float    @default(0)
   maxFreeVotes               Int      @default(30)
-  hasPurchasedUnlimitedVotes Boolean  @default(false)
   isGlobal                   Boolean  @default(true)
   isActive                   Boolean  @default(true)
   ethnicity                  String?

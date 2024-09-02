@@ -31,32 +31,22 @@ export class UnlimitedVotes implements PurchaseRepo {
       throw new NotFoundError("User not found");
     }
 
-    await prisma.$transaction([
-      prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          purchase: {
-            upsert: {
-              create: {
-                hasUnlimitedVotes: true,
-              },
-              update: {
-                hasUnlimitedVotes: true,
-              },
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        purchase: {
+          upsert: {
+            create: {
+              hasUnlimitedVotes: true,
+            },
+            update: {
+              hasUnlimitedVotes: true,
             },
           },
         },
-      }),
-      prisma.picture.updateMany({
-        where: {
-          userId,
-        },
-        data: {
-          hasPurchasedUnlimitedVotes: true,
-        },
-      }),
-    ]);
+      },
+    });
   }
 }

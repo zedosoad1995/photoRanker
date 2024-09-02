@@ -10,7 +10,6 @@ import { ConsoleLogger } from "./repositories/logger/console";
 import { IncreasePhotos } from "./repositories/purchase/increasePhotos";
 import { UnlimitedVotes } from "./repositories/purchase/unlimitedVotes";
 import { PURCHASE_TYPE } from "@shared/constants/purchase";
-import { MultipleUnlimitedVotes } from "./repositories/purchase/multipleUnlimitedVotes";
 import { UnlimitedStats } from "./repositories/purchase/unlimitedStats";
 
 const s3 = new S3Client({
@@ -23,9 +22,7 @@ const s3 = new S3Client({
 
 export const localStorageInteractor = new LocalStorageInteractor();
 export const s3Interactor = new S3Interactor(s3);
-export const mainStorageInteractor = ["PROD", "STG"].includes(
-  process.env.NODE_ENV as string
-)
+export const mainStorageInteractor = ["PROD", "STG"].includes(process.env.NODE_ENV as string)
   ? s3Interactor
   : localStorageInteractor;
 
@@ -36,14 +33,11 @@ export const mailingService =
   process.env.NODE_ENV === "PROD" ? new SendGridRepo() : new GmailRepo();
 
 export const logger =
-  process.env.NODE_ENV === "PROD"
-    ? new CloudWatchLogger()
-    : new ConsoleLogger();
+  process.env.NODE_ENV === "PROD" ? new CloudWatchLogger() : new ConsoleLogger();
 
 // Purchase
 export const purchaser = {
   [PURCHASE_TYPE.INCREASE_PHOTOS]: new IncreasePhotos(),
   [PURCHASE_TYPE.UNLIMITED_VOTES_ALL]: new UnlimitedVotes(),
-  [PURCHASE_TYPE.UNLIMITED_VOTES_MULTIPLE]: new MultipleUnlimitedVotes(),
   [PURCHASE_TYPE.UNLIMITED_STATS]: new UnlimitedStats(),
 };

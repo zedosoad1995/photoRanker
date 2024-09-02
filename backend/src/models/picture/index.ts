@@ -7,7 +7,7 @@ import { base64ToString, toBase64 } from "@/helpers/crypto";
 import { adjustDate, formatDate } from "@/helpers/date";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
-import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
+import { UNLIMITED_VOTE_ALL_ON } from "@shared/constants/purchase";
 import { IAgeGroup } from "@shared/types/picture";
 import { getPictureVotesStats } from "./votesStats/votesStats";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
@@ -254,14 +254,12 @@ async function getPicturesWithPercentile(
   }
 
   const whenLimitedVotes =
-    isBanned || isAdmin(role) || !(UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON)
+    isBanned || isAdmin(role) || !UNLIMITED_VOTE_ALL_ON
       ? `FALSE`
       : `${
           UNLIMITED_VOTE_ALL_ON
             ? '(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND'
             : ""
-        } ${
-          UNLIMITED_VOTE_MULTIPLE_ON ? 'pic."hasPurchasedUnlimitedVotes" = FALSE AND' : ""
         } pic."numVotes" > pic."maxFreeVotes"`;
 
   const subQueryPicPercentile = `
@@ -404,7 +402,7 @@ function getUpdateFieldsToReturn(
 ) {
   const { filepath, ...ommitedPic } = omittedField(pic);
   const imgUrl = storageInteractor.getImageUrl(filepath);
-  const retPic = _.omit(ommitedPic, "freeRating", "hasPurchasedUnlimitedVotes", "isGlobal");
+  const retPic = _.omit(ommitedPic, "freeRating", "isGlobal");
 
   return { ...retPic, url: imgUrl };
 }
