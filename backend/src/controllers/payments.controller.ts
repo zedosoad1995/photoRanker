@@ -12,12 +12,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 const createPaymentIntentHandler = async (purchaser: PurchaseRepo, req: Request) => {
   const loggedUser = req.loggedUser as ILoggedUserMiddleware;
 
-  const hasBeenPurchased = await purchaser.hasAlreadyBeenPurchased(loggedUser, req.body);
+  const hasBeenPurchased = await purchaser.hasAlreadyBeenPurchased(loggedUser);
   if (hasBeenPurchased) {
     throw new BadRequestError("This feature has already been purchased");
   }
 
-  const purchaseInfo = purchaser.getPurchaseAmountAndMetadata(req.body);
+  const purchaseInfo = purchaser.getPurchaseAmountAndMetadata();
   if (!purchaseInfo) {
     throw new BadRequestError("Invalid purchaseType");
   }
@@ -45,7 +45,7 @@ export const createPaymentIntentIncreasePhotos = async (req: Request, res: Respo
 };
 
 export const createPaymentIntentUnlimitedVotes = async (req: Request, res: Response) => {
-  const clientSecret = await createPaymentIntentHandler(purchaser["unlimited-votes-all"], req);
+  const clientSecret = await createPaymentIntentHandler(purchaser["unlimited-votes"], req);
 
   res.status(200).send({ clientSecret });
 };

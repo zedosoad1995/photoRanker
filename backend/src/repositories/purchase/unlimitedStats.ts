@@ -1,10 +1,10 @@
 import { prisma } from "@/models";
 import { PurchaseRepo } from "@/types/repositories/purchase";
 import { ILoggedUserMiddleware } from "@/types/user";
-import { PURCHASE_AMOUNT, PURCHASE_TYPE } from "@shared/constants/purchase";
+import { IPurchaseType, PURCHASE_AMOUNT } from "@shared/constants/purchase";
 
 export class UnlimitedStats implements PurchaseRepo {
-  purchaseName = PURCHASE_TYPE.UNLIMITED_STATS;
+  purchaseName: IPurchaseType = "unlimited-stats";
 
   public async hasAlreadyBeenPurchased(user: ILoggedUserMiddleware) {
     return Boolean(user?.purchase?.hasUnlimitedStats);

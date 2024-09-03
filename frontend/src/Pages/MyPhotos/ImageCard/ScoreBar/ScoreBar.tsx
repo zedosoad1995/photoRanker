@@ -1,15 +1,45 @@
 import { useInView } from "react-intersection-observer";
+import { LockClosedIcon } from "@heroicons/react/20/solid";
 
 interface IScoreBar {
   percentile: number | null;
+  isSmall: boolean;
+  isLocked?: boolean;
 }
 
-export const ScoreBar = ({ percentile }: IScoreBar) => {
+export const ScoreBar = ({
+  percentile,
+  isSmall,
+  isLocked = false,
+}: IScoreBar) => {
   const { ref, inView } = useInView({
     threshold: 1,
     triggerOnce: true,
     delay: 30,
   });
+
+  if (isLocked) {
+    return (
+      <div className="relative group cursor-pointer">
+        <LockClosedIcon
+          onClick={() => {}}
+          className={`${
+            isSmall ? "w-5 h-5" : "w-6 h-6"
+          } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
+        />
+        <div
+          className="bg-white absolute h-full w-full"
+          style={{
+            background:
+              "linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%)",
+          }}
+        />
+        <div className="rounded-lg h-4 bg-light-contour overflow-hidden">
+          <div className="rounded-lg bg-amber-400 h-full w-full" />
+        </div>
+      </div>
+    );
+  }
 
   let scoreBarColor = "";
   if (percentile !== null) {

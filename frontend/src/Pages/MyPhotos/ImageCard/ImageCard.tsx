@@ -7,7 +7,6 @@ import { IUser } from "@/Types/user";
 import { isAdmin } from "@/Utils/role";
 import {
   EllipsisVerticalIcon,
-  LockClosedIcon,
   PauseIcon,
   PlayIcon,
 } from "@heroicons/react/20/solid";
@@ -50,7 +49,6 @@ export const PhotoCard = ({
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  const [_, setIsOpenUnlockVotesModal] = useState(false);
   const [width, setWidth] = useState(0);
   const isSmall = useMemo(() => width < 240, [width]);
 
@@ -221,37 +219,17 @@ export const PhotoCard = ({
                 : "-"}
             </span>
           </div>
-          <ScoreBar percentile={picInfo.percentile} />
+          <ScoreBar percentile={picInfo.percentile} isSmall={isSmall} />
           {picInfo.cannotSeeAllVotes && (
             <>
               <div className="flex justify-between mb-1 mt-2">
                 <span>Score ({picInfo.numPaidVotes} votes)</span>{" "}
               </div>
-              <div className="relative group">
-                <LockClosedIcon
-                  onClick={() => {
-                    setIsOpenUnlockVotesModal(true);
-                  }}
-                  className={`${
-                    isSmall ? "w-5 h-5" : "w-6 h-6"
-                  } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
-                />
-                <div
-                  className="bg-white absolute h-full w-full"
-                  style={{
-                    background:
-                      "linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%)",
-                  }}
-                />
-                <div className="rounded-md h-2 bg-light-contour overflow-hidden">
-                  <div
-                    className="rounded-md bg-amber-400 h-full"
-                    style={{
-                      width: "100%",
-                    }}
-                  />
-                </div>
-              </div>
+              <ScoreBar
+                percentile={picInfo.percentile}
+                isSmall={isSmall}
+                isLocked
+              />
             </>
           )}
           <div className="mt-4 flex justify-center">

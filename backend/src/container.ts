@@ -9,8 +9,9 @@ import { CloudWatchLogger } from "./repositories/logger/cloudwatch";
 import { ConsoleLogger } from "./repositories/logger/console";
 import { IncreasePhotos } from "./repositories/purchase/increasePhotos";
 import { UnlimitedVotes } from "./repositories/purchase/unlimitedVotes";
-import { PURCHASE_TYPE } from "@shared/constants/purchase";
+import { IPurchaseType } from "@shared/constants/purchase";
 import { UnlimitedStats } from "./repositories/purchase/unlimitedStats";
+import { PurchaseRepo } from "./types/repositories/purchase";
 
 const s3 = new S3Client({
   region: process.env.S3_REGION,
@@ -36,8 +37,8 @@ export const logger =
   process.env.NODE_ENV === "PROD" ? new CloudWatchLogger() : new ConsoleLogger();
 
 // Purchase
-export const purchaser = {
-  [PURCHASE_TYPE.INCREASE_PHOTOS]: new IncreasePhotos(),
-  [PURCHASE_TYPE.UNLIMITED_VOTES]: new UnlimitedVotes(),
-  [PURCHASE_TYPE.UNLIMITED_STATS]: new UnlimitedStats(),
+export const purchaser: Record<IPurchaseType, PurchaseRepo> = {
+  "increase-photos": new IncreasePhotos(),
+  "unlimited-votes": new UnlimitedVotes(),
+  "unlimited-stats": new UnlimitedStats(),
 };

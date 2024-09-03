@@ -2,10 +2,10 @@ import { NotFoundError } from "@/errors/NotFoundError";
 import { prisma } from "@/models";
 import { PurchaseRepo } from "@/types/repositories/purchase";
 import { ILoggedUserMiddleware } from "@/types/user";
-import { PURCHASE_AMOUNT, PURCHASE_TYPE } from "@shared/constants/purchase";
+import { IPurchaseType, PURCHASE_AMOUNT } from "@shared/constants/purchase";
 
 export class UnlimitedVotes implements PurchaseRepo {
-  purchaseName = PURCHASE_TYPE.UNLIMITED_VOTES;
+  purchaseName: IPurchaseType = "unlimited-votes";
 
   public async hasAlreadyBeenPurchased(user: ILoggedUserMiddleware) {
     return Boolean(user?.purchase?.hasUnlimitedVotes);

@@ -1,12 +1,9 @@
-import { PURCHASE_TYPE } from "@shared/constants/purchase";
 import { ICreatePaymentIntent } from "@/Types/payment";
 import api from ".";
+import { IPurchaseType } from "@shared/constants/purchase";
 
 type ICreatePaymentIntentInput = {
-  purchaseType:
-    | typeof PURCHASE_TYPE.INCREASE_PHOTOS
-    | typeof PURCHASE_TYPE.UNLIMITED_VOTES
-    | typeof PURCHASE_TYPE.UNLIMITED_STATS;
+  purchaseType: IPurchaseType;
 };
 
 export const createPaymentIntent = async (
