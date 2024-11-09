@@ -42,7 +42,7 @@ export class LocalStorageInteractor implements StorageInteractor {
   }
 
   public getImageUrl(imagePath: string) {
-    return `${this.getBaseDir()}/${imagePath.replace(/\\/g, "/")}`;
+    return `${this.getBaseDir()}/${encodeURI(decodeURI(imagePath).replace(/\\/g, "/"))}`;
   }
 
   public async deleteImage(encodedImagePage: string) {
