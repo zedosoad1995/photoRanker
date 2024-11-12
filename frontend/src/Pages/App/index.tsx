@@ -15,6 +15,7 @@ import Logo from "@/Components/Logo";
 import { useNavigate } from "react-router-dom";
 import { LOGIN, REGISTER } from "@/Constants/routes";
 import { FAQAccordion } from "./FAQAccordion";
+import { Modes } from "./Modes";
 
 function App() {
   const [showFloatBtn, setShowFloatBtn] = useState(false);
@@ -532,6 +533,7 @@ function App() {
           </div>
         </div>
       </section>
+      <Modes />
       <section className="py-20 md:py-[111px] px-5 sm:px-[70px] bg-[#F8FBFD]">
         <div className="max-w-6xl mx-auto">
           <div

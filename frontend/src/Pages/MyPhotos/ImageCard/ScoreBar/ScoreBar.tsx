@@ -15,7 +15,6 @@ export const ScoreBar = ({
     return (
       <div className="relative group cursor-pointer">
         <LockClosedIcon
-          onClick={() => {}}
           className={`${
             isSmall ? "w-5 h-5" : "w-6 h-6"
           } absolute z-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-70 transition-opacity duration-300`}
