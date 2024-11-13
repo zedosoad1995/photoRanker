@@ -13,8 +13,8 @@ export const ScoreBars = ({ picStats }: IScoreBars) => {
     if (!picStats.ageGroup) return undefined;
 
     return picStats.ageGroup.max === undefined
-      ? picStats.ageGroup.min + "+"
-      : picStats.ageGroup.min + "-" + picStats.ageGroup.max;
+      ? String(picStats.ageGroup.min) + "+"
+      : String(picStats.ageGroup.min) + "-" + String(picStats.ageGroup.max);
   }, [picStats.ageGroup]);
 
   const generalTooltip = useMemo(() => {
@@ -23,7 +23,7 @@ export const ScoreBars = ({ picStats }: IScoreBars) => {
     }
 
     return getTooltipScoreText(picStats.percentileGeneral, picStats.gender);
-  }, [picStats.percentileGeneral]);
+  }, [picStats.percentileGeneral, picStats.gender]);
 
   const ageTooltip = useMemo(() => {
     if (picStats.percentileByAgeGroup === undefined) {
@@ -36,7 +36,7 @@ export const ScoreBars = ({ picStats }: IScoreBars) => {
       ageGroupText,
       "age group"
     );
-  }, [picStats.percentileByAgeGroup]);
+  }, [picStats.percentileByAgeGroup, picStats.gender, ageGroupText]);
 
   const continentTooltip = useMemo(() => {
     if (picStats.percentileByContinent === undefined) {
@@ -53,7 +53,7 @@ export const ScoreBars = ({ picStats }: IScoreBars) => {
       picStats.continent,
       "continent"
     );
-  }, [picStats.percentileByContinent]);
+  }, [picStats.percentileByContinent, picStats.gender, picStats.continent]);
 
   const ethnicityTooltip = useMemo(() => {
     if (picStats.percentileByEthnicity === undefined) {
@@ -70,7 +70,7 @@ export const ScoreBars = ({ picStats }: IScoreBars) => {
       picStats.ethnicity,
       "ethnicity"
     );
-  }, [picStats.percentileByEthnicity]);
+  }, [picStats.percentileByEthnicity, picStats.gender, picStats.ethnicity]);
 
   return (
     <>

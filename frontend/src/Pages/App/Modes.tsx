@@ -135,8 +135,9 @@ export const Modes = () => {
       {mode === "personal" && (
         <>
           <div className="text-[#82898f] text-base font-light mb-5 text-center">
-            Discover which of your photos is the crowd favorite—no comparisons
-            with others needed, just your best shot.
+            Compete only with yourself: find out which of your photos people
+            love most, as your images go head-to-head with each other. Just you,
+            your photos, and the crowd's choice.
           </div>
           <div className="flex justify-center">
             <img
