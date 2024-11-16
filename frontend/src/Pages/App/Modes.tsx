@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 export const Modes = () => {
   const vsRef = useRef<HTMLDivElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
+
+  const { ref: rootRef, inView: inViewRoot } = useInView({
+    threshold: 0.5,
+    triggerOnce: true,
+  });
 
   const [mode, setMode] = useState<"global" | "personal">("personal");
 
@@ -39,13 +45,12 @@ export const Modes = () => {
   }, [mode]);
 
   return (
-    <section className="py-20 md:py-[111px] px-5 sm:px-[70px] bg-[#F8FBFD]">
-      <div
-        className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]`}
-      >
-        2 MODES
-      </div>
-      <div className="mb-[25px] w-[82px] h-[6px] bg-[#eee] mx-auto" />
+    <div
+      ref={rootRef}
+      className={`${
+        inViewRoot ? "opacity-100" : "opacity-0"
+      } transition-opacity duration-500 ease-in`}
+    >
       <div className="bg-light-contour rounded-lg flex gap-1 p-1 w-full sm:w-fit text-sm mx-auto mb-4">
         <button
           onClick={() => {
@@ -68,12 +73,9 @@ export const Modes = () => {
           <div>Me vs Me</div>
         </button>
       </div>
-      {/* <div className="text-[#374048] text-2xl font-semibold mb-2">
-        Me vs Others
-      </div> */}
       {mode === "global" && (
         <>
-          <div className="text-[#82898f] text-base font-light mb-5 text-center">
+          <div className="text-[#82898f] text-lg font-light mb-5 text-center">
             See how your photos rank globally by competing against other users’
             images. Find out how you stack up!
           </div>
@@ -131,10 +133,9 @@ export const Modes = () => {
           </div>
         </>
       )}
-      {/* <div className="text-[#374048] text-2xl font-semibold mb-2">Me vs Me</div> */}
       {mode === "personal" && (
         <>
-          <div className="text-[#82898f] text-base font-light mb-5 text-center">
+          <div className="text-[#82898f] text-lg font-light mb-5 text-center">
             Compete only with yourself: find out which of your photos people
             love most, as your images go head-to-head with each other. Just you,
             your photos, and the crowd's choice.
@@ -148,6 +149,6 @@ export const Modes = () => {
           </div>
         </>
       )}
-    </section>
+    </div>
   );
 };

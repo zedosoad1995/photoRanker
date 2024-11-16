@@ -1,13 +1,22 @@
+import { useInView } from "react-intersection-observer";
+
 export const VotingDetails = () => {
+  const { ref: rootRef, inView: inViewRoot } = useInView({
+    threshold: 0.5,
+    triggerOnce: true,
+  });
+
   return (
-    <section className="py-20 md:py-[111px] px-5 sm:px-[70px] bg-[#F8FBFD]">
-      <div
-        className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]`}
-      >
+    <div
+      ref={rootRef}
+      className={`${
+        inViewRoot ? "opacity-100" : "opacity-0"
+      } transition-opacity duration-500 ease-in`}
+    >
+      <div className="text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 text-center">
         Voting Details
       </div>
-      <div className="mb-[25px] w-[82px] h-[6px] bg-[#eee] mx-auto" />
-      <div className="text-[#82898f] text-base font-light mb-5 text-center">
+      <div className="text-[#82898f] text-lg font-light mb-5 text-center">
         Analyse all your votes you've received: who did you win/lose against;
         demographic information about the voter (gender, age, nationality,
         ethnicity).
@@ -19,6 +28,6 @@ export const VotingDetails = () => {
           alt="vote details"
         />
       </div>
-    </section>
+    </div>
   );
 };

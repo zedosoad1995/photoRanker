@@ -166,7 +166,7 @@ function App() {
         ref={refHero}
         className={`min-h-[680px] bg-[#F8FBFD] pb-20 ${
           inViewHero ? "opacity-100" : "opacity-0"
-        } transition-opacity duration-500 ease-in`}
+        } transition-opacity duration-500 ease-in `}
       >
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center w-full px-5 py-6">
@@ -535,10 +535,22 @@ function App() {
           </div>
         </div>
       </section>
-      <Modes />
-      <PhotoStats />
-      <VotingDetails />
-      <section className="py-20 md:py-[111px] px-5 sm:px-[70px] bg-[#F8FBFD]">
+      <section className="py-20 md:py-[111px] bg-[#F8FBFD] px-5 sm:px-[70px]">
+        <div className="mx-auto max-w-4xl">
+          <div
+            className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]`}
+          >
+            FUNCTIONALITIES
+          </div>
+          <div className="mb-[25px] w-[82px] h-[6px] bg-[#eee] mx-auto" />
+          <Modes />
+          <div className="mb-20" />
+          <PhotoStats />
+          <div className="mb-20" />
+          <VotingDetails />
+        </div>
+      </section>
+      <section className="py-20 md:py-[111px] px-5 sm:px-[70px]">
         <div className="max-w-6xl mx-auto">
           <div
             ref={refFeatures}
@@ -707,7 +719,7 @@ function App() {
           </div>
         </div>
       </section>
-      <section className="pt-20 md:pt-[98px] pb-[78px] px-5 sm:px-[70px]">
+      <section className="pt-20 bg-[#F8FBFD] md:pt-[98px] pb-[78px] px-5 sm:px-[70px]">
         <div className="max-w-6xl mx-auto">
           <div
             ref={refFAQ}

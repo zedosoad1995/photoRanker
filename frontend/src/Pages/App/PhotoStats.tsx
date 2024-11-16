@@ -1,20 +1,28 @@
 import { PauseIcon } from "@heroicons/react/20/solid";
 import colors from "tailwindcss/colors";
 import { ScoreBar } from "../PhotoDetails/PhotoStats/PhotoStatsBody/ScoreBars/ScoreBar";
+import { useInView } from "react-intersection-observer";
 
 export const PhotoStats = () => {
+  const { ref: rootRef, inView: inViewRoot } = useInView({
+    threshold: 0.5,
+    triggerOnce: true,
+  });
+
   return (
-    <section className="py-20 md:py-[111px] px-5 sm:px-[70px] bg-[#F8FBFD]">
-      <div
-        className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]`}
-      >
+    <div
+      ref={rootRef}
+      className={`${
+        inViewRoot ? "opacity-100" : "opacity-0"
+      } transition-opacity duration-500 ease-in`}
+    >
+      <div className="text-[#374048] text-3xl lg:text-4xl font-semibold mb-5 text-center">
         See Photo Statistics
       </div>
-      <div className="mb-[25px] w-[82px] h-[6px] bg-[#eee] mx-auto" />
-      <div className="text-[#82898f] text-base font-light mb-5 text-center">
+      <div className="text-[#82898f] text-lg font-light mb-5 text-center">
         See how well do you rank in your age group, ethnicity, and continent.
-        This allows you to compete with people of similar demographic groups and
-        have a more detailed insight of your photo.
+        This allows you to compete with people of similar demographic
+        backgrounds and have a more detailed insight of your photo.
       </div>
       <div className="shadow rounded-lg bg-white max-w-[400px] mx-auto">
         <div className="flex flex-col justify-center items-center">
@@ -68,6 +76,6 @@ export const PhotoStats = () => {
           />
         </div>
       </div>
-    </section>
+    </div>
   );
 };
