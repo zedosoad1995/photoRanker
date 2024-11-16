@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
   };
 
   const updateUser = async () => {
-    refetch();
+    await refetch();
   };
 
   return (

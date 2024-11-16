@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import Cropper, { Area } from "react-easy-crop";
 import Button from "@/Components/Button";
@@ -6,6 +6,9 @@ import { getCroppedImage, resizeImage } from "@/Utils/image";
 import { uploadImage } from "@/Services/picture";
 import { IMAGE_SIZE_LIMIT } from "@/Constants/picture";
 import { IMode, Mode } from "@/Constants/mode";
+import Select from "@/Components/Select";
+import { useAuth } from "@/Contexts/auth";
+import { calculateAge } from "@shared/helpers/date";
 
 interface IUploadPhotoModal {
   image: { image: string; width: number; height: number } | null;
@@ -24,18 +27,38 @@ export default function UploadPhotoModal({
   onClose: handleClose,
   onUpload: handleUploadParent,
 }: IUploadPhotoModal) {
-  if (!isOpen) return null;
+  const { user } = useAuth();
 
   const [isUploadLoading, setIsUploadLoading] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [age, setAge] = useState(() => {
+    if (!user?.dateOfBirth) return 18;
+
+    const calculatedAge = calculateAge(user.dateOfBirth);
+    if (calculatedAge > 99) return 99;
+
+    return calculatedAge;
+  });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  const ages = useMemo(
+    () =>
+      Array.from({ length: 99 - 18 + 1 }, (_, i) => {
+        const value = i + 18;
+        return { id: `${value}`, label: `${value}` };
+      }),
+    []
+  );
 
   const handleUpload = async () => {
     if (image && filename && croppedAreaPixels) {
       try {
         setIsUploadLoading(true);
-        let croppedImage = await getCroppedImage(image.image, croppedAreaPixels);
+        let croppedImage = await getCroppedImage(
+          image.image,
+          croppedAreaPixels
+        );
 
         if (croppedImage.size > IMAGE_SIZE_LIMIT) {
           croppedImage = await resizeImage(croppedImage);
@@ -59,6 +82,12 @@ export default function UploadPhotoModal({
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
+  const handleChangeAge = (value: string) => {
+    setAge(Number(value));
+  };
+
+  if (!isOpen) return null;
+
   return (
     <Dialog
       as="div"
@@ -80,7 +109,11 @@ export default function UploadPhotoModal({
                 onZoomChange={setZoom}
                 onCropComplete={handleCompleteCrop}
                 aspect={1}
-                objectFit={image.height > image.width ? "vertical-cover" : "horizontal-cover"}
+                objectFit={
+                  image.height > image.width
+                    ? "vertical-cover"
+                    : "horizontal-cover"
+                }
               />
             )}
           </div>
@@ -95,6 +128,13 @@ export default function UploadPhotoModal({
                 setZoom(Number(event.currentTarget.value));
               }}
               className="bg-gray-200 rounded-lg appearance-none cursor-pointer  w-full h-1"
+            />
+          </div>
+          <div className="mb-4">
+            <Select
+              options={ages}
+              value={String(age)}
+              onChange={handleChangeAge}
             />
           </div>
           <div className="mb-2">
