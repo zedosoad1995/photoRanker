@@ -1,6 +1,5 @@
 import { IMode } from "@/Constants/mode";
 import { IPictureWithPercentile } from "@/Types/picture";
-import { IAgeGroup } from "@shared/types/picture";
 import { SetStateAction, createContext, useContext, useState } from "react";
 
 type IPicUrls = {
@@ -15,10 +14,6 @@ type INextCursor = {
   [k in IMode]?: string;
 };
 
-type IAgeGroupMode = {
-  [k in IMode]?: IAgeGroup;
-};
-
 interface IPhotosContext {
   picUrls: IPicUrls;
   setPicUrls: React.Dispatch<React.SetStateAction<IPicUrls>>;
@@ -26,19 +21,15 @@ interface IPhotosContext {
   setPicsInfo: React.Dispatch<React.SetStateAction<IPicsInfo>>;
   nextCursor: INextCursor;
   setNextCursor: React.Dispatch<SetStateAction<INextCursor>>;
-  ageGroup: IAgeGroupMode;
-  setAgeGroup: React.Dispatch<SetStateAction<IAgeGroupMode>>;
 }
 
 const initValues: IPhotosContext = {
   picsInfo: {},
   picUrls: {},
   nextCursor: {},
-  ageGroup: {},
   setPicsInfo: () => {},
   setPicUrls: () => {},
   setNextCursor: () => {},
-  setAgeGroup: () => {},
 };
 
 const MyPhotosContext = createContext<IPhotosContext>(initValues);
@@ -51,7 +42,6 @@ export const PhotosProvider = ({ children }: IPhotosProvider) => {
   const [picUrls, setPicUrls] = useState<IPicUrls>({});
   const [picsInfo, setPicsInfo] = useState<IPicsInfo>({});
   const [nextCursor, setNextCursor] = useState<INextCursor>({});
-  const [ageGroup, setAgeGroup] = useState<IAgeGroupMode>({});
 
   return (
     <MyPhotosContext.Provider
@@ -62,8 +52,6 @@ export const PhotosProvider = ({ children }: IPhotosProvider) => {
         setPicUrls,
         nextCursor,
         setNextCursor,
-        ageGroup,
-        setAgeGroup,
       }}
     >
       {children}
@@ -79,14 +67,11 @@ export const usePhotos = (mode: IMode) => {
     setPicsInfo,
     nextCursor,
     setNextCursor,
-    ageGroup,
-    setAgeGroup,
   } = useContext(MyPhotosContext);
 
   const picUrlsMode = picUrls[mode];
   const picsInfoMode = picsInfo[mode];
   const nextCursorMode = nextCursor[mode];
-  const ageGroupMode = ageGroup[mode];
 
   function setModeFunction<T extends { [k in IMode]?: any }>(
     setFunction: React.Dispatch<SetStateAction<T>>
@@ -105,10 +90,8 @@ export const usePhotos = (mode: IMode) => {
     picUrls: picUrlsMode,
     picsInfo: picsInfoMode,
     nextCursor: nextCursorMode,
-    ageGroup: ageGroupMode,
     setPicUrls: setModeFunction(setPicUrls),
     setPicsInfo: setModeFunction(setPicsInfo),
     setNextCursor: setModeFunction(setNextCursor),
-    setAgeGroup: setModeFunction(setAgeGroup),
   };
 };

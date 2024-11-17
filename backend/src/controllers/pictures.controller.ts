@@ -47,7 +47,7 @@ export const getMany =
       throw new BadRequestError("Cannot call belongsToMe and userId simulataneously");
     }
 
-    const { pictures, nextCursor, ageGroup } = await PictureModel.getPicturesWithPercentile(
+    const { pictures, nextCursor } = await PictureModel.getPicturesWithPercentile(
       userId,
       loggedUser,
       hasReport,
@@ -68,7 +68,6 @@ export const getMany =
     res.status(200).json({
       pictures: retPics,
       nextCursor,
-      ageGroup,
     });
   };
 
@@ -175,7 +174,8 @@ export const uploadOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const loggedUser = req.loggedUser as ILoggedUserMiddleware;
     const isGlobal = req.body.isGlobal;
-
+    const age = Number(req.body.age);
+    
     if (!req.file) {
       throw new BadRequestError(PICTURE.NO_FILE);
     }
@@ -200,6 +200,7 @@ export const uploadOne =
         ratingDeviation: RD_INI,
         volatility: VOLATILITY_INI,
         maxFreeVotes: MAX_FREE_VOTES,
+        age,
         user: {
           connect: {
             id: req.loggedUser?.id,

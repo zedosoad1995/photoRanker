@@ -66,7 +66,7 @@ export default function UploadPhotoModal({
 
         const isGlobal = mode === Mode.Global ? true : false;
 
-        await uploadImage(croppedImage, filename, isGlobal);
+        await uploadImage(croppedImage, filename, age, isGlobal);
         await handleUploadParent();
 
         handleClose();

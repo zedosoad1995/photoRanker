@@ -20,7 +20,6 @@ export interface IPictureWithPercentile {
   numPaidVotes: number;
   cannotSeeAllVotes: boolean;
   isActive: boolean;
-  ageGroupPercentile?: number;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -78,7 +77,6 @@ export interface PictureRes {
 export interface IGetManyPictures {
   pictures: IPictureWithPercentile[];
   nextCursor?: string;
-  ageGroup: IAgeGroup;
 }
 
 export interface IUploadPermission {

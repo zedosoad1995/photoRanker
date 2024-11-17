@@ -2,9 +2,30 @@ import _ from "underscore";
 import { NotFoundError } from "@/errors/NotFoundError";
 import { prisma } from "@/models";
 import { Picture, User } from "@prisma/client";
-import { getAgeGroupQuery } from "../helpers/user";
 import { COUNTRIES_BY_CONTINENT } from "@shared/constants/user";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
+import { AGE_GROUPS } from "@/constants/user";
+
+const getAgeQuery = (minAge: number, maxAge?: number) => {
+  const query = `pic.age >= ${minAge}`;
+
+  if (maxAge === undefined) {
+    return query;
+  }
+
+  return `${query} AND pic.age <= ${maxAge}`;
+};
+
+export const getAgeGroupQuery = (age: number) => {
+  const ageGroup = AGE_GROUPS.find(
+    (row) => age >= row.min && (row.max === undefined || age <= row.max),
+  );
+  if (ageGroup === undefined) {
+    throw new Error(`No age group found for user age of ${age}`);
+  }
+
+  return [getAgeQuery(ageGroup.min, ageGroup.max), ageGroup] as const;
+};
 
 const getInnerPicturesQuery = (picUser: User, pic: Picture) => {
   const whereQuery = [
@@ -15,10 +36,8 @@ const getInnerPicturesQuery = (picUser: User, pic: Picture) => {
   ];
   const whereStr = whereQuery.join(" AND ");
 
-  const [ageGroupQuery, ageGroup] = getAgeGroupQuery(
-    picUser.dateOfBirth as string,
-    `usr."dateOfBirth"`,
-  );
+  // TODO: remove 18, when age is required
+  const [ageGroupQuery, ageGroup] = getAgeGroupQuery(pic.age);
 
   const ethnicity =
     picUser.role === "ADMIN" && pic.ethnicity !== null ? pic.ethnicity : picUser.ethnicity;

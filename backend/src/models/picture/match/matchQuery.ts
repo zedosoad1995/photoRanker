@@ -25,16 +25,12 @@ const getPicturesWithClosestElos = (
 
     if (userPreferences.contentMaxAge) {
       whereQuery.push(
-        `usr."dateOfBirth" > '${formatDate(
-          adjustDate(new Date(), { years: -userPreferences.contentMaxAge - 1 })
-        )}'`
+        `pic.age <= ${userPreferences.contentMaxAge}`
       );
     }
 
     whereQuery.push(
-      `usr."dateOfBirth" < '${formatDate(
-        adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })
-      )}'`
+      `pic.age >= ${userPreferences.contentMinAge}`
     );
   }
 

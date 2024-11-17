@@ -78,11 +78,12 @@ export const deleteImage = async (id: string): Promise<void> => {
 export const uploadImage = async (
   image: Blob,
   filename: string,
-  isGlobal: boolean = true
+  age: number,
+  isGlobal = true,
 ): Promise<Blob> => {
   const formData = new FormData();
   formData.append("image", image, filename);
-  formData.append("info", JSON.stringify({ isGlobal }));
+  formData.append("info", JSON.stringify({ isGlobal, age }));
 
   return api.post("/pictures", formData, {
     headers: {
