@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { inputField } from "@/globalClasses";
@@ -20,6 +20,8 @@ export default function AutoCompleteSelect({
 }: IAutoCompleteSelect) {
   const [query, setQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+
+  const comboButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const filteredOptions =
     query === ""
@@ -44,9 +46,13 @@ export default function AutoCompleteSelect({
               onChange={(event) => setQuery(event.target.value)}
               className={`pr-6 ${inputField}`}
               onKeyDown={handleKeyDown}
+              onClick={() => comboButtonRef.current?.click()}
               onFocus={() => setIsFocused(true)}
             />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+            <Combobox.Button
+              ref={comboButtonRef}
+              className="absolute inset-y-0 right-0 flex items-center pr-2"
+            >
               <ChevronUpDownIcon className="h-5 w-5 text-light-text" />
             </Combobox.Button>
           </div>
@@ -67,7 +73,11 @@ export default function AutoCompleteSelect({
               >
                 {({ selected }) => (
                   <>
-                    <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
+                    <span
+                      className={`block truncate ${
+                        selected ? "font-medium" : "font-normal"
+                      }`}
+                    >
                       {option}
                     </span>
                     {selected ? (

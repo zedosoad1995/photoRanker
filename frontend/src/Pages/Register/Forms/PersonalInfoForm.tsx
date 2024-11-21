@@ -6,11 +6,14 @@ import {
   CreateUserPersonalInfoSchema,
   ICreateUserPersonalInfo,
 } from "@/Schemas/User/CreateUserPersonalInfo";
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import { ICreateUser } from "@/Types/user";
-import DatePickerField from "@/Components/DatePickerField";
+import Textfield from "@/Components/TextField";
 
-type IData = Pick<ICreateUser, "countryOfOrigin" | "ethnicity" | "dateOfBirth" | "gender">;
+type IData = Pick<
+  ICreateUser,
+  "countryOfOrigin" | "ethnicity" | "dateOfBirth" | "gender"
+>;
 
 type IProps = {
   updateData: (data: Partial<IData>) => void;
@@ -41,7 +44,12 @@ const PersonalInfoForm = forwardRef(
         ethnicity,
         countryOfOrigin,
       },
+      mode: "onSubmit",
     });
+
+    const [day, setDay] = useState("");
+    const [month, setMonth] = useState("");
+    const [year, setYear] = useState("");
 
     useImperativeHandle(ref, () => ({
       checkValid() {
@@ -55,10 +63,34 @@ const PersonalInfoForm = forwardRef(
       updateData({ [label]: value });
     };
 
-    const handleChangeDate = (value: string) => {
-      setValue("dateOfBirth", value, { shouldValidate: true });
-      updateData({ dateOfBirth: value });
-    };
+    const handleChangeDate =
+      (dateType: "day" | "month" | "year") =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const val = event.currentTarget.value;
+
+        let newDay = day;
+        let newMonth = month;
+        let newYear = year;
+
+        if (dateType === "day") {
+          setDay(val);
+          newDay = val;
+        } else if (dateType === "month") {
+          setMonth(val);
+          newMonth = val;
+        } else {
+          setYear(val);
+          newYear = val;
+        }
+
+        const newDate = `${newYear.padStart(4, "0")}-${newMonth.padStart(
+          2,
+          "0"
+        )}-${newDay.padStart(2, "0")}`;
+
+        setValue("dateOfBirth", newDate, { shouldValidate: true });
+        updateData({ dateOfBirth: newDate });
+      };
 
     return (
       <>
@@ -85,7 +117,9 @@ const PersonalInfoForm = forwardRef(
             onKeyDown={handleKeyDown}
           />
           {errors.ethnicity?.message && (
-            <div className="text-error-text mt-1 text-danger">{errors.ethnicity?.message}</div>
+            <div className="text-error-text mt-1 text-danger">
+              {errors.ethnicity?.message}
+            </div>
           )}
         </div>
         <div>
@@ -97,16 +131,47 @@ const PersonalInfoForm = forwardRef(
             onKeyDown={handleKeyDown}
           />
           {errors.gender?.message && (
-            <div className="text-error-text mt-1 text-danger">{errors.gender?.message}</div>
+            <div className="text-error-text mt-1 text-danger">
+              {errors.gender?.message}
+            </div>
           )}
         </div>
-        <DatePickerField
-          label="Date of Birth"
-          value={dateOfBirth}
-          onKeyDown={handleKeyDown}
-          onChange={handleChangeDate}
-          error={errors.dateOfBirth?.message}
-        />
+        <div>
+          <div className="flex gap-2">
+            <Textfield
+              label="Day"
+              placeholder="DD"
+              onChange={handleChangeDate("day")}
+              value={day}
+              autocomplete="bday-day"
+              maxLen={2}
+              isNumeric
+            />
+            <Textfield
+              label="Month"
+              placeholder="MM"
+              onChange={handleChangeDate("month")}
+              value={month}
+              autocomplete="bday-month"
+              maxLen={2}
+              isNumeric
+            />
+            <Textfield
+              label="Year"
+              placeholder="YYYY"
+              onChange={handleChangeDate("year")}
+              value={year}
+              autocomplete="bday-year"
+              maxLen={4}
+              isNumeric
+            />
+          </div>
+          {Boolean(errors.dateOfBirth?.message) && (
+            <div className="text-error-text mt-1 text-danger">
+              {errors.dateOfBirth?.message}
+            </div>
+          )}
+        </div>
       </>
     );
   }

@@ -109,7 +109,7 @@ export const Header = ({
     <>
       <input
         type="file"
-        accept="image/jpeg, image/png"
+        accept="image/jpeg, image/png, image/webp"
         ref={fileInputRef}
         onChange={handleFileChange}
         className="hidden"
