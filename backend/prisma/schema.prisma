@@ -83,7 +83,7 @@ model Picture {
   numVotes                   Int      @default(0)
   freeRating                 Float    @default(0)
   maxFreeVotes               Int      @default(30)
-  age                        Int?
+  age                        Int
   hasPurchasedUnlimitedVotes Boolean  @default(false)
   isGlobal                   Boolean  @default(true)
   isActive                   Boolean  @default(true)
