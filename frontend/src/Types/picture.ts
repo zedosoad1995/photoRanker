@@ -58,6 +58,7 @@ export interface IAdminPhoto {
   ethnicity: string | null;
   countryOfOrigin: string | null;
   url: string;
+  age: number;
 }
 
 export interface IGetAdminPhoto {
@@ -86,4 +87,5 @@ export interface IUploadPermission {
 export interface IAdminPictureBody {
   countryOfOrigin?: string;
   ethnicity?: string;
+  age?: number;
 }

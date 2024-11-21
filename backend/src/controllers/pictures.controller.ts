@@ -175,7 +175,7 @@ export const uploadOne =
     const loggedUser = req.loggedUser as ILoggedUserMiddleware;
     const isGlobal = req.body.isGlobal;
     const age = Number(req.body.age);
-    
+
     if (!req.file) {
       throw new BadRequestError(PICTURE.NO_FILE);
     }
@@ -289,6 +289,7 @@ export const getAdminPics =
         ethnicity: true,
         filepath: true,
         user: true,
+        age: true,
       },
       where: {
         user: {
@@ -302,6 +303,7 @@ export const getAdminPics =
       ethnicity: pic.ethnicity ?? pic.user.ethnicity,
       countryOfOrigin: pic.countryOfOrigin ?? pic.user.countryOfOrigin,
       url: storageInteractor.getImageUrl(pic.filepath),
+      age: pic.age,
     }));
 
     res.status(200).json({ pictures: transformedPics });
