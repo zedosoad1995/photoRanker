@@ -2,31 +2,22 @@ import { NotFoundError } from "@/errors/NotFoundError";
 import { prisma } from "@/models";
 import { PurchaseRepo } from "@/types/repositories/purchase";
 import { ILoggedUserMiddleware } from "@/types/user";
-import {
-  MAX_PAID_PHOTOS,
-  PHOTO_LIMIT_PURCHASE_ON,
-  PURCHASE_AMOUNT,
-  PURCHASE_TYPE,
-} from "@shared/constants/purchase";
+import { IPurchaseType, MAX_PAID_PHOTOS, PURCHASE_AMOUNT } from "@shared/constants/purchase";
 
 export class IncreasePhotos implements PurchaseRepo {
-  purchaseName = PURCHASE_TYPE.INCREASE_PHOTOS;
+  purchaseName: IPurchaseType = "increase-photos";
 
   public async hasAlreadyBeenPurchased(user: ILoggedUserMiddleware) {
     return Boolean(user?.purchase?.hasIncreasedPhotoLimit);
   }
 
   public getPurchaseAmountAndMetadata() {
-    if (PHOTO_LIMIT_PURCHASE_ON) {
-      return {
-        amount: PURCHASE_AMOUNT[this.purchaseName],
-        metadata: {
-          type: this.purchaseName,
-        },
-      };
-    }
-
-    return null;
+    return {
+      amount: PURCHASE_AMOUNT[this.purchaseName],
+      metadata: {
+        type: this.purchaseName,
+      },
+    };
   }
 
   public async handlePurchase(userId: string) {

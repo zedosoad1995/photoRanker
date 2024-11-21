@@ -47,7 +47,7 @@ export const getMany =
       throw new BadRequestError("Cannot call belongsToMe and userId simulataneously");
     }
 
-    const { pictures, nextCursor, ageGroup } = await PictureModel.getPicturesWithPercentile(
+    const { pictures, nextCursor } = await PictureModel.getPicturesWithPercentile(
       userId,
       loggedUser,
       hasReport,
@@ -68,7 +68,6 @@ export const getMany =
     res.status(200).json({
       pictures: retPics,
       nextCursor,
-      ageGroup,
     });
   };
 
@@ -130,9 +129,13 @@ export const getVotesStats =
       throw new NotFoundError("Piture not found");
     }
 
-    const stats = await PictureModel.getPictureVotesStats(pictureId, storageInteractor);
+    const { stats, count, hasMore } = await PictureModel.getPictureVotesStats(
+      pictureId,
+      storageInteractor,
+      loggedUser,
+    );
 
-    res.status(200).json({ stats });
+    res.status(200).json({ stats, total: count, hasMore });
   };
 
 export const getStats =
@@ -171,6 +174,7 @@ export const uploadOne =
   (storageInteractor: StorageInteractor) => async (req: Request, res: Response) => {
     const loggedUser = req.loggedUser as ILoggedUserMiddleware;
     const isGlobal = req.body.isGlobal;
+    const age = Number(req.body.age);
 
     if (!req.file) {
       throw new BadRequestError(PICTURE.NO_FILE);
@@ -196,6 +200,7 @@ export const uploadOne =
         ratingDeviation: RD_INI,
         volatility: VOLATILITY_INI,
         maxFreeVotes: MAX_FREE_VOTES,
+        age,
         user: {
           connect: {
             id: req.loggedUser?.id,
@@ -284,6 +289,7 @@ export const getAdminPics =
         ethnicity: true,
         filepath: true,
         user: true,
+        age: true,
       },
       where: {
         user: {
@@ -297,6 +303,7 @@ export const getAdminPics =
       ethnicity: pic.ethnicity ?? pic.user.ethnicity,
       countryOfOrigin: pic.countryOfOrigin ?? pic.user.countryOfOrigin,
       url: storageInteractor.getImageUrl(pic.filepath),
+      age: pic.age,
     }));
 
     res.status(200).json({ pictures: transformedPics });

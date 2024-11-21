@@ -5,7 +5,6 @@ import { IPictureWithPercentile } from "@/Types/picture";
 import { IUser } from "@/Types/user";
 import { isAdmin } from "@/Utils/role";
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { IAgeGroup } from "@shared/types/picture";
 import { usePhotos } from "@/Contexts/photos";
 import {
   FILTER_SELECT,
@@ -16,7 +15,6 @@ import {
 } from "@/Constants/localStorageKeys";
 
 export interface MyPhotosState {
-  ageGroup: IAgeGroup;
   picUrls?: string[];
   picsInfo?: IPictureWithPercentile[];
   nextCursor?: string;
@@ -68,14 +66,11 @@ export const MyPhotosProvider = ({
     setPicsInfo,
     nextCursor,
     setNextCursor,
-    ageGroup,
-    setAgeGroup,
   } = usePhotos(mode);
 
   const [isLoadingMoreImages, updateLoadingMoreImages] = useStateRef(false);
 
   const initialState: MyPhotosState = {
-    ageGroup,
     picUrls,
     picsInfo,
     nextCursor,
@@ -119,10 +114,6 @@ export const MyPhotosProvider = ({
     setNextCursor(state.nextCursor);
   }, [state.nextCursor]);
 
-  useEffect(() => {
-    setAgeGroup(state.ageGroup);
-  }, [state.ageGroup]);
-
   const getPictures = async (cursor?: string) => {
     dispatch({ key: "isSet", value: false });
 
@@ -143,8 +134,7 @@ export const MyPhotosProvider = ({
         orderByDir,
         limit: 30,
         cursor,
-      }).then(async (res) => {
-        dispatch({ key: "ageGroup", value: res.ageGroup });
+      }).then((res) => {
         dispatch({ key: "nextCursor", value: res.nextCursor });
 
         dispatch({

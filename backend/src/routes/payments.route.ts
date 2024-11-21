@@ -6,11 +6,9 @@ import { checkBanned } from "@/middlewares/checkBanned";
 import {
   createPaymentIntentIncreasePhotos,
   createPaymentIntentUnlimitedVotes,
-  createPaymentIntentMultipleUnlimitedVotes,
   stripeWebhook,
+  createPaymentIntentUnlimitedStats,
 } from "@/controllers/payments.controller";
-import { validateForm } from "@/middlewares/validateForm";
-import { createPaymentIntentMultipleUnlimitedVotesSchema } from "@/schemas/purchase/createPaymentIntentMultipleUnlimitedVotes";
 
 const router = Router();
 
@@ -19,20 +17,19 @@ const profileChecks = [checkAuth, checkBanned, checkProfileCompleted, checkEmail
 router.post(
   "/create-payment-intent/increase-photos",
   ...profileChecks,
-  createPaymentIntentIncreasePhotos
+  createPaymentIntentIncreasePhotos,
 );
 
 router.post(
   "/create-payment-intent/unlimited-votes",
   ...profileChecks,
-  createPaymentIntentUnlimitedVotes
+  createPaymentIntentUnlimitedVotes,
 );
 
 router.post(
-  "/create-payment-intent/multiple-unlimited-votes",
+  "/create-payment-intent/unlimited-stats",
   ...profileChecks,
-  validateForm(createPaymentIntentMultipleUnlimitedVotesSchema),
-  createPaymentIntentMultipleUnlimitedVotes
+  createPaymentIntentUnlimitedStats,
 );
 
 router.post("/stripe-webhook", stripeWebhook);

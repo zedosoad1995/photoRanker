@@ -20,7 +20,6 @@ export interface IPictureWithPercentile {
   numPaidVotes: number;
   cannotSeeAllVotes: boolean;
   isActive: boolean;
-  ageGroupPercentile?: number;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -59,6 +58,7 @@ export interface IAdminPhoto {
   ethnicity: string | null;
   countryOfOrigin: string | null;
   url: string;
+  age: number;
 }
 
 export interface IGetAdminPhoto {
@@ -67,6 +67,8 @@ export interface IGetAdminPhoto {
 
 export interface IGetPictureVotingStats {
   stats: IPictureVotingStats[];
+  total: number;
+  hasMore: boolean;
 }
 
 export interface PictureRes {
@@ -76,7 +78,6 @@ export interface PictureRes {
 export interface IGetManyPictures {
   pictures: IPictureWithPercentile[];
   nextCursor?: string;
-  ageGroup: IAgeGroup;
 }
 
 export interface IUploadPermission {
@@ -86,4 +87,5 @@ export interface IUploadPermission {
 export interface IAdminPictureBody {
   countryOfOrigin?: string;
   ethnicity?: string;
+  age?: number;
 }

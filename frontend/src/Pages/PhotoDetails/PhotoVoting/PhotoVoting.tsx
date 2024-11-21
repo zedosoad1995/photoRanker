@@ -1,14 +1,28 @@
 import { Spinner } from "@/Components/Loading/Spinner";
 import { getPictureVotingStats } from "@/Services/picture";
 import { loadImage } from "@/Utils/image";
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { usePhotoInfo } from "../Contexts/photoInfo";
+import { VotingCard } from "./VotingCard";
+import Button from "@/Components/Button";
+import { MAX_FREE_STATS_PER_PIC } from "@shared/constants/purchase";
 
 export const PhotoVoting = () => {
   const { pictureId } = useParams();
-  const { voteStats, setVoteStats } = usePhotoInfo();
+
+  const {
+    voteStats,
+    setVoteStats,
+    hasMoreVotes,
+    setHasMoreVotes,
+    setTotalVotes,
+    totalVotes,
+  } = usePhotoInfo();
   const [isLoading, setIsLoading] = useState(false);
+  const innerCardRef = useRef<HTMLDivElement | null>(null);
+  const statCardRef = useRef<HTMLDivElement | null>(null);
+  const hiddingBottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!pictureId || voteStats) {
@@ -18,7 +32,7 @@ export const PhotoVoting = () => {
     setIsLoading(true);
 
     getPictureVotingStats(pictureId)
-      .then(async ({ stats }) => {
+      .then(async ({ stats, total, hasMore }) => {
         await Promise.all(
           stats.flatMap(({ winner, loser }) => {
             return [
@@ -35,11 +49,42 @@ export const PhotoVoting = () => {
         );
 
         setVoteStats(stats);
+        setTotalVotes(total);
+        setHasMoreVotes(hasMore);
       })
       .finally(() => {
         setIsLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const setHiddenBottomHeight = () => {
+      if (
+        !statCardRef.current ||
+        !innerCardRef.current ||
+        !hiddingBottomRef.current
+      ) {
+        return;
+      }
+
+      const height = innerCardRef.current.getBoundingClientRect().height;
+
+      const cutOffHeight = height * 0.3;
+
+      statCardRef.current.style.height = `${cutOffHeight}px`;
+      hiddingBottomRef.current.style.height = `${cutOffHeight}px`;
+      hiddingBottomRef.current.style.background = `linear-gradient(to bottom, #F8F8FB00 0px, #F8F8FBFF ${cutOffHeight}px)`;
+    };
+
+    setHiddenBottomHeight();
+
+    window.addEventListener("resize", setHiddenBottomHeight);
+    return () => {
+      window.removeEventListener("resize", setHiddenBottomHeight);
+    };
+  }, [isLoading]);
 
   return (
     <>
@@ -58,113 +103,51 @@ export const PhotoVoting = () => {
       {isLoading && <Spinner />}
       {!isLoading && (
         <>
-          {voteStats?.map((stat) => {
+          {voteStats?.map((stat, index) => {
             const selectedPic = stat.is_winner ? stat.winner : stat.loser;
             const otherPic = stat.is_winner ? stat.loser : stat.winner;
 
+            const isLast = index === voteStats.length - 1 && hasMoreVotes;
+
+            if (isLast) {
+              return (
+                <div
+                  key={stat.id}
+                  ref={statCardRef}
+                  className="overflow-hidden relative"
+                >
+                  <div
+                    ref={hiddingBottomRef}
+                    className="absolute w-[102%] -left-[1%] z-10"
+                  />
+                  <VotingCard
+                    innerCardRef={innerCardRef}
+                    selectedPic={selectedPic}
+                    otherPic={otherPic}
+                    stat={stat}
+                  />
+                </div>
+              );
+            }
+
             return (
-              <div
-                key={stat.id}
-                className="mb-6 rounded-lg border shadow overflow-clip bg-white max-w-[800px] mx-auto"
-              >
-                <div className="flex items-center">
-                  <div className={`relative`}>
-                    <img src={String(selectedPic)} />
-                    {stat.is_winner && (
-                      <div
-                        style={{
-                          background:
-                            "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(34, 197, 94, 0.9) 100%)",
-                        }}
-                        className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white max-[420px]:text-sm"
-                      >
-                        Winner
-                      </div>
-                    )}
-                    {!stat.is_winner && (
-                      <div
-                        style={{
-                          background:
-                            "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255, 0, 0, 0.9) 100%)",
-                        }}
-                        className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white max-[420px]:text-sm"
-                      >
-                        Loser
-                      </div>
-                    )}
-                  </div>
-                  <div className={`relative`}>
-                    <img src={String(otherPic)} />
-                    {!stat.is_winner && (
-                      <div
-                        style={{
-                          background:
-                            "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(34, 197, 94, 0.9) 100%)",
-                        }}
-                        className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white max-[420px]:text-sm"
-                      >
-                        Winner
-                      </div>
-                    )}
-                    {stat.is_winner && (
-                      <div
-                        style={{
-                          background:
-                            "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255, 0, 0, 0.9) 100%)",
-                        }}
-                        className="absolute -translate-x-1/2 -translate-y-full left-1/2 text-center pt-4 w-full font-semibold text-white max-[420px]:text-sm"
-                      >
-                        Loser
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <div className="flex bg-white">
-                    <div className="flex flex-col w-1/4 items-center py-2">
-                      <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
-                        GENDER
-                      </div>
-                      <div className="font-semibold max-[550px]:text-sm max-[400px]:text-xs">
-                        {stat.voter_gender}
-                      </div>
-                    </div>
-                    <div className="my-2 w-0 border-l-2" />
-                    <div className="flex flex-col w-1/4 items-center py-2">
-                      <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
-                        AGE
-                      </div>
-                      <div className="font-semibold max-[550px]:text-sm max-[400px]:text-xs">
-                        {stat.voter_age}
-                      </div>
-                    </div>
-                    <div className="my-2 w-0 border-l-2" />
-                    <div className="flex flex-col w-1/4 items-center py-2">
-                      <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
-                        COUNTRY
-                      </div>
-                      <div className="font-semibold max-[550px]:text-sm max-[400px]:text-xs text-ellipsis text-center w-full overflow-hidden">
-                        {stat.voter_country}
-                      </div>
-                    </div>
-                    <div className="my-2 w-0 border-l-2" />
-                    <div className="flex flex-col w-1/4 items-center py-2">
-                      <div className="font-semibold text-placeholder-text text-xs max-[550px]:text-[11px] max-[400px]:text-[10px]">
-                        ETHNICITY
-                      </div>
-                      <div className="font-semibold max-[550px]:text-sm max-[400px]:text-xs">
-                        {stat.voter_ethnicity}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-sm max-[550px]:text-xs font-medium text-center -mt-2 max-[550px]:-mt-1 mb-1 text-placeholder-text">
-                    VOTER INFO
-                  </div>
-                </div>
-              </div>
+              <React.Fragment key={stat.id}>
+                <VotingCard
+                  selectedPic={selectedPic}
+                  otherPic={otherPic}
+                  stat={stat}
+                />
+              </React.Fragment>
             );
           })}
         </>
+      )}
+      {hasMoreVotes && !isLoading && (
+        <div className="flex justify-center my-4">
+          <Button isFull={false} variant="outline">
+            Show {totalVotes - MAX_FREE_STATS_PER_PIC} more
+          </Button>
+        </div>
       )}
     </>
   );

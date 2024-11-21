@@ -125,7 +125,7 @@ export default function PersonalMode() {
     if (selectedFile) {
       const reader = new FileReader();
       reader.onloadend = async () => {
-        let base64Image = reader.result as string;
+        const base64Image = reader.result as string;
 
         const { height, width } = await getImageDimensionsFromBase64(
           base64Image
@@ -158,7 +158,7 @@ export default function PersonalMode() {
         </div>
         <input
           type="file"
-          accept=".jpg, .jpeg, .png"
+          accept=".jpg, .jpeg, .png, .webp"
           ref={fileInputRef}
           onChange={handleFileChange}
           className="hidden"

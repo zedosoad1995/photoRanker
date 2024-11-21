@@ -10,8 +10,6 @@ async function main() {
 
     const age = calculateAge(user.dateOfBirth);
 
-    console.log(age);
-
     await prisma.picture.updateMany({
       data: {
         age,

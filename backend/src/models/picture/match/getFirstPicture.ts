@@ -1,7 +1,6 @@
 import _ from "underscore";
 import { Gender, Picture, Preference, User } from "@prisma/client";
 import { isAdmin } from "@/helpers/role";
-import { adjustDate, formatDate } from "@/helpers/date";
 import { calculateAge } from "@shared/helpers/date";
 import { prisma } from "@/models";
 
@@ -18,17 +17,13 @@ const getPhotoPreferencesQueries = (userPreferences: Preference | null) => {
     // Max age preference
     if (userPreferences.contentMaxAge) {
       whereArr.push(
-        `usr."dateOfBirth" > '${formatDate(
-          adjustDate(new Date(), { years: -userPreferences.contentMaxAge - 1 })
-        )}'`
+        `pic.age <= ${userPreferences.contentMaxAge}`
       );
     }
 
     // Min age preferences
     whereArr.push(
-      `usr."dateOfBirth" < '${formatDate(
-        adjustDate(new Date(), { years: -userPreferences.contentMinAge, days: 1 })
-      )}'`
+      `pic.age >= ${userPreferences.contentMinAge}`
     );
   }
 

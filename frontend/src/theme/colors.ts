@@ -1,6 +1,6 @@
 export const colors = {
-  primary: "#ff4742",
-  "primary-hover": "#ff6b66",
+  primary: "#4f46e5",
+  "primary-hover": "#6366f1",
   "primary-text": "#312e81",
   "primary-contrast": "#e0e7ff",
   "normal-text": "#111827",

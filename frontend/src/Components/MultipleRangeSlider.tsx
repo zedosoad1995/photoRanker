@@ -6,6 +6,8 @@ interface IMultipleRangeSlider {
   min?: number;
   max?: number;
   step?: number;
+  leftMax?: number;
+  minDiff?: number;
 }
 
 const MultipleRangeSlider = ({
@@ -14,6 +16,8 @@ const MultipleRangeSlider = ({
   min = 0,
   max = 100,
   step = 1,
+  leftMax = 50,
+  minDiff = 6,
 }: IMultipleRangeSlider) => {
   const isDraggingRef = useRef(false);
   const activeHandler = useRef<React.RefObject<HTMLDivElement> | null>(null);
@@ -77,12 +81,21 @@ const MultipleRangeSlider = ({
     if (newValue > max) newValue = max;
 
     if (handleRef === sliderLeftHandleRef) {
+      if (leftMax !== undefined && newValue > leftMax) newValue = leftMax;
+      if (rightValueRef.current - newValue < minDiff)
+        newValue = rightValueRef.current - minDiff;
+
       if (newValue !== leftValueRef.current)
         handleChange(newValue, rightValueRef.current);
+
       leftValueRef.current = newValue;
     } else {
+      if (newValue - leftValueRef.current < minDiff)
+        newValue = leftValueRef.current + minDiff;
+
       if (newValue !== rightValueRef.current)
         handleChange(leftValueRef.current, newValue);
+
       rightValueRef.current = newValue;
     }
 
@@ -90,14 +103,16 @@ const MultipleRangeSlider = ({
       ((newValue - min) / (max - min)) *
       (containerBounds.width - handleRef.current.offsetWidth);
 
-    handleRef.current.style.left = newX + "px";
+    handleRef.current.style.left = String(newX) + "px";
 
     const leftHandlePos = sliderLeftHandleRef.current.offsetLeft;
     const rightHandlePos = sliderRightHandleRef.current.offsetLeft;
 
     betweenTrailRef.current.style.left =
-      leftHandlePos + sliderLeftHandleRef.current.offsetWidth / 2 + "px";
-    betweenTrailRef.current.style.width = rightHandlePos - leftHandlePos + "px";
+      String(leftHandlePos + sliderLeftHandleRef.current.offsetWidth / 2) +
+      "px";
+    betweenTrailRef.current.style.width =
+      String(rightHandlePos - leftHandlePos) + "px";
   };
 
   const handleMouseDown =

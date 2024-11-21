@@ -3,6 +3,9 @@ import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { UserRole } from "@prisma/client";
 import { Countries, Ethnicities, Genders } from "@shared/types/user";
 import { generateUserStatsWhenAdmin } from "./generateAdminUserStats";
+import { ILoggedUserMiddleware } from "@/types/user";
+import { isRegular } from "@/helpers/role";
+import { MAX_FREE_STATS_PER_PIC } from "@shared/constants/purchase";
 
 export interface IGetPictureVotesStatsQueryReturn {
   id: string;
@@ -23,9 +26,13 @@ export interface IGetPictureVotesStatsQueryReturn {
 
 export const getPictureVotesStats = async (
   pictureId: string,
-  storageInteractor: StorageInteractor
+  storageInteractor: StorageInteractor,
+  loggedUser: ILoggedUserMiddleware,
 ) => {
-  const res: IGetPictureVotesStatsQueryReturn[] = await prisma.$queryRawUnsafe(`
+  // regular && not purchased && flag_on -> order by asc, Limit 5
+  const hasLimitedStats = isRegular(loggedUser.role) && !loggedUser.purchase?.hasUnlimitedStats;
+
+  let res: IGetPictureVotesStatsQueryReturn[] = await prisma.$queryRawUnsafe(`
     WITH
       CTE AS (
         SELECT
@@ -122,7 +129,17 @@ export const getPictureVotesStats = async (
       main.id
     HAVING MAX(main.winner_pic) IS NOT NULL AND MAX(main.loser_pic) IS NOT NULL
     ORDER BY
-      main."createdAt" DESC`);
+      main."createdAt" ${hasLimitedStats ? "ASC" : "DESC"}`);
 
-  return generateUserStatsWhenAdmin(res);
+  let hasMore = false;
+  const count = res.length;
+  if (hasLimitedStats) {
+    // The plus 1, is because we want to kinda display an extra stat, for visual purposes. We do not really care if the user can find the extra vote trhough the API
+    res = res.slice(0, MAX_FREE_STATS_PER_PIC + 1);
+    if (count > MAX_FREE_STATS_PER_PIC) {
+      hasMore = true;
+    }
+  }
+
+  return { stats: generateUserStatsWhenAdmin(res), count, hasMore };
 };

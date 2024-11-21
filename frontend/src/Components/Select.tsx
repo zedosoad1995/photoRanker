@@ -16,7 +16,13 @@ interface ISelect {
   onChange: (value: any) => void;
 }
 
-export default function Select({ options, title, label, value, onChange: handleChange }: ISelect) {
+export default function Select({
+  options,
+  title,
+  label,
+  value,
+  onChange: handleChange,
+}: ISelect) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRightAlign, setIsRightAlign] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -37,31 +43,55 @@ export default function Select({ options, title, label, value, onChange: handleC
 
     setDropdownHeight();
 
-    // Optional: Update if window resizes
     window.addEventListener("resize", setDropdownHeight);
 
     return () => {
       window.removeEventListener("resize", setDropdownHeight);
     };
-  }, [dropdownRef.current, isOpen]);
+  }, [dropdownRef, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const setDropdownWidth = () => {
+      if (!dropdownRef.current || !selectRef.current) return;
+
+      if (dropdownRef.current.clientWidth > selectRef.current.clientWidth)
+        return;
+
+      dropdownRef.current.style.width = `${selectRef.current.clientWidth}px`;
+    };
+
+    setDropdownWidth();
+
+    window.addEventListener("resize", setDropdownWidth);
+
+    return () => {
+      window.removeEventListener("resize", setDropdownWidth);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsRightAlign(false);
+    }
+
+    if (!dropdownRef.current) return;
+
+    const rect = dropdownRef.current.getBoundingClientRect();
+
+    setIsRightAlign(window.innerWidth < rect.right);
+  }, [isOpen]);
 
   const handleOpenMenu = () => {
-    setIsOpen((val) => {
-      if (!selectRef.current) {
-        return val;
-      }
-
-      if (!val) {
-        const rect = selectRef.current.getBoundingClientRect();
-        setIsRightAlign(window.innerWidth - rect.right < selectRef.current.offsetWidth);
-      }
-
-      return !val;
-    });
+    setIsOpen((val) => !val);
   };
 
   const closeOpenMenu = (event: MouseEvent | TouchEvent) => {
-    if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+    if (
+      selectRef.current &&
+      !selectRef.current.contains(event.target as Node)
+    ) {
       setIsOpen(false);
     }
   };
@@ -112,15 +142,15 @@ export default function Select({ options, title, label, value, onChange: handleC
             <Listbox.Options
               static
               ref={dropdownRef}
-              className={`absolute mt-1 overflow-y-auto max-h-0 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 text-sm max-[296px]:text-xs z-20 ${
+              className={`fixed mt-1 overflow-y-auto max-h-0 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 text-sm max-[296px]:text-xs z-20 ${
                 options.length === 0 || !isOpen ? "hidden" : ""
-              } ${isRightAlign ? "right-0" : ""}`}
+              } ${isRightAlign ? "right-2" : ""}`}
             >
               {options.map((option) => {
+                let isSelected = value === option.id;
+
                 if (hasMultiple) {
-                  var isSelected = value.some((val) => option.id === val);
-                } else {
-                  var isSelected = value === option.id;
+                  isSelected = value.some((val) => option.id === val);
                 }
 
                 return (
@@ -131,7 +161,9 @@ export default function Select({ options, title, label, value, onChange: handleC
                     className="relative cursor-pointer select-none py-2 pl-4 pr-9 hover:bg-primary-contrast hover:text-primary-text"
                   >
                     <span
-                      className={`block truncate ${isSelected ? "font-medium" : "font-normal"}`}
+                      className={`block truncate ${
+                        isSelected ? "font-medium" : "font-normal"
+                      }`}
                     >
                       {option.label}
                     </span>

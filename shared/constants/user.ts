@@ -26,10 +26,12 @@ export const ROLE = {
 } as const;
 
 export const ETHNICITY = [
-  "White",
-  "Black",
   "Asian",
+  "Black",
   "Latino",
+  "Middle Eastern",
+  "South Asian",
+  "White",
   "Other",
 ] as const;
 

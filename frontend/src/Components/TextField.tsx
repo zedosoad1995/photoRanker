@@ -6,6 +6,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
 
 interface ITextField {
   label?: string;
+  placeholder?: string;
   type?: HTMLInputTypeAttribute;
   autocomplete?: AutocompleteOption;
   required?: boolean;
@@ -14,18 +15,23 @@ interface ITextField {
   value?: string | number | readonly string[];
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+  isNumeric?: boolean;
+  maxLen?: number;
 }
 
 export default function Textfield({
   label,
+  placeholder,
   type,
   autocomplete,
   required,
   register,
   error,
   value,
-  onChange: handleChange,
+  onChange,
   onKeyDown: handleKeyDown,
+  isNumeric,
+  maxLen,
 }: ITextField) {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -46,6 +52,20 @@ export default function Textfield({
       : "top-1/2 scale-100 -translate-y-1/2"
   }`;
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isNumeric) {
+      onChange?.({
+        ...event,
+        currentTarget: {
+          ...event.currentTarget,
+          value: event.currentTarget.value.replace(/\D/g, ""),
+        },
+      });
+    } else {
+      onChange?.(event);
+    }
+  };
+
   return (
     <div onBlur={() => setIsFocused(false)}>
       <div className="relative">
@@ -61,13 +81,17 @@ export default function Textfield({
         )}
         <input
           type={transformedType}
+          placeholder={placeholder}
           autoComplete={autocomplete}
           required={required}
-          className={`${inputField} ${error ? "!ring-danger !focus:ring-danger" : ""}`}
+          className={`${inputField} ${
+            error ? "!ring-danger !focus:ring-danger" : ""
+          }`}
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           onFocus={() => setIsFocused(true)}
+          maxLength={maxLen}
           {...register}
         />
       </div>

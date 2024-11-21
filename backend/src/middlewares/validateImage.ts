@@ -13,7 +13,7 @@ export const validateImage =
       throw new BadRequestError(PICTURE.NO_FILE);
     }
 
-    const allowedTypes = ["png", "jpg", "jpeg"];
+    const allowedTypes = ["png", "jpg", "jpeg", "webp"];
     const extension = path.extname(req.file.originalname).toLowerCase().slice(1);
     if (!allowedTypes.includes(extension)) {
       throw new BadRequestError(PICTURE.INVALID_EXTENSION);

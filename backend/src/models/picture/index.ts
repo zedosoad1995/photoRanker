@@ -4,15 +4,11 @@ import { Picture, Prisma, User } from "@prisma/client";
 import { isAdmin, isRegular } from "@/helpers/role";
 import { ORDER_BY_DIR_OPTIONS_TYPE } from "@/constants/query";
 import { base64ToString, toBase64 } from "@/helpers/crypto";
-import { adjustDate, formatDate } from "@/helpers/date";
 import { StorageInteractor } from "@/types/repositories/storageInteractor";
 import { getMatchPictures } from "./match/matchQuery";
-import { UNLIMITED_VOTE_ALL_ON, UNLIMITED_VOTE_MULTIPLE_ON } from "@shared/constants/purchase";
-import { IAgeGroup } from "@shared/types/picture";
 import { getPictureVotesStats } from "./votesStats/votesStats";
 import { RatingRepo } from "@/types/repositories/ratingRepo";
 import { getPictureStats } from "./stats/stats";
-import { getAgeGroupQuery } from "./helpers/user";
 
 interface IReturnPicWithPervental {
   id: string;
@@ -40,7 +36,6 @@ async function getPicturesWithPercentile(
 ): Promise<{
   pictures: IReturnPicWithPervental[];
   nextCursor: string | undefined;
-  ageGroup: IAgeGroup;
 }> {
   const loggedUserId = loggedUser.id;
   const role = loggedUser.role;
@@ -56,14 +51,14 @@ async function getPicturesWithPercentile(
 
   const orderKey = Object.keys(orderByObj)[0];
   const orderValue = Object.values(orderByObj)[0];
-  const extraSelectField = [`pic_perc."ageGroupPercentile"`];
+  const extraSelectField = [];
 
   let orderType: "date" | "number" = "number";
   let useHaving = false;
 
   const PIC_GROUP_BY =
     (getAllColumnNames() ?? ["id"]).map((col) => `pic."${col}"`).join(", ") +
-    `, pic_perc.percentile, pic_perc."numVotes", pic_perc."cannotSeeAllVotes", pic_perc."ageGroupPercentile"`;
+    `, pic_perc.percentile, pic_perc."numVotes", pic_perc."cannotSeeAllVotes"`;
 
   const USER_JOIN = `
     INNER JOIN "User" as usr
@@ -142,15 +137,11 @@ async function getPicturesWithPercentile(
     }
 
     if (minAge) {
-      whereQuery.push(
-        `usr."dateOfBirth" < '${formatDate(adjustDate(new Date(), { years: -minAge, days: 1 }))}'`,
-      );
+      whereQuery.push(`pic.age >= ${minAge}`);
     }
 
     if (maxAge) {
-      whereQuery.push(
-        `usr."dateOfBirth" > '${formatDate(adjustDate(new Date(), { years: -maxAge - 1 }))}'`,
-      );
+      whereQuery.push(`pic.age <= ${maxAge}`);
     }
 
     // Sorting
@@ -233,36 +224,10 @@ async function getPicturesWithPercentile(
 
   subQueryPicPercentileSelect.push(percentileSelect);
 
-  let ageGroupQuery: string = "";
-  let ageGroup: IAgeGroup;
-  if (isGlobal) {
-    [ageGroupQuery, ageGroup] = getAgeGroupQuery(loggedUser.dateOfBirth as string, `"dateOfBirth"`);
-
-    const percentileAgeGroupSelect = `
-      100 * 
-      CASE 
-        WHEN COUNT(*) OVER(PARTITION BY CASE WHEN ${ageGroupQuery} THEN 1 ELSE 0 END) = 1 THEN 1
-        ELSE PERCENT_RANK() OVER (
-          PARTITION BY CASE WHEN ${ageGroupQuery} THEN 1 ELSE 0 END 
-          ORDER BY pic.rating
-        )
-      END AS "ageGroupPercentile"`;
-
-    subQueryPicPercentileSelect.push(percentileAgeGroupSelect);
-  } else {
-    subQueryPicPercentileSelect.push(`NULL AS "ageGroupPercentile"`);
-  }
-
   const whenLimitedVotes =
-    isBanned || isAdmin(role) || !(UNLIMITED_VOTE_ALL_ON || UNLIMITED_VOTE_MULTIPLE_ON)
+    isBanned || isAdmin(role)
       ? `FALSE`
-      : `${
-          UNLIMITED_VOTE_ALL_ON
-            ? '(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND'
-            : ""
-        } ${
-          UNLIMITED_VOTE_MULTIPLE_ON ? 'pic."hasPurchasedUnlimitedVotes" = FALSE AND' : ""
-        } pic."numVotes" > pic."maxFreeVotes"`;
+      : `(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND pic."numVotes" > pic."maxFreeVotes"`;
 
   const subQueryPicPercentile = `
     SELECT 
@@ -286,8 +251,7 @@ async function getPicturesWithPercentile(
         CASE
           WHEN ${whenLimitedVotes} THEN TRUE
           ELSE FALSE
-        END AS "cannotSeeAllVotes",
-        usr."dateOfBirth"
+        END AS "cannotSeeAllVotes"
       FROM "Picture" AS pic
       ${joinInnerQuery.join("\n")}
       WHERE 
@@ -362,7 +326,6 @@ async function getPicturesWithPercentile(
   return {
     pictures: picturesWithoutCursor,
     nextCursor: nextCursor ? toBase64(nextCursor) : undefined,
-    ageGroup,
   };
 }
 
@@ -404,7 +367,7 @@ function getUpdateFieldsToReturn(
 ) {
   const { filepath, ...ommitedPic } = omittedField(pic);
   const imgUrl = storageInteractor.getImageUrl(filepath);
-  const retPic = _.omit(ommitedPic, "freeRating", "hasPurchasedUnlimitedVotes", "isGlobal");
+  const retPic = _.omit(ommitedPic, "freeRating", "isGlobal");
 
   return { ...retPic, url: imgUrl };
 }
