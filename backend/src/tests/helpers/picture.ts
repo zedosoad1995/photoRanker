@@ -16,7 +16,7 @@ export const randomizePicture = (data: Partial<Prisma.PictureCreateManyInput> = 
 
   const imagePath = path.join(
     INTERMEDIATE_FOLDER,
-    `${crypto.randomBytes(18).toString("hex")}.${faker.helpers.arrayElement(["jpg", "png"])}`
+    `${crypto.randomBytes(18).toString("hex")}.${faker.helpers.arrayElement(["jpg", "png"])}`,
   );
 
   // Create file
@@ -29,6 +29,7 @@ export const randomizePicture = (data: Partial<Prisma.PictureCreateManyInput> = 
     ratingDeviation: faker.number.float({ min: 20, max: 700 }),
     volatility: faker.number.float({ min: 1e-6, max: 0.1 }),
     numVotes: faker.number.int({ min: 0, max: 50_000 }),
+    age: faker.number.int({ min: 18, max: 70 }),
     userId: uuidv4(),
     ...data,
   };
