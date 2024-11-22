@@ -30,7 +30,9 @@ export const getPictureVotesStats = async (
   loggedUser: ILoggedUserMiddleware,
 ) => {
   // regular && not purchased && flag_on -> order by asc, Limit 5
-  const hasLimitedStats = isRegular(loggedUser.role) && !loggedUser.purchase?.hasUnlimitedStats;
+  // TODO Purchase
+  //const hasLimitedStats = isRegular(loggedUser.role) && !loggedUser.purchase?.hasUnlimitedStats;
+  const hasLimitedStats = false;
 
   let res: IGetPictureVotesStatsQueryReturn[] = await prisma.$queryRawUnsafe(`
     WITH

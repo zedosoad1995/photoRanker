@@ -61,7 +61,7 @@ export const createOne = (mailingService: MailRepo) => async (req: Request, res:
   if (bannedUser) {
     throw new ForbiddenError(
       "This email has been banned. You cannot create another account",
-      BANNED_ACCOUNT
+      BANNED_ACCOUNT,
     );
   }
 
@@ -110,7 +110,7 @@ export const createOne = (mailingService: MailRepo) => async (req: Request, res:
     {
       email: user.email,
     },
-    process.env.JWT_KEY!
+    process.env.JWT_KEY!,
   );
 
   res.cookie(
@@ -118,7 +118,7 @@ export const createOne = (mailingService: MailRepo) => async (req: Request, res:
     {
       jwt: userJwt,
     },
-    cookieOptions
+    cookieOptions,
   );
 
   res.status(201).json({ user: UserModel.dump(user) });
