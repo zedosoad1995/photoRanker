@@ -224,10 +224,12 @@ async function getPicturesWithPercentile(
 
   subQueryPicPercentileSelect.push(percentileSelect);
 
-  const whenLimitedVotes =
+  // TODO purchase
+  /* const whenLimitedVotes =
     isBanned || isAdmin(role)
       ? `FALSE`
-      : `(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND pic."numVotes" > pic."maxFreeVotes"`;
+      : `(purchase."hasUnlimitedVotes" IS NULL OR purchase."hasUnlimitedVotes" = FALSE) AND pic."numVotes" > pic."maxFreeVotes"`; */
+  const whenLimitedVotes = "FALSE";
 
   const subQueryPicPercentile = `
     SELECT 
