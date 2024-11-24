@@ -5,7 +5,7 @@ import { loadImage } from "@/Utils/image";
 import { COUNTRIES, ETHNICITY } from "@shared/constants/user";
 import { useEffect, useMemo, useState } from "react";
 
-export const AdminPhotos = () => {
+export default function AdminPhotos() {
   const [pics, setPics] = useState<IAdminPhoto[]>();
 
   const ages = useMemo(
@@ -93,4 +93,4 @@ export const AdminPhotos = () => {
       ))}
     </div>
   );
-};
+}

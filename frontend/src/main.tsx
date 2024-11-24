@@ -19,19 +19,9 @@ import {
   PRIVACY,
   TERMS,
 } from "./Constants/routes.ts";
-import SignIn from "./Pages/Login.tsx";
-import Register from "./Pages/Register/Register.tsx";
 import { AuthProvider } from "@/Contexts/auth.tsx";
 import ProtectedLayout from "./Components/Layout/Layout.tsx";
-import Settings from "./Pages/Settings/Settings.tsx";
-import Vote from "./Pages/Vote/Vote.tsx";
-import MyPhotos from "./Pages/MyPhotos/MyPhotos.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import FacebookCallback from "./Pages/FacebookCallback.tsx";
-import ExpiredValidation from "./Pages/ExpiredValidation.tsx";
-import CheckingValidation from "./Pages/CheckingValidation.tsx";
-import ForgotPassword from "./Pages/ForgotPassword.tsx";
-import ResetPassword from "./Pages/ResetPassword.tsx";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UnprotectedLayout from "./Components/Layout/UnprotectedLayout/Layout.tsx";
@@ -39,11 +29,27 @@ import App from "./Pages/App/index.tsx";
 import RedirectLayout from "./Components/RedirectLayout.tsx";
 import { NotFoundPage } from "./Pages/404.tsx";
 import { PhotosProvider } from "./Contexts/photos.tsx";
-import { PhotoDetails } from "./Pages/PhotoDetails/PhotoDetails.tsx";
 import AdminLayout from "./Components/Layout/AdminLayout.tsx";
-import { AdminPhotos } from "./Pages/Admin/Photos/Photos.tsx";
-import { Terms } from "./Pages/Terms.tsx";
-import { Privacy } from "./Pages/Privacy.tsx";
+
+import { lazy, Suspense } from "react";
+import FullPageLoading from "./Components/Loading/FullPageLoading.tsx";
+
+const SignIn = lazy(() => import("./Pages/Login.tsx"));
+const Register = lazy(() => import("./Pages/Register/Register.tsx"));
+const Settings = lazy(() => import("./Pages/Settings/Settings.tsx"));
+const Vote = lazy(() => import("./Pages/Vote/Vote.tsx"));
+const MyPhotos = lazy(() => import("./Pages/MyPhotos/MyPhotos.tsx"));
+const PhotoDetails = lazy(
+  () => import("./Pages/PhotoDetails/PhotoDetails.tsx")
+);
+const AdminPhotos = lazy(() => import("./Pages/Admin/Photos/Photos.tsx"));
+const Terms = lazy(() => import("./Pages/Terms.tsx"));
+const Privacy = lazy(() => import("./Pages/Privacy.tsx"));
+const FacebookCallback = lazy(() => import("./Pages/FacebookCallback.tsx"));
+const ExpiredValidation = lazy(() => import("./Pages/ExpiredValidation.tsx"));
+const CheckingValidation = lazy(() => import("./Pages/CheckingValidation.tsx"));
+const ForgotPassword = lazy(() => import("./Pages/ForgotPassword.tsx"));
+const ResetPassword = lazy(() => import("./Pages/ResetPassword.tsx"));
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -55,7 +61,11 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
   },
   {
-    element: <ProtectedLayout />,
+    element: (
+      <Suspense fallback={<FullPageLoading />}>
+        <ProtectedLayout />
+      </Suspense>
+    ),
     children: [
       {
         path: VOTE,
@@ -94,7 +104,11 @@ const router = createBrowserRouter([
     ],
   },
   {
-    element: <UnprotectedLayout />,
+    element: (
+      <Suspense fallback={<FullPageLoading />}>
+        <UnprotectedLayout />
+      </Suspense>
+    ),
     children: [
       {
         element: <RedirectLayout />,

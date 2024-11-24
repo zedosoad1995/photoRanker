@@ -1,6 +1,6 @@
 import { Footer } from "@/Components/Footer";
 
-export const Privacy = () => {
+export default function Privacy() {
   return (
     <>
       <div className="p-4 md:p-12 h-auto text-[#374048]">
@@ -149,4 +149,4 @@ export const Privacy = () => {
       <Footer />
     </>
   );
-};
+}

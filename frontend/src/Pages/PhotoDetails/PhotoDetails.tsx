@@ -9,7 +9,7 @@ import { IPhotoMode, PhotoMode } from "@/Constants/mode";
 import { DO_NOT_FETCH_PHOTOS, PHOTO_MODE } from "@/Constants/localStorageKeys";
 import { PhotoInfoProvider } from "./Contexts/photoInfo";
 
-export const PhotoDetails = () => {
+export default function PhotoDetails() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<IPhotoMode>(
     (localStorage.getItem(PHOTO_MODE) as IPhotoMode) ?? PhotoMode.Stats
@@ -45,4 +45,4 @@ export const PhotoDetails = () => {
       {mode === "votes" && <PhotoVoting />}
     </PhotoInfoProvider>
   );
-};
+}
