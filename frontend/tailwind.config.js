@@ -26,6 +26,15 @@ export default {
         label: ["0.875rem", "1.25rem"],
         "error-text": "13px",
       },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+      },
+      animation: {
+        fadeIn: "fadeIn 0.7s ease-in forwards",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

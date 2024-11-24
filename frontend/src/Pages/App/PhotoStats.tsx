@@ -31,6 +31,7 @@ export const PhotoStats = () => {
               src="/mature_man.webp"
               alt="person photo stats"
               className="w-full"
+              loading="lazy"
             />
           </div>
 

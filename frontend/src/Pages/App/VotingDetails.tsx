@@ -26,6 +26,7 @@ export const VotingDetails = () => {
           className="mx-auto w-full max-w-lg"
           src="/vote_details.webp"
           alt="vote details"
+          loading="lazy"
         />
       </div>
     </div>
