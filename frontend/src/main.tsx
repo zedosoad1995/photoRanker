@@ -62,8 +62,8 @@ const router = createBrowserRouter([
   },
   {
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <FullPageLoading />
+      <Suspense fallback={<FullPageLoading />}>
+        <ProtectedLayout />
       </Suspense>
     ),
     children: [
@@ -105,8 +105,8 @@ const router = createBrowserRouter([
   },
   {
     element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <FullPageLoading />
+      <Suspense fallback={<FullPageLoading />}>
+        <UnprotectedLayout />
       </Suspense>
     ),
     children: [
