@@ -240,7 +240,6 @@ function App() {
                         className="mx-auto w-full"
                         src="/dude.webp"
                         alt="male rated 1-10"
-                        loading="lazy"
                       />
                     </div>
                   </div>
@@ -270,7 +269,6 @@ function App() {
                         className="mx-auto w-full"
                         src="/dude2.webp"
                         alt="another male rated 1-10"
-                        loading="lazy"
                       />
                     </div>
                   </div>
