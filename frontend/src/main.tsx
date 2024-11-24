@@ -16,6 +16,8 @@ import {
   RESET_PASSWORD,
   PHOTO_DETAILS,
   ADMIN_PHOTOS,
+  PRIVACY,
+  TERMS,
 } from "./Constants/routes.ts";
 import SignIn from "./Pages/Login.tsx";
 import Register from "./Pages/Register/Register.tsx";
@@ -40,6 +42,8 @@ import { PhotosProvider } from "./Contexts/photos.tsx";
 import { PhotoDetails } from "./Pages/PhotoDetails/PhotoDetails.tsx";
 import AdminLayout from "./Components/Layout/AdminLayout.tsx";
 import { AdminPhotos } from "./Pages/Admin/Photos/Photos.tsx";
+import { Terms } from "./Pages/Terms.tsx";
+import { Privacy } from "./Pages/Privacy.tsx";
 
 if (import.meta.env.VITE_ENV === "PROD") {
   console.log = () => {};
@@ -98,6 +102,14 @@ const router = createBrowserRouter([
           {
             path: HOME,
             element: <App />,
+          },
+          {
+            path: TERMS,
+            element: <Terms />,
+          },
+          {
+            path: PRIVACY,
+            element: <Privacy />,
           },
           {
             path: LOGIN,

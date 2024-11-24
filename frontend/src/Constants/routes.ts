@@ -1,4 +1,6 @@
 export const HOME = "/";
+export const PRIVACY = "/privacy";
+export const TERMS = "/terms";
 export const LOGIN = "/login";
 export const REGISTER = "/register";
 export const EXPIRED_VALIDATION = "/expired-validation";

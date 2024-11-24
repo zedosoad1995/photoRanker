@@ -18,6 +18,7 @@ import { FAQAccordion } from "./FAQAccordion";
 import { Modes } from "./Modes";
 import { PhotoStats } from "./PhotoStats";
 import { VotingDetails } from "./VotingDetails";
+import { Footer } from "@/Components/Footer";
 
 function App() {
   const [showFloatBtn, setShowFloatBtn] = useState(false);
@@ -94,6 +95,11 @@ function App() {
 
   const { ref: refFAQ, inView: inViewFAQ } = useInView({
     threshold: 1,
+    triggerOnce: true,
+  });
+
+  const { ref: refFunctionality, inView: inViewFunctionality } = useInView({
+    threshold: 0.5,
     triggerOnce: true,
   });
 
@@ -234,6 +240,7 @@ function App() {
                         className="mx-auto w-full"
                         src="/dude.webp"
                         alt="male rated 1-10"
+                        loading="lazy"
                       />
                     </div>
                   </div>
@@ -263,6 +270,7 @@ function App() {
                         className="mx-auto w-full"
                         src="/dude2.webp"
                         alt="another male rated 1-10"
+                        loading="lazy"
                       />
                     </div>
                   </div>
@@ -309,7 +317,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/upload.webp" alt="upload photo" />
+                <img src="/upload.webp" alt="upload photo" loading="lazy" />
               </div>
             </div>
             <div
@@ -341,7 +349,7 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/upload.webp" alt="upload photo" />
+                <img src="/upload.webp" alt="upload photo" loading="lazy" />
               </div>
             </div>
             <div className="w-1/2 pl-3 lg:pl-20 my-auto">
@@ -387,6 +395,7 @@ function App() {
                 <img
                   src="/side-by-side-click.webp"
                   alt="vote images side by side"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -455,6 +464,7 @@ function App() {
                 <img
                   src="/side-by-side-click.webp"
                   alt="vote images side by side"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -468,7 +478,11 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-lg overflow-hidden">
-                <img src="/score.webp" alt="get rated by attractiveness" />
+                <img
+                  src="/score.webp"
+                  alt="get rated by attractiveness"
+                  loading="lazy"
+                />
               </div>
             </div>
             <div
@@ -500,7 +514,11 @@ function App() {
               } transition-opacity duration-500 ease-in`}
             >
               <div className="rounded-t-lg overflow-hidden">
-                <img src="/score.webp" alt="get rated by attractiveness" />
+                <img
+                  src="/score.webp"
+                  alt="get rated by attractiveness"
+                  loading="lazy"
+                />
               </div>
             </div>
             <div className="w-1/2 pl-3 lg:pl-20 my-auto">
@@ -538,12 +556,23 @@ function App() {
       <section className="py-20 md:py-[111px] bg-[#F8FBFD] px-5 sm:px-[70px]">
         <div className="mx-auto max-w-4xl">
           <div
-            className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px]`}
+            ref={refFunctionality}
+            className={`text-3xl md:text-[48px] leading-[29px] text-[#374048] font-semibold text-center mb-[25px] ${
+              inViewFunctionality
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
+            } transition-all duration-500 ease-in`}
           >
             FUNCTIONALITIES
           </div>
-          <div className="mb-[25px] w-[82px] h-[6px] bg-[#eee] mx-auto" />
-          <Modes />
+          <div
+            className={`mb-[25px] w-[82px] h-[6px] bg-[#eee] mx-auto ${
+              inViewFunctionality
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-6"
+            } transition-all duration-500 ease-in`}
+          />
+          <Modes inView={inViewFunctionality} />
           <div className="mb-20" />
           <PhotoStats />
           <div className="mb-20" />
@@ -747,6 +776,7 @@ function App() {
           <FAQAccordion />
         </div>
       </section>
+      <Footer />
     </div>
   );
 }
