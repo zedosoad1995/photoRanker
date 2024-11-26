@@ -8,6 +8,7 @@ Photo Ranker is a web application designed to offer both an engaging and unbiase
   <img src="assets/voting.gif" width="400" />
 </div>
 
+
 ## Motivations
 
 The goal of Photo Ranker is to address a common problem: receiving honest feedback on photos. Friends and acquaintances might be too kind, while numerical ratings can lead to indecision and biases. Photo Ranker's binary choice system, inspired by the Glicko-2 algorithm used in chess, aims to:
