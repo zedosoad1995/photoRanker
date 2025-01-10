@@ -21,9 +21,8 @@ COPY --from=builder /backend/prisma/ ./prisma
 COPY --from=builder /backend/package*.json .
 COPY --from=builder /backend/.env .env
 
-RUN npm install prisma@5.4.2 --save-dev
+RUN npm ci --omit=dev
 RUN npx prisma generate
-RUN npm ci --production
 
 EXPOSE 8000
 
