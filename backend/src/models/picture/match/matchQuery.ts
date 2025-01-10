@@ -3,8 +3,6 @@ import { prisma } from "../..";
 import { Gender, Picture, Preference, User } from "@prisma/client";
 import { randomWeightedClosestElo } from "@/helpers/rating";
 import { BadRequestError } from "@/errors/BadRequestError";
-import { isAdmin } from "@/helpers/role";
-import { adjustDate, formatDate } from "@/helpers/date";
 import { calculateAge } from "@shared/helpers/date";
 import { getFirstPic } from "./getFirstPicture";
 
@@ -56,15 +54,6 @@ const getPicturesWithClosestElos = (
     }
   }
 
-  if (!isAdmin(loggedUser.role)) {
-    whereQuery.push(`NOT EXISTS (
-      SELECT 1 FROM "_MatchToPicture" as ab
-      INNER JOIN "Match" as match ON ab."A" = match.id
-      INNER JOIN "Vote" as vote ON match.id = vote."matchId"
-      WHERE ab."B" = pic.id AND vote."voterId" = '${loggedUser.id}'
-    )`);
-  }
-
   whereQuery.push(`pic."isGlobal" = ${isGlobal ? "TRUE" : "FALSE"}`);
 
   if (!isGlobal) {
@@ -92,7 +81,7 @@ const getPicturesWithClosestElos = (
 };
 
 export const getMatchPictures = async (loggedUser: User, userPreferences: Preference | null) => {
-  const MAX_RETRIEVED_PICS = 100;
+  const MAX_RETRIEVED_PICS = 300;
   let isMale = Math.random() > 0.5;
   const gender = isMale ? Gender.Male : Gender.Female;
 
