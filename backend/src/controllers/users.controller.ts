@@ -88,6 +88,7 @@ export const createOne = (mailingService: MailRepo) => async (req: Request, res:
       verificationTokenExpiration: expires,
       verificationToken,
       numLimitPhotos: MAX_FREE_PHOTOS,
+      canBypassPreferences: Math.random() < 0.3,
     },
   });
 
