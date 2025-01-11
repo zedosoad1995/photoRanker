@@ -15,8 +15,8 @@ import { ETHNICITY } from "@shared/constants/user";
 const generateAge = (minAge: number, maxAge: number | null) => {
   const filteredAgeDistribution = Object.fromEntries(
     Object.entries(FAKE_AGE_DISTRIBUTION).filter(([age, _]) =>
-      isAgeValid(Number(age), minAge, maxAge)
-    )
+      isAgeValid(Number(age), minAge, maxAge),
+    ),
   );
 
   if (Object.keys(filteredAgeDistribution).length === 0) {
@@ -52,7 +52,7 @@ type IVoterInfo = Partial<{
 export const getFakeVoterDemographics = async (
   loggedUser: ILoggedUser,
   pictureUserId?: string,
-  otherVoterInfo?: IVoterInfo
+  otherVoterInfo?: IVoterInfo,
 ) => {
   if (isRegular(loggedUser.role) && !loggedUser.canBypassPreferences) {
     return;
@@ -65,23 +65,25 @@ export const getFakeVoterDemographics = async (
     gender: Gender;
   }> = {};
 
-  const preference = await PreferenceModel.findUnique({
-    where: {
-      userId: pictureUserId,
-    },
-  });
+  const preference = pictureUserId
+    ? await PreferenceModel.findUnique({
+        where: {
+          userId: pictureUserId,
+        },
+      })
+    : undefined;
 
   if (preference) {
     if (otherVoterInfo?.age && otherVoterInfo.gender) {
       const hasOtherUserValidAge = isAgeValid(
         otherVoterInfo.age,
         preference.exposureMinAge,
-        preference.exposureMaxAge
+        preference.exposureMaxAge,
       );
 
       const hasOtherUserValidGender = isGenderValid(
         otherVoterInfo.gender,
-        preference.exposureGender
+        preference.exposureGender,
       );
 
       if (hasOtherUserValidAge && hasOtherUserValidGender) {
@@ -97,8 +99,13 @@ export const getFakeVoterDemographics = async (
       return;
     }
 
-    voterInfo.age = generateAge(preference.exposureMinAge, preference.exposureMaxAge);
-    voterInfo.gender = generateGender(preference.exposureGender);
+    if ((!hasValidAge && isRegular(loggedUser.role)) || isAdmin(loggedUser.role)) {
+      voterInfo.age = generateAge(preference.exposureMinAge, preference.exposureMaxAge);
+    }
+
+    if ((!hasValidGender && isRegular(loggedUser.role)) || isAdmin(loggedUser.role)) {
+      voterInfo.gender = generateGender(preference.exposureGender);
+    }
   } else {
     if (otherVoterInfo?.age && otherVoterInfo.gender) {
       return otherVoterInfo;
