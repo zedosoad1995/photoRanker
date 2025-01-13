@@ -11,19 +11,20 @@ import {
 import { pickRandomKey } from "@/helpers/random";
 import { Gender } from "@prisma/client";
 import { ETHNICITY } from "@shared/constants/user";
+import { hashStringToNormalizedFloat } from "@/helpers/crypto";
 
-const generateAge = (minAge: number, maxAge: number | null) => {
+const generateAge = (minAge: number, maxAge: number | null, isAdmin: boolean, userId: string) => {
   const filteredAgeDistribution = Object.fromEntries(
     Object.entries(FAKE_AGE_DISTRIBUTION).filter(([age, _]) =>
       isAgeValid(Number(age), minAge, maxAge),
     ),
   );
 
-  if (Object.keys(filteredAgeDistribution).length === 0) {
-    filteredAgeDistribution[25] = 1;
+  if(isAdmin){
+    return Number(pickRandomKey(filteredAgeDistribution));
   }
 
-  return Number(pickRandomKey(filteredAgeDistribution));
+  return Number(pickRandomKey(filteredAgeDistribution, hashStringToNormalizedFloat(userId)));
 };
 
 const generateGender = (desiredGender: Gender | null) => {
@@ -100,7 +101,7 @@ export const getFakeVoterDemographics = async (
     }
 
     if ((!hasValidAge && isRegular(loggedUser.role)) || isAdmin(loggedUser.role)) {
-      voterInfo.age = generateAge(preference.exposureMinAge, preference.exposureMaxAge);
+      voterInfo.age = generateAge(preference.exposureMinAge, preference.exposureMaxAge, isAdmin(loggedUser.role), loggedUser.id);
     }
 
     if ((!hasValidGender && isRegular(loggedUser.role)) || isAdmin(loggedUser.role)) {
