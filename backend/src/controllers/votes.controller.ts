@@ -139,7 +139,5 @@ export const vote = (ratingRepo: RatingRepo) => async (req: Request, res: Respon
     var [vote, _] = await prisma.$transaction([createNewVote, makeMatchInactive]);
   }
 
-  res
-    .status(201)
-    .send({ vote: omit(vote, "voterCountry", "voterEthnicity", "voterAge", "voterGender") });
+  res.status(204).send()
 };
