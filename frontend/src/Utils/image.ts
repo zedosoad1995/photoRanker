@@ -1,6 +1,5 @@
 import { Area } from "react-easy-crop";
-import Resizer from "react-image-file-resizer";
-import { IMG_HEIGHT, IMG_WIDTH } from "@shared/constants/picture";
+import imageCompression, { Options } from "browser-image-compression";
 
 export const base64toBlob = (dataURL: string) => {
   const arr = dataURL.split(",");
@@ -39,7 +38,9 @@ export const getImageDimensionsFromBase64 = (
   });
 };
 
-export const createHTMLImageFromBase64 = (dataURL: string): Promise<HTMLImageElement> =>
+export const createHTMLImageFromBase64 = (
+  dataURL: string
+): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
     image.addEventListener("load", () => resolve(image));
@@ -47,7 +48,10 @@ export const createHTMLImageFromBase64 = (dataURL: string): Promise<HTMLImageEle
     image.src = dataURL;
   });
 
-export const getCroppedImage = async (dataURL: string, crop: Area): Promise<Blob> => {
+export const getCroppedImage = async (
+  dataURL: string,
+  crop: Area
+): Promise<Blob> => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -95,21 +99,14 @@ export const getCroppedImage = async (dataURL: string, crop: Area): Promise<Blob
   });
 };
 
-export const resizeImage = (image: Blob): Promise<Blob> =>
-  new Promise((resolve) => {
-    Resizer.imageFileResizer(
-      image,
-      IMG_WIDTH,
-      IMG_HEIGHT,
-      "JPEG",
-      100,
-      0,
-      (uri) => {
-        resolve(uri as Blob);
-      },
-      "blob"
-    );
-  });
+export const resizeImage = (image: Blob): Promise<Blob> => {
+  const options: Options = {
+    maxSizeMB: 2,
+    maxWidthOrHeight: 800,
+    useWebWorker: true,
+  };
+  return imageCompression(image as File, options);
+};
 
 export const loadImage = (src: string) => {
   return new Promise((resolve, reject) => {
